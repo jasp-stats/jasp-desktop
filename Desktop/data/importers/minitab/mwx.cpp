@@ -1,6 +1,7 @@
 #include "mwx.h"
 #include "minitabimportcolumn.h"
 #include "log.h"
+#include "columnutils.h"
 #include "archivereader.h"
 #include <QFileInfo>
 #include <QString>
@@ -85,8 +86,10 @@ void Minitab::getColumns(std::vector<MwxImportColumn *> &columns, ImportDataSet 
 		}
 		else if (varDataBody.isMember("NumericData"))
 		{
+			//The column reads a value like text typed in the locale of the interface, so a number is handed on written that way (like ExcelImporter does).
+			//Json::Value::asString writes it the way C does instead, and a German interface would take the 1.234 it writes for one thousand two hundred and thirty-four.
 			for (const auto &val : varDataBody["NumericData"])
-				impCol->addValue(val.isNull() ? "" : val.asString());
+				impCol->addValue(val.isNull() ? "" : val.isNumeric() ? ColumnUtils::doubleToStringMaxPrec(val.asDouble(), false) : val.asString());
 		}
 
 		while (impCol->size() < _numRows)

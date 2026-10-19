@@ -20,7 +20,7 @@ Rectangle
 	width:				implicitWidth
 	
 	color:				enabled ? jaspTheme.controlBackgroundColor : jaspTheme.controlDisabledBackgroundColor
-	border.color:		jaspTheme.buttonBorderColor
+	border.color:		!textInput.activeFocus ? jaspTheme.borderColor : jaspTheme.focusBorderColor
 	border.width:		1
 	onFocusChanged:		if(focus) textInput.focus = true;
 	activeFocusOnTab:	true

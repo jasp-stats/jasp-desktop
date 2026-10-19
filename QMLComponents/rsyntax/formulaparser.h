@@ -4,6 +4,8 @@
 #include <QCoreApplication>
 #include "models/terms.h"
 
+class VariableInfoProvider;
+
 class FormulaParser
 {
 	Q_DECLARE_TR_FUNCTIONS(FormulaParser)
@@ -29,10 +31,10 @@ public:
 	static const char interactionSeparator;
 	static const char allInterationsSeparator;
 
-	static bool			parse(const Json::Value& formula, bool isLhs, ParsedTerms& parsedTerms, QString& error);
-	static Terms		parseTerm(QString term);
-	static Terms		parseTerm(const Json::Value& jsonString);
-	static Terms		parseTerms(const Json::Value& json);
+	static bool			parse(const Json::Value& formula, bool isLhs, ParsedTerms& parsedTerms, QString& error, VariableInfoProvider * provider);
+	static Terms		parseTerm(QString term,																	VariableInfoProvider * provider);
+	static Terms		parseTerm(const Json::Value& jsonString,												VariableInfoProvider * provider);
+	static Terms		parseTerms(const Json::Value& json,														VariableInfoProvider * provider);
 //	static ParsedTerm	parseTerm(const QString& term, const ParsedTerms& conditionalParsedTerms, bool isCorrelated);
 //	static ParsedTerm	parseTerm(const ParsedTerm& term, const ParsedTerms& conditionalParsedTerms, bool isCorrelated);
 

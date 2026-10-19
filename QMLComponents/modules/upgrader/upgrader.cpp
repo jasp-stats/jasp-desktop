@@ -1,6 +1,6 @@
 #include "upgrader.h"
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <QFile>
 #include "utilities/messageforwarder.h"
 #include <QTimer>

@@ -2,9 +2,10 @@
 #include "utilities/desktopcommunicator.h"
 #include <QMessageBox>
 #include <QPushButton>
-#include <QFileDialog>
-#include <QInputDialog>
+#include "databaseconnectioninfo.h"
 #include <QRegularExpression>
+#include <QInputDialog>
+#include <QFileDialog>
 #include <QString>
 #include "qutils.h"
 #include "appdirs.h"
@@ -23,6 +24,13 @@ MessageForwarder::MessageForwarder(QObject *main) : QQuickItem(nullptr)
 void MessageForwarder::log(QString msg)
 {
 	Log::log() << msg << std::endl;
+}
+
+void MessageForwarder::linkWithDatabaseConnectionInfo(DatabaseConnectionInfo *info)
+{
+	connect(info,		&DatabaseConnectionInfo::showYesNo,			_singleton,		&MessageForwarder::showYesNoSlot			);
+	connect(info,		&DatabaseConnectionInfo::askPassword,		_singleton,		&MessageForwarder::askPasswordSlot			);
+	connect(info,		&DatabaseConnectionInfo::showWarning,		_singleton,		&MessageForwarder::showWarningQML			);
 }
 
 bool MessageForwarder::useNativeFileDialogs()
@@ -80,6 +88,7 @@ QString MessageForwarder::constrainToSandboxStartDir(const QString &initialPath)
 }
 
 MessageForwarder * MessageForwarder::_singleton = nullptr;
+MessageForwarder::WarningHandler MessageForwarder::_warningHandler;
 
 QMessageBox *MessageForwarder::getInfoBox(const QString &title, const QString &message)
 {
@@ -95,6 +104,19 @@ QMessageBox *MessageForwarder::getInfoBox(const QString &title, const QString &m
 
 void MessageForwarder::showWarning(QString title, QString message, QMessageBox::Icon icon)
 {
+	if (_warningHandler)
+	{
+		_warningHandler(title, message, icon == QMessageBox::Critical);
+		return;
+	}
+	//A modal dialog would block an automated test runner forever, so in tests it becomes a log line.
+	//Same pattern as MainWindow::checkForUpdates, which also stays out of the way in tests.
+	if(QCoreApplication::applicationName() == "JASPTest")
+	{
+		Log::log() << "[MessageForwarder::showWarning] suppressed in test: " << fq(message) << std::endl;
+		return;
+	}
+
 	QMessageBox box;
 	box.setText(title);
 	box.setInformativeText(message);

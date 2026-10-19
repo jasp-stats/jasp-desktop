@@ -32,6 +32,7 @@
 #include <boost/container/string.hpp>
 #include <functional>
 #include <thread>
+#include <limits>
 
 typedef boost::interprocess::allocator<char,	boost::interprocess::managed_shared_memory::segment_manager	> CharAllocator;
 typedef boost::container::basic_string<char,	std::char_traits<char>, CharAllocator						> String;
@@ -114,7 +115,7 @@ private:
 													_semaphoreInName,
 													_semaphoreOutName;
 	uint64_t										_msgIDSend				= 0,
-													_msgIDRecv				= 1;
+													_msgIDRecv				= std::numeric_limits<uint64_t>::max(); //Sentinel: any first message id (modulo 10000) is detected as "new".
 };
 
 #endif // IPCCHANNEL_H

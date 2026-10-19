@@ -80,6 +80,7 @@ ListView
 					ToolTip.delay: 500
 					ToolTip.text:  index < count -1 ? "Back to " + model.name : model.name;
 					ToolTip.visible: count > 1 ? hovered  : false
+					ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 				}
 			}			
 		}	

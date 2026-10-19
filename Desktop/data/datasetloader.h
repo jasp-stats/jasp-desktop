@@ -28,7 +28,7 @@ class DataSetLoader
 {
 public:
 	static void loadPackage(const std::string & locator, const std::string & extension, std::function<void (int progress)> progress = nullptr);
-	static void syncPackage(const std::string & locator, const std::string & extension, std::function<void (int progress)> progress = nullptr);
+	static void syncPackage(const std::string & locator, const std::string & extension, DataSet * dataSet, std::function<void (int progress)> progress = nullptr);
 	
 	static std::string getExtension(const std::string &locator, const std::string &extension);
 

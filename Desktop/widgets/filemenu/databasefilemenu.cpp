@@ -5,7 +5,7 @@
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlRecord>
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utilities/messageforwarder.h"
 #include "filemenu.h"
 
@@ -69,7 +69,7 @@ void DatabaseFileMenu::loadFromSettings()
 
 void DatabaseFileMenu::loadFromDataSetPackage()
 {
-	_info = DataSetPackage::pkg()->databaseJson();
+	_info.fromJson(DataSetPackage::pkg()->workspace()->shownDataSet()->databaseJson());
 	
 	emit allChanged();
 }
@@ -96,12 +96,10 @@ void DatabaseFileMenu::importResults()
 	_info.close();
 	
 	FileEvent *event = new FileEvent(this, mode());
-	
 	event->setFileType(FileTypeBase::database);
-
 	event->setDatabase(_info.toJson());
 
-	emit dataSetIORequest(event);
+	event->starts();
 	
 	resetEphemeralFields();
 }
@@ -190,7 +188,7 @@ void DatabaseFileMenu::setUsername(const QString &newUsername)
 	
 	_info._username = newUsername;
 	
-	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())	DataSetPackage::pkg()->dataSet()->setDatabaseJson(_info.toJson());
 	else					Settings::setValue(Settings::DB_IMPORT_USERNAME, _info._username);
 	
 	
@@ -204,7 +202,7 @@ void DatabaseFileMenu::setPassword(const QString &newPassword)
 	
 	_info._password = newPassword;
 	
-	if(useDataSetPackage())		DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())		DataSetPackage::pkg()->dataSet()->setDatabaseJson(_info.toJson());
 	else if(_info._rememberMe)	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
 	
 	emit passwordChanged();
@@ -217,7 +215,7 @@ void DatabaseFileMenu::setRememberMe(bool rememberMe)
 	
 	_info._rememberMe = rememberMe;
 	
-	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())	DataSetPackage::pkg()->dataSet()->setDatabaseJson(_info.toJson());
 	else					
 	{
 		Settings::setValue(Settings::DB_REMEMBER_ME, _info._rememberMe);
@@ -235,7 +233,7 @@ void DatabaseFileMenu::setDatabase(const QString &newDatabase)
 		return;
 	
 	_info._database = newDatabase;
-	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())	DataSetPackage::pkg()->dataSet()->setDatabaseJson(_info.toJson());
 	else					Settings::setValue(Settings::DB_IMPORT_DBNAME, _info._database);
 	
 	emit databaseChanged();
@@ -247,7 +245,7 @@ void DatabaseFileMenu::setHostname(const QString &newHostname)
 		return;
 	
 	_info._hostname = newHostname;
-	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())	DataSetPackage::pkg()->dataSet()->setDatabaseJson(_info.toJson());
 	else					Settings::setValue(Settings::DB_IMPORT_HOSTNAME, _info._hostname);
 	
 	emit hostnameChanged();
@@ -259,7 +257,7 @@ void DatabaseFileMenu::setDbType(const DbType newDbType)
 		return;
 
 	_info._dbType = newDbType;
-	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())	DataSetPackage::pkg()->dataSet()->setDatabaseJson(_info.toJson());
 	else					Settings::setValue(Settings::DB_IMPORT_TYPE, static_cast<uint>(_info._dbType));
 	
 	emit dbTypeChanged();
@@ -299,7 +297,7 @@ void DatabaseFileMenu::setPort(int newPort)
 		return;
 	
 	_info._port = newPort;
-	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())	DataSetPackage::pkg()->dataSet()->setDatabaseJson(_info.toJson());
 	else					Settings::setValue(Settings::DB_IMPORT_PORT, _info._port);
 	
 	emit portChanged();
@@ -311,7 +309,7 @@ void DatabaseFileMenu::setQuery(const QString &newQuery)
 		return;
 	
 	_info._query = newQuery;
-	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())	DataSetPackage::pkg()->dataSet()->setDatabaseJson(_info.toJson());
 	else					Settings::setValue(Settings::DB_IMPORT_QUERY, _info._query);
 	
 	emit queryChanged();
@@ -334,16 +332,19 @@ void DatabaseFileMenu::setInterval(int newInterval)
 	
 	_info._interval = newInterval;
 	
-	if(useDataSetPackage())	DataSetPackage::pkg()->setDatabaseJson(_info.toJson());
+	if(useDataSetPackage())
+	{
+		DataSet * ds = DataSetPackage::pkg()->dataSet();
+		if(ds)
+		{
+			ds->setDatabaseJson(_info.toJson());
+			if(_info._interval == 0)	ds->syncer().stopDatabaseSyncing();
+			else						ds->syncer().startDatabaseSyncing(_info.toJson(), previousInterval == 0);
+		}
+	}
 	else					Settings::setValue(Settings::DB_IMPORT_INTERVAL, _info._interval);
 	
 	emit intervalChanged();
-	
-	if(useDataSetPackage())
-	{
-		if(_info._interval == 0)	DataSetPackage::pkg()->databaseStopSynching();
-		else						DataSetPackage::pkg()->databaseStartSynching(previousInterval == 0);
-	}
 }
 
 

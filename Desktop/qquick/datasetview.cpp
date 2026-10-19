@@ -10,6 +10,7 @@
 #include <QGuiApplication>
 #include <QClipboard>
 #include "utils.h"
+#include "dataenums.h"
 
 DataSetView * DataSetView::_mainDataSetView = nullptr;
 
@@ -21,6 +22,7 @@ DataSetView::DataSetView(QQuickItem *parent)
 	connect(DataSetPackage::pkg(),		&DataSetPackage::dataModeChanged,				this, &DataSetView::onDataModeChanged);
 	connect(_expandedModel,				&ExpandDataProxyModel::undoChanged,				this, &DataSetView::undoChanged);
 	connect(_selectionModel,			&QItemSelectionModel::currentColumnChanged,		this, &DataSetView::currentSelectedColumnHandler);
+	connect(DataSetPackage::pkg(),		&DataSetPackage::workspaceChanged,				this, &DataSetViewBase::resetItems);
 }
 
 void DataSetView::setModel(QAbstractItemModel * model)
@@ -59,13 +61,21 @@ void DataSetView::setRolenames()
 {
 	_roleNameToRole.clear();
 
-	if (!_expandedModel->sourceModel())
-		return;
-
-	auto roleNames = _expandedModel->sourceModel()->roleNames();
-
-	for(const auto & rn : roleNames.keys())
-		_roleNameToRole[roleNames[rn].toStdString()] = rn;
+	if (!_expandedModel->sourceModel())	
+	{
+		DataSetViewBase::setRolenames();
+		
+	}
+	else
+	{	
+		auto roles = _expandedModel->roleNames();
+		for(const auto & rn : roles.keys())
+			_roleNameToRole[roles[rn].toStdString()] = rn;
+	}
+	
+	for(auto & roleAndName : dataPkgRolesToStringMap())
+		_roleNameToRole[roleAndName.second] = roleAndName.first;
+	
 }
 
 void DataSetView::_copy(QPoint where, bool clear)
@@ -143,8 +153,8 @@ void DataSetView::_copy(QPoint where, bool clear)
 			for(size_t r=minIdx.y(); r<=maxIdx.y(); r++)
 			{
 				QModelIndex expandedIndex = _expandedModel->index(r, c);
-				vals.push_back(_expandedModel->data(expandedIndex, int(DataSetPackage::specialRoles::value)).toString());
-				labs.push_back(_expandedModel->data(expandedIndex, int(DataSetPackage::specialRoles::label)).toString());
+				vals.push_back(_expandedModel->data(expandedIndex, int(dataPkgRoles::value)).toString());
+				labs.push_back(_expandedModel->data(expandedIndex, int(dataPkgRoles::label)).toString());
 			}
 
 			_lastJaspCopyValues	.push_back(vals);

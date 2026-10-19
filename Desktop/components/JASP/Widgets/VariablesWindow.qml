@@ -31,6 +31,18 @@ FocusScope
 	id:			variablesContainer
 	visible:	columnModel.visible
 
+	// Close through the usual apply/discard/cancel route (guard unsaved computed-column edits):
+	// stays open when the user cancels or the edits cannot be applied, and returns whether it
+	// closed. Used by both close buttons and by the Filter/Variables exclusivity logic.
+	function requestClose()
+	{
+		if(!computedColumnWindow.askIfChangedOrClose())
+			return false
+
+		columnModel.visible = false
+		return true
+	}
+
 	property real calculatedBaseHeight:			(columnInfoTop.height + jaspTheme.generalAnchorMargin * 2)
 	property real calculatedMinimumHeight:		calculatedBaseHeight * 1.5
 	property real calculatedPreferredHeight:	calculatedBaseHeight * 4
@@ -44,9 +56,9 @@ FocusScope
 		{
 			if (columnModel.visible && columnModel.chosenColumn >= 0)
 			{
-				columnModel.columnName			= (columnModel.compactMode ? tabInfo : columnInfoTop).columnNameValue
-				columnModel.columnTitle			= (columnModel.compactMode ? tabInfo : columnInfoTop).columnTitleValue
-				columnModel.columnDescription	= (columnModel.compactMode ? tabInfo : columnInfoTop).columnDescriptionValue
+				columnModel.setColumnNameQ(		(columnModel.compactMode ? tabInfo : columnInfoTop).columnNameValue)
+				columnModel.setColumnTitleQ(	(columnModel.compactMode ? tabInfo : columnInfoTop).columnTitleValue)
+				columnModel.setColumnDescriptionQ((columnModel.compactMode ? tabInfo : columnInfoTop).columnDescriptionValue)
 				columnModel.computedType		= (columnModel.compactMode ? tabInfo : columnInfoTop).columnComputedTypeValue
 				columnModel.currentColumnType	= (columnModel.compactMode ? tabInfo : columnInfoTop).columnTypeValue
 			}
@@ -178,6 +190,19 @@ FocusScope
 					}
 				}
 			}
+
+			HelpButton
+			{
+				id:					helpButton
+				height:				columnModel.compactMode ? 33 * jaspTheme.uiScale : 0
+				width:				height
+				buttonPadding:		6 * preferencesModel.uiScale
+				toolTip:			qsTr("Open Documentation")
+				helpMD:				allHelp.variableslabeleditorhelp
+				anchors.right:		closeButton.left
+				anchors.top:		tabView.top
+				anchors.topMargin:	jaspTheme.generalAnchorMargin * -0.5
+			}
 			
 			MenuButton
 			{
@@ -185,7 +210,7 @@ FocusScope
 				height:				33 * jaspTheme.uiScale
 				width:				columnModel.compactMode ? height : 0
 				iconSource:			jaspTheme.iconPath + "collapse.png"
-				onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
+				onClicked:			variablesContainer.requestClose()
 				toolTip:			qsTr("Close variable window")
 				radius:				height
 				visible:			columnModel.compactMode
@@ -289,14 +314,14 @@ FocusScope
 					{
 						id:					columnHasLabels
 						label:				qsTr("Use labels")
-						checked:			columnModel.hasLabels
-						onCheckedChanged:	columnModel.hasLabels = checked
+						checked:			columnModel.column &&  columnModel.column.hasLabels
+						onCheckedChanged:	if(columnModel.column) columnModel.column.hasLabels = checked
 					}
 				
 					LabelEditorWindow
 					{
 						id:					labelEditonWindow
-						enabled:			columnModel.hasLabels
+						enabled:			columnModel.column && columnModel.column.hasLabels
 						height:				labelsView.height - y
 						opacity:			enabled ? 1 : .5
 						anchors
@@ -327,10 +352,12 @@ FocusScope
 					{
 						id:					missingValues
 						height:				missingValuesView.height - y
-						anchors.top:		useCustomValues.bottom
-						anchors.topMargin:	jaspTheme.generalAnchorMargin
-						anchors.left:		parent.left
-						anchors.leftMargin:	jaspTheme.generalAnchorMargin
+						anchors
+						{
+							top:		useCustomValues.bottom
+							left:		parent.left
+							margins:	jaspTheme.generalAnchorMargin
+						}
 						enabled:			useCustomValues.checked
 						showTitle:			false
 						model:				columnModel
@@ -342,7 +369,7 @@ FocusScope
 				ColumnBasicInfo
 				{
 					id:				tabInfo
-					closeIcon:		false
+					showIcons:		false
 				}
 			}
 		}

@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+                background: transparent;
+            }
+            deep-chat {
+                display: block;
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+
+        <script type="text/javascript" src="js/qwebchannel.js"></script>
+        <script type="text/javascript" src="js/deepChat.bundle.js"></script>
+        <script type="text/javascript" src="js/chat-themes.js"></script>
+        <script type="text/javascript" src="js/chat-bridge.js"></script>
+        <script type="text/javascript" src="js/md_table_enhance.js"></script>
+    </head>
+    <body>
+        <deep-chat
+            auxiliaryStyle="
+                /* --- Markdown Tables (match jasp.css look) --- */
+                table {
+                    font-style: normal;
+                    border-collapse: collapse;
+                    margin-bottom: 2em;
+                    cursor: default;
+                    font-size: 12px;
+                }
+                th {
+                    vertical-align: bottom;
+                    font-weight: normal;
+                }
+                td {
+                    text-align: right;
+                    vertical-align: bottom;
+                    padding: 3px 12px;
+                }
+                thead th {
+                    text-align: center;
+                    padding: 3px 12px;
+                    word-break: break-word;
+                    overflow-wrap: anywhere;
+                }
+                tbody th,
+                tbody tr td:first-child {
+                    text-align: left;
+                }
+                td.text, th.text { text-align: left; }
+                td.number { text-align: right; }
+                /* Group spacing (matching JASP new-group-row) */
+                tr.new-group td,
+                tr.new-group th {
+                    padding-top: 10.8px;
+                }
+                tbody th,
+                tbody td {
+                    border-bottom: none;
+                    border-top: none;
+                    word-break: break-word;
+                    overflow-wrap: anywhere;
+                }
+                thead tr th {
+                    border-bottom: thin solid;
+                }
+                tbody tr:last-child th,
+                tbody tr:last-child td {
+                    border-bottom: thin solid;
+                }
+                /* Theme colours come from CSS custom properties set by
+                   chat-themes.js. Custom properties cascade into the shadow
+                   DOM and live-update, so theme switches need no rebuild.
+                   auxiliaryStyle itself is only applied once by deep-chat,
+                   hence the variable indirection. */
+                tbody tr:nth-child(even) td,
+                tbody tr:nth-child(even) th {
+                    background: var(--jasp-zebra, #EBEBEB);
+                }
+                a {
+                    color: var(--jasp-link, #14a1e3);
+                }
+                ::-webkit-scrollbar {
+                    width: 10px;
+                    height: 10px;
+                }
+                ::-webkit-scrollbar-thumb {
+                    background-color: var(--jasp-scrollbar, #9A9A9A);
+                    border-radius: 5px;
+                }
+            "
+            errorMessages='{"displayServiceErrorMessages": true}'
+        ></deep-chat>
+    </body>
+</html>

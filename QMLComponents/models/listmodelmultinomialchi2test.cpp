@@ -17,7 +17,7 @@
 //
 
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "listmodelmultinomialchi2test.h"
 #include "analysisform.h"
 #include "controls/tableviewbase.h"

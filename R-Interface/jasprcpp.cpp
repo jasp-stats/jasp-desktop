@@ -44,6 +44,7 @@ CreateColumn					dataSetCreateColumn;
 DeleteColumn					dataSetDeleteColumn;
 GetColumnType					dataSetGetColumnType;
 SetColumnDataAndType			dataSetColumnDataAndType;
+SetDataSet						dataSetSetDataSet;
 GetColumnAnalysisId				dataSetGetColumnAnalysisId,
 								dataSetGetColumnOriginalIndex;
 
@@ -154,6 +155,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	dataSetGetColumnOriginalIndex				= callbacks->dataSetGetColumnOriginalIndex;
 	dataSetGetColumnAnalysisId					= callbacks->dataSetGetColumnAnalysisId;
 	dataSetColumnDataAndType					= callbacks->dataSetColumnAsDataAndType;
+	dataSetSetDataSet							= callbacks->dataSetSetDataSet;
 	requestSpecificFileNameCB					= callbacks->requestSpecificFileNameCB;
 	readFullFilteredDataSetCB					= callbacks->readFullFilteredDataSetCB;
 	requestStateFileSourceCB					= callbacks->requestStateFileSourceCB;
@@ -200,6 +202,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rEnvironment[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnNameRcpp);
 	rEnvironment[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnNameRcpp);
 	rEnvironment[".setColumnDataAsScale"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
+	rEnvironment[".setDataSet"]						= Rcpp::InternalFunction(&jaspRCPP_setDataSet);
 	rEnvironment[".readFullDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
 	rEnvironment[".allColumnNamesDataset"]			= Rcpp::InternalFunction(&jaspRCPP_allColumnNamesDataset);
 	rEnvironment[".readDatasetToEndNative"]			= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
@@ -571,7 +574,17 @@ const char*	STDCALL jaspRCPP_evalComputedColumn(const char *rCode, const char * 
 			rEnvironment[".calcedVals"]	=	NULL;
 		}
 
-		staticResult = jaspRCPP_parseEvalStringReturn(setColumnCode,	false, false);
+		//Only write results into the column when the user code actually produced values; otherwise the
+		//setter would replace good computed data with an empty/NA column on an R error.
+		Rcpp::RObject calcedVals = rEnvironment[".calcedVals"];
+		if (Rf_isNull(calcedVals))
+		{
+			if (lastErrorMessage.empty())
+				jaspRCPP_setErrorMsg("The computed-column R code produced no results, the column was left unchanged.");
+			staticResult = NullString;
+		}
+		else
+			staticResult = jaspRCPP_parseEvalStringReturn(setColumnCode,	false, false);
 
 		rEnvironment[".calcedVals"]	=	NULL;
 
@@ -925,6 +938,134 @@ bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObjec
 	return dataSetColumnDataAndType(columnName.c_str(), nominals, static_cast<size_t>(strData.size()), int(colType), computed);
 }
 
+bool jaspRCPP_setDataSet(const std::string & datasetName, Rcpp::RObject dfObj)
+{
+	//The whole output dataset is replaced by this frame, so we must refuse anything that is not a
+	//data.frame (e.g. a matrix or list slips past the NULL/empty-frame guard in the caller). Report
+	//the real cause instead of silently writing an empty dataset.
+	if(!Rcpp::is<Rcpp::DataFrame>(dfObj))
+	{
+		std::string what = "The R code produced a non-data.frame result that cannot be used to replace the output dataset";
+		jaspRCPP_setErrorMsg(what.c_str());
+		return false;
+	}
+
+	Rcpp::DataFrame			df(dfObj);
+	size_t					colCount	= df.size();
+	Rcpp::CharacterVector	dfNames		= df.names();
+
+	static Rcpp::Function	asNumeric	("as.numeric"),
+							asCharacter	("as.character"),
+							isOrdered	("is.ordered");
+
+	std::vector<std::string>					names;
+	std::vector<int>							types;
+	std::vector<std::vector<std::string>>		data;
+	std::vector<std::vector<const char *>>		innerPtrs;
+	std::vector<const char *>					namePtrs;
+	std::vector<int>							typePtrs;
+	std::vector<const char **>					dataPtrs;
+	std::vector<size_t>							lengths;
+
+	names.reserve(colCount);
+	types.reserve(colCount);
+	data.reserve(colCount);
+
+	for(size_t i=0; i<colCount; i++)
+	{
+		Rcpp::RObject colObj	= df[i];
+		std::string	 colName	= Rcpp::as<std::string>(dfNames[i]);
+
+		columnType colType;
+		if(Rf_isFactor(colObj))						colType = Rcpp::as<bool>(isOrdered(colObj)) ? columnType::ordinal	: columnType::nominal;
+		else if(Rf_isLogical(colObj))				colType = columnType::nominal;
+		else										colType = columnType::scale;
+
+		Rcpp::Vector<STRSXP>	strData = Rcpp::CharacterVector(asCharacter(Rcpp::_["x"] = colObj));
+		Rcpp::Vector<REALSXP>	dblData = Rcpp::NumericVector(	asNumeric(	Rcpp::_["x"] = colObj));
+
+		std::vector<std::string> colData(strData.begin(), strData.end());
+		//as.character and as.numeric may not agree on length for unusual R objects, so only read
+		//dblData within its own bounds.
+		size_t common = std::min(colData.size(), size_t(dblData.size()));
+		for(size_t r=0; r<common; r++)
+			if(std::isnan(dblData[r]))
+				colData[r] = "";
+
+		names	.push_back(colName);
+		types	.push_back(int(colType));
+		data	.push_back(colData);
+	}
+
+	for(size_t i=0; i<colCount; i++)
+	{
+		innerPtrs.emplace_back(data[i].size());
+		for(size_t r=0; r<data[i].size(); r++)
+			innerPtrs[i][r] = data[i][r].c_str();
+
+		namePtrs.push_back(names[i].c_str());
+		typePtrs.push_back(types[i]);
+		dataPtrs.push_back(innerPtrs[i].data());
+		lengths.push_back(data[i].size());
+	}
+
+	return dataSetSetDataSet(datasetName.c_str(), namePtrs.data(), typePtrs.data(), dataPtrs.data(), lengths.data(), colCount);
+}
+
+const char*	STDCALL jaspRCPP_evalComputedDataSet(const char *rCode, const char * setDataSetCode)
+{
+	// Function to evaluate computed-dataset R code from C++; the user code is expected to
+	// produce a data.frame, which is then written into the output dataset by setDataSetCode.
+	lastErrorMessage = "";
+	auto rEnvironment = Rcpp::Environment::global_env();
+
+	rEnvironment[".rCode"] = rCode;
+	const std::string rCodeTryCatch(""
+		"returnVal = NULL;	"
+		"tryCatch("
+		"    suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
+		"    error	= function(e) { .setRError( toString(e$message)) } 	"
+		")"
+		"; returnVal	");
+
+	static std::string staticResult;
+	try
+	{
+		try
+		{
+			rEnvironment[".jaspResult"]	= Rcpp::RObject(jaspRCPP_parseEval(rCodeTryCatch,	false, false));
+		}
+		catch(std::runtime_error e)
+		{
+			jaspRCPP_setErrorMsg(e.what());
+			staticResult						=	NullString;
+			rEnvironment[".jaspResult"]	=	NULL;
+		}
+
+		//Do not run setDataSetCode (which replaces the whole output dataset) when the user code
+		//errored or produced nothing: it would wipe previously-good computed data with an empty frame.
+		Rcpp::RObject jaspResult = rEnvironment[".jaspResult"];
+		//An empty (0-column) data.frame is not NULL but would still wipe the output; treat it as no result.
+		bool isEmptyFrame = Rcpp::is<Rcpp::DataFrame>(jaspResult) && Rf_ncols(jaspResult) == 0;
+		if (Rf_isNull(jaspResult) || isEmptyFrame)
+		{
+			if (lastErrorMessage.empty())
+				jaspRCPP_setErrorMsg("The computed-dataset R code produced no result (NULL/empty data.frame), the output dataset was left unchanged.");
+			staticResult = NullString;
+		}
+		else
+			staticResult = jaspRCPP_parseEvalStringReturn(setDataSetCode,	false, false);
+
+		rEnvironment[".jaspResult"]	=	NULL;
+	}
+	catch(...)
+	{
+		staticResult = NullString;
+	}
+
+	return staticResult.c_str();
+}
+
 
 void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *& outputData, size_t & numLevels, const char **& labelPointers, std::string *& labels)
 {
@@ -1167,16 +1308,16 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 
 Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal)
 {
-#ifdef JASP_DEBUG
-	std::cout << "jaspRCPP_makeFactor:\n\tlevels:\n\t\tnum: " << nbLevels << "\n\t\tstrs:\n";
-	for(int i=0; i<nbLevels; i++)
-		std::cout << "\t\t\t'" << levels[i] << "'\n";
-	std::cout << "intVec: ";
-
-	for(int i=0; i<v.size(); i++)
-		std::cout << v[i] << (i < v.size() - 1 ? ", " : "" );
-	std::cout << std::endl;
-#endif
+//#ifdef JASP_DEBUG
+//	std::cout << "jaspRCPP_makeFactor:\n\tlevels:\n\t\tnum: " << nbLevels << "\n\t\tstrs:\n";
+//	for(int i=0; i<nbLevels; i++)
+//		std::cout << "\t\t\t'" << levels[i] << "'\n";
+//	std::cout << "intVec: ";
+//
+//	for(int i=0; i<v.size(); i++)
+//		std::cout << v[i] << (i < v.size() - 1 ? ", " : "" );
+//	std::cout << std::endl;
+//#endif
 
 	Rcpp::CharacterVector labels(nbLevels);
 	for (int i = 0; i < nbLevels; i++)

@@ -5,25 +5,26 @@
 #include "qmlutils.h"
 #include "qutils.h"
 #include "log.h"
-#include "columnencoder.h"
-#include "models/term.h"
-#include "jaspcontrol.h"
-#include "altnavpostfixassignmentstrategy.h"
-#include "variableinfo.h"
-#include "messageforwarder.h"
-#include "preferencesmodelbase.h"
-#include "jasptheme.h"
-#include "knownissues.h"
-#include "modules/upgrader/upgrades.h"
+#include "modules/description/description.h"
+#include "modules/description/entrybase.h"
 #include "modules/upgrader/upgrade.h"
+#include "modules/upgrader/upgrades.h"
 #include "modules/upgrader/changejs.h"
 #include "modules/upgrader/changecopy.h"
 #include "modules/upgrader/changeremove.h"
 #include "modules/upgrader/changerename.h"
 #include "modules/upgrader/changesetvalue.h"
 #include "modules/upgrader/changeincompatible.h"
-#include "modules/description/description.h"
-#include "modules/description/entrybase.h"
+#include "columnencoder.h"
+#include "models/term.h"
+#include "jaspcontrol.h"
+#include "altnavpostfixassignmentstrategy.h"
+#include "messageforwarder.h"
+#include "preferencesmodelbase.h"
+#include "jasptheme.h"
+#include "knownissues.h"
+#include "workspace.h"
+
 
 #ifdef linux
 #include <QtGlobal>
@@ -44,27 +45,41 @@ QmlUtils::QmlUtils(QObject *parent) : QObject(parent)
 
 }
 
+static ColumnEncoder * currentDatasetEncoder()
+{
+	//The process-global current-encoder indirection is only populated inside the engine, so the
+	//desktop must en/decode against the shown dataset's own encoder instead.
+	Workspace * ws = Workspace::singleton();
+	DataSet * ds = ws ? ws->shownDataSet() : nullptr;
+
+	return ds ? &ds->encoder() : nullptr;
+}
+
 QString QmlUtils::encodeAllColumnNames(const QString & str)
 {
-	return tq(ColumnEncoder::encodeAll(fq(str)));
+	ColumnEncoder * encoder = currentDatasetEncoder();
+	return encoder ? tq(encoder->encodeAll(fq(str))) : str;
 }
 
 QString QmlUtils::decodeAllColumnNames(const QString & str)
 {
-	return tq(ColumnEncoder::decodeAll(fq(str)));
+	ColumnEncoder * encoder = currentDatasetEncoder();
+	return encoder ? tq(encoder->decodeAll(fq(str))) : str;
 }
 
 QJSValue	QmlUtils::encodeJson(const QJSValue	& val, QQuickItem * caller)
 {
 	Json::Value v(fqj(val));
-	ColumnEncoder::encodeJson(v);
+	if(ColumnEncoder * encoder = currentDatasetEncoder())
+		encoder->encodeJson(v);
 	return tqj(v, caller);
 }
 
 QJSValue	QmlUtils::decodeJson(const QJSValue	& val, QQuickItem * caller)
 {
 	Json::Value v(fqj(val));
-	ColumnEncoder::decodeJson(v);
+	if(ColumnEncoder * encoder = currentDatasetEncoder())
+		encoder->decodeJson(v);
 	return tqj(v, caller);
 }
 
@@ -250,7 +265,7 @@ void QmlUtils::setGlobalPropertiesInQMLContext(QQmlContext * ctxt)
 	ctxt->setContextProperty("INTERACTIVE_PLOTS",		interactive);
 	ctxt->setContextProperty("INTERACTION_SEPARATOR",	Term::separator);
 	
-	ctxt->setContextProperty("dataSetInfo",				VariableInfo::info());
+	ctxt->setContextProperty("dataSetInfo",				Workspace::singleton() ? Workspace::singleton()->varInfo() : nullptr);
 	ctxt->setContextProperty("messages",				MessageForwarder::msgForwarder());
 	ctxt->setContextProperty("backgroundForms",			nullptr);
 

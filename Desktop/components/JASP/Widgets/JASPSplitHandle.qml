@@ -108,6 +108,7 @@ Rectangle
 				visible:		handleRoot.toolTipArrow !== "" && arrowMouse.containsMouse
 				y:				arrowMouse.mouseY + 15
 				x:				parent.width / 2
+				
 			}
 
 			Image

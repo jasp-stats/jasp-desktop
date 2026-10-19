@@ -36,11 +36,6 @@ void DataLibrary::refres()
 	_dataLibraryListModel->refresh();
 }
 
-void DataLibrary::openFile(FileEvent *event)
-{
-	emit dataSetIORequest(event);
-}
-
 void DataLibrary::setListModel(DataLibraryListModel * listModel)
 {
 	if (_dataLibraryListModel == listModel)

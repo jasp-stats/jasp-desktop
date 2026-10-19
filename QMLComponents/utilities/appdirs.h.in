@@ -45,6 +45,7 @@ public:
 	static QString documents();
 	static QString autoSaveDir();
 	static QString sandboxedDocuments();
+	static void    setSandboxDirOverride(const QString &path); //Used by JASP-Desktop to override the default location of the sandbox-dir through the preferences, empty string means no override.
 	static QString clipboardDir();
 	static void    purgeClipboard();
 	static QString logDir();

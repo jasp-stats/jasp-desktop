@@ -295,10 +295,17 @@ JASPWidgets.Exporter = {
 	},
 
 	getTitleHtml: function (toolbar, exportParams) {
-		var html = toolbar.title === undefined ? "" : toolbar.title;
+		var title = toolbar.title === undefined ? "" : toolbar.title;
+
+		//The dataset/filter indication is shown as part of the heading, so it is exported along with it.
+		//The export carries no stylesheet, hence the space that the stylesheet provides when displaying.
+		if (toolbar.titleSuffix !== undefined && toolbar.titleSuffix !== "")
+			title += " " + toolbar.titleSuffix;
+
+		var html = title;
 		if (toolbar.titleTag !== undefined) {
 			var headerStyles = " " + JASPWidgets.Exporter.getHeaderStyles(toolbar.$title(), exportParams);
-			html = '<' + toolbar.titleTag + headerStyles + '>' + toolbar.title + '</' + toolbar.titleTag + '>';
+			html = '<' + toolbar.titleTag + headerStyles + '>' + title + '</' + toolbar.titleTag + '>';
 		}
 
 		var topLevelStyles = " " + JASPWidgets.Exporter.getSpacingStyles(toolbar.$el, exportParams);
@@ -344,6 +351,21 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		return this.$el.find(this.titleTag);
 	},
 
+	//The heading can hold a suffix (the dataset/filter an analysis runs on) that is shown but not editable,
+	//so everything to do with editing goes through the title part alone.
+	$titleCore: function() {
+		var $title	= this.$title();
+		var $core	= $title.find('.toolbar-title-core');
+
+		return $core.length > 0 ? $core : $title;
+	},
+
+	titleHtml: function() {
+		var suffix = (this.titleSuffix === undefined || this.titleSuffix === "") ? "" : '<span class="toolbar-title-suffix">' + this.titleSuffix + '</span>';
+
+		return '<span class="toolbar-title-core">' + this.title + '</span>' + suffix;
+	},
+
 	setStatus: function(status) {
 		this.status = status;
 	},
@@ -356,7 +378,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		if (this.title !== undefined) {
 			if (this.titleTag !== undefined)
-				this.$el.append('<' + this.titleTag + ' class="in-toolbar toolbar-clickable">' + this.title + '</' + this.titleTag + '>');
+				this.$el.append('<' + this.titleTag + ' class="in-toolbar toolbar-clickable">' + this.titleHtml() + '</' + this.titleTag + '>');
 			else
 				this.$el.append(this.title);
 		}
@@ -405,7 +427,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 	startEdit: function (callbackWhenDone) {
 		this.editing	= true;
-		var element		= this.$title();
+		var element		= this.$titleCore();
 
 		this["callback"] = callbackWhenDone;
 
@@ -426,7 +448,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			return;
 
 		this._editEnding	= true;
-		var element			= this.$title();
+		var element			= this.$titleCore();
 		element.removeClass("toolbar-editing");
 
 		element[0].setAttribute("contenteditable", false);
@@ -530,6 +552,9 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		if (this.options.hasInteractiveImg)
 			this.options['interactiveOptions'] = this.parent.interactiveOptions();
 
+		if (this.parent.model && this.parent.model.get('id') !== undefined)
+			this.options['_analysisId'] = this.parent.model.get('id');
+
 		this.parent.trigger('toolbar:showMenu', this.parent, this.options);
 
 		return true;
@@ -563,7 +588,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasLaTeXCode:			(parent.hasLaTeXCode	=== undefined || parent.hasLaTeXCode())	&& parent.latexCodeMenuClicked		!== undefined,
 			hasRemoveAllAnalyses:	parent.menuName			=== 'All',
 			hasRefreshAllAnalyses:	parent.menuName			=== 'All',
-			hasExportResults:		parent.menuName			=== 'All',
+			hasExportResults:		parent.menuName			=== 'All' || parent.menuName === 'Analysis',
 			hasShowRSyntax:			parent.menuName			=== 'All',
 
 			objectName:				parent.menuName

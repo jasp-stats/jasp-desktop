@@ -1,8 +1,8 @@
 #include "minitabimporter.h"
 #include "data/importers/minitab/mwx.h"
 #include "data/importers/minitab/minitabimportcolumn.h"
-#include "utilities/qutils.h"
 #include <QFileInfo>
+#include "qutils.h"
 #include <QDebug>
 
 

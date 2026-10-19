@@ -20,7 +20,7 @@
 #define FORMULABASE_H
 
 #include <QQuickItem>
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "formulaparser.h"
 
 class FormulaSource;

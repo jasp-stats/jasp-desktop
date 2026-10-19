@@ -97,7 +97,7 @@ public:
 				void				runRScript(			const QString & script);
 				void				runFilterByName(	const QString & name);
 	virtual		void				rScriptDoneHandler(	const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
-	virtual		void				filterDoneHandler(	const QString & name, const QString & error)	{ /* do nothing */ }
+	virtual		void				filterDoneHandler(	int dataSetID, const QString & name, const QString & error)	{ /* do nothing */ }
 
 				bool				valueOk(QVariant value, int col = -1, int row = -1);
 	virtual		bool				isRCodeColumn(int)													const				{ return false; }

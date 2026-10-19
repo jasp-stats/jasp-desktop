@@ -18,7 +18,21 @@
 
 #include "boundcontroljagstextarea.h"
 #include "controls/textareabase.h"
+#include "analysisform.h"
+#include "variableinfo.h"
 #include "columnencoder.h"
+
+ColumnEncoder * BoundControlJAGSTextArea::_encoder() const
+{
+	//Desktop-only: never use the process-global ColumnEncoder (that is only meaningful inside the engine's
+	//request context). Resolve the encoder for the data this control's form is bound to instead.
+	if (VariableInfo * vi = _textArea->form()->varInfo())
+		if (VariableInfoProvider * provider = vi->provider())
+			if (ColumnEncoder * encoder = provider->columnEncoder())
+				return encoder;
+
+	return ColumnEncoder::fallbackEncoder();
+}
 
 void BoundControlJAGSTextArea::bindTo(const Json::Value &value)
 {
@@ -63,7 +77,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 
 	// get the column names of the data set
 	_usedColumnNames.clear();
-	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(text)), &_usedColumnNames));
+	_textEncoded = tq(_encoder()->encodeRScript(stringUtils::stripRComments(fq(text)), &_usedColumnNames));
 
 	QRegularExpression relationSymbol = QRegularExpression("<-|=|~");
 	QStringList textByLine = _textEncoded.split(QRegularExpression(";|\n"));
@@ -89,7 +103,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 			if (paramName.contains("["))
                 paramName = paramName.left(paramName.indexOf("["));
 
-			if (paramName != "" && !ColumnEncoder::columnEncoder()->shouldDecode(fq(paramName)))
+			if (paramName != "" && !_encoder()->shouldDecode(fq(paramName)))
 				_usedParameters.insert(paramName);
 
 		}
@@ -101,7 +115,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 	boundValue["model"] = _textEncoded.toStdString();
 	Json::Value columns(Json::arrayValue);
 	for (const std::string& column : _usedColumnNames)
-		columns.append(ColumnEncoder::columnEncoder()->encode(column));
+		columns.append(_encoder()->encode(column));
 	boundValue["columns"] = columns;
 	Json::Value parameters(Json::arrayValue);
 	for (const QString& parameter : _usedParameters)

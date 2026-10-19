@@ -59,6 +59,17 @@ signals:
 	void progress(QString status, int progress);
 	void beginFileUpload(QString nodePath, QString sourcePath);
 	bool checkDoSync();
+	void syncCompleted(int dataSetId, bool success);
+	///Emitted after a (non-sync) load added a dataset to the workspace. The workspace table model
+	///was mutated on the loader thread, so the GUI thread connects to this to refresh it (and any
+	///views bound to it, e.g. the dataset tabbuttons) from the correct thread.
+	void dataSetsChanged();
+
+public slots:
+	///Carries the DataSet (not just its id) so the loader never has to reach into the GUI-owned
+	///workspace map from its worker thread. The id is kept only for the syncCompleted completion
+	///routing, which runs back on the GUI thread.
+	void onSyncRequired(DataSet * dataSet, const QString & locator, const QString & extension, const QString & databaseJson);
 
 private slots:
 	void loadTask(FileEvent *event);

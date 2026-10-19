@@ -21,6 +21,7 @@
 
 #include "listmodeltableviewbase.h"
 
+class Filter;
 class ListModelFactorLevels;
 
 class ListModelCustomContrasts : public ListModelTableViewBase
@@ -43,7 +44,6 @@ public:
 	QString			colName()									const				{ return _colName;	}
 
 	void			getVariablesAndLabels(Terms& variables, QVector<QVector<QVariant> >& allLabels);
-
 public slots:
 	void sourceTermsReset()														override;
 	bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})	override;

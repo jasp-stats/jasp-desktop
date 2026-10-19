@@ -22,6 +22,7 @@
 #include <QApplication>
 #include "mainwindow.h"
 #include "common.h"
+#include "parsedarguments.h"
 
 ///
 /// Our override of QApplication, basically instantiates MainWindow and cleans it up at the end
@@ -34,7 +35,7 @@ public:
 
 	virtual bool notify(QObject *receiver, QEvent *event) OVERRIDE;
 	virtual bool event(QEvent *event) OVERRIDE;
-	void init(QString filePath, bool newData, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath);
+	void init(const ParsedArguments& arguments);
 
 
 signals:

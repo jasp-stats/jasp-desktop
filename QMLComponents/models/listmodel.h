@@ -41,6 +41,7 @@ public:
 	enum ListModelRoles
 	{
         NameRole = Qt::UserRole + 1,
+		ValueRole,
 		InfoRole,
 		TypeRole,
 		SelectedRole,
@@ -112,18 +113,18 @@ public:
 signals:
 			void termsChanged();		// Used to signal all kinds of changes in the model. Do not call it directly
 			void variableNamesChanged(QMap<QString, QString> map);
-			void variableTypeChanged(Term term);
 			void labelsChanged(QString columnName, QMap<QString, QString> = {});
 			void labelsReordered(QString columnName);
 			void filterChanged();
 			void variablesChanged(QStringList columns);
 			void selectedItemsChanged();
 			void keyTermChanged(const QString& oldName, const QString& newName);
+			void variableTypeChanged(QString columnName, columnType columnType);
 
 public slots:	
 	virtual void sourceTermsReset();
 	virtual void sourceVariableNamesChanged(QMap<QString, QString> map);
-	virtual bool sourceVariableTypeChanged(Term sourceTerm);
+	virtual bool sourceVariableTypeChanged(QString columnName, columnType colType);
 	virtual bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels = {});
 	virtual bool sourceLabelsReordered(QString columnName);
 	virtual void sourceVariablesChanged(QStringList columns);

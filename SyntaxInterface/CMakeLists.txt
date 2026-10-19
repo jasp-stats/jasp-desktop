@@ -48,6 +48,10 @@ target_compile_definitions(
 	JASP_R_INTERFACE_LIBRARY
 	)
 
+if(MSVC)
+	target_compile_options(SyntaxInterface PRIVATE /EHsc)
+endif()
+
 if(USE_QT_STATIC_LIBS)
 	target_compile_definitions(
 		SyntaxInterface

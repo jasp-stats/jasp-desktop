@@ -77,7 +77,16 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 	else if (maxRows > 0 && dropItemIndex >= maxRows)
 		return termsToAdd;
 
-	Terms newTerms;
+
+	Terms termsToAddWithRightTypes = termsToAdd;
+	for (Term & term : termsToAddWithRightTypes)
+	{
+		// If the real type is now allowed, change the type to its original one.
+		columnType realType = getVariableRealType(term.value());
+		if (term.type() != realType && listView()->isTypeAllowed(realType))
+			term.setType(realType);
+	}
+
 
 	if (dropItemIndex < 0 && maxRows == 1)
 		dropItemIndex = 0; // for single row, per default replace old item by new one.
@@ -89,10 +98,9 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 	{
 		// If we replace all the items, use beginResetModel
 		termsToSendBack = terms();
-		newTerms = termsToAdd;
 
 		beginResetModel();
-		_setTerms(newTerms);
+		_setTerms(termsToAddWithRightTypes);
 		endResetModel();
 	}
 	else
@@ -106,16 +114,16 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 			dropItemIndex = terms().size();
 
 		beginInsertRows(QModelIndex(), dropItemIndex, dropItemIndex + termsToAdd.size() - 1);
-		newTerms = terms();
+		Terms newTerms = terms();
 		if (dropItemIndex < terms().size())
 		{
-			newTerms.insert(dropItemIndex, termsToAdd);
+			newTerms.insert(dropItemIndex, termsToAddWithRightTypes);
 			_setTerms(newTerms);
 		}
 		else
 		{
-			newTerms.add(termsToAdd);
-			_addTerms(termsToAdd);
+			newTerms.add(termsToAddWithRightTypes);
+			_addTerms(termsToAddWithRightTypes);
 		}
 
 		endInsertRows();

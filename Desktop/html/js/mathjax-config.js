@@ -1,8 +1,12 @@
 MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
     options: {
       menuOptions: {
         settings: {
-          assistiveMml: false,   // Disable assistive MathML to avoid duplicated copy-past in notes.
+          assistiveMml: false
         }
       }
     }

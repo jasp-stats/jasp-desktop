@@ -1,7 +1,7 @@
-#include "utilities/qutils.h"
+#include "qutils.h"
 
-#define ENUM_DECLARATION_CPP
-#include "upgradestep.h"
+
+#include "upgradechange.h"
 
 
 
@@ -191,7 +191,7 @@ UpgradeChange::UpgradeChange(const Json::Value & upgradeStep)
 
 			if(change.isMember(_renamed))		_optionsRenamed [option] = change[_renamed].asString();
 			else if(change.isMember(_copied))	_optionsCopied	[option] = change[_copied].asString();
-			else if(change.isMember(_modified))	_optionsModified[option] = ModifyTypeFromString(change[_modified].asString()); //Maybe check for error?
+			else if(change.isMember(_modified))	_optionsModified.insert(option);
 			else if(change.isMember(_args) ||
 					change.isMember(_boolOp))	_optionsBoolOp	[option] = BoolOp(change);
 			else								_optionsNewValue[option] = change;
@@ -274,21 +274,18 @@ void UpgradeChange::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) cons
 	for(const auto & removeMe		: _optionsRemoved	) applyRemove(	options, removeMe,										msgs);
 	for(const auto & nameValue		: _optionsNewValue	) applySetValue(options, nameValue.first,		nameValue.second,		msgs);
 	for(const auto & nameValue		: _optionsBoolOp	) applySetBool(	options, nameValue.first,		nameValue.second,		msgs);
-	for(const auto & optionModifier : _optionsModified	) applyModifier(options, optionModifier.first,	optionModifier.second,	msgs);
+	for(const auto & optionModifier : _optionsModified	) applyModifier(options, optionModifier,								msgs);
 
 	for(const auto & optionMsg : _optionMsgs)
 		msgs[optionMsg.first].push_back(optionMsg.second);
 }
 
-void UpgradeChange::applyModifier(Json::Value & options, const std::string & name,	const ModifyType modifier, UpgradeMsgs & msgs) const
+void UpgradeChange::applyModifier(Json::Value & options, const std::string & name, UpgradeMsgs & msgs) const
 {
 	if(!options.isMember(name))
-		throw upgradeError("Could not modify option '" + name + "' with operation '"+ ModifyTypeToString(modifier) +"' because options does not contain it.", true);
+		throw upgradeError("Could not modify option '" + name + "' with because options does not contain it.", true);
 
-	switch(modifier)
-	{
-	case ModifyType::Flatten:
-	{
+	
 		Json::Value outList;
 
 		std::function<void(const Json::Value & in)> flatFunc = [&](const Json::Value & in) {
@@ -305,12 +302,9 @@ void UpgradeChange::applyModifier(Json::Value & options, const std::string & nam
 		flatFunc(options[name]);
 		options[name] = outList;
 
-		break;
-	}
-	default: throw std::runtime_error("Upgrading with a modifier '" + ModifyTypeToString(modifier) + "' is not yet supported by JASP!");
-	}
+		
 
-	msgs[logId].push_back(prefixLog + "Modified option '" + name + "' with modifier '" + modifier + "'");
+	msgs[logId].push_back(prefixLog + "Modified option '" + name );
 }
 
 }

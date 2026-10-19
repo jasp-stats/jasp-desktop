@@ -33,12 +33,18 @@ public:
 	static const std::string gitBranch;
 	static const std::string gitCommit;
 
+	static bool        proMode();          ///< whether this build (or session) runs the PRO-only feature set, e.g. the batch data-sync command line
+	static void        setProMode(bool proMode); ///< lets tests flip PRO-only features on in a community build (and vice versa)
+
 	static std::string getShortDesc();
 	static std::string getBuildYear();
 	static std::string getRVersion();
 	static std::string getRDirName();
 	static std::string getArchLabel();
 	static long long   getSimpleCryptKey();
+
+private:
+	static bool        _proMode;
 };
 
 #endif // APPINFO_H

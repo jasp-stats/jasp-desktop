@@ -12,15 +12,9 @@ class RecentFilesListModel : public FileMenuBasicListModel
 	Q_OBJECT
 
 public:
-	explicit RecentFilesListModel(QObject *parent = nullptr);
+	explicit RecentFilesListModel(FileMenuObject *parent = nullptr);
 
 	void addRecentFilePath(const QString &newpath);
-
-signals:
-	void openFileEvent(FileEvent *event);
-
-public slots:
-	void openFile(const QString& path) override;
 
 private:
 	RecentFilesFileSystem *_fsbmRecentFiles;

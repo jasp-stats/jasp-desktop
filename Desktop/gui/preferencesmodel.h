@@ -6,6 +6,8 @@
 #include <QVariantList>
 #include "preferencesmodelbase.h"
 #include "pdfdefinition.h"
+#include "gui/aipersonamodel.h"
+#include "gui/aiconfigmodel.h"
 
 class JaspTheme;
 
@@ -78,6 +80,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(int			pdfPageSize				READ pdfPageSize				WRITE setPdfPageSize				NOTIFY pdfPageSizeChanged				)
 	Q_PROPERTY(bool			pdfLandscape			READ pdfLandscape				WRITE setPdfLandscape				NOTIFY pdfLandscapeChanged				)
 	Q_PROPERTY(bool			engineSandbox			READ engineSandbox				WRITE setEngineSandbox				NOTIFY engineSandboxChanged				)
+	Q_PROPERTY(QString		engineSandboxDir		READ engineSandboxDir			WRITE setEngineSandboxDir		NOTIFY engineSandboxDirChanged		)
 	Q_PROPERTY(QString 		localConfigurationPATH 	READ localConfigurationPATH		WRITE setLocalConfigurationPATH		NOTIFY localConfigurationPATHChanged	)
 	Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged		)
 	Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
@@ -87,13 +90,35 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			showInteractiveDefault	READ showInteractiveDefault		WRITE setShowInteractiveDefault		NOTIFY showInteractiveDefaultChanged	)
 	Q_PROPERTY(int			autoSaveIntervalSec		READ autoSaveIntervalSec		WRITE setAutoSaveIntervalSec		NOTIFY autoSaveIntervalSecChanged		)
 	Q_PROPERTY(bool			autoSaveAtAll			READ autoSaveAtAll				WRITE setAutoSaveAtAll				NOTIFY autoSaveAtAllChanged				)
-	
+	Q_PROPERTY(QString		aiCommonSystemPrompt	READ aiCommonSystemPrompt		WRITE setAiCommonSystemPrompt		NOTIFY aiCommonSystemPromptChanged		)
+	Q_PROPERTY(bool			aiCommonSystemPromptUseCustom	READ aiCommonSystemPromptUseCustom		WRITE setAiCommonSystemPromptUseCustom		NOTIFY aiCommonSystemPromptUseCustomChanged		)
+	Q_PROPERTY(bool			aiEnabled				READ aiEnabled					WRITE setAiEnabled					NOTIFY aiEnabledChanged					)
+	Q_PROPERTY(bool			aiAnnotationUseCustom	READ aiAnnotationUseCustom		WRITE setAiAnnotationUseCustom		NOTIFY aiAnnotationUseCustomChanged		)
+	Q_PROPERTY(QString		aiAnnotationPrompt		READ aiAnnotationPrompt			WRITE setAiAnnotationPrompt			NOTIFY aiAnnotationPromptChanged		)
+	Q_PROPERTY(QString		aiUserAvatar			READ aiUserAvatar				WRITE setAiUserAvatar				NOTIFY aiUserAvatarChanged				)
+	Q_PROPERTY(QObject*		aiPersonaModel			READ aiPersonaModel													CONSTANT								)
+	Q_PROPERTY(QObject*		aiConfigModel			READ aiConfigModel													CONSTANT								)
+	Q_PROPERTY(bool			onboardingCompleted		READ onboardingCompleted		WRITE setOnboardingCompleted		NOTIFY onboardingCompletedChanged		)
+	Q_PROPERTY(int			onboardingStep			READ onboardingStep				WRITE setOnboardingStep				NOTIFY onboardingStepChanged			)
+	Q_PROPERTY(bool			rpcServerEnabled		READ rpcServerEnabled			WRITE setRpcServerEnabled			NOTIFY rpcServerEnabledChanged			)
+	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
+	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
+	Q_PROPERTY(bool			syncDroppedDatafile		READ syncDroppedDatafile		WRITE setSyncDroppedDatafile		NOTIFY syncDroppedDatafileChanged		)
+
 
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
 
 	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
+
+	//Session-only override for --rpcPort (see setRuntimeRpcPort): while set (!= -1) the RPC
+	//server is enabled on this port for the lifetime of the process and the persisted
+	//RPC_SERVER_ENABLED/PORT settings are neither consulted nor written, so automation
+	//(Tests/gatetest) cannot leak configuration into the user's desktop. Static rather than
+	//a member because MainWindow reads these prefs before the PreferencesModel exists.
+	static void		setRuntimeRpcPort(int port)				{ s_runtimeRpcPort = port; }
+	static int		runtimeRpcPort()							{ return s_runtimeRpcPort; }
 
 	int				customPPI()								const;
 	int				numDecimals()							const;
@@ -157,7 +182,7 @@ public:
 	bool			developerMode()							const override;
 	QString			developerModeName()						const override;
 	bool			ALTNavModeActive()						const override;
-    bool			orderByValueByDefault()					const;
+	bool			orderByValueByDefault()					const;
 	int				maxScaleLevels()						const override;
 	QVariantList	pdfPageSizeModel()						const { return _pdfPageSizeModel; }
 	int				pdfPageSize()							const;
@@ -165,7 +190,7 @@ public:
 	bool			directLibpathEnabled()					const;
 	QString			directLibpathFolder()					const;
 	QString			directDevModName()						const;
-	
+
 	QString			localConfigurationPATH()				const;
 	QString			remoteConfigurationURL()				const;
 	bool			remoteConfiguration()					const;
@@ -175,21 +200,57 @@ public:
 	int				autoSaveIntervalSec()					const;
 	bool			autoSaveAtAll()							const;
 	bool			checkUpdatesAskUser()					const;
+	bool			onboardingCompleted()					const;
+	int				onboardingStep()						const;
+
+	bool			keepMissingColsWhenSyncing()			const { return _keepMissingColsWhenSyncing; }
 	
 	void			setCheckUpdatesAskUser(	bool	newCheckUpdatesAskUser);
 	void			setCheckUpdates(		bool	newCheckUpdates);
 	void			setStartMaximized(		bool	newStartMaximized);
 	void			setAutoSaveIntervalSec(	int		newAutoSaveIntervalSec);
 	void			setAutoSaveAtAll(		bool	newAutoSaveAtAll);
-	
-	bool storeStateEtc() const;
-	void setStoreStateEtc(bool newStoreStateEtc);
-	
-	bool showInteractiveDefault() const;
-	void setShowInteractiveDefault(bool newShowInteractiveDefault);
-	
-public slots:
-	bool engineSandbox()							const;
+	Q_INVOKABLE void resetAiDefaults();
+
+	bool	storeStateEtc() const;
+	void	setStoreStateEtc(bool newStoreStateEtc);
+
+	bool	showInteractiveDefault() const;
+	void	setShowInteractiveDefault(bool newShowInteractiveDefault);
+
+	AIPersonaModel* aiPersonaModel() const;
+	AIConfigModel* aiConfigModel() const;
+
+	QString aiCommonSystemPrompt() const;
+	void	setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
+
+	bool	aiCommonSystemPromptUseCustom() const;
+	void	setAiCommonSystemPromptUseCustom(bool newAiCommonSystemPromptUseCustom);
+
+	bool	aiEnabled() const;
+	void	setAiEnabled(bool newAiEnabled);
+
+	bool	aiAnnotationUseCustom() const;
+	void	setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
+
+	QString aiAnnotationPrompt() const;
+	void	setAiAnnotationPrompt(QString newAiAnnotationPrompt);
+
+	QString	aiUserAvatar() const;
+	void	setAiUserAvatar(QString newAiUserAvatar);
+
+	bool	rpcServerEnabled() const;
+	void	setRpcServerEnabled(bool v);
+	QString rpcServerIp() const;
+	void	setRpcServerIp(QString v);
+	int		rpcServerPort() const;
+	void	setRpcServerPort(int v);
+
+	bool	syncDroppedDatafile() const;
+		
+	public slots:
+	bool	engineSandbox()								const;
+	QString	engineSandboxDir()						const;
 	bool useNativeFileDialog()						const;
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
@@ -209,6 +270,7 @@ public slots:
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
 	void browseDeveloperLibPathFolder();
+	void browseEngineSandboxDir();
 	void browseConfigurationFile();
 	void removeEmptyValue(				QString		value);
 	void addEmptyValue(					QString		value);
@@ -257,12 +319,15 @@ public slots:
 	void setDirectLibpathFolder(		QString		libpath);
 	void setDirectDevModName(			QString		 name);
 	void setEngineSandbox(				bool		engineSandbox);
+	void setEngineSandboxDir(			QString		dir);
 	void setLocalConfigurationPATH(		QString		path);
 	void setRemoteConfiguration(		bool		enabled);
 	void setRemoteConfigurationURL(		QString		URL);
 	void setUseConfigurationFile(		bool		newUseConfigurationFile);
-
-
+	void setKeepMissingColsWhenSyncing(	bool		keepMissingColsWhenSyncing) { _keepMissingColsWhenSyncing = keepMissingColsWhenSyncing; }
+	void setSyncDroppedDatafile(		bool		syncDroppedDatafile);
+	void setOnboardingCompleted(		bool		newOnboardingCompleted);
+	void setOnboardingStep(				int			newOnboardingStep);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -317,8 +382,9 @@ signals:
 	void pdfLandscapeChanged(			bool		pdfLandscape);
 	void directLibpathEnabledChanged(	bool		directLibpathEnabled);
 	void directLibpathFolderChanged();
-	void directDevModNameChanged(		QString name);
+	void directDevModNameChanged(		QString		name);
 	void engineSandboxChanged(			bool		engineSandbox);
+	void engineSandboxDirChanged(		QString		dir);
 	void localConfigurationPATHChanged(	QString		path);
 	void remoteConfigurationChanged(	bool		enabled);
 	void remoteConfigurationURLChanged(	QString		remoteConfigurationURL);
@@ -328,11 +394,27 @@ signals:
 	void showInteractiveDefaultChanged(	bool		interactive);
 	void autoSaveIntervalSecChanged(	int			interval);
 	void autoSaveAtAllChanged(			bool		autoSave);
-	
+	void aiCommonSystemPromptChanged(	QString		aiCommonSystemPrompt);
+	void aiCommonSystemPromptUseCustomChanged(bool	aiCommonSystemPromptUseCustom);
+	void aiEnabledChanged(				bool		aiEnabled);
+	void aiAnnotationUseCustomChanged(	bool		aiAnnotationUseCustom);
+	void aiAnnotationPromptChanged(		QString		aiAnnotationPrompt);
+	void aiUserAvatarChanged(			QString		aiUserAvatar);
+
+	void rpcServerEnabledChanged(		bool		rpcServerEnabled);
+	void rpcServerIpChanged(			QString		rpcServerIp);
+	void rpcServerPortChanged(			int			rpcServerPort);
+
+	void syncDroppedDatafileChanged(	bool		syncDroppedDatafile);
+  
+	void onboardingCompletedChanged(	bool	onboardingCompleted);
+	void onboardingStepChanged(			int		onboardingStep);
+
 private slots:
 	void dataLabelNAChangedSlot(QString label);
 	
 private:
+	inline static int s_runtimeRpcPort	= -1;	///< --rpcPort session override, -1 = not set (see setRuntimeRpcPort)
 	int				_defaultPPI		= 192;
 	double			_uiScale		= -1;
 	QStringList		_allFonts,
@@ -342,7 +424,9 @@ private:
 	QVariantList	_pdfPageSizeModel;
 	bool			_githubPatCustom, //Should be initialized on prefs construction
 					_autoSaveIntervalSec,
-					_autoSaveAtAll;
+					_autoSaveAtAll,
+					_keepMissingColsWhenSyncing = false;
+	AIPersonaModel*	_aiPersonaModel = nullptr;
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts)					const;
 	QStringList		_splitValues(const QString& values)				const;

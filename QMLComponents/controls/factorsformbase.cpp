@@ -17,7 +17,7 @@
 //
 
 #include "factorsformbase.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "variableslistbase.h"
 #include "log.h"
 

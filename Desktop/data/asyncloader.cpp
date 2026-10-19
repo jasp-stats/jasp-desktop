@@ -26,7 +26,7 @@
 
 #include <boost/bind.hpp>
 
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utils.h"
 #include "osf/onlinedatamanager.h"
 #include "log.h"
@@ -52,10 +52,55 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 	connect(this, &AsyncLoader::beginSave, this, &AsyncLoader::saveTask, Qt::QueuedConnection);
 }
 
+void AsyncLoader::onSyncRequired(DataSet * dataSet, const QString & locator, const QString & extension, const QString & databaseJson)
+{
+	Log::log() << "[AsyncLoader::onSyncRequired] START: dataSetId=" << (dataSet ? dataSet->id() : -1) << ", locator=" << locator.toStdString() << ", extension=" << extension.toStdString() << std::endl;
+
+	//Owns the per-dataset sync lifecycle on behalf of the (data) syncer. The DataSet pointer is
+	//carried across the queued hand-off so this slot (which runs on our worker thread) never has to
+	//read the GUI-owned workspace map. The id is kept for the syncCompleted completion routing.
+	//
+	//Every exit path releases the syncer's re-entrancy guard (via syncCompleted) so _isSyncing is
+	//cleared exactly once for whichever dataset syncs.
+	//
+	//Note: For database sync, locator can be empty because the database path is in databaseJson.
+	//The check below allows empty locator when databaseJson is not empty.
+	//Take the id before the check below: it is also there to catch a null dataSet, so it cannot be
+	//dereferenced afterwards to report which sync was released.
+	const int dataSetId = dataSet ? dataSet->id() : -1;
+
+	if((locator.isEmpty() && databaseJson.isEmpty()) || !dataSet)
+	{
+		Log::log() << "[AsyncLoader::onSyncRequired] EMPTY locator/databaseJson or NULL dataSet, aborting" << std::endl;
+		emit syncCompleted(dataSetId, false); //Nothing sensible to sync; release the syncer guard.
+		return;
+	}
+
+	FileEvent * event = new FileEvent(this, FileEvent::FileSyncData, /*routeThroughFileMenu=*/false);
+	event->setDataSet(dataSet);
+	event->setPath(locator);
+	if(!databaseJson.isEmpty())
+	{
+		Json::Value db;
+		Json::Reader().parse(databaseJson.toStdString(), db);
+		event->setDatabase(db);
+	}
+
+	//UI-independent path: drive the event straight through the loader (no FileMenu involved) and make
+	//sure it is cleaned up once finished, so the sync pipeline works headless (and in the unit tests).
+	connect(event, &FileEvent::completed, event, &FileEvent::cleanUp, Qt::QueuedConnection);
+
+	Log::log() << "[AsyncLoader::onSyncRequired] Calling io(event)" << std::endl;
+	event->starts();
+	io(event);
+	Log::log() << "[AsyncLoader::onSyncRequired] io(event) returned" << std::endl;
+}
+
 void AsyncLoader::io(FileEvent *event)
 {
 	switch (event->operation())
 	{
+	case FileEvent::FileSyncData:
 	case FileEvent::FileNew:
 		emit progress(tr("Loading New Data Set"), 0);
 		emit beginLoad(event);
@@ -81,13 +126,6 @@ void AsyncLoader::io(FileEvent *event)
 		emit progress(tr("Exporting Data Set"), 0);
 		emit beginSave(event);
 		break;
-
-	case FileEvent::FileSyncData:
-	{
-		emit progress(tr("Sync Data Set"), 0);
-		emit beginLoad(event);
-		break;
-	}
 
 	case FileEvent::FileClose:
 		event->setComplete();
@@ -131,8 +169,6 @@ void AsyncLoader::saveTask(FileEvent *event)
 			delay += sleepTime;
 		}
 		
-		DataSetPackage::pkg()->doWalCheckPoint();
-
 		Exporter *exporter = event->exporter();
 		if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
 		else			throw LoaderException("No Exporter found!");
@@ -207,6 +243,7 @@ void AsyncLoader::loadPackage(QString id)
 {
 	if (id == "asyncloader")
 	{
+		Log::log() << "[AsyncLoader::loadPackage] START: id=" << id.toStdString() << std::endl;
 		OnlineDataNode *dataNode = nullptr;
 
 		try
@@ -245,44 +282,85 @@ void AsyncLoader::loadPackage(QString id)
 
 			DataSetPackage * pkg = DataSetPackage::pkg();
 
-			if(!pkg->dataSet())
-				pkg->createDataSet();
+			//For a FileSyncData event the reload targets a specific (possibly non-shown) dataset; keep that
+			//reference so the bookkeeping below (and the syncer lifecycle completion) apply to the right one.
+			DataSet * syncTargetDataSet = nullptr;
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
-				_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
+			{
+				Log::log() << "[AsyncLoader::loadPackage] FileSyncData operation detected" << std::endl;
+				syncTargetDataSet = _currentEvent->dataSet(); //QPointer; null if the dataset was destroyed meanwhile
+				if(!syncTargetDataSet)
+				{
+					Log::log() << "[AsyncLoader::loadPackage] syncTargetDataSet is NULL after _currentEvent->dataSet()" << std::endl;
+					_currentEvent->setComplete(false, "No dataset found for sync");
+
+					//Release the syncer guard exactly once, like every other exit of this branch.
+					Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted with success=false (no dataset)" << std::endl;
+					emit syncCompleted(_currentEvent->dataSetId(), false);
+					return;
+				}
+				Log::log() << "[AsyncLoader::loadPackage] Calling syncPackage for datasetId=" << syncTargetDataSet->id() << std::endl;
+				_loader.syncPackage(path, extension, syncTargetDataSet, boost::bind(&AsyncLoader::progressHandler, this, _1));
+				Log::log() << "[AsyncLoader::loadPackage] syncPackage returned" << std::endl;
+			}
 			else
 				_loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
 
-			if(_currentEvent->operation() != FileEvent::FileSyncData && _currentEvent->type() != Utils::FileType::jasp && !_currentEvent->isReadOnly())
-				pkg->setSynchingExternally(true);
+			//The (non-sync) load above may have added a dataset to the workspace table model. The
+			//model was mutated on this (worker) thread, so let the GUI thread know it must refresh
+			//its views (dataset tabbuttons etc.) of the new row-count.
+			if(!syncTargetDataSet)
+				emit dataSetsChanged();
 
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 
 			if (dataNode != nullptr && calcMD5 != dataNode->md5().toLower())
 				throw LoaderException("The security check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
 
-			pkg->setInitialMD5(fq(calcMD5));
-
-			if (dataNode != nullptr)
+			//Timestamp/databaseJson bookkeeping applies to whichever dataset was reloaded (the target for a sync).
+			DataSet * bookkeepingDataSet = syncTargetDataSet ? syncTargetDataSet : pkg->dataSet();
+			if (bookkeepingDataSet)
 			{
-				pkg->setId(fq(dataNode->nodeId()));
-				_currentEvent->setPath(dataNode->path());
+				pkg->setInitialMD5(fq(calcMD5));
+
+				if (dataNode != nullptr)
+				{
+					pkg->setId(fq(dataNode->nodeId()));
+					_currentEvent->setPath(dataNode->path());
+				}
+				else
+					pkg->setId(path);
+
+				if (_currentEvent->type() != Utils::FileType::jasp)
+				{
+					QFileInfo fileInfo(_currentEvent->path());
+					long timestamp = fileInfo.isFile() ? fileInfo.lastModified().toSecsSinceEpoch() : 0;
+
+					bookkeepingDataSet->setDataFileAndTimeStamp(_currentEvent->path().toStdString(), timestamp);
+					bookkeepingDataSet->setDatabaseJson(_currentEvent->database());
+				}
+
+				pkg->setFileReadOnly(_currentEvent->isReadOnly());
+				_currentEvent->setDataFilePath(QString::fromStdString(bookkeepingDataSet->dataFilePath()));
+			}
+
+			//Sync completion is delivered through AsyncLoader::syncCompleted (slot on the GUI thread via a
+			//QueuedConnection), which covers success here and failure in the catch blocks below, so the
+			//syncer's re-entrancy guard (_isSyncing) is released exactly once.
+			//setComplete() must come *before* the emit: isSuccessful() is only true once the event is
+			//completed, and reporting the sync to the syncer before that would always claim failure.
+			_currentEvent->setComplete();
+
+			if(syncTargetDataSet)
+			{
+				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->dataSetId() << ", success=" << _currentEvent->isSuccessful() << std::endl;
+				emit syncCompleted(_currentEvent->dataSetId(), _currentEvent->isSuccessful());
 			}
 			else
-				pkg->setId(path);
-
-			if (_currentEvent->type() != Utils::FileType::jasp)
 			{
-				QFileInfo fileInfo(_currentEvent->path());
-				long timestamp = fileInfo.isFile() ? fileInfo.lastModified().toSecsSinceEpoch() : 0;
-
-				pkg->setDataFilePath(_currentEvent->path().toStdString(), timestamp);
-				pkg->setDatabaseJson(_currentEvent->database());
+				Log::log() << "[AsyncLoader::loadPackage] syncTargetDataSet is NULL, NOT emitting syncCompleted" << std::endl;
 			}
-
-			pkg->setDataFileReadOnly(_currentEvent->isReadOnly());
-			_currentEvent->setDataFilePath(QString::fromStdString(pkg->dataFilePath()));
-			_currentEvent->setComplete();
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
@@ -291,8 +369,16 @@ void AsyncLoader::loadPackage(QString id)
 		{
 			Log::log() << "Loader Exception in loadPackage: " << e.what() << std::endl;
 
-			DataSetPackage::pkg()->dbDelete();
-			DataSetPackage::pkg()->deleteDataSet(); //Make sure we dont keep failed stuff in memory
+			//For a sync we only reload one existing dataset; a (transient) failure must not destroy the
+			//whole workspace. Release the syncer's re-entrancy guard via syncCompleted so later syncs can
+			//still run; the dataset stays alive on the GUI thread.
+			if (_currentEvent->operation() == FileEvent::FileSyncData)
+			{
+				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->dataSetId() << ", success=false (exception)" << std::endl;
+				emit syncCompleted(_currentEvent->dataSetId(), false);
+			}
+			else
+				DataSetPackage::pkg()->deleteWorkspace(false); //Make sure we dont keep failed stuff in memory
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
@@ -302,8 +388,13 @@ void AsyncLoader::loadPackage(QString id)
 		{
 			Log::log() << "Exception in loadPackage: " << e.what() << std::endl;
 
-			DataSetPackage::pkg()->dbDelete();
-			DataSetPackage::pkg()->deleteDataSet(); //Make sure we dont keep failed stuff in memory
+			if (_currentEvent->operation() == FileEvent::FileSyncData)
+			{
+				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->dataSetId() << ", success=false (exception)" << std::endl;
+				emit syncCompleted(_currentEvent->dataSetId(), false);
+			}
+			else
+				DataSetPackage::pkg()->deleteWorkspace(true); //Make sure we dont keep failed stuff in memory
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
@@ -311,6 +402,7 @@ void AsyncLoader::loadPackage(QString id)
 		}
 
 		JASPTIMER_STOP(AsyncLoader::loadPackage);
+		Log::log() << "[AsyncLoader::loadPackage] END" << std::endl;
 	}
 }
 

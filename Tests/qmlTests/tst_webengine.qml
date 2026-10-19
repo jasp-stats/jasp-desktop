@@ -193,6 +193,37 @@ TestCase
 		compare(spy.count, 1);
 		compare(spy.signalArguments[0][0], "99.99&thinsp;%");
 	}
+
+	function test_utils_comprehensive()
+	{
+		// Page was already loaded by test_format, no need to wait
+		compare(spyLoader.count, 1);
+
+		spy.clear();
+		resultsView.runJavaScript(
+			"var r = runAllUtilTests();" +
+			"JSON.stringify(r);",
+			function(result) { resultsView.jsDone(result); }
+		);
+
+		spy.wait(1000);
+		compare(spy.count, 1);
+
+		var parsed = JSON.parse(spy.signalArguments[0][0]);
+
+		console.log("Utils tests: " + parsed.passed + " passed, " + parsed.failed + " failed, " + parsed.total + " total");
+
+		if (parsed.failed > 0) {
+			for (var i = 0; i < parsed.results.length; i++) {
+				var r = parsed.results[i];
+				if (!r.passed)
+					console.log("  FAIL: " + r.test + " | expected: '" + r.expected + "' | actual: '" + r.actual + "'");
+			}
+		}
+
+		compare(parsed.failed, 0, "All util tests should pass (" + parsed.total + " total)");
+	}
+
 }
 
 

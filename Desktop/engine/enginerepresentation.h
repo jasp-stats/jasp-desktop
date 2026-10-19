@@ -13,6 +13,7 @@
 /// Keeps track of the state of a single Engine process (JASPEngine)
 /// Tracks it through knowing the state, aka is it running an analysis, a filter or something else
 /// Also handles pausing, resuming, stopping and restarting them
+class DataSet;
 class EngineRepresentation : public QObject
 {
 	Q_OBJECT
@@ -22,6 +23,7 @@ class EngineRepresentation : public QObject
 	Q_PROPERTY(engineState	state				READ state				WRITE setState				NOTIFY stateChanged				)
 	Q_PROPERTY(QString		analysisStatus		READ analysisStatus									NOTIFY analysisStatusChanged	)	//For updates to EngineSync' list capabilities
 	Q_PROPERTY(QString		module				READ moduleQ										NOTIFY moduleChanged			)
+	Q_PROPERTY(float		loadingProgress		READ loadingProgress								NOTIFY loadingProgressChanged	)
 
 
 public:
@@ -42,14 +44,14 @@ public:
 	void			runScriptOnProcess(		const QString		& rCmdCode);
 	void			runScriptOnProcess(		RFilterByNameStore	* filterStore);
 	void			runScriptOnProcess(		RComputeColumnStore * computeColumnStore);
+	void			runScriptOnProcess(		RComputeDataSetStore * computeDataSetStore);
 
 	void			runModuleInstallRequestOnProcess(	Json::Value request);
 	void			runModuleUnInstallRequestOnProcess(	Json::Value request);
 	void			runModuleLoadRequestOnProcess(		Json::Value request);
 
-	void			sendLogCfg();
-	void			sendSettings();
-	void			sendReloadData();
+void sendLogCfg();
+	void sendSettings();
 
 	///Kills engine outright by killing process
 	void 			killEngine(bool beCareful = true);
@@ -81,7 +83,7 @@ public:
 	bool			idle()					const { return _engineState == engineState::idle;										}
 	bool			installingModule()		const { return _engineState == engineState::moduleInstallRequest;						}
 	bool			unInstallingModule()	const { return _engineState == engineState::moduleUninstallRequest;						}
-	bool			reloadingData()			const { return _engineState == engineState::reloadData;						}
+	bool			loadingData()			const { return _engineState == engineState::loadingData;						}
 	bool			moduleLoading()			const { return _engineState == engineState::moduleLoadRequest;							}
 	bool			idleSoon()				const;
 	bool			shouldSendSettings()	const { return idle() && _settingsChanged;												}
@@ -90,12 +92,9 @@ public:
 	bool			runsRCmd()				const { return _runsRCmd;																}
 	bool			isBored()				const;
 	bool			busyWithData()			const;
-	bool			needsReloadData()		const { return idle() && _reloadData; }
 	bool			moduleLoaded()			const { return _moduleLoaded; }
-    bool        isPriviliged()           const { return _isPriviliged; }
-
-
-    void        setIsPrivileged(bool value) { _isPriviliged = value;}
+    bool			isPrivileged()          const { return _isPrivileged; }
+    void			setIsPrivileged(bool value) { _isPrivileged = value;}
 
 	///How many seconds has this engine been idle?
 	int64_t			idleFor() const;
@@ -118,6 +117,9 @@ public:
 	void			setState(engineState newState);
 
 	const QString	analysisStatus() const;
+	bool			isComputingDataSet(int dataSetId) const { return _lastCompDataSetId == dataSetId && state() == engineState::computeDataSet; }
+
+	float			loadingProgress() const { return _loadingProgress; }
 
 
 protected:
@@ -126,8 +128,9 @@ protected:
 	void			processFilterByNameReply(	Json::Value & json);
 	void			processAnalysisReply(		Json::Value & json);
 	void			processComputeColumnReply(	Json::Value & json);
+	void			processComputeDataSetReply(	Json::Value & json);
 	void			processModuleRequestReply(	Json::Value & json);
-	void			processReloadDataReply();
+	void			processLoadingDataReply(Json::Value & json);
 	void			processEnginePausedReply();
 	void			processEngineStoppedReply();
 	void			processEngineResumedReply(	Json::Value & json);
@@ -147,24 +150,18 @@ public slots:
 
 
 	void			setDynamicModule(const std::string & dynamicModule);
-	void			reloadData() { _reloadData = true; }
 
 signals:
 	void			engineTerminated();
 	void			checkDataSetForUpdates();
-	void			filterByNameDone(				QString name, QString error);
+	void			filterByNameDone(				int dataSetID, QString name, QString error);
 	void			filterDone(																int requestID);
-	void			processFilterErrorMsg(			const QString & error,					int requestId = -1);
-	void			processNewFilterResult(			int requestId);
-	void			computeColumnErrorTextChanged(	const QString & error);
-
+		void			computeColumnSucceeded(			int dataSetId, QString columnName, QString warning, bool dataChanged);
+		void			computeDataSetSucceeded(		int dataSetId, QString warning, bool dataChanged);
+	
 	void			rCodeReturned(					const QString & result, int requestId, bool hasError	);
 	void			rCodeReturnedLog(				const QString & log, bool hasError						);
 
-	void			computeColumnSucceeded(			const QString & columnName, const QString & warning, bool dataChanged);
-	void			computeColumnRemoved(			const QString & columnName);
-	void			computeColumnFailed(			const QString & columnName, const QString & error);
-	void			columnDataTypeChanged(			const QString & columnName);
 
 	void			moduleInstallationSucceeded(	const QString & moduleName);
 	void			moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
@@ -190,6 +187,7 @@ signals:
 	void			stateChanged();
 	void			analysisStatusChanged();
 	void			moduleChanged();
+	void			loadingProgressChanged();
 
 	IPCChannel	*	channelSignal(size_t channelNumber);
 
@@ -199,7 +197,7 @@ private:
 	void			sendPauseEngine();
 	void			sendStopEngine();
 	void			setSlaveProcess(QProcess * slaveProcess);
-	void			checkForComputedColumns(const Json::Value & results);
+	void			checkForComputedColumns(DataSet * dataSet, const Json::Value & results);
 	void			handleEngineCrash();
 	void			abortAnalysisInProgress(bool restartAfterwards);
 	void			addSettingsToJson(Json::Value & msg);
@@ -218,8 +216,15 @@ private:
 				*	_analysisAborted	= nullptr;	///<To make sure we know that the response we got was from this aborted analysis or not
 	int64_t			_idRemovedAnalysis	= -1,		///<If the analysis was deleted we should ignore its results
 					_lastRequestId		= -1,		///<for R code requests from qml components, so that we can send it back to the right element
+					_lastFilterByNameRequestId = -1,///<for named filter runs: replies for superseded requests are dropped (see processFilterByNameReply)
+													 ///<TODO: this gate is per engine channel: two superseded requests dispatched to two channels
+													 ///<each pass their own channel's gate (and engines write results to the shared DB unordered),
+													 ///<so a stale reply can in theory still slip through. A global last-request-id per
+													 ///<dataset+filter (tracked in EngineSync) would close it completely.
 					_abortTime			= -1,		///<When did we tell the analysis to abort? So that we can kill it if it takes too long
-					_idleStartSecs		= -1;
+					_idleStartSecs		= -1,
+					_lastCompColDataSet = -1,
+					_lastCompDataSetId	= -1;
 	bool			_pauseRequested		= false,	///<should tell the engine to pause as soon as possible
 					_stopRequested		= false,	///<should tell the engine to stop as soon as possible
 					_slaveCrashed		= false,	///<My slave crashed
@@ -230,9 +235,9 @@ private:
 					_runsRCmd			= false,	///<is this engine meant for the R prompt?
 					_removeEngine		= false,
 					_pauseUnloadData	= false,
-					_reloadData			= false,	///<when the idle is engine and this true, it should reload the data
+					_loadingProgress	= 0.0,
                     _moduleLoaded		= false,	///<If _dynModName is set but this is false the engine should still load the module.
-                    _isPriviliged        = false;
+                    _isPrivileged        = false;
 	std::string		_lastCompColName	= "???",
 					_dynModName			= "",		///<If filled: refers to the particular dynamic module this engine was meant for.
 					_requestModName		= "";		///<To keep track of which engine is handling a request for a module

@@ -16,22 +16,16 @@
 //
 
 #include "jaspimporter.h"
-#include "columnutils.h"
-#include <fstream>
-
-#include <sys/stat.h>
-
+#include "log.h"
 #include <fcntl.h>
-#include "utilities/qutils.h"
-//#include "libzip/config.h"
+#include "qutils.h"
 #include <archive.h>
+#include <sys/stat.h>
 #include <archive_entry.h>
 #include <json/json.h>
 #include "archivereader.h"
 #include "tempfiles.h"
 #include "../exporters/jaspexporter.h"
-#include "log.h"
-
 #include "resultstesting/compareresults.h"
 #include "data/jaspencryptiondata.h"
 #include "data/jaspencrypt.h"
@@ -107,10 +101,8 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 
 	JASPTIMER_STOP(JASPImporter::loadDataSet INIT);
 
-	packageData->beginLoadingData();
 	loadDataArchive(tmpPath.generic_string(), progressCallback);
 	loadJASPArchive(tmpPath.generic_string(), progressCallback);
-	packageData->endLoadingData();
 
 	if(encrypted) //delete the decrypted tmp file we made
 		std::filesystem::remove(tmpPath);
@@ -141,7 +133,7 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
 	//ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)+"-shm").writeEntryToTempFiles([&](float p){ progressCallback(2.333 * p); });
     ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([&](float p){ progressCallback(33.333 * p); });
 	
-	DataSetPackage::pkg()->loadDataSet([&](float p){ progressCallback(33.333 + 33.333 * p); });
+	DataSetPackage::pkg()->loadWorkspace([&](float p){ progressCallback(33.333 + 33.333 * p); });
 
 	if(resultXmlCompare::compareResults::theOne()->testMode())
 	{

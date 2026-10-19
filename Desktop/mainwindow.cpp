@@ -26,6 +26,8 @@
 #include <QQuickStyle>
 #include <QQuickWindow>
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
+#include <QtWebEngineQuick/qquickwebengineprofile.h>
+#include <QtWebEngineQuick/qquickwebenginedownloadrequest.h>
 #include <QAction>
 #include <QMenuBar>
 #include <exception>
@@ -37,6 +39,8 @@
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "mainwindow.h"
+#include <QTextDocumentFragment>
+#include <QTextDocument>
 
 #include "gui/preferencesmodel.h"
 #include "data/exporters/jaspexporter.h"
@@ -52,21 +56,24 @@
 
 #include "qquick/datasetview.h"
 #include "qquick/rcommander.h"
+#include "qquick/scriptconstructorview.h"
 
 #include "resultstesting/compareresults.h"
 
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include "utilities/qmlutils.h"
 #include "utilities/reporter.h"
+#include "utilities/allhelp.h"
 
 #include "widgets/filemenu/filemenu.h"
 #include "rsyntax/formulabase.h"
 #include "utilities/desktopcommunicator.h"
 
-#include "boost/iostreams/stream.hpp"
-#include <boost/iostreams/device/null.hpp>
+#include "rpc/jasprpcdispatcher.h"
+#include "rpc/jasprpcserver.h"
+#include "ai/agentstatetracker.h"
 
 #include "communitydefs.h"
 
@@ -75,7 +82,17 @@ using namespace Modules;
 
 MainWindow * MainWindow::_singleton	= nullptr;
 
-MainWindow::MainWindow(Application * application) : QObject(application), _application(application)
+//MainWindow-level tests (JASPTest) only exercise the data/sync chain, for which neither the QML
+//user interface nor the R engines (and thus no analyses) are needed - and both add a small fleet
+//of flaky threads to the test process. The environment variable also keeps loadQML's full QML
+//engine from starting up. Note this is about running without any backend (R/engine), not about
+//being headless: the tests still run under a display via xvfb.
+static bool backendlessTestMode()
+{
+	return !qEnvironmentVariableIsEmpty("JASP_TEST_BACKENDLESS");
+}
+
+MainWindow::MainWindow(Application * application, bool batchRun) : QObject(application), _application(application), _batchRunning(batchRun)
 {
 	std::cout << "MainWindow constructor started" << std::endl;
 	connect(this, &MainWindow::exitSignal, this, &QApplication::exit, Qt::QueuedConnection);
@@ -97,35 +114,40 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	std::cout << "Going to construct the necessary models for JASP to function." << std::endl;
 
 	//The order of these constructors is deliberate (up to some extent anyway). If you change the order you might find that stuff explodes randomly (although most likely during startup)
+	_rpcDispatcher 		= new JaspRpcDispatcher();
+	_rpcServer 			= new JaspRpcServer(*_rpcDispatcher, this,
+		PreferencesModel::prefs()->rpcServerIp(),
+		PreferencesModel::prefs()->rpcServerPort());
 	_qml					= new QQmlApplicationEngine(this);
 	_languageModel			= new LanguageModel(application, _qml, this);
 	_loader					= new AsyncLoader(nullptr);
 	_preferences			= new PreferencesModel(this);
+	_aiConfigModel			= new AIConfigModel(this);
 	_package				= new DataSetPackage(this);
 	_dynamicModules			= new DynamicModules(this);
 	_upgrader				= new Upgrader(this);
 	_analyses				= new Analyses();
 	_engineSync				= new EngineSync(this);
-	_datasetTableModel		= new DataSetTableModel();
-	_dataSetModelVarInfo	= new DataSetTableModel(false);
-	_columnModel			= new ColumnModel(_datasetTableModel);
-	
+	_datasetTableModel		= new DataSetTableModel(this);
+	_columnModel			= new ColumnModel();
+
 	initLog(); //initLog needs _preferences and _engineSync!
 
 	Log::log() << "JASP " << AppInfo::version.asString() << " from commit " << AppInfo::gitCommit << " and branch " << AppInfo::gitBranch << " is continuing initialization." << std::endl;
 
-	_resultsJsInterface		= new ResultsJsInterface();
+	_aiBridge				= new AiBridge(this);
+
+		_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
-	_labelFilterGenerator	= new labelFilterGenerator(_columnModel,		this);
-	_columnsModel			= new ColumnsModel(_dataSetModelVarInfo);			// We do not want filtered-out columns/levels to be selectable in other guis, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2322
+	_columnsModel			= new ColumnsModel(_datasetTableModel);			// We do not want filtered-out columns/levels to be selectable in other guis, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2322
 	_workspaceModel			= new WorkspaceModel(this);
-	_computedColumnsModel	= new ComputedColumnModel();
-	_filterModel			= new FilterModel(_labelFilterGenerator);
+	_filterModel			= new FilterModel(this);
 	_ribbonModel			= new RibbonModel();
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_ribbonModelUncommon	= new RibbonModelUncommon(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
+	_allHelp				= new AllHelp(this);
 	_aboutModel				= new AboutModel(this);
 	_encryptionModel		= new EncryptionSettingsModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
@@ -152,6 +174,8 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	qmlRegisterType<RCommander>									("JASP",			1, 0, "RCommander"						);
 	qmlRegisterType<ResultsJsInterface>							("JASP",			1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<ColumnModel>								("JASP",			1, 0, "ColumnModel"						);
+	qmlRegisterType<ScriptConstructorView>						("JASP",			1, 0, "ScriptConstructor"				);
+	qmlRegisterUncreatableMetaObject(ScriptConstructorEnums::staticMetaObject, "JASP", 1, 0, "ScriptConstructorMode", "enums only");
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 
@@ -159,11 +183,12 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	QmlUtils::setGlobalPropertiesInQMLContext(_qml->rootContext());
 	QmlUtils::registerQmlModuleTypes();
 
-	QTimer::singleShot(0, this, [&]() { loadQML(); });
+	QTimer::singleShot(0, this, [&]() { if(!backendlessTestMode()) loadQML(); });
 
 	_languageModel->setApplicationEngine(_qml);
 
-	_engineSync->start();
+	if(!backendlessTestMode())
+		_engineSync->start();
 	
 	checkForUpdates();
 
@@ -177,6 +202,15 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	_languageModel->setDefaultLocaleFromCurrent(); //Make sure (Q)ColumnUtils knows whats up
 
 	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
+
+	// Ensure the agent state tracker is initialized (also done by AiBridge,
+	// but this covers the case where the AI feature is not yet active).
+	AgentStateTracker::init();
+
+	registerRpcHandlers();
+
+	if (PreferencesModel::prefs()->rpcServerEnabled() && !_rpcServer->start())
+		Log::log() << "JASP-RPC server failed to start." << std::endl;
 	
 
 	JASPTIMER_FINISH(MainWindowConstructor);
@@ -185,7 +219,7 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 
 void MainWindow::checkForUpdates()
 {
-	if(resultXmlCompare::compareResults::theOne()->testMode() || QCoreApplication::applicationName() == "JASPTest")
+	if(_batchRunning || resultXmlCompare::compareResults::theOne()->testMode() || QCoreApplication::applicationName() == "JASPTest")
 		return;
 	
 	if(PreferencesModel::prefs()->checkUpdatesAskUser())
@@ -215,16 +249,14 @@ This setting can always be changed in the Interface Preferences.)MultiLine"),
 
 MainWindow::~MainWindow()
 {
+	MessageForwarder::setWarningHandler({});
 	Log::log() << "MainWindow::~MainWindow()" << std::endl;
-	
-	AppDirs::purgeClipboard();
-	_engineSync->killProcessTimer();
 
-	try
-	{
-		DatabaseInterface::closeInterfaces();
-	}
-	catch(...) {}
+	delete _aiBridge;
+	delete _rpcServer;
+	delete _rpcDispatcher;
+
+	_engineSync->killProcessTimer();
 
 	try
 	{
@@ -253,6 +285,20 @@ MainWindow::~MainWindow()
 		delete _resultsJsInterface;
 	}
 	catch(...)	{}
+
+	//The database interface must outlive the QObjects destroyed below (DataSetPackage and its
+	//DataSets still write to it while they go away). Closing it earlier made any later database
+	//access lazily recreate the interface against a session database that is already gone.
+	//_package is deleted explicitly so it cannot outlive the interface via ~QObject.
+	delete _package;
+
+	try
+	{
+		DatabaseInterface::closeInterfaces();
+	}
+	catch(...) {}
+	// Only logs when PROFILE_JASP is defined (JASP_TIMER_USED=ON).
+	JASPTIMER_PRINTALL();
 }
 
 QString MainWindow::windowTitle() const
@@ -339,7 +385,7 @@ const QString MainWindow::commUrlMembers() const
 const QString MainWindow::contactUrlFeatures() const
 {
 #ifdef PRO
-	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";	
+	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";
 #else
 	return "https://jasp-stats.org/request-feature";	
 #endif
@@ -348,7 +394,7 @@ const QString MainWindow::contactUrlFeatures() const
 const QString MainWindow::contactUrlBugs() const
 {
 #ifdef PRO
-	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";	
+	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";
 #else
 	return "https://jasp-stats.org/report-bug";
 #endif
@@ -357,7 +403,7 @@ const QString MainWindow::contactUrlBugs() const
 const QString MainWindow::contactUrlCrashReport() const
 {
 #ifdef PRO
-	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
+	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
 #else
 	return "https://jasp-stats.org/report-bug";
 #endif
@@ -375,7 +421,7 @@ const QString MainWindow::contactText() const
 		"</ul>\n"
 		"There you will be in direct contact with the JASP software developers.\n"
 		"\n"
-		"You can find out more about JASP Services BV at <a href=\"%3\">our website</a>."
+		"You can find out more about JASP Services BV at <a href=\"%4\">our website</a>."
 	)
 	.replace("&", "&amp;").replace(", ", ",&nbsp;").replace("\n", "<br>")
 	.arg(	contactUrlFeatures()
@@ -418,11 +464,13 @@ void MainWindow::showAnalysis()
 
 bool MainWindow::checkDoSync()
 {
+	if (_batchRunning)
+		return !checkAutomaticSync(); //Only the explicit command-line data source may be imported.
 	//Only do this if we are *not* running in reporting mode. 
 	if (!_reporter && checkAutomaticSync() && !MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
 	{
 		setCheckAutomaticSync(false);
-		DataSetPackage::pkg()->setSynchingExternally(false);
+		//DataSetPackage::pkg()->setSynchingExternally(false);
 		return false;
 	}
 
@@ -444,49 +492,85 @@ Q_DECLARE_METATYPE(columnType)
 void MainWindow::makeConnections()
 {
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
-	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
+	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 	connect(this,					&MainWindow::dataAvailableChanged,					_ribbonModel,			&RibbonModel::dataLoadedChanged								);
 	connect(this,					&MainWindow::dataAvailableChanged,					this,					&MainWindow::checkEmptyWorkspace							);
 	connect(this,					&MainWindow::analysesAvailableChanged,				this,					&MainWindow::checkEmptyWorkspace							);
-
+	connect(this,					&MainWindow::resetVariableTypes,					_package,				&DataSetPackage::resetVariableTypes							);
 
 	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_ribbonModel,			&RibbonModel::synchronisationChanged						);
-	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,								Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnModel::datasetChanged,						Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::checkForDependentColumnsToBeSent,	_computedColumnsModel,	&ComputedColumnModel::checkForDependentColumnsToBeSentSlot	);
 	connect(_package,				&DataSetPackage::datasetChanged,					_columnsModel,			&ColumnsModel::datasetChanged								);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
+	connect(_package,				&DataSetPackage::workspaceChanged,					this,					&MainWindow::onWorkspaceChanged								);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					_fileMenu,				&FileMenu::workspaceModified								);
 	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
-	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
-	connect(_package,				&DataSetPackage::synchingIntervalPassed,			this,					&MainWindow::syncKeyPressed									);
-	connect(_package,				&DataSetPackage::newDataLoaded,						this,					&MainWindow::populateUIfromDataSet							);
+	connect(_package,				&DataSetPackage::newDataLoaded,						this,					[this](){ populateUIfromDataSet(); }						); //Through a lambda because a default argument is not part of the type of &MainWindow::populateUIfromDataSet, so it cannot fill in for the argument the signal does not carry.
 	connect(_package,				&DataSetPackage::newDataLoaded,						_fileMenu,				[&](){ _fileMenu->enableButtonsForOpenedWorkspace(); }		);
 	connect(_package,				&DataSetPackage::dataModeChanged,					_analyses,				&Analyses::dataModeChanged									);
 	connect(_package,				&DataSetPackage::dataModeChanged,					_engineSync,			&EngineSync::dataModeChanged								);
 	connect(_package,				&DataSetPackage::dataModeChanged,					this,					&MainWindow::onDataModeChanged								);
 	connect(_package,				&DataSetPackage::askUserForExternalDataFile,		this,					&MainWindow::startDataEditorHandler							);
-	connect(_package,				&DataSetPackage::makeAnAutoSave,					this,					&MainWindow::saveTmpFileHandler								);
-	
-	connect(_package,				&DataSetPackage::runFilter,							_filterModel,			&FilterModel::sendGeneratedAndRFilter						);
+	connect(_package,				&DataSetPackage::makeAnAutoSave,					this,					&MainWindow::saveTmpFileHandler								); 
 	connect(_package,				&DataSetPackage::showWarning,						_msgForwarder,			&MessageForwarder::showWarningQML,							Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	connect(_package,				&DataSetPackage::workspaceEmptyValuesChanged,		_analyses,				&Analyses::refreshAllAnalyses								);
-	connect(_package,				&DataSetPackage::refreshAllAnalyses,				_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::refreshAllCompCols,				_computedColumnsModel,	&ComputedColumnModel::invalidateAllColumns,					Qt::QueuedConnection);
-	
-	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnModel::computeColumnSucceeded				);
-	connect(_engineSync,			&EngineSync::computeColumnRemoved,					_computedColumnsModel,	&ComputedColumnModel::computeColumnRemoved					);
-	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnModel::computeColumnFailed					);
+	connect(_package,				&DataSetPackage::refreshAllAnalyses,				_analyses,				&Analyses::refreshAllAnalysesOfFilter,						Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::sendFilter,						_engineSync,			&EngineSync::sendFilter										);
+	connect(_package,				&DataSetPackage::sendFilterByName,					_engineSync,			&EngineSync::sendFilterByName								);
+	connect(_package,				&DataSetPackage::shownDataSetChanged,				_datasetTableModel,		&DataSetTableModel::handleDataSetChange						);
+	connect(_package,				&DataSetPackage::shownDataSetChanged,				this,					&MainWindow::updateShownFilterInQmlContext					);
+	//Every dataset (not just the currently shown one) must trigger its own reload when it needs to sync.
+	//Qt::UniqueConnection is required because wireDataSetSync is re-run on every shownDataSetChanged
+	//(emitted from both setShownDataSet and refresh) and on dataSetCreated; without it the same
+	//(sender, signal) -> loader connection would accumulate, fanning one logical sync out to many reloads.
+	auto wireDataSetSync = [this](DataSet * ds) {
+		if(ds)
+			connect(ds, &DataSet::syncRequired, _loader, &AsyncLoader::onSyncRequired, static_cast<Qt::ConnectionType>(Qt::QueuedConnection | Qt::UniqueConnection));
+	};
+	//Datasets that already exist (e.g. loaded from a file/db before connections were made) and any created later.
+	wireDataSetSync(_package->workspace() ? _package->workspace()->shownDataSet() : nullptr);
+	for(DataSet * ds : _package->workspace() ? _package->workspace()->dataSets() : DataSets())
+		wireDataSetSync(ds);
+	connect(_package,				&DataSetPackage::shownDataSetChanged,				this,					[wireDataSetSync](DataSet * ds){ wireDataSetSync(ds); });
+	connect(_package,				&DataSetPackage::dataSetCreated,					this,					[this](int dataSetId){
+		DataSet * ds = _package->workspace() ? _package->workspace()->dataSetById(dataSetId) : nullptr;
+		if(ds)
+			connect(ds, &DataSet::syncRequired, _loader, &AsyncLoader::onSyncRequired, static_cast<Qt::ConnectionType>(Qt::QueuedConnection | Qt::UniqueConnection));
+	});
+	//The worker thread finishes the sync; route the completion back to the dataset's syncer on the main
+	//thread (via a QueuedConnection, since syncCompleted is emitted from the loader worker) so its
+	//re-entrancy guard (_isSyncing) is released exactly once for whichever dataset syncs.
+	//A (non-sync) load added a dataset to the workspace on the worker thread; refresh the workspace
+	//table model here, on the GUI thread, so views bound to it (dataset tabbuttons) pick it up.
+	connect(_loader,				&AsyncLoader::dataSetsChanged,						this,					[this](){
+	  if(_package->workspace())
+		  _package->workspace()->refresh();
+	}, Qt::QueuedConnection);
+
+	connect(_loader,				&AsyncLoader::syncCompleted,						this,					[this](int dataSetId, bool success){
+		Log::log() << "[MainWindow::syncCompleted] Received: dataSetId=" << dataSetId << ", success=" << success << std::endl;
+		DataSet * ds = _package->workspace() ? _package->workspace()->dataSetById(dataSetId) : nullptr;
+		Log::log() << "[MainWindow::syncCompleted] dataSetById returned: " << (ds ? QString::number(ds->id()) : "NULL") << std::endl;
+		if(ds)
+		{
+		  Log::log() << "[MainWindow::syncCompleted] Calling setSyncingResult for datasetId=" << ds->id() << std::endl;
+		  ds->syncer().setSyncingResult(success);
+		  Log::log() << "[MainWindow::syncCompleted] setSyncingResult returned" << std::endl;
+		}
+	}, Qt::QueuedConnection);
+
+	connect(_package,				&DataSetPackage::shownFilterChanged,				this,					&MainWindow::updateShownFilterInQmlContext					);
+	connect(_package,				&DataSetPackage::shownFilterChanged,				_filterModel,			&FilterModel::filterChanged,								Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::filtersCountChanged,				_filterModel,			&FilterModel::filterDropDownListChanged						);
+	connect(_package,				&DataSetPackage::runComputedColumn,					_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::runComputedDataSet,				_engineSync,			&EngineSync::computeDataSet,								Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::checkForDependentAnalyses,			_analyses,				&Analyses::checkForDependentAnalyses);
+	connect(_package,				&DataSetPackage::workspaceEmptyValuesChanged,		_datasetTableModel,		&DataSetTableModel::emptyValuesChanged			);
+
 	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
-	connect(_engineSync,			&EngineSync::columnDataTypeChanged,					_columnsModel,			&ColumnsModel::columnTypeChanged							);
 	connect(_engineSync,			&EngineSync::refreshAllPlotsExcept,					_analyses,				&Analyses::refreshAllPlots									);
-	connect(_engineSync,			&EngineSync::processNewFilterResult,				_filterModel,			&FilterModel::processFilterResult							);
-	connect(_engineSync,			&EngineSync::processFilterErrorMsg,					_filterModel,			&FilterModel::processFilterErrorMsg							);
-	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_filterModel,			&FilterModel::computeColumnSucceeded						);
 	connect(_engineSync,			&EngineSync::plotEditorRefresh,						_plotEditorModel,		&PlotEditorModel::refresh									);
 	connect(_engineSync,			&EngineSync::checkDataSetForUpdates,				_package,				&DataSetPackage::checkDataSetForUpdates,					Qt::QueuedConnection);
 
@@ -495,21 +579,20 @@ void MainWindow::makeConnections()
 	qRegisterMetaType<DbType>();
 	qRegisterMetaType<PlotEditor::References::ReferenceType>();
 
-	connect(_computedColumnsModel,	&ComputedColumnModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
-	connect(_computedColumnsModel,	&ComputedColumnModel::dataColumnAdded,				_fileMenu,				&FileMenu::dataColumnAdded									);
-	connect(_computedColumnsModel,	&ComputedColumnModel::showAnalysisForm,				_analyses,				&Analyses::selectAnalysis									);
-	connect(_computedColumnsModel,	&ComputedColumnModel::showAnalysisForm,				this,					&MainWindow::showAnalysis									);
-	connect(_computedColumnsModel,	&ComputedColumnModel::chooseColumn,					_columnModel,			&ColumnModel::setChosenColumnByName,						Qt::QueuedConnection);
+	
+	connect(_package,				&DataSetPackage::showAnalysis,						_analyses,				&Analyses::selectAnalysisById								);
+	connect(_package,				&DataSetPackage::showAnalysis,						this,					&MainWindow::showAnalysis									);
+	
 			
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_columnModel,			&ColumnModel::languageChangedHandler,						Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::currentLocaleChanged,				_resultsJsInterface,	&ResultsJsInterface::setLocale,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_allHelp,				&AllHelp::helpChanged,										Qt::QueuedConnection);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
 	connect(_resultsJsInterface,	&ResultsJsInterface::saveTextToFile,				this,					&MainWindow::saveTextToFileHandler							);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSaveImage,				this,					&MainWindow::analysisSaveImageHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisResizeImage,			this,					&MainWindow::analysisEditImageHandler						);
-	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		this,					&MainWindow::resultsPageLoaded								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu									);
@@ -517,7 +600,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSelected,				_analyses,				&Analyses::analysisIdSelectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisUnselected,			_analyses,				&Analyses::analysesUnselectedInResults						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChangedInResults,	_analyses,				&Analyses::analysisTitleChangedInResults					);
-	connect(_resultsJsInterface,	&ResultsJsInterface::duplicateAnalysis,				_analyses,				&Analyses::duplicateAnalysis								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::duplicateAnalysis,				_analyses,				[this](int id){ _analyses->duplicateAnalysis(size_t(id)); });
 	connect(_resultsJsInterface,	&ResultsJsInterface::showDependenciesInAnalysis,	_analyses,				&Analyses::showDependenciesInAnalysis						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showPlotEditor,				_plotEditorModel,		&PlotEditorModel::showPlotEditor							);
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsMetaChanged,			_analyses,				&Analyses::resultsMetaChanged								);
@@ -525,8 +608,18 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		_languageModel,			&LanguageModel::resultsPageLoaded,							Qt::QueuedConnection);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showRSyntaxInResults,			_analyses,				&Analyses::showRSyntaxInResults								);
 
+	//Whatever the results page downloads by itself (the plotly menu offers to save a plot as png for
+	//instance) is cancelled by webengine unless someone accepts it, so ask the user where to put it.
+	//This is the default profile on purpose: the plot/img/jaspPersona scheme handlers are installed
+	//there as well, so the results view cannot be given a profile of its own without losing those.
+	connect(QQuickWebEngineProfile::defaultProfile(),	&QQuickWebEngineProfile::downloadRequested,	this,	&MainWindow::webEngineDownloadRequested						);
+
+	connect(_columnModel,			&ColumnModel::columnNameForIndex,					_datasetTableModel,		&DataSetTableModel::columnName								);
+
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
+	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent	);
+	connect(_analyses,				&Analyses::analysisStatusChanged,					this,					&MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent	);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::emptyQMLCache,							this,					&MainWindow::resetQmlCache									);
 	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::analysisAdded									);
@@ -534,6 +627,7 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysesExportResults,					_fileMenu,				&FileMenu::analysesExportResults							);
 	connect(_analyses,				&Analyses::analysisStatusChanged,					_resultsJsInterface,	&ResultsJsInterface::setStatus								);
 	connect(_analyses,              &Analyses::analysisTitleChanged,                    _resultsJsInterface,    &ResultsJsInterface::changeTitle							);
+	connect(_analyses,              &Analyses::analysisDataSpecChanged,                 _resultsJsInterface,    &ResultsJsInterface::changeDataSpec							);
 	connect(_analyses,				&Analyses::analysisOverwriteUserdata,				_resultsJsInterface,	&ResultsJsInterface::overwriteUserdata						);
 	connect(_analyses,				&Analyses::showAnalysisInResults,					_resultsJsInterface,	&ResultsJsInterface::showAnalysis							);
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
@@ -546,7 +640,6 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysisImageEdited,						_plotEditorModel,		&PlotEditorModel::updateOptions								);
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
-	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
 	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
 	connect(_fileMenu,				&FileMenu::showContact,								this,					&MainWindow::showContact									);
 	connect(_fileMenu,				&FileMenu::showCommunity,							this,					&MainWindow::showCommunity								);
@@ -580,7 +673,6 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::useConfigurationFileChanged,		_jaspConfiguration,		&JASPConfiguration::processConfiguration					);
 	connect(_preferences,			&PreferencesModel::orderByValueByDefaultChanged,	[&](){	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault()); });
 
-
 	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault());
 	
 	auto * dCSingleton = DesktopCommunicator::singleton();
@@ -594,16 +686,6 @@ void MainWindow::makeConnections()
 	connect(dCSingleton,			&DesktopCommunicator::queryEncryptionSettingsSignal, _encryptionModel,		&EncryptionSettingsModel::queryEncryptionSettings);
 	connect(_encryptionModel,		&EncryptionSettingsModel::queryComplete,			dCSingleton,			&DesktopCommunicator::encryptionSettingsQueryComplete);
 	connect(dCSingleton,			&DesktopCommunicator::askCsvDelimiterSignal,		_csvPreviewModel,		&CsvPreviewModel::preparePreview);
-
-
-	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
-	connect(_filterModel,			&FilterModel::refreshAllCompCols,					_computedColumnsModel,	&ComputedColumnModel::invalidateAllColumns,					Qt::QueuedConnection);
-	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
-	connect(_filterModel,			&FilterModel::filterUpdated,						_package,				&DataSetPackage::refresh									);
-	connect(_filterModel,			&FilterModel::filterUpdated,						[&]() { _package->resetFilterCounters(); emit _columnsModel->filterChanged(); }		);
-	connect(_filterModel,			&FilterModel::sendFilter,							_engineSync,			&EngineSync::sendFilter										);
-
-	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter,							Qt::QueuedConnection);
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
@@ -642,12 +724,23 @@ void MainWindow::makeConnections()
 	connect(_jaspConfiguration,		&JASPConfiguration::configurationProcessed,			this,					&MainWindow::loadModulesFromUserConfiguration				);
 }
 
+void MainWindow::onWorkspaceChanged()
+{
+	_qml->rootContext()->setContextProperty("workspace", Workspace::singleton());
+}
+
+
 void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
 {
 	Log::log()		<< "Received QML warnings:\n";
 	for(const QQmlError & warning : warnings)
 		Log::log(false)	<< "\t" << warning.toString() << "\n";
 	Log::log(false) << std::endl;
+}
+
+void MainWindow::updateShownFilterInQmlContext()
+{
+	_qml->rootContext()->setContextProperty("shownFilter",								DataSetPackage::pkg()->filter()					);	
 }
 
 
@@ -667,17 +760,22 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("plotEditorModel",							_plotEditorModel								);
 	_qml->rootContext()->setContextProperty("preferencesModel",							_preferences									);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",						_resultsJsInterface								);
+	_qml->rootContext()->setContextProperty("aiBridge",									_aiBridge										);
+	_qml->rootContext()->setContextProperty("aiConfigModel",							_aiConfigModel									);
+	_qml->rootContext()->setContextProperty("messages",									_msgForwarder									);
+	_qml->rootContext()->setContextProperty("dataSetPackage",							DataSetPackage::pkg()							);
 	_qml->rootContext()->setContextProperty("ribbonModelFiltered",						_ribbonModelFiltered							);
-	_qml->rootContext()->setContextProperty("computedColumnsInterface",					_computedColumnsModel							);
 	_qml->rootContext()->setContextProperty("windowsCodePagesHelper",					_windowsWorkaroundCPs							); //is nullptr on not-windows!
 	_qml->rootContext()->setContextProperty("ribbonModelUncommon",						_ribbonModelUncommon							);
 	_qml->rootContext()->setContextProperty("columnTypesModel",							_columnTypesModel								);
 	_qml->rootContext()->setContextProperty("resultMenuModel",							_resultMenuModel								);
 	_qml->rootContext()->setContextProperty("fileMenuModel",							_fileMenu										);
 	_qml->rootContext()->setContextProperty("filterModel",								_filterModel									);
+	_qml->rootContext()->setContextProperty("shownFilter",								DataSetPackage::pkg()->filter()					);
 	_qml->rootContext()->setContextProperty("ribbonModel",								_ribbonModel									);
 	_qml->rootContext()->setContextProperty("engineSync",								_engineSync										);
 	_qml->rootContext()->setContextProperty("helpModel",								_helpModel										);
+	_qml->rootContext()->setContextProperty("allHelp",									_allHelp										);
 	_qml->rootContext()->setContextProperty("jaspTheme",								nullptr											); //Will be set from jaspThemeChanged()!
 	_qml->rootContext()->setContextProperty("qmlUtils",									new QmlUtils(this)								);
 
@@ -743,7 +841,25 @@ void MainWindow::loadQML()
 
 	_fileMenu->refresh(); //Now that the theme is loaded we can determine the proper width for the buttons in the filemenu
 
-	Log::log() << "Loading HelpWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+
+    Log::log() << "Loading AIChatWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ChatWindow.qml"));
+
+	// Find the ChatWindow and track its active state for the toggle button
+	for (QObject* obj : _qml->rootObjects())
+	{
+		if (obj->objectName() == "chatWindow")
+		{
+			_chatWindow = qobject_cast<QWindow*>(obj);
+			if (_chatWindow)
+				{
+					connect(_chatWindow, &QWindow::activeChanged, this, &MainWindow::checkChatWindowActive);
+					Log::log() << "ChatWindow found and connected." << std::endl;
+				}
+			break;
+		}
+	}
+
+    Log::log() << "Loading HelpWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	Log::log() << "Loading AboutWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	Log::log() << "Loading ContactWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
 	Log::log() << "Loading CommunityWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CommunityWindow.qml"));
@@ -771,6 +887,8 @@ void MainWindow::loadQML()
 	connect(_ribbonModel, &RibbonModel::dataRedo,						DataSetView::mainDataViewer(),	&DataSetView::redo);
 	connect(this,		  &MainWindow::resizeData,						DataSetView::mainDataViewer(),	&DataSetView::resizeData);
 	connect(_ribbonModel, &RibbonModel::showNewData,					this,							&MainWindow::showNewData);
+	connect(_ribbonModel, &RibbonModel::addNewDataSet,					this,							&MainWindow::addNewDataSet);
+	
 
 	//connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
 
@@ -797,6 +915,109 @@ void MainWindow::setDefaultWorkspaceEmptyValues()
 	DataSetPackage::pkg()->setDefaultWorkspaceEmptyValues();
 }
 
+void MainWindow::toggleChat()
+{
+	if (!PreferencesModel::prefs()->aiEnabled()) return;
+	// Find the ChatWindow if not already cached (handles edge case of late load)
+	if (!_chatWindow)
+	{
+		for (QObject* obj : _qml->rootObjects())
+		{
+			if (obj->objectName() == "chatWindow")
+			{
+				_chatWindow = qobject_cast<QWindow*>(obj);
+				if (_chatWindow)
+					connect(_chatWindow, &QWindow::activeChanged, this, &MainWindow::checkChatWindowActive);
+				break;
+			}
+		}
+	}
+
+	if (!_chatWindow)
+	{
+		// Fallback: if chat window not found, just toggle visibility
+		setAiChatVisible(!_aiChatVisible);
+		return;
+	}
+
+	if (!_chatWindow->isVisible())
+	{
+		// Chat is hidden → show it and bring to front
+		setAiChatVisible(true);
+		_chatWindow->raise();
+		_chatWindow->requestActivate();
+	}
+	else if (_chatWindow->visibility() == QWindow::Minimized)
+	{
+		// Chat is minimized → restore and bring to front
+		_chatWindow->setVisibility(QWindow::Windowed);
+		_chatWindow->raise();
+		_chatWindow->requestActivate();
+	}
+	else if (!_chatWindow->isActive())
+	{
+		// Chat is visible but behind other windows → bring to front
+		_chatWindow->raise();
+		_chatWindow->requestActivate();
+	}
+	else
+	{
+		// Chat is visible and in front → hide it
+		setAiChatVisible(false);
+	}
+}
+
+void MainWindow::checkChatWindowActive()
+{
+	bool active = _chatWindow && _chatWindow->isActive();
+	if (_chatWindowActive != active)
+	{
+		_chatWindowActive = active;
+		emit chatWindowActiveChanged();
+	}
+}
+
+void MainWindow::annotateAnalysis()
+{
+	if (!PreferencesModel::prefs()->aiEnabled()) return;
+
+	AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
+	if (!pm->activePersonaAllowAnnotation())
+		return;
+
+	// Find the ChatWindow if not already cached
+	if (!_chatWindow)
+	{
+		for (QObject* obj : _qml->rootObjects())
+		{
+			if (obj->objectName() == "chatWindow")
+			{
+				_chatWindow = qobject_cast<QWindow*>(obj);
+				if (_chatWindow)
+					connect(_chatWindow, &QWindow::activeChanged, this, &MainWindow::checkChatWindowActive);
+				break;
+			}
+		}
+	}
+
+	if (!_chatWindow) return;
+
+	// Always open and bring to front (never close)
+	setAiChatVisible(true);
+	if (_chatWindow->visibility() == QWindow::Minimized)
+		_chatWindow->setVisibility(QWindow::Windowed);
+	_chatWindow->raise();
+	_chatWindow->requestActivate();
+
+	// Always use the stored annotation prompt (default or custom)
+	QString prompt = PreferencesModel::prefs()->aiAnnotationPrompt();
+
+
+	// Delegate to the QML ChatWindow's submit function
+	QMetaObject::invokeMethod(_chatWindow.data(), "submitUserMessage",
+		Qt::QueuedConnection, Q_ARG(QVariant, QVariant(prompt)));
+}
+
 void MainWindow::setQmlImportPaths()
 {
 	static QStringList originalImportPaths = _qml->importPathList();
@@ -814,11 +1035,15 @@ void MainWindow::setQmlImportPaths()
 
 	if(_preferences->developerMode())
 	{
-		Log::log() << "QML has the following import paths:\n";
-
-		for(const QString & p : _qml->importPathList())
-			Log::log() << "\t" << p << "\n";
-		Log::log() << std::endl;
+		
+		QString importLog = "QML has the following import paths:" + _qml->importPathList().join("\n\t") + "\n";
+		static QString previous;
+		
+		if(previous != importLog)
+		{
+			Log::log() << importLog << std::endl;
+			previous = importLog;
+		}
 	}
 }
 
@@ -894,10 +1119,8 @@ void MainWindow::initLog()
 {
 	assert(_engineSync != nullptr && _preferences != nullptr);
 
-	static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries
-
 	Log::logFileNameBase = (AppDirs::logDir() + "JASP "  + getSortableTimestamp()).toStdString();
-	Log::init(&nullstream);
+	Log::init(&Log::nullStream());
 	Log::setLogFileName(Log::logFileNameBase + " Desktop.log");
 	Log::setLoggingToFile(_preferences->logToFile());
 	logRemoveSuperfluousFiles(_preferences->logFilesMax());
@@ -935,13 +1158,13 @@ void MainWindow::showLogFolder() const
 	openFolderExternally(AppDirs::logDir());
 }
 
-void MainWindow::openURLFile(QString fileURLPath)
+bool MainWindow::openURLFile(QString fileURLPath)
 {
 	QUrl fileUrl = fileURLPath.startsWith("file:") ? QUrl(fileURLPath) : QUrl::fromLocalFile(fileURLPath);
 	if (!fileUrl.isLocalFile())
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("Cannot access file %1").arg(fileURLPath));
-		return;
+        return false;
 	}
 
 	QString filePath = fileUrl.toLocalFile();
@@ -950,100 +1173,188 @@ void MainWindow::openURLFile(QString fileURLPath)
 	if (!fileInfo.exists())
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("File %1 is not found.").arg(filePath));
-		return;
+        return false;
 	}
 
-	if (!FileTypeBaseValidName(fileInfo.suffix().toLower().toStdString()))
+    Utils::FileType fileType = Utils::getTypeFromFileName(fq(filePath));
+
+    if (fileType == Utils::FileType::empty || fileType == Utils::FileType::unknown || fileType == Utils::FileType::html ||  fileType == Utils::FileType::pdf)
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("JASP does not support this file type %1.").arg(filePath));
-		return;
+        return false;
 	}
 
-	open(filePath);
+	if (_preferences->syncDroppedDatafile() && _package->isLoaded() && fileType != Utils::FileType::jasp)
+	{
+		FileEvent * syncEvent = new FileEvent(this, FileEvent::FileSyncData);
+		syncEvent->setPath(filePath);
+		syncEvent->setDataSet(_package->dataSet());
+
+		syncEvent->starts();
+	}
+	else
+        open(filePath);
+
+    return true;
 }
 
-void MainWindow::open(QString filepath)
+void MainWindow::open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save)
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode())
-		resultXmlCompare::compareResults::theOne()->setFilePath(filepath);
+		resultXmlCompare::compareResults::theOne()->setFilePath(mainFilePath);
 
 	_openedUsingArgs = true;
-	if (_resultsPageLoaded)	_fileMenu->open(filepath);
-	else					_openOnLoadFilename = filepath;
+	if (_resultsJsInterface->resultsLoaded())
+		_open(mainFilePath, inputDataFile, exportFile, keepJASPOpen, save);
+	else
+		connect(_resultsJsInterface, &ResultsJsInterface::resultsPageLoadedSignal, this, [this, mainFilePath, inputDataFile, exportFile, keepJASPOpen, save](){_open(mainFilePath, inputDataFile, exportFile, keepJASPOpen, save); }, Qt::SingleShotConnection);
 }
 
+void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save)
+{
+	FileEvent * openEvent = _fileMenu->open(mainFilePath);
+	if (!inputDataFile.isEmpty())
+	{
+		_batchKeepOpen = keepJASPOpen;
+		openEvent->setSilent(_batchRunning);
+		FileEvent * syncEvent = new FileEvent(this, FileEvent::FileSyncData);
+		syncEvent->setSilent(_batchRunning);
+		syncEvent->setPath(inputDataFile);
+		syncEvent->chain(openEvent, true);
+
+		//Import failures finish this worker; otherwise wait for analyses before reporting or exporting.
+		connect(syncEvent, &FileEvent::finalized, this, [this, syncEvent, exportFile, save]()
+		{
+			if (!syncEvent->isSuccessful())
+			{
+				_batchResult.addError(tr("Could not import data: %1").arg(syncEvent->message()));
+				finishBatchRun();
+				return;
+			}
+
+			bool hasValues = false;
+			for (Column * column : _package->dataSet()->columns())
+			{
+				if (!column->isComputed())
+					for (size_t row = 0; row < column->rowCount() && !hasValues; ++row)
+						hasValues = !column->isEmptyValue(column->getValue(row));
+				if (hasValues) break;
+			}
+			if (!hasValues)
+			{
+				_batchResult.addError(tr("Cannot analyse this file: imported %1 rows, but all data values are blank or marked as missing. Check the file and JASP's missing-value settings.").arg(_package->dataSet()->rowCount()));
+				finishBatchRun();
+				return;
+			}
+
+			if (!exportFile.isEmpty())
+			{
+				FileEvent * exportEvent = new FileEvent(this, save ? FileEvent::FileSave : FileEvent::FileExportResults);
+				exportEvent->setPath(exportFile);
+				exportEvent->setSilent(true);
+				connect(exportEvent, &FileEvent::finalized, this, [this, exportEvent]() {
+					if (!exportEvent->isSuccessful())
+						_batchResult.addError(tr("Could not export results: %1").arg(exportEvent->message()));
+					finishBatchRun();
+				});
+				_waitingEvent = exportEvent;
+			}
+			_batchWaitingForAnalyses = true; //Also wait and inspect errors when --exportType=No is used.
+			waitForAllAnalysesFinishedBeforeStartingEvent();
+		} );
+	}
+}
+
+void MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent()
+{
+	if (!_batchWaitingForAnalyses)
+		return;
+
+	//The analyses may all look finished *right now*, but the sync (or open) that led here can
+	//schedule analysis refreshes deferred: queued filter-refresh connections and EngineSync's
+	//100ms poll only run on later event-loop passes. A refresh started after the export begins
+	//would set the analyses to Empty/Running and wipe the results page to its intermediate empty
+	//state *while* the export captures it (compareResults avoids this by forcing a refresh first
+	//and waiting it out). So debounce: (re)start a settle timer that only starts the event once
+	//the analyses have gone a full settle interval without a single status change. Every status
+	//change and every new result re-enters this slot (analysisStatusChanged and
+	//analysisResultsChanged below) and postpones the start; a refresh that never finishes is
+	//caught by _waitingEventTimeoutTimer.
+	if (!_waitingEventStartTimer)
+	{
+		_waitingEventStartTimer = new QTimer(this);
+		_waitingEventStartTimer->setSingleShot(true);
+		_waitingEventStartTimer->setInterval(1000);
+		connect(_waitingEventStartTimer, &QTimer::timeout, this, &MainWindow::_startWaitingEventIfAnalysesStillFinished);
+	}
+	_waitingEventStartTimer->start(); //restarting a running timer postpones the pending start
+}
+
+void MainWindow::_startWaitingEventIfAnalysesStillFinished()
+{
+	if (!_batchWaitingForAnalyses || !_analyses->allFinished())
+		return;
+
+	//Stop waiting before inspecting results: setErrorInResults() emits analysisResultsChanged,
+	//which re-enters the waiting slot. Clearing the flag prevents a second export without
+	//disconnecting the status/result signals needed by later operations.
+	FileEvent * waitingEvent = _waitingEvent;
+	_waitingEvent            = nullptr;
+	_batchWaitingForAnalyses = false;
+
+	_analyses->applyToAll([&](Analysis * a)
+	{
+		//An analysis whose form never got instantiated (a module that failed to load for instance)
+		//has no error to report either, so leave it alone instead of dereferencing nothing.
+		if (a->form() && a->form()->hasError())
+			a->setErrorInResults(fq(tr("Validation error: %1").arg(a->form()->getError(true))));
+		if (_batchRunning)
+		{
+			const auto errorCount = _batchResult.errors.size();
+			_batchResult.collect(a->results(), tq(a->title()));
+			if (a->status() != Analysis::Complete && !a->isReport() && _batchResult.errors.size() == errorCount)
+				_batchResult.addError(tq(a->title()) + ": " + a->statusQ());
+		}
+	});
+
+	if (waitingEvent) waitingEvent->starts();
+	else finishBatchRun();
+}
+
+void MainWindow::waitingEventTimedOut()
+{
+	_batchResult.addError(tr("Timed out waiting for the batch data file to finish."));
+	finishBatchRun();
+}
+
+///This function assumes there should afterwards be only 1 DataSet!
 void MainWindow::showNewData()
 {
-	_package->generateEmptyData();
 	_ribbonModel->showData();
+	_package->generateEmptyData();
+}
+
+
+void MainWindow::addNewDataSet()
+{
+	//createDataSet() (re)creates the workspace if it is null (e.g. right after a reset on a fresh
+	//JASP), so obtain the new DataSet first and never dereference workspace() before it exists.
+	DataSet * newSet = _package->createDataSet();
+
+	_package->workspace()->setShownDataSet(newSet);
+
+	newSet->setColumnCount(1);
+	newSet->setRowCount(1, false);
+	newSet->column(0)->initFromLookups(newSet->freeNewColumnName(0), 1, [](size_t){return "";}, [](size_t){return "";}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault());
+
 }
 
 void MainWindow::open(const Json::Value & dbJson)
 {
 	_openedUsingArgs = true;
-	if (_resultsPageLoaded)	_fileMenu->open(dbJson);
-	else					_openOnLoadDbJson = dbJson;
+	if (_resultsJsInterface->resultsLoaded())	_fileMenu->open(dbJson);
+	else										_openOnLoadDbJson = dbJson;
 }
-
-/*
-
-void MainWindow::dragEnterEvent(QDragEnterEvent *event)
-{
-	const QMimeData *data = event->mimeData();
-
-	if (data->hasUrls())
-	{
-		QList<QUrl> urls = data->urls();
-		QUrl first = urls.first();
-		QFileInfo file(first.path());
-
-		if (file.exists() && (file.completeSuffix() == "csv" || file.completeSuffix() == "jasp"))
-			event->accept();
-		else
-			event->ignore();
-	}
-	else
-	{
-		event->ignore();
-	}
-}
-
-
-void MainWindow::dropEvent(QDropEvent *event)
-{
-	const QMimeData *data = event->mimeData();
-	QUrl url = data->urls().first();
-	open(url.path());
-
-	event->accept();
-}
-
-
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
-
-	if (_applicationExiting)
-	{
-		// sometimes on osx we get two events
-		event->accept();
-	}
-
-	_applicationExiting = true;
-
-	if (_package->isModified())
-	{
-		_fileMenu->close();
-		event->ignore();
-	}
-	else
-	{
-		event->accept();
-	}
-
-	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
-	if (rd) rd->close();
-}*/
 
 void MainWindow::saveKeyPressed()
 {
@@ -1082,12 +1393,14 @@ void MainWindow::zoomResetKeyPressed()
 
 void MainWindow::undo()
 {
-	DataSetPackage::pkg()->undoStack()->undo();
+	if (UndoStack::singleton())
+		UndoStack::singleton()->undo();
 }
 
 void MainWindow::redo()
 {
-	DataSetPackage::pkg()->undoStack()->redo();
+	if (UndoStack::singleton())
+		UndoStack::singleton()->redo();
 }
 
 void MainWindow::syncKeyPressed()
@@ -1155,6 +1468,48 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 	
 	if(_reporter && _analyses->allFinished())
 		_reporter->analysesFinished();
+}
+
+void MainWindow::webEngineDownloadRequested(QQuickWebEngineDownloadRequest * download)
+{
+	if(!download)
+		return;
+
+	//Without a name of its own fall back on what the page suggested, and on something recognizable
+	//after that, so the dialog never opens on an empty file name.
+	QString suggested = download->downloadFileName();
+
+	if(suggested.isEmpty())
+		suggested = download->suggestedFileName();
+
+	if(suggested.isEmpty())
+		suggested = "download";
+
+	QFileInfo	suggestedInfo(suggested);
+	QString		extension	= suggestedInfo.suffix(),
+				filter		= extension.isEmpty()
+							? tr("All Files") + " (*)"
+							: tr("%1 Files").arg(extension.toUpper()) + " (*." + extension + ");;" + tr("All Files") + " (*)",
+				finalPath	= MessageForwarder::browseSaveFile(tr("Save File"), suggested, filter);
+
+	if(finalPath.isEmpty())
+	{
+		download->cancel();
+		return;
+	}
+
+	QFileInfo finalInfo(finalPath);
+
+	//browseSaveFile hands back the whole path while the request wants it split, and it overwrites
+	//itself, so remove whatever is there instead of letting webengine pick "file (1).png".
+	if(finalInfo.exists())
+		QFile::remove(finalPath);
+
+	download->setDownloadDirectory(finalInfo.absolutePath());
+	download->setDownloadFileName(finalInfo.fileName());
+	download->accept();
+
+	Log::log() << "Accepted a download from the webengine, storing it as '" << finalPath << "'" << std::endl;
 }
 
 void MainWindow::analysisSaveImageHandler(int id, QString options)
@@ -1241,7 +1596,11 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 		)
 			analysis->refresh();
 		else
-			emit editImageCancelled(id);
+		{
+			Json::Value opts;
+			Json::Reader().parse(fq(options), opts);
+			emit editImageCancelled(id, tq(opts.get("name", "").asString()));
+		}
 	}
 	else
 	{
@@ -1255,9 +1614,265 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 	}
 }
 
-void MainWindow::connectFileEventCompleted(FileEvent * event)
+void MainWindow::registerRpcHandlers()
 {
-	connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted, Qt::QueuedConnection);
+	auto* disp = JaspRpcDispatcher::singleton();
+	if (!disp)
+		return;
+
+	// Shared helper — builds the dataset metadata portion used by
+	// data_load (on success), data_load_status (on complete), and data_info.
+	auto resolveDataSet = [](const Json::Value& params) -> DataSet *
+	{
+		Workspace * ws = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
+		if (!ws)
+			return nullptr;
+
+		if (params.isMember("dataSetId"))
+			return ws->dataSetById(params["dataSetId"].asInt());
+
+		return ws->shownDataSet();
+	};
+
+	auto buildDataInfo = [](DataSet * ds) -> Json::Value
+	{
+		Json::Value info;
+
+		if (!ds)
+		{
+			info["loaded"] = false;
+			return info;
+		}
+
+		info["loaded"]      = true;
+		info["path"]        = tq(ds->dataFilePath()).toStdString();
+		info["rowCount"]    = static_cast<int>(ds->rowCount());
+
+		auto colTypes = ds->getColumnTypesMap();
+		info["columnCount"] = static_cast<int>(colTypes.size());
+
+		Json::Value columns(Json::arrayValue);
+		for (const auto& [name, type] : colTypes)
+		{
+			Json::Value col;
+			col["name"] = name;
+			col["type"] = columnTypeToString(type);
+
+			if (type == columnType::nominal || type == columnType::nominalText || type == columnType::ordinal)
+			{
+				Column * column = ds->column(name);
+				if (column)
+					col["distinctCount"] = static_cast<int>(column->labelsNonEmptyCount());
+			}
+
+			columns.append(col);
+		}
+		info["columns"] = columns;
+
+		return info;
+	};
+
+	// --- data_load ---
+	disp->registerMethodByName("data_load", [this, buildDataInfo](const Json::Value& params) -> Json::Value
+	{
+		// Reject if a load is already in progress
+		for (const auto& [id, job] : _rpcJobs)
+		   if (job.status == "running")
+			   return JaspRpcDispatcher::errorResult(
+				   "A data load is already in progress (job " + std::to_string(id) + ").");
+
+		bool wait      = params.get("wait", true).asBool();
+		int  timeoutMs = params.get("timeoutMs", 30000).asInt();
+
+		// Set CSV delimiter before load to skip interactive preview popup
+		std::string delimStr = params.get("delimiter", ",").asString();
+		if (!delimStr.empty())
+		   DesktopCommunicator::singleton()->setKnownCsvDelimiter(delimStr[0]);
+
+		std::string path = params["path"].asString();
+
+		int jobId = _nextRpcJobId++;
+		_rpcJobs[jobId] = {"running", ""};
+
+		auto* event = new FileEvent(this, FileEvent::FileOpen);
+		event->setSilent(true);
+		event->setPath(QString::fromStdString(path));
+
+		connect(event, &FileEvent::completed, this, [this, jobId, event]()
+				{
+					auto& job = _rpcJobs[jobId];
+
+					if (event->isSuccessful())
+					{
+					   DataSetPackage* pkg = DataSetPackage::pkg();
+					   pkg->setCurrentFile(event->path());
+					   emit pkg->newDataLoaded();
+
+					   job.status = "complete";
+					}
+					else
+					{
+					   job.status = "error";
+					   job.error  = event->message().toStdString();
+					}
+				}
+		);
+
+		event->starts();
+
+		// Fast path: non-blocking — return jobId immediately
+		if (!wait)
+		{
+		   Json::Value response = JaspRpcDispatcher::successResult();
+		   response["status"] = "accepted";
+		   response["jobId"]  = jobId;
+		   return response;
+		}
+
+	   // Blocking wait — poll until complete, error, or timeout
+		JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+											   [&](QEventLoop& loop, QTimer&) {
+												   auto* pollTimer = new QTimer(&loop);
+												   QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() {
+													   auto it = _rpcJobs.find(jobId);
+													   if (it == _rpcJobs.end() || it->second.status != "running")
+														   loop.quit();
+												   });
+												   pollTimer->start(100);
+											   });
+
+	   // Build response based on final job state
+	   auto it = _rpcJobs.find(jobId);
+	   if (it == _rpcJobs.end())
+		   return JaspRpcDispatcher::errorResult("Job vanished: " + std::to_string(jobId));
+
+	   const auto& job = it->second;
+
+	   if (job.status == "error")
+	   {
+		   Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+		   response["jobId"]  = jobId;
+		   response["status"] = "error";
+		   return response;
+	   }
+
+	   if (job.status == "running")
+	   {
+		   Json::Value response = JaspRpcDispatcher::successResult();
+		   response["jobId"]  = jobId;
+		   response["status"] = "running";
+		   return response;
+	   }
+
+	   // job.status == "complete" — return full metadata
+	   {
+		   Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
+		   response["status"] = "success";
+		   response["jobId"]  = jobId;
+
+		   // Agent just loaded new data — clear data dirty flags
+		   AgentStateTracker::notifyDataObserved();
+
+		   return response;
+	   }
+	});
+
+	// --- data_load_status ---
+	disp->registerMethodByName("data_load_status", [this, buildDataInfo](const Json::Value& params) -> Json::Value
+	{
+	   int jobId = params["jobId"].asInt();
+
+	   auto it = _rpcJobs.find(jobId);
+	   if (it == _rpcJobs.end())
+		   return JaspRpcDispatcher::errorResult(
+			   "Unknown jobId: " + std::to_string(jobId));
+
+	   bool wait      = params.get("wait", true).asBool();
+	   int  timeoutMs = params.get("timeoutMs", 30000).asInt();
+
+	   // Fast path: already done or not waiting
+	   if (!wait || it->second.status != "running")
+	   {
+		   const auto& job = it->second;
+
+		   if (job.status == "error")
+		   {
+			   Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+			   response["jobId"]  = jobId;
+			   response["status"] = "error";
+			   return response;
+		   }
+
+		   if (job.status == "complete")
+		   {
+			   Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
+			   response["status"] = "complete";
+			   response["jobId"]  = jobId;
+			   AgentStateTracker::notifyDataObserved();
+			   return response;
+		   }
+
+		   Json::Value response = JaspRpcDispatcher::successResult();
+		   response["jobId"]  = jobId;
+		   response["status"] = "running";
+		   return response;
+	   }
+
+	   // Blocking wait
+	   JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+											   [&](QEventLoop& loop, QTimer&) {
+												   auto* pollTimer = new QTimer(&loop);
+												   QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() {
+													   auto it2 = _rpcJobs.find(jobId);
+													   if (it2 == _rpcJobs.end() || it2->second.status != "running")
+														   loop.quit();
+												   });
+												   pollTimer->start(100);
+											   });
+
+	   // Re-read after wait
+	   it = _rpcJobs.find(jobId);
+	   if (it == _rpcJobs.end())
+		   return JaspRpcDispatcher::errorResult("Job vanished: " + std::to_string(jobId));
+
+	   const auto& job = it->second;
+
+	   if (job.status == "error")
+	   {
+		   Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+		   response["jobId"]  = jobId;
+		   response["status"] = "error";
+		   return response;
+	   }
+
+	   if (job.status == "complete")
+	   {
+		   Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
+		   response["status"] = "complete";
+		   response["jobId"]  = jobId;
+		   AgentStateTracker::notifyDataObserved();
+		   return response;
+	   }
+
+	   Json::Value response = JaspRpcDispatcher::successResult();
+	   response["jobId"]  = jobId;
+	   response["status"] = "running";
+	   return response;
+	});
+
+	// --- data_info ---
+	disp->registerMethodByName("data_info", [buildDataInfo, resolveDataSet](const Json::Value& params) -> Json::Value
+	{
+	   Json::Value response = buildDataInfo(resolveDataSet(params));
+	   response["status"] = "success";
+
+	   // Agent just observed the dataset — clear data dirty flags
+	   AgentStateTracker::notifyDataObserved();
+
+	   return response;
+	});
+
+	Log::log() << "[RPC] Registered data_load, data_load_status, and data_info handlers." << std::endl;
 }
 
 bool MainWindow::startDetached(const QString & applicationPath, const QStringList & args) const
@@ -1282,7 +1897,7 @@ bool MainWindow::startDetached(const QString & applicationPath, const QStringLis
 	return worked;
 }
 
-void MainWindow::dataSetIORequestHandler(FileEvent *event)
+void MainWindow::fileEventRequestHandler(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileNew)
 	{
@@ -1293,20 +1908,22 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileOpen)
 	{
-		if (_package->isLoaded())
+		//A .jasp file contains an entire workspace, so opening one while a workspace is already loaded
+		//must happen in a separate instance (that instance opens it for real). Datafiles and database
+		//connections, in contrast, add a dataset to the current workspace (creating the workspace on
+		//first use), so they always open in this instance.
+		bool isJaspFile = (event->type() == Utils::FileType::jasp);
+
+		if (_package->isLoaded() && isJaspFile)
 		{
 			// If this instance has a valid OSF connection save this setting for a new instance
 			_odm->savePasswordFromAuthData(OnlineDataManager::OSF);
 
 			// begin new instance
-			
-			if(event->isDatabase())		MainWindow::startDetached(QCoreApplication::applicationFilePath(), QStringList(tq(event->databaseStr())));
-			else						MainWindow::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
+			MainWindow::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
 		}
 		else
 		{
-			connectFileEventCompleted(event);
-
 			setWelcomePageVisible(false);
 
 			_loader->io(event);
@@ -1315,8 +1932,6 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{
-		connectFileEventCompleted(event);
-		
 		_resultsJsInterface->exportPreviewHTML();
 		_package->setAnalysesData(_analyses->asJson());
 
@@ -1326,29 +1941,31 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
-		connectFileEventCompleted(event);
 		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
-		connectFileEventCompleted(event);
 		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		//Without a dataset there is nothing to synchronize into; failing the event (instead of
+		//silently dropping it) makes whoever waits for it, e.g. the command-line export chain,
+		//finish with a clear error instead of hanging.
 		if (!_package->hasDataSet())
+		{
+			Log::log() << "[MainWindow::fileEventRequestHandler] FileSyncData without a dataset; failing the event." << std::endl;
+			event->setComplete(false, tr("There is no dataset to synchronize with."));
 			return;
+		}
 
-		connectFileEventCompleted(event);
 		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		connectFileEventCompleted(event);
-
 		if (_package->isModified() && (dataAvailable() || analysesAvailable()))
 		{
 			switch(MessageForwarder::showSaveDiscardCancel(tr("%1 has been modified").arg(currentFileUserReadable()), tr("Would you like to save your changes?")))
@@ -1359,7 +1976,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 				return;
 
 			case MessageForwarder::DialogResponse::Save:
-				event->chain(_fileMenu->save());
+				event->chain(_fileMenu->save()); // event will be set completed when the save event is first completed.
 				break;
 
 			case MessageForwarder::DialogResponse::Discard:
@@ -1411,7 +2028,7 @@ void MainWindow::closeVariablesPage()
 	_columnModel->setVisible(false);
 }
 
-void MainWindow::dataSetIOCompleted(FileEvent *event)
+void MainWindow::fileEventRequestFinalize(FileEvent *event)
 {
 	hideProgress(event->isTmp() && event->operation() == FileEvent::FileSave);
 	
@@ -1422,7 +2039,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->isSuccessful())
 		{
-			populateUIfromDataSet();
+			populateUIfromDataSet(event->type() == Utils::FileType::jasp);
+			if (_batchRunning)
+				_package->dataSet()->setDataFileSynch(false);
 
 			_package->setCurrentFile(event->path());
 			
@@ -1433,31 +2052,37 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if(event->osfPath() != "")
 				_package->setFolder("OSF://" + event->osfPath()); //It is also set by setCurrentPath, but then we get some weirdlooking OSF path
 
-			if (event->type() == Utils::FileType::jasp)
+			if (event->type() == Utils::FileType::jasp && !_batchRunning)
 			{
-				if(!_package->dataFilePath().empty() && !_package->dataFileReadOnly() && strncmp("http", _package->dataFilePath().c_str(), 4) != 0)
+				if(!_package->dataSet()->dataFilePath().empty() && !_package->isReadOnlyFile() && strncmp("http", _package->dataSet()->dataFilePath().c_str(), 4) != 0)
 				{
-					QString dataFilePath = QString::fromStdString(_package->dataFilePath());
+					QString dataFilePath = QString::fromStdString(_package->dataSet()->dataFilePath());
 					if (QFileInfo::exists(dataFilePath))
 					{
-						uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toSecsSinceEpoch();
-						if (currentDataFileTimestamp > _package->dataFileTimestamp())
+						qint64 currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toSecsSinceEpoch();
+						if (currentDataFileTimestamp > _package->dataSet()->dataFileTimestamp())
 						{
 							setCheckAutomaticSync(true);
-							_fileMenu->syncDataFile(dataFilePath);
+							_package->dataSet()->syncer().startFileSyncing(dataFilePath);
 						}
+						else if (_package->dataSet()->dataFileSynch())
+							//This workspace was saved while synching, but the watcher died with the previous
+							//session and the file has not changed since. Re-arm it anyway, or the
+							//Synchronisation button would (rightly) show "not synching" while the saved
+							//state promises the data file is leading.
+							_package->dataSet()->syncer().startFileSyncing(dataFilePath);
 					}
 					else
 					{
-						_package->setDataFilePath("");
+						_package->dataSet()->setDataFile("");
 					}
 				}
 				
-				if(_package->databaseJson() != Json::nullValue)
-					_package->databaseStartSynching(true);
+				if(_package->dataSet()->databaseJson() != Json::nullValue)
+					_package->dataSet()->syncer().startDatabaseSyncing(_package->dataSet()->databaseJson(), true);
 			}
-			else if(event->isDatabase()) //Not a jasp file, but a direct load from a database, make sure it starts synching if the user wants it to:
-				_package->databaseStartSynching(false);
+			else if(event->isDatabase())
+				_package->dataSet()->syncer().startDatabaseSyncing(event->database(), false);
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
 			{				
@@ -1469,14 +2094,30 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			_package->reset();
-			setWelcomePageVisible(true);
+			//A cancelled Open dialog must NOT reset the workspace: the user merely dismissed the dialog and expects their current
+			//data/analyses to survive. A failed open still has to, silent or not, since the loader already tore the workspace down.
+			//And so does a cancel from inside the loader itself (the csv preview, the encryption question): the loader deleted the
+			//dataset, so there is nothing left to return to and leaving it be would strand JASP on a blank page.
+			//Analyses that run without data survive though, and as long as there are some the welcome page stays hidden.
+			if (!event->isCancelled() || !_package->hasDataSet())
+			{
+				_package->reset();
+				if (!_analysesAvailable)
+					setWelcomePageVisible(true);
+			}
 
-			if (!event->isCancelled())
-				MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
+			if (!event->isCancelled()) //The user knows they cancelled, no need to tell them it failed
+			{
+				if (!event->isSilent())
+					MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
 
-			if (_openedUsingArgs)	emit exitSignal(3);
-
+				if (_batchRunning)
+				{
+					_batchResult.addError(tr("Unable to open template: %1").arg(event->message()));
+					finishBatchRun();
+				}
+				else if (_openedUsingArgs) emit exitSignal(3);
+			}
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -1519,7 +2160,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			if (!event->isCancelled())
+			if (!event->isCancelled() && !event->isSilent())
 				MessageForwarder::showWarning(tr("Save failed"), tr("Unable to save file.\n\n%1").arg(event->message()));
 
 			if(testingAndSaving)
@@ -1563,10 +2204,15 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if(!event->path().endsWith(".pdf") && _preferences->currentThemeName() != "lightTheme")
 			_resultsJsInterface->setThemeCss(_preferences->currentThemeName());
 	}
+	//FileSyncData completion is handled solely via AsyncLoader::syncCompleted -> DataSetSyncer::setSyncingResult
+	//(see wireDataSetSync), which covers both the automatic and file-menu initiated syncs exactly once.
+	//Routing it also through FileEvent::completed here would double-release the syncer's guard.
 }
 
 
-void MainWindow::populateUIfromDataSet()
+
+
+void MainWindow::populateUIfromDataSet(bool loadAnalyses)
 {
 	JASPTIMER_SCOPE(MainWindow::populateUIfromDataSet);
 	bool errorFound = false;
@@ -1574,25 +2220,31 @@ void MainWindow::populateUIfromDataSet()
 	
 	_resultsJsInterface->setScrollAtAll(false);
 
-	_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
+	if (loadAnalyses)
+		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
 
 	if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 		(*_analyses)[0]->expandAnalysis(); //Show options for only analysis
 
 	bool hasAnalyses = _analyses->count() > 0;
 
-	setDataAvailable(_package->dataSet() && (_package->dataSet()->rowCount() > 0 && _package->dataSet()->columnCount() > 0));
-
 	hideProgress();
+	setWelcomePageVisible(false);
+	
+	setDataAvailable(_package->dataSet() && (_package->dataSet()->rowCount() > 0 && _package->dataSet()->columnCount() > 0));
 
 	_analyses->setVisible(hasAnalyses && !resultXmlCompare::compareResults::theOne()->testMode());
 
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
-	else if (errorFound)					MessageForwarder::showWarning(errorMsg.str());
+	else if (errorFound)
+	{
+		if (_batchRunning) _batchResult.addError(tq(errorMsg.str()));
+		else MessageForwarder::showWarning(errorMsg.str());
+	}
 
 	_package->setLoaded(true);
 	checkUsedModules();
-
+	
 	_resultsJsInterface->setScrollAtAll(true);
 	_package->setModified(false);
 }
@@ -1609,36 +2261,10 @@ void MainWindow::checkUsedModules()
 void MainWindow::qmlLoaded()
 {
 	Log::log() << "MainWindow::qmlLoaded()" << std::endl;
-	_qmlLoaded = true;
 	emit qmlLoadedChanged();
-	
-	handleDeferredFileLoad();
-}
 
-void MainWindow::resultsPageLoaded()
-{
-	Log::log() << "MainWindow::resultsPageLoaded()" << std::endl;
-	_resultsPageLoaded = true;
-	
-	handleDeferredFileLoad();
-}
-
-void MainWindow::handleDeferredFileLoad()
-{
-	if( !(_qmlLoaded && _resultsPageLoaded))
-		return;
-			
-	if (_openOnLoadFilename != "")
-		QTimer::singleShot(0, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
-	
 	if(!_openOnLoadDbJson.isNull())
 		QTimer::singleShot(0, this, &MainWindow::_openDbJson);
-}
-
-void MainWindow::_openFile()
-{
-	_fileMenu->open(_openOnLoadFilename);
-	_openOnLoadFilename = "";
 }
 
 void MainWindow::_openDbJson()
@@ -1739,6 +2365,12 @@ void MainWindow::openGitHubBugReport() const
 
 void MainWindow::fatalError()
 {
+	if (_batchRunning)
+	{
+		_batchResult.addError(tr("JASP internal error: %1").arg(_fatalError));
+		finishBatchRun();
+		return;
+	}
 	static bool exiting = false;
 
 	if (exiting == false)
@@ -1831,46 +2463,44 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 bool MainWindow::startDataEditorHandler()
 {
 	setCheckAutomaticSync(false);
-	QString dataFilePath = QString::fromStdString(_package->dataFilePath());
+	QString dataFilePath = _package->dataSet() ? QString::fromStdString(_package->dataSet()->dataFilePath()) : QString();
 
 	if (
 			(dataFilePath.isEmpty() || _package->manualEdits())
 			|| dataFilePath.startsWith("http")
 			|| !QFileInfo::exists(dataFilePath)
 			|| Utils::getFileSize(dataFilePath.toStdString()) == 0
-			|| _package->dataFileReadOnly()
+			|| _package->isReadOnlyFile()
 	)
 	{
+		//"Reload Data File" is only an honest offer when there actually is a local data file to reload
+		//from; without one (no path, online, gone, empty or read-only) the user has to find or generate one.
+		bool manualEditsMode =		_package->manualEdits()
+								&&	!dataFilePath.isEmpty()
+								&&	!dataFilePath.startsWith("http")
+								&&	!_package->isReadOnlyFile()
+								&&	QFileInfo::exists(dataFilePath)
+								&&	Utils::getFileSize(dataFilePath.toStdString()) > 0;
+
 		QString									message = tr("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?");
 		if (dataFilePath.startsWith("http"))	message = tr("JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?");
-		else if (_package->dataFileReadOnly())	message = tr("JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?");
+		else if (_package->isReadOnlyFile())	message = tr("JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?");
+		else if (manualEditsMode)				message = tr("JASP has an associated data file, but you edited it. Would you like to reload from the associated data or generate a new file?");
 
 		MessageForwarder::DialogResponse choice;
 
-		const bool manualEditsMode = _package->manualEdits() && !dataFilePath.isEmpty() && !_package->dataFileReadOnly();
-
 		if (manualEditsMode)
-		{
-			message = tr("JASP has an associated data file, but you edited it. Would you like to reload from the associated data or generate a new file?");
 			choice = MessageForwarder::showYesNoCancel(tr("Start Spreadsheet Editor"), message, tr("Generate Data File"), tr("Reload Data File"));
-		}
 		else
 			choice = MessageForwarder::showYesNoCancel(tr("Start Spreadsheet Editor"), message, tr("Generate Data File"), tr("Find Data File"));
 
-
-		FileEvent *event = nullptr;
-
-		bool justOpenItAlready = false;
-
-		switch(choice)
-		{
-		case MessageForwarder::DialogResponse::Save:
-		case MessageForwarder::DialogResponse::Discard:
-		case MessageForwarder::DialogResponse::Cancel:
+		if (choice != MessageForwarder::DialogResponse::Yes && choice != MessageForwarder::DialogResponse::No)
 			return false;
 
+		FileEvent	*	event				= nullptr;
+		bool			startEditorAfter	= true;
 
-		case MessageForwarder::DialogResponse::Yes:
+		if (choice == MessageForwarder::DialogResponse::Yes)
 		{
 			QString	caption = "Generate Data File as CSV",
 					filter = "CSV Files (*.csv)",
@@ -1884,9 +2514,15 @@ bool MainWindow::startDataEditorHandler()
 				name = name.replace('#', '_');
 			}
 
-			QFileInfo pkgFile(_package->currentFile()); // dataFilePath might be empty, so take the current file (the file from which the workspace is loaded, that is a jasp or a data file)
-			if (pkgFile.dir().exists() && !pkgFile.absolutePath().startsWith(AppDirs::examples())) //If the file was opened from a directory that exists and is not examples we use that as basis to open a csv
-				name = pkgFile.dir().absoluteFilePath(_package->name().replace('#', '_') + ".csv");
+			// Default to the shown dataset's dataFilePath if known, else use the window name
+			std::string datasetDataFile = _package->dataSet() ? _package->dataSet()->dataFilePath() : "";
+			if(!datasetDataFile.empty())
+			{
+				QFileInfo fi(tq(datasetDataFile));
+				name = fi.dir().absoluteFilePath(fi.completeBaseName() + ".csv");
+			}
+			else
+				name = QDir::current().absoluteFilePath(_package->name().replace('#', '_') + ".csv");
 
 			dataFilePath = MessageForwarder::browseSaveFile(caption, name, filter);
 
@@ -1897,43 +2533,32 @@ bool MainWindow::startDataEditorHandler()
 				dataFilePath.append(".csv");
 
 			event = new FileEvent(this, FileEvent::FileGenerateData);
-			break;
 		}
-
-		case MessageForwarder::DialogResponse::No:
+		else if (manualEditsMode)
 		{
-			if(manualEditsMode)
-				justOpenItAlready = true;
-			else
-			{
-				QString caption = "Find Data File";
-				QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx *.rdata *.rds *.mwx *.mpx)";
-
-				dataFilePath = MessageForwarder::browseOpenFile(caption, "", filter);
-				if (dataFilePath == "")
-					return false;
-
-				event = new FileEvent(this, FileEvent::FileSyncData);
-			}
-
-			break;
-		}
-
-		}
-
-		if(!justOpenItAlready)
-		{
-			connect(event, &FileEvent::completed, this,			&MainWindow::startDataEditorEventCompleted);
-			connect(event, &FileEvent::completed, _fileMenu,	&FileMenu::setSyncFile);
-			event->setPath(dataFilePath);
-			_loader->io(event);
-			showProgress();
+			//"Reload Data File": the data file is still there and unchanged, only the edits made by hand
+			//made JASP diverge from it. So re-import that file, which throws those edits away, instead of
+			//leaving the edited data on screen. The user asked for their data back, not for an editor.
+			event				= new FileEvent(this, FileEvent::FileSyncData);
+			startEditorAfter	= false;
+			event->setDataSet(_package->dataSet());
 		}
 		else
 		{
-			startDataEditor(dataFilePath);
-			_package->setSynchingExternally(true);
+			QString caption = "Find Data File";
+			QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx *.rdata *.rds *.mwx *.mpx)";
+
+			dataFilePath = MessageForwarder::browseOpenFile(caption, "", filter);
+			if (dataFilePath == "")
+				return false;
+
+			event = new FileEvent(this, FileEvent::FileSyncData);
+			event->setDataSet(_package->dataSet());
 		}
+
+		event->setPath(dataFilePath);
+		connect(event, &FileEvent::completed, this,	[this, event, startEditorAfter]()	{ startDataEditorEventCompleted(event, startEditorAfter); });
+		event->starts();
 	}
 	else
 		startDataEditor(dataFilePath);
@@ -1984,17 +2609,33 @@ void MainWindow::showCommunity()
 	setCommunityVisible(true);
 }
 
-void MainWindow::startDataEditorEventCompleted(FileEvent* event)
+void MainWindow::startDataEditorEventCompleted(FileEvent* event, bool startEditor)
 {
+	Log::log() << "[MainWindow::startDataEditorEventCompleted] START: event->isSuccessful()=" << event->isSuccessful() << ", event->path()=" << event->path().toStdString() << std::endl;
 	hideProgress();
 
 	if (event->isSuccessful())
 	{
-		_package->setDataFilePath(event->path().toStdString());
-		_package->setDataFileReadOnly(false);
+		Log::log() << "[MainWindow::startDataEditorEventCompleted] Event successful, updating dataset" << std::endl;
+		_package->dataSet()->setDataFile(event->path().toStdString());
+		Log::log() << "[MainWindow::startDataEditorEventCompleted] Dataset file set to: " << event->path().toStdString() << std::endl;
+		_package->setFileReadOnly(false);
+        _fileMenu->setSyncFile(event);
 		_package->setModified(true);
-		startDataEditor(event->path());
+		if(!startEditor)
+			Log::log() << "[MainWindow::startDataEditorEventCompleted] Not starting the data editor" << std::endl;
+		else
+		{
+			Log::log() << "[MainWindow::startDataEditorEventCompleted] Calling startDataEditor" << std::endl;
+			startDataEditor(event->path());
+			Log::log() << "[MainWindow::startDataEditorEventCompleted] startDataEditor returned" << std::endl;
+		}
 	}
+	else
+	{
+		Log::log() << "[MainWindow::startDataEditorEventCompleted] Event NOT successful" << std::endl;
+	}
+	Log::log() << "[MainWindow::startDataEditorEventCompleted] END" << std::endl;
 }
 
 
@@ -2048,11 +2689,9 @@ void MainWindow::startDataEditor(QString path)
 						path.append(".csv");
 
 					FileEvent *event = new FileEvent(this, FileEvent::FileGenerateData);
-					connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
-					connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
-					event->setPath(path);
-					_loader->io(event);
-					showProgress();
+                    event->setPath(path);
+                    connect(event, &FileEvent::completed, this,	 [this, event]() { startDataEditorEventCompleted(event); });
+					event->starts();
 				}
 			}
 		}
@@ -2160,7 +2799,7 @@ void MainWindow::saveJaspFileHandler()
 {
 	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
 	saveEvent->setPath(resultXmlCompare::compareResults::theOne()->filePath());
-	dataSetIORequestHandler(saveEvent);
+	saveEvent->starts();
 }
 
 void MainWindow::saveTmpFileHandler()
@@ -2170,7 +2809,7 @@ void MainWindow::saveTmpFileHandler()
 
 	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
 	saveEvent->setTmp(true);
-	dataSetIORequestHandler(saveEvent);
+	saveEvent->starts();
 }
 
 bool MainWindow::enginesInitializing()
@@ -2359,7 +2998,7 @@ QQmlContext * MainWindow::giveRootQmlContext()
 QString MainWindow::versionString()
 {
 	return	"JASP "
-		+	QString::fromStdString(AppInfo::version.asString())
+		+QString::fromStdString(AppInfo::version.asString(3)) //always show major.minor.patch, otherwise 1.0.0.0 would be minimized to "1"
 #ifdef JASP_DEBUG
 		+	"-Debug"
 #endif
@@ -2395,6 +3034,7 @@ void MainWindow::setCommunityVisible(bool newCommunityVisible)
 	emit communityVisibleChanged();
 }
 
+
 void MainWindow::loadModulesFromUserConfiguration(configState state)
 {
 	if(state == configState::FAIL)
@@ -2405,10 +3045,59 @@ void MainWindow::loadModulesFromUserConfiguration(configState state)
 		auto button = _ribbonModel->ribbonButtonModel(moduleName.toStdString());
 		_ribbonModel->setModuleEnabled(_ribbonModel->ribbonButtonModelIndex(button), true);
 	}
+
+	// Apply OverrideCommon to refresh Common/Extra
+	const QStringList* overrideCommon = _jaspConfiguration->getOverrideCommon();
+	if(overrideCommon && !overrideCommon->isEmpty())
+	{
+		DynamicModules::dynMods()->refreshCommonModules(*overrideCommon);
+	}
 }
 
 
 bool MainWindow::hadFatalError() const
 {
 	return _hadFatalError;
+}
+
+void MainWindow::setStartedForBatch(bool startedForBatch)
+{
+	//Set before loadQML(): unattended workers use a hidden window on the normal Qt platform.
+	_startedForBatch = startedForBatch;
+}
+
+void MainWindow::configureBatchRun(int timeoutMinutes)
+{
+	MessageForwarder::setWarningHandler([this](const QString & title, const QString & message, bool error) {
+		const QString diagnostic = title.isEmpty() ? message : title + ": " + message;
+		if (error)
+		{
+			_batchResult.addError(diagnostic);
+			QTimer::singleShot(0, this, [this]() { finishBatchRun(); });
+		}
+		else _batchResult.addWarning(diagnostic);
+	});
+	_waitingEventTimeoutTimer = new QTimer(this);
+	_waitingEventTimeoutTimer->setSingleShot(true);
+	connect(_waitingEventTimeoutTimer, &QTimer::timeout, this, &MainWindow::waitingEventTimedOut);
+	_waitingEventTimeoutTimer->start(std::chrono::minutes(std::max(1, timeoutMinutes)));
+}
+
+void MainWindow::finishBatchRun()
+{
+	if (!_batchRunning) return;
+	if (_waitingEventTimeoutTimer) _waitingEventTimeoutTimer->stop();
+	if (_waitingEventStartTimer) _waitingEventStartTimer->stop();
+	_batchWaitingForAnalyses = false;
+	_waitingEvent = nullptr;
+	for (QStringList * messages : {&_batchResult.errors, &_batchResult.warnings})
+		for (QString & message : *messages)
+			if (Qt::mightBeRichText(message)) message = QTextDocumentFragment::fromHtml(message).toPlainText();
+	//Anything still holding an unterminated line on stdout (JASP's own logging prefixes one before
+	//every message) would otherwise end up in front of the marker, so open a fresh line and write
+	//the whole report in a single insertion.
+	std::cout << ("\n" + _batchResult.serialize() + "\n").constData() << std::flush;
+	_batchRunning = false;
+	MessageForwarder::setWarningHandler({});
+	if (!_batchKeepOpen) emit exitSignal(_batchResult.errors.isEmpty() ? 0 : 1);
 }

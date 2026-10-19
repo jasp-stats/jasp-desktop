@@ -48,7 +48,8 @@ RoundedButton
 	border.width:		0
 	centerText:			false
 	activeFocusOnTab:	true
-
+	
+	
 	signal hoverClicked();
 	onHoverClicked:			forceActiveFocus();
 

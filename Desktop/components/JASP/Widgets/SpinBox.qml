@@ -79,12 +79,13 @@ Item
 		}
 	}
 
-	JaspControls.RectangularButton
+	JaspControls.RoundedButton
 	{
 		id:						minus
 		iconSource:				jaspTheme.iconPath + "/subtraction-sign-small.svg" //jaspTheme.iconPath + "/addition-sign-small.svg"
 		onClicked:				root.setValue(Number(valueField.text) - root.stepSize)
-		width:					height
+		width:					height * 1.5
+		icon.x:					buttonPadding
 		anchors
 		{
 			left:				label.right
@@ -101,6 +102,7 @@ Item
 		anchors
 		{
 			left:					minus.right
+			leftMargin:			-.5 * minus.height
 			verticalCenter:			parent.verticalCenter
 		}
 		width:						jaspTheme.spinBoxWidth
@@ -111,6 +113,7 @@ Item
 		Keys.onReturnPressed: (event)=>		valueField.processInput()
 		Keys.onEnterPressed:		valueField.processInput()
 		Keys.onEscapePressed: 		text = root.lastValidValue
+		z:							10
 
 		onTextChanged:				if(acceptableInput) root.lastValidValue = text
 		selectByMouse:				true
@@ -128,45 +131,32 @@ Item
 
 		ToolTip.text:				root.toolTip
 		ToolTip.visible:			root.toolTip !== "" && ( hoverMe.containsMouse || minus.hovered || plus.hovered )
+		ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 
 		background: Rectangle
 		{
 			id:				controlBackground
 			color:			jaspTheme.controlBackgroundColor
 			border.width:	1
-			border.color:	jaspTheme.borderColor
+			border.color:	!valueField.activeFocus ? jaspTheme.borderColor : jaspTheme.focusBorderColor
 		}
 	}
 
-	JaspControls.RectangularButton
+	JaspControls.RoundedButton
 	{
 		id:					plus
 		iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
 		onClicked:			root.setValue(Number(valueField.text) + root.stepSize)
-		width:				height
-
+		width:				height * 1.5
+		icon.x:				width - buttonPadding - icon.width
+		
 		anchors.left:		valueField.right
+		anchors.leftMargin: height * -.5
 
 		activeFocusOnTab: false
 	}
 
-	Rectangle
-	{
-		anchors
-		{
-			top:			parent.top
-			left:			minus.left
-			right:			plus.right
-			bottom:			parent.bottom
-			margins:		-border.width
-		}
-		z:					-1
-		border.color:		jaspTheme.focusBorderColor
-		border.width:		jaspTheme.jaspControlHighlightWidth
-		color:				"transparent"
-		visible:			root.activeFocus
-	}
-
+	
 	MouseArea
 	{
 		id:					hoverMe

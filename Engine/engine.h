@@ -59,18 +59,19 @@ private:
 	void 					receiveFilterByNameMessage(		const Json::Value & jsonRequest);
 	void					receiveAnalysisMessage(			const Json::Value & jsonRequest);
 	void					receiveComputeColumnMessage(	const Json::Value & jsonRequest);
+	void					receiveComputeDataSetMessage(	const Json::Value & jsonRequest);
 	void					receiveModuleRequestMessage(	const Json::Value & jsonRequest);
-	void					receiveReloadData();
 	void					receiveLogCfg(					const Json::Value & jsonRequest);
 	void					receiveSettings(				const Json::Value & jsonRequest);
 	void					absorbSettings(					const Json::Value & json);
 
 	void					runAnalysis();
-	void					runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);
-	void					runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
-	void 					runFilterByName(	const std::string & name);
-	void					runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
-	void					runRCodeCommander(		  std::string   rCode																						);
+	void					runComputeColumn(	int dataSet,		const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);
+	void					runComputeDataSet(	int dataSet,		const std::string & computeCode,			int defaultInputFilterId			);
+	void					runDefaultFilter(	int dataSet,		const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
+	void 					runFilterByName(	const std::string & name, int dataSet, int requestId = -1);
+	void					runRCode(			int dataSet,		const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
+	void					runRCodeCommander(	int dataSet,		std::string   rCode																						);
 
 	void					stopEngine();
 	void					pauseEngine(	const Json::Value & jsonRequest);
@@ -78,6 +79,7 @@ private:
 	void					sendEnginePaused();
 	void					sendEngineResumed(bool justReloadedData = false);
 	void					sendEngineLoadingData();
+	void					sendLoadingDataProgress(float progress);
 	void					sendEngineStopped();
 
 	void					saveImage();
@@ -86,7 +88,8 @@ private:
 	void					removeNonKeepFiles(const Json::Value & filesToKeepValue);
 
 	void					sendAnalysisResults();
-	void					sendFilterByNameDone(	const std::string & name, const std::string & errorMessage);
+	void					sendAbortAck();
+	void					sendFilterByNameDone(	const std::string & name, int dataSetId, const std::string & errorMessage, int requestId = -1);
 	void					sendFilterResult(		int filterRequestId);
 	void					sendFilterError(		int filterRequestId,	const std::string & errorMessage);
 	void					sendRCodeResult(		int rCodeRequestId,		const std::string & rCodeResult);
@@ -97,11 +100,11 @@ private: // Data:
 	const int						_engineNum;
 	const unsigned long				_parentPID;
 	IPCChannel					*	_channel				= nullptr;
-	ColumnEncoder				*	_extraEncodings			= nullptr;
 	engineState						_engineState			= engineState::initializing,
 									_lastRequest			= engineState::initializing;
 	Status							_analysisStatus			= Status::empty;
 	int								_analysisRevision,
+									_analysisDataSetId		= -1,
 									_progress,
 									_ppi					= 96,
 									_numDecimals			= 3;
@@ -113,6 +116,7 @@ private: // Data:
 									_analysisPreloadData;
 	std::string						_analysisName,
 									_analysisTitle,
+									_analysisFilter,
 									_analysisDataKey,
 									_analysisResultsMeta,
 									_analysisStateKey,

@@ -20,7 +20,23 @@ Item
 		toolseparator:			false
 	}
 
+	Text
+	{
+		id:						onlineDataLibrary
+		anchors.top:			menuHeader.bottom
+		anchors.left:			menuHeader.left
+		color:					jaspTheme.blue
+		font.underline:			true
+		font.family:			jaspTheme.font.family
+		text:					qsTr('Click here to open the Online Data Library')
 
+		MouseArea
+		{
+			anchors.fill:	parent
+			onClicked:		Qt.openUrlExternally("https://jasp-stats.github.io/jasp-data-library")
+			cursorShape:	Qt.PointingHandCursor
+		}
+	}
 
 	BreadCrumbs
 	{
@@ -30,9 +46,10 @@ Item
 
 		anchors
 		{
-			top:				menuHeader.bottom
+			top:				onlineDataLibrary.bottom
 			left:				parent.left
 			right:				parent.right
+			topMargin:			jaspTheme.generalMenuMargin
 			leftMargin:			jaspTheme.generalMenuMargin
 			rightMargin:		jaspTheme.generalMenuMargin
 		}

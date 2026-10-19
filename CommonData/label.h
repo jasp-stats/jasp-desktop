@@ -4,7 +4,7 @@
 #include <string>
 #include <json/json.h>
 #include "datasetbasenode.h"
-
+#include "columntype.h"
 
 class Column;
 class DatabaseInterface;
@@ -21,16 +21,25 @@ class DatabaseInterface;
 /// and Column makes sure (_dbUpdateLabelOrder) the order is stored in the database when it is changed.
 class Label : public DataSetBaseNode
 {
+	Q_OBJECT
+	
+friend Column;
+
+protected:
+								Label(Column * column, const std::string & label, int value, bool filterAllows = true, const std::string & description = "", const Json::Value & originalValue = Json::nullValue, int order = -1, int id = -1); 
+
 public:	
 	friend Column;
 	static const int NO_LABEL;
-
-								Label(Column * column, const std::string & label, int value, bool filterAllows = true, const std::string & description = "", const Json::Value & originalValue = Json::nullValue, int order = -1, int id = -1);
-
+	
 			void				dbDelete();
 			void				dbCreate();
 			void				dbLoad(int labelId = -1);
 			void				dbUpdate();
+			
+			int					rowCount(		const QModelIndex &parent = QModelIndex())										const	override;
+			int					columnCount(	const QModelIndex &parent = QModelIndex())										const	override;
+			QVariant			data(			const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
 
 			Label			&	operator=(const Label &label);
 			
@@ -49,7 +58,12 @@ public:
 			,std::string>			origValDisplay()			const;
 	std::pair<std::string
 		,std::string>			lastOrigValDisplay()		const	{ return _lastValDisMapping; }
-	
+
+			std::string			getValue(	bool fancyEmptyValue = false, bool ignoreEmptyValue = false, bool sepas = true, columnType asType = columnType::unknown)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json
+			std::string			getDisplay(	bool fancyEmptyValue = true, bool sepas = true)									const;
+			std::string			getShadow(	bool fancyEmptyValue = true, bool sepas = true)									const;
+			std::string			getLabel(	bool ignoreEmptyValue = false)	const;
+
 	static	std::string			originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue = false, bool ignoreEmpty=true);
 			std::string			originalValueAsString(bool fancyEmptyValue = false, bool ignoreEmpty = true)		const;
 			std::string			str() const;
@@ -73,6 +87,10 @@ public:
 
 			DatabaseInterface	& db();
 	const	DatabaseInterface	& db() const;
+	
+signals:
+	void				manualEditMade();
+	void				labelFilterChanged();
 
 private:
 	static std::string			_originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue = false, bool ignoreEmpty=true);

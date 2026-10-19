@@ -31,7 +31,7 @@
 #include "tempfiles.h"
 #include "log.h"
 #include "utilenums.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <fstream>
 #include "appinfo.h"
 #include "gui/preferencesmodel.h"
@@ -288,7 +288,7 @@ void JASPExporter::saveAnalyses(archive *a, const std::string &sourceDir)
 
 	for (const Json::Value & analysisJson : analysesDataList)
 		for (const std::string & path : TempFiles::retrieveList(analysisJson["id"].asInt(), sourceDir))
-			if(!stringUtils::endsWith(path, "/state") || (PreferencesModel::prefs()->storeStateEtc() && analysisJson.get("saveState", "default").asString() != "never") || analysisJson.get("saveState", "default").asString() == "always")
+			if(!stringUtils::endsWith(path, "/state") || (PreferencesModel::prefs() && PreferencesModel::prefs()->storeStateEtc() && analysisJson.get("saveState", "default").asString() != "never") || analysisJson.get("saveState", "default").asString() == "always")
 				saveSnapshotFile(a, path, sourceDir);
 }
 

@@ -3,10 +3,9 @@
 
 #include <QObject>
 #include <json/json.h>
-#include "utilities/qutils.h"
-#include "version.h"
+#include "qutils.h"
 #include "stringutils.h"
-
+#include "version.h"
 ///
 /// This class stores information per module and analysis that is pulled from the server occasionally (in JaspVersionChecker)
 /// When the user adds an analysis it checks whether we have found a serious issue and posted it to our server. Which allows us to show a message in the qml form
@@ -28,6 +27,7 @@ public:
 	typedef std::map<std::string, issuesPerVersion>				issuesPerModule;
 
 	explicit KnownIssues(QObject *parent = nullptr);
+	~KnownIssues() override { if(_knownIssues == this) _knownIssues = nullptr; } ///< the singleton must not dangle: a second Analyses constructing its own would assert (see FileMenu::_singleton)
 
 	static KnownIssues * issues() { return _knownIssues; }
 

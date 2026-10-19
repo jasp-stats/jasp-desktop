@@ -6,7 +6,7 @@
 #include "version.h"
 #include <QQuickItem>
 #include <json/json.h>
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "modules/dynamicmodule.h"
 
 namespace Modules

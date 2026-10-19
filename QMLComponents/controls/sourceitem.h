@@ -25,6 +25,7 @@
 #include <QMap>
 #include <QSet>
 #include <QAbstractItemModel>
+#include <QPointer>
 
 #include "jasplistcontrol.h"
 #include "variableinfo.h"
@@ -47,7 +48,7 @@ public:
 		ConditionVariable() {}
 	};
 
-	static const QString SourceValueLabel, SourceValueValue, SourceValueInfo;
+	static const QString SourceValueLabel, SourceValueValue, SourceValueInfo, SourceValueType;
 
 	SourceItem(
 			  JASPListControl* targetListControl
@@ -76,7 +77,6 @@ public:
 	Terms					getTerms();
 	QSet<QString>			usedControls()				const;
 	bool					connected()					const	{ return _connected;						}
-
 
 	void										connectModels();
 	void										disconnectModels();
@@ -115,8 +115,9 @@ private:
 	Terms							_values;
 	bool							_isValuesSource				= false;
 	bool							_isRSource					= false;
-	ListModel			*			_sourceListModel			= nullptr;
-	QAbstractItemModel	*			_sourceNativeModel			= nullptr;
+	// Guarded: these models belong to other controls, which a form's teardown may destroy before this source item disconnects from them
+	QPointer<ListModel>				_sourceListModel;
+	QPointer<QAbstractItemModel>	_sourceNativeModel;
 	int								_nativeModelRole			= Qt::DisplayRole;
 	bool							_isDataSetVariables			= false,
 									_combineWithOtherModels		= false,

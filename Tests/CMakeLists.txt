@@ -2,11 +2,17 @@ if(BUILD_TESTS)
 
 find_package(Qt6 REQUIRED COMPONENTS Test QuickTest Qml Core)
 
+qt_add_executable(JASPTestBatchResult testbatchresult.cpp)
+target_link_libraries(JASPTestBatchResult PRIVATE JASPDesktopLib Qt::Test)
+qt_add_executable(JASPTestBatchInputsModel testbatchinputsmodel.cpp)
+target_link_libraries(JASPTestBatchInputsModel PRIVATE JASPDesktopLib Qt::Test)
+
 qt_add_executable(
   JASPTest
   ${SYSTEM_TYPE}
   testall.h
   testall.cpp
+  numbersinlocales.h
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
   testinfo.h
@@ -42,16 +48,47 @@ qt_add_executable(
   ${SYSTEM_TYPE}
   testcsvpreviewmodel.h
   testcsvpreviewmodel.cpp
+  numbersinlocales.h
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
 )
 
+qt_add_executable(
+  JASPTestColumnEncoderContext
+  ${SYSTEM_TYPE}
+  testcolumnencodercontext.h
+  testcolumnencodercontext.cpp
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+)
+
+qt_add_executable(
+  JASPTestDbMigration
+  ${SYSTEM_TYPE}
+  testdatabasemigration.h
+  testdatabasemigration.cpp
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+)
+
+
+qt_add_executable(
+  JASPTestParsedArgs
+  ${SYSTEM_TYPE}
+  testparsedarguments.h
+  testparsedarguments.cpp
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+)
 
 add_dependencies(JASPTest           JASPDesktopLib)
 add_dependencies(JASPTestDebugData  JASPDesktopLib)
 add_dependencies(JASPTestEngine     JASPDesktopLib)
 add_dependencies(JASPQuickTest      JASPDesktopLib)
 add_dependencies(JASPTestCsvPrev    JASPDesktopLib)
+add_dependencies(JASPTestDbMigration JASPDesktopLib)
+add_dependencies(JASPTestColumnEncoderContext Common)
+add_dependencies(JASPTestParsedArgs   JASPDesktopLib)
 
 target_include_directories(
   JASPTest
@@ -82,6 +119,24 @@ target_include_directories(
 
 target_include_directories(
   JASPTestCsvPrev
+  PUBLIC
+  JASPDesktopLib
+)
+
+target_include_directories(
+  JASPTestDbMigration
+  PUBLIC
+  JASPDesktopLib
+)
+
+target_include_directories(
+  JASPTestColumnEncoderContext
+  PUBLIC
+  ${PROJECT_SOURCE_DIR}/Common
+)
+
+target_include_directories(
+  JASPTestParsedArgs
   PUBLIC
   JASPDesktopLib
 )
@@ -135,9 +190,34 @@ target_link_libraries(
   Qt::Test
 )
 
+target_link_libraries(
+  JASPTestDbMigration
+  PUBLIC
+  JASPDesktopLib
+  Qt::Test
+)
+
+target_link_libraries(
+  JASPTestColumnEncoderContext
+  PUBLIC
+  Common
+  Qt::Test
+)
+
+target_link_libraries(
+  JASPTestParsedArgs
+  PUBLIC
+  JASPDesktopLib
+  Qt::Test
+
+  PRIVATE
+  Qt6::Core
+)
+
 target_compile_definitions(
   JASPTest
   PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
+  PRIVATE JASP_TESTHOOKS
 )
 
 target_compile_definitions(
@@ -155,6 +235,11 @@ target_compile_definitions(
   PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
 )
 
+target_compile_definitions(
+  JASPTestParsedArgs
+  PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
+)
+
 
 
 target_compile_definitions(
@@ -166,11 +251,52 @@ target_compile_definitions(
 
 enable_testing(true)
 
-add_test(NAME testDataImport  COMMAND JASPTest)
-add_test(NAME testCsvPreview  COMMAND JASPTestCsvPrev)
-add_test(NAME testDebugData   COMMAND JASPTestDebugData)
-add_test(NAME testEngine      COMMAND JASPTestEngine)
-add_test(NAME testQuick       COMMAND JASPQuickTest)
+add_test(NAME testBatchResult COMMAND JASPTestBatchResult)
+add_test(NAME testBatchInputsModel COMMAND JASPTestBatchInputsModel)
+
+add_test(NAME testDataImport               COMMAND JASPTest)
+add_test(NAME testParsedArgs               COMMAND JASPTestParsedArgs)
+add_test(NAME testCsvPreview               COMMAND JASPTestCsvPrev)
+add_test(NAME testDbMigration              COMMAND JASPTestDbMigration)
+add_test(NAME testDebugData                COMMAND JASPTestDebugData)
+add_test(NAME testEngine                   COMMAND JASPTestEngine)
+add_test(NAME testQuick                    COMMAND JASPQuickTest)
+add_test(NAME testColumnEncoderContext     COMMAND JASPTestColumnEncoderContext)
+
+# --- RPC gate/fuzz smokes (Tests/gatetest) ---
+# These launch the full JASP app with `-platform offscreen` and drive it over its
+# RPC/MCP API (see Tests/gatetest/README.md); run_gatetest.sh builds the Python
+# venv and installs the pinned jasp-mcp submodule on first use. They need no
+# xvfb-run (the scripts handle their own platform) but do need a built JASP.
+# All three carry the `gatetest` label: exclude them from a normal run with
+# `ctest -LE gatetest` (first run also needs network for the venv bootstrap).
+# JASP_BIN is passed explicitly so the smokes work from any build-tree name.
+add_test(NAME gateSmoke
+	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
+			--module jaspTTests --timeout-per-analysis 120
+			--skip-file ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/skip-list.txt
+			--report ${CMAKE_CURRENT_BINARY_DIR}/gateSmoke.json)
+set_tests_properties(gateSmoke PROPERTIES TIMEOUT 1800 LABELS gatetest
+	ENVIRONMENT "JASP_BIN=${CMAKE_BINARY_DIR}/Desktop/JASP")
+
+add_test(NAME fuzzSmoke
+	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
+			--module jaspTTests --runs-per-analysis 2
+			--skip-file ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/skip-list.txt
+			--report ${CMAKE_CURRENT_BINARY_DIR}/fuzzSmoke.json)
+set_tests_properties(fuzzSmoke PROPERTIES TIMEOUT 1800 LABELS gatetest
+	ENVIRONMENT "GATETEST_SCRIPT=fuzztest.py;JASP_BIN=${CMAKE_BINARY_DIR}/Desktop/JASP")
+
+# Full sweep (every analysis of every module): opt-in, since it runs for hours.
+if(BUILD_GATETEST)
+	add_test(NAME gateTest
+		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
+				--restart-on-death
+				--skip-file ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/skip-list.txt
+				--report ${CMAKE_CURRENT_BINARY_DIR}/gateTest.json)
+	set_tests_properties(gateTest PROPERTIES TIMEOUT 14400 LABELS gatetest
+		ENVIRONMENT "GATETEST_SCRIPT=fuzztest.py;JASP_BIN=${CMAKE_BINARY_DIR}/Desktop/JASP")
+endif()
 
 
 

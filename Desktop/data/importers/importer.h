@@ -1,14 +1,13 @@
 #ifndef IMPORTER_H
 #define IMPORTER_H
 
-#include <QObject>
 #include <QMutex>
-#include <boost/function.hpp>
+#include <QObject>
 #include "importdataset.h"
-
-class ImportDataSet;
-class ImportColumn;
+#include <boost/function.hpp>
 #include <QCoreApplication>
+
+class DataSet;
 
 ///
 /// Base class for all importers
@@ -19,8 +18,8 @@ class Importer : public QObject
 public:
 	Importer();
 	virtual ~Importer();
-    void loadDataSet(const std::string &locator, std::function<void (int)> progressCallback);
-    void syncDataSet(const std::string &locator, std::function<void (int)> progressCallback);
+	void loadDataSet(const std::string &locator, DataSet * dataSet, std::function<void (int)> progressCallback);
+	void syncDataSet(const std::string &locator, DataSet * dataSet, std::function<void (int)> progressCallback);
 	
 	virtual bool importerDeliversLabels() const { return true; } //They all do except csv, so for synchronization to work we want labels to be ignored for csv when synching, this to allow people to enter better labels and not lose them on every sync
 	

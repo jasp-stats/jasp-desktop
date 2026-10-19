@@ -34,7 +34,9 @@
 TableViewBase::TableViewBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
-	_controlType = ControlType::TableView;
+	_controlType		= ControlType::TableView;
+	// The R value of a table is always the whole table (a list of columns), never the terms of its source.
+	_useTermsInRSyntax	= false;
 }
 
 void TableViewBase::setUpModel()
@@ -187,10 +189,10 @@ void TableViewBase::rScriptDoneHandler(const QString & result)
 		_tableModel->rScriptDoneHandler(result);
 }
 
-void TableViewBase::filterDoneHandler(const QString &name, const QString & error)
+void TableViewBase::filterDoneHandler(int dataSetID, const QString &name, const QString & error)
 {
 	if(_tableModel)
-		_tableModel->filterDoneHandler(name, error);
+		_tableModel->filterDoneHandler(dataSetID, name, error);
 }
 
 JASPControl::ItemType TableViewBase::itemTypePerItem(int col, int row) const

@@ -17,7 +17,7 @@
 
 #include "rdataimporter.h"
 #include "rdata/rdataimportdataset.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <columnutils.h>
 #include <string>
 #include <QFileInfo>

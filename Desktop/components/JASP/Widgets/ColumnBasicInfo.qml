@@ -27,7 +27,7 @@ Item
 	id:							common
 	implicitHeight:				Math.max(leftColumn.childrenRect.height, rightColumn.childrenRect.height) + 2 * jaspTheme.generalAnchorMargin
 	height:						implicitHeight
-	property bool closeIcon:	true
+	property bool showIcons:	true
 	property alias columnNameValue:			columnNameVariablesWindow.value
 	property alias columnTitleValue:		columnTitleVariablesWindow.value
 	property alias columnDescriptionValue:	columnDescriptionVariablesWindow.text
@@ -74,9 +74,9 @@ Item
 			{
 				id:					columnNameVariablesWindow
 				placeholderText:	qsTr("<First fill in the column name>")
-				value:				columnModel.columnName
-				onEditingFinished:	if(columnModel.columnName !== displayValue) 
-										columnModel.columnName = displayValue
+				value:				columnModel.column ? columnModel.column.name : ""
+				onEditingFinished:	if((columnModel.column ? columnModel.column.name : "") !== displayValue) 
+										columnModel.setColumnNameQ(displayValue)
 				undoModel:			columnModel
 				editable:           columnModel.nameEditable
 				label:				qsTr("Name: ")
@@ -127,7 +127,7 @@ Item
 				text:				qsTr("Show parent analysis")
 				width:				parent.width - x
 				x:					leftColumn.labelWidth
-				onClicked:			computedColumnsInterface.showAnalysisFormForColumn(columnModel.columnName)
+				onClicked:			columnModel.column.showAnalysisForm()
 			}
 		}
 	}
@@ -159,24 +159,37 @@ Item
 				id:					columnTitleVariablesWindow
 				label:				qsTr("Long name: ");
 				placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
-				fieldWidth:			longNameRow.width - ( rightColumn.labelWidth + closeButton.width )
-				value:				columnModel.columnTitle
-				onEditingFinished:	if(columnModel.columnTitle !== displayValue) columnModel.columnTitle = displayValue
+				fieldWidth:			longNameRow.width - ( rightColumn.labelWidth + closeButton.width + helpButton.width)
+				value:				columnModel.column ? columnModel.column.title : ""
+				onEditingFinished:	if((columnModel.column ? columnModel.column.title : "") !== displayValue) columnModel.setColumnTitleQ(displayValue)
 				undoModel:			columnModel
 				controlLabel.width:	rightColumn.labelWidth
 				enabled:			!columnModel.isVirtual
 			}
 
-			MenuButton
+			Row
 			{
-				id:					closeButton
-				height:				33 * jaspTheme.uiScale
-				width:				common.closeIcon? height : 0
-				iconSource:			jaspTheme.iconPath + "collapse.png"
-				onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
-				toolTip:			qsTr("Close variable window")
-				radius:				height
-				visible:			common.closeIcon
+				HelpButton
+				{
+					id:					helpButton
+					height:				common.showIcons ? 33 * jaspTheme.uiScale : 0
+					width:				height
+					visible:			common.showIcons
+					helpMD:				allHelp.variableslabeleditorhelp
+					buttonPadding:		6 * preferencesModel.uiScale
+				}
+
+				MenuButton
+				{
+					id:					closeButton
+					height:				33 * jaspTheme.uiScale
+					width:				common.showIcons ? height : 0
+					iconSource:			jaspTheme.iconPath + "collapse.png"
+					onClicked:			variablesContainer.requestClose()
+					toolTip:			qsTr("Close variable window")
+					radius:				height
+					visible:			common.showIcons
+				}
 			}
 		}
 
@@ -204,9 +217,9 @@ Item
 				implicitWidth:		descriptionRow.width - x
 				control.padding:	3 * jaspTheme.uiScale
 
-				text:				columnModel.columnDescription
+				text:				columnModel.column ? columnModel.column.description : ""
 				wrapMode:           TextEdit.Wrap
-				onEditingFinished: 	if(columnModel.columnDescription !== text) columnModel.columnDescription = text
+				onEditingFinished: 	if((columnModel.column ? columnModel.column.description : "") !== text) columnModel.setColumnDescriptionQ(text)
 				applyScriptInfo:	""
 				placeholderText:	"..."
 				undoModel:			columnModel

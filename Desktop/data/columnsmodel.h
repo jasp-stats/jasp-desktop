@@ -1,7 +1,7 @@
 #ifndef COLUMNSMODEL_H
 #define COLUMNSMODEL_H
 
-#include <QTransposeProxyModel>
+#include <QAbstractTableModel>
 #include "datasettablemodel.h"
 #include "variableinfo.h"
 
@@ -24,29 +24,30 @@ public:
 											~ColumnsModel()		override;
 
 				QVariant					data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
-				int							rowCount(		const QModelIndex &parent = QModelIndex())							const override;
-				int							columnCount(	const QModelIndex &parent = QModelIndex())							const override;
+				int							rowCount(		const QModelIndex &parent = QModelIndex())							const	override;
 				QHash<int, QByteArray>		roleNames()																			const	override;
-				int							getColumnIndex(const std::string & col)												const				{ return _tableModel->getColumnIndex(col);	}
+				int							columnCount(	const QModelIndex &parent = QModelIndex())							const	override;
 				QStringList					getColumnNames()																	const;
 	Q_INVOKABLE	int							getColumnType(const QString & name)													const;
-				QString						getColumnTransformedToolTip(const QString & name, columnType transformedTo)			const;
-	Q_INVOKABLE	QString						getColumnTransformedToolTip(const QString & name, int transformedTo)				const;
 	Q_INVOKABLE	QString						getColumnIcon(int columnType)														const;
 	Q_INVOKABLE	QString						getColumnIcon(int columnType, bool isTransformed)									const;
 				QString						getColumnIcon(columnType colType)													const;
+				int							getColumnIndex(const std::string & col)												const				{ return _tableModel->getColumnIndex(col);	}
 	Q_INVOKABLE QString						getColumnDescription(const QString & name)											const;
 	Q_INVOKABLE	QString						getColumnIconTransform(int columnType)												const;
 				QString						getColumnIconTransform(columnType colType)											const;
+				QString						getColumnTransformedToolTip(const QString & name, columnType transformedTo)			const;
+	Q_INVOKABLE	QString						getColumnTransformedToolTip(const QString & name, int transformedTo)				const;
 
-				QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)		const	override;
-				bool						absorbInfo(	VariableInfo::InfoType info, const QString& name, int row, QVariant value)			override;
+				QVariant					provideInfo(varInfoType info, const QString& colName = "", int row = 0)		const	override;
+	Q_INVOKABLE	QVariant					provideInfoAt(varInfoType info, int colIndex, int row = 0)					const;
+				bool						absorbInfo(	varInfoType info, const QString& name, int row, QVariant value)			override;
 				QAbstractItemModel		*	providerModel()																					override	{ return this;	}
 
 	static		ColumnsModel			*	singleton()	{ return _singleton; }
 
 public slots:
-	void datasetChanged(QStringList changedColumns, QStringList missingColumns, QMap<QString, QString> changeNameColumns, bool rowCountChanged, bool hasNewColumns);
+	void datasetChanged(int dataSetId, QStringList changedColumns, QStringList missingColumns, QMap<QString, QString> changeNameColumns, bool rowCountChanged, bool hasNewColumns);
 	void refresh() { beginResetModel(); endResetModel(); }
 
 signals:

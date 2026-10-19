@@ -67,6 +67,11 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 
 	for (const Json::Value& row : value)
 	{
+		//const operator[]/asString throw on non-object rows and non-string entries (e.g.
+		//fuzzed garbage in an options table), so skip anything that is not shaped as a row.
+		if (!row.isObject())
+			continue;
+
 		tableTerms.colNames.push_back(tq(row["name"].asString()));
 		if (index == 0)
 		{
@@ -76,6 +81,8 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 		tableTerms.values.push_back({});
 		for (const Json::Value& value : row["values"])
 		{
+			//bool/null/objects are not representable in a table cell, but they must keep their place as an
+			//empty cell: skipping them would move every following value of this column up a row.
 			QVariant val;
 			if (value.isInt())			val = value.asInt();
 			else if (value.isDouble())	val = value.asDouble();

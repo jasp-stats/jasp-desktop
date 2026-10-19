@@ -17,7 +17,7 @@
 //
 
 #include "resultmenumodel.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utilities/settings.h"
 #include "jasptheme.h"
 #include "gui/preferencesmodel.h"

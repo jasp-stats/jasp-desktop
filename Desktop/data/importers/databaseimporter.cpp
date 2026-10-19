@@ -1,10 +1,10 @@
-﻿#include "databaseimporter.h"
+﻿#include "database/databaseimportcolumn.h"
+#include "utilities/messageforwarder.h"
+#include "databaseimporter.h"
 #include <QSqlRecord>
 #include <QSqlField>
-#include "database/databaseimportcolumn.h"
+#include "qutils.h"
 #include "utils.h"
-#include "timers.h"
-#include "utilities/qutils.h"
 
 ImportDataSet * DatabaseImporter::loadFile(const std::string &locator, std::function<void(int)> progressCallback)
 {
@@ -13,18 +13,20 @@ ImportDataSet * DatabaseImporter::loadFile(const std::string &locator, std::func
 	if(!Json::Reader().parse(locator, json))
 		throw std::runtime_error("DatabaseImporter::loadFile received illegal locator!"); //shouldnt occur normally
 	
-	_info = DatabaseConnectionInfo(json);
+	_info = new DatabaseConnectionInfo(json, this);
+	
+	MessageForwarder::linkWithDatabaseConnectionInfo(_info);
 
-	if(!_info.connect())
+	if(!_info->connect())
 		throw std::runtime_error(fq(tr("Failed to connect to database %1 at %2 with user %3, last error was: '%4'")
-										.arg(_info._database)
-										.arg(_info._hostname + ":" + tq(std::to_string(_info._port)))
-										.arg(_info._username)
-										.arg(_info.lastError())));
+										.arg(_info->_database)
+										.arg(_info->_hostname + ":" + tq(std::to_string(_info->_port)))
+										.arg(_info->_username)
+										.arg(_info->lastError())));
 	
 	
 	
-	QSqlQuery	query	= _info.runQuery();
+	QSqlQuery	query	= _info->runQuery();
 	float		progDiv	= 100.0f / float(query.size());
 	QSqlRecord  record	= query.record();
 	
@@ -49,7 +51,7 @@ ImportDataSet * DatabaseImporter::loadFile(const std::string &locator, std::func
 	}
 	while(query.next());
 
-	_info.close();
+	_info->close();
 	
 	data->buildDictionary(); //Not necessary for reading from database but synching will break otherwise...
 	

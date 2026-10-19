@@ -1,7 +1,8 @@
+#include "utilities/messageforwarder.h"
 #include "enginerepresentation.h"
 #include "gui/preferencesmodel.h"
-#include "utilities/messageforwarder.h"
-#include "utilities/qutils.h"
+#include "data/datasetpackage.h"
+#include "qutils.h"
 #include "utils.h"
 #include "log.h"
 
@@ -65,6 +66,7 @@ void EngineRepresentation::cleanUpAfterClose(bool forgetAnalyses)
 	_settingsChanged	= true;
 	_abortAndRestart	= false;
 	_lastCompColName	= "???";
+	_lastCompColDataSet	= -1;
 
 
 	if(_dynModName != "")
@@ -124,11 +126,28 @@ void EngineRepresentation::handleEngineCrash()
 		break;
 
 	case engineState::filter:
-		emit processFilterErrorMsg(tr("The engine crashed while trying to run the filter..."), _lastRequestId);
+		//No filter-specific message: runtime filter errors are persisted by the engine and surface
+		//through the DB revision round-trip (Filter::checkForUpdates -> dbLoadResultAndError), and the
+		//generic engine-crash UI already informs the user here.
 		break;
 
 	case engineState::computeColumn:
-		emit computeColumnFailed(tq(_lastCompColName), tr("The engine crashed while trying to compute this column..."));
+		{
+			DataSet * dataSet = Workspace::singleton()->dataSetById(_lastCompColDataSet);
+			Column  * column  = dataSet ? dataSet->column(_lastCompColName) : nullptr;
+			
+			if(column)
+				column->setError(fq(tr("The engine crashed while trying to compute this column...")));
+		}
+		break;
+
+	case engineState::computeDataSet:
+		{
+			DataSet * dataSet = Workspace::singleton()->dataSetById(_lastCompDataSetId);
+			
+			if(dataSet)
+				dataSet->setError(fq(tr("The engine crashed while trying to compute this dataset...")));
+		}
 		break;
 
 	case engineState::rCode:
@@ -314,6 +333,7 @@ void EngineRepresentation::processReplies()
 			case engineState::rCode:				processRCodeReply(json);			break;
 			case engineState::analysis:				processAnalysisReply(json);			break;
 			case engineState::computeColumn:		processComputeColumnReply(json);	break;
+			case engineState::computeDataSet:		processComputeDataSetReply(json);	break;
 			case engineState::paused:				processEnginePausedReply();			break;
 			case engineState::resuming:				processEngineResumedReply(json);	break;
 			case engineState::stopped:				processEngineStoppedReply();		break;
@@ -322,7 +342,7 @@ void EngineRepresentation::processReplies()
 			case engineState::moduleLoadRequest:	processModuleRequestReply(json);	break;
 			case engineState::logCfg:				processLogCfgReply();				break;
 			case engineState::settings:				processSettingsReply();				break;
-			case engineState::reloadData:			processReloadDataReply();			break;
+			case engineState::loadingData:			processLoadingDataReply(json);			break;
 			default:								throw std::logic_error("If you define/send-from-engine new engineStates ("+engineStateToString(typeRequest)+") you should add them to the switch in EngineRepresentation::processReplies()!");
 			}
 	}
@@ -348,6 +368,7 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["generatedFilter"] = filterStore->generatedfilter.toStdString();
 	json["requestId"]		= filterStore->requestId;
+	json["dataSetId"]		= filterStore->dataSetId;
 
 	_lastRequestId			= filterStore->requestId;
 
@@ -367,6 +388,13 @@ void EngineRepresentation::runScriptOnProcess(RFilterByNameStore *filterStore)
 
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["name"]			= filterStore->name.toStdString();
+	json["dataSetId"]		= filterStore->dataSetId;
+	json["requestId"]		= filterStore->requestId;
+
+	//Remember which request we sent out: replies for superseded requests (a newer
+	//input change queued another run while this one was in flight) must be dropped,
+	//otherwise they would be treated as the freshest result of the filter.
+	_lastFilterByNameRequestId = filterStore->requestId;
 
 	sendString(json);
 }
@@ -374,8 +402,6 @@ void EngineRepresentation::runScriptOnProcess(RFilterByNameStore *filterStore)
 void EngineRepresentation::processFilterReply(Json::Value & json)
 {
 	checkIfExpectedReplyType(engineState::filter);
-
-
 	setState(engineState::idle);
 
 #ifdef PRINT_ENGINE_MESSAGES
@@ -384,15 +410,18 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 
 	int requestId = json.get("requestId", -1).asInt();
 
-	if(requestId == _lastRequestId)
-	{
-		emit filterDone(requestId);
+	//Ignore stale replies (from a request that has since been superseded): only the reply for the
+	//most recently dispatched filter may update the filter state.
+	if(requestId != _lastRequestId)
+		return;
 
-		if(json.isMember("error"))
-			emit processFilterErrorMsg(tq(json["error"].asString()), requestId);
-		else
-			emit processNewFilterResult(requestId);
-	}
+	//Emit filterDone unconditionally so the scheduler always resets _filterRunning, even when the
+	//engine signalled a failed filter run through the "error" field (otherwise a failed filter would
+	//wedge the engine scheduler forever). The error itself is persisted by the engine in the filter's
+	//DB row and surfaces to the UI through the normal checkForUpdates round-trip below.
+	emit filterDone(requestId);
+
+	Workspace::singleton()->checkForUpdates();
 }
 
 void EngineRepresentation::processFilterByNameReply(Json::Value &json)
@@ -407,13 +436,25 @@ void EngineRepresentation::processFilterByNameReply(Json::Value &json)
 
 	std::string name	= json.get("name",			"???").asString(),
 				error	= json.get("errorMessage", "").asString();
+	int			dataSet = json.get("dataSetId", -1).asInt();
+	int			requestId = json.get("requestId", -1).asInt();
 
-	emit filterByNameDone(tq(name), tq(error));
+	//Drop stale replies: only the reply for the most recently dispatched filterByName may
+	//update filter results / clear the stale flag. When either side is -1 we cannot match
+	//(mixed old-engine/desktop builds) so we let it through as before.
+	if(_lastFilterByNameRequestId != -1 && requestId != -1 && requestId != _lastFilterByNameRequestId)
+	{
+		Log::log() << "Dropping stale filterByName reply for '" << name << "' (requestId " << requestId << " != " << _lastFilterByNameRequestId << ")" << std::endl;
+		return;
+	}
+
+	Workspace::singleton()->checkForUpdates();
+	emit filterByNameDone(dataSet, tq(name), tq(error));
 }
 
 void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode)
 {
-	RScriptStore * script = new RScriptStore(-1, rCmdCode, "", engineState::rCode, false, true);
+	RScriptStore * script = new RScriptStore(DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->id() : -1, -1, rCmdCode, "", engineState::rCode, false, true);
 
 	runScriptOnProcess(script);
 
@@ -435,6 +476,7 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 		json["requestId"]		= scriptStore->requestId;
 		json["whiteListed"]		= scriptStore->whiteListedVersion;
 		json["returnLog"]		= scriptStore->returnLog;
+		json["dataSetId"]		= scriptStore->dataSetId;
 
 		_lastRequestId			= scriptStore->requestId;
 
@@ -446,6 +488,7 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 	case engineState::filter:			runScriptOnProcess(static_cast<RFilterStore*>(scriptStore));			return;
 	case engineState::filterByName:		runScriptOnProcess(static_cast<RFilterByNameStore*>(scriptStore));		return;
 	case engineState::computeColumn:	runScriptOnProcess(static_cast<RComputeColumnStore*>(scriptStore));		return;
+	case engineState::computeDataSet:	runScriptOnProcess(static_cast<RComputeDataSetStore*>(scriptStore));	return;
 	}
 }
 
@@ -480,8 +523,10 @@ void EngineRepresentation::runScriptOnProcess(RComputeColumnStore * computeColum
 	json["columnName"]		= computeColumnStore->_columnName.toStdString();
 	json["computeCode"]		= computeColumnStore->script.toStdString();
 	json["columnType"]		= columnTypeToString(computeColumnStore->_columnType);
+	json["dataSetId"]		= computeColumnStore->dataSetId;
 
 	_lastCompColName		= json["columnName"].asString();
+	_lastCompColDataSet		= computeColumnStore->dataSetId;
 
 	sendString(json);
 }
@@ -493,14 +538,55 @@ void EngineRepresentation::processComputeColumnReply(Json::Value & json)
 
 	setState(engineState::idle);
 
-
-	std::string result		= json.get("result", "some string that is not 'TRUE' or 'FALSE'").asString();
-	std::string error		= json.get("error", "").asString();
 	std::string columnName	= json.get("columnName", "").asString();
+	std::string warning		= json.get("error", "").asString();
+	std::string result		= json.get("result", "").asString();
 
-	if(result == "TRUE")		emit computeColumnSucceeded(QString::fromStdString(columnName), QString::fromStdString(error), true);
-	else if(result == "FALSE")	emit computeColumnSucceeded(QString::fromStdString(columnName), QString::fromStdString(error), false);
-	else						emit computeColumnFailed(	QString::fromStdString(columnName), QString::fromStdString(error == "" ? "Unknown Error" : error));
+	//The engine reports success as the stringified R logical "TRUE"; anything else (explicit "fail",
+	//or "FALSE" from a failed .setColumnData* without an R error) is a failure, so surface a non-empty
+	//warning so the coordinator leaves the column invalidated instead of silently validating it.
+	bool dataChanged = result == "TRUE";
+	if(!dataChanged && warning.empty())
+		warning = "The computed column could not be produced by the engine.";
+
+	emit computeColumnSucceeded(_lastCompColDataSet, tq(columnName), tq(warning), dataChanged);
+	emit checkDataSetForUpdates();
+}
+
+void EngineRepresentation::runScriptOnProcess(RComputeDataSetStore * computeDataSetStore)
+{
+	Json::Value json = Json::Value(Json::objectValue);
+
+	setState(engineState::computeDataSet);
+
+	json["typeRequest"]				= engineStateToString(_engineState);
+	json["computeCode"]				= computeDataSetStore->script.toStdString();
+	json["dataSetId"]				= computeDataSetStore->dataSetId;
+	json["defaultInputFilterId"]	= computeDataSetStore->_defaultInputFilterId;
+
+	_lastCompDataSetId				= computeDataSetStore->dataSetId;
+
+	sendString(json);
+}
+
+void EngineRepresentation::processComputeDataSetReply(Json::Value & json)
+{
+	checkIfExpectedReplyType(engineState::computeDataSet);
+
+	setState(engineState::idle);
+
+	std::string warning		= json.get("error", "").asString();
+	std::string result		= json.get("result", "").asString();
+
+	//The engine reports success as the stringified R logical "TRUE"; anything else (explicit "fail",
+	//or "FALSE" from a failed .setDataSet without an R error) is a failure, so surface a non-empty
+	//warning so the coordinator leaves the dataset invalidated instead of silently validating it.
+	bool dataChanged = result == "TRUE";
+	if(!dataChanged && warning.empty())
+		warning = "The computed dataset could not be produced by the engine.";
+
+	emit computeDataSetSucceeded(_lastCompDataSetId, tq(warning), dataChanged);
+	emit checkDataSetForUpdates();
 }
 
 void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
@@ -572,6 +658,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		case analysisResultStatus::complete:
 		case analysisResultStatus::fatalError:
 		case analysisResultStatus::validationError:
+		case analysisResultStatus::aborted:
 			setState(engineState::idle);
 			_idRemovedAnalysis	= -1;
 
@@ -589,6 +676,15 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	}
 
 	Analysis *analysis			= _analysisInProgress;
+
+	//Stale reply for an analysis we no longer track (e.g. removed earlier, whose
+	//_idRemovedAnalysis bookkeeping was already cleared): _analysisInProgress is null
+	//here and dereferencing it used to be a null-pointer crash.
+	if (!analysis)
+	{
+		Log::log() << "Analysis reply (id " << id << ") arrived but nothing is in progress and it is not the tracked removed analysis; ignoring it." << std::endl;
+		return;
+	}
 
 	if (analysis->id() != id || analysis->revision() < revision)
 		throw std::runtime_error("Received results for wrong analysis!");
@@ -648,7 +744,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	case analysisResultStatus::complete:
 		analysis->setResults(results, status);
 		clearAnalysisInProgress();
-		checkForComputedColumns(results);
+		checkForComputedColumns(analysis->dataSet(), results);
 		emit checkDataSetForUpdates(); //Maybe the analysis wrote some stuff?
 
 		break;
@@ -658,18 +754,30 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 			analysis->setResults(results, status, progress);
 		break;
 
+	case analysisResultStatus::aborted:
+		//The engine acknowledged our abort: just clear the in-progress bookkeeping
+		//(and go back to scheduling). The analysis is already in the state the desktop
+		//gave it (Empty/Aborted/removed), so its results must not be touched here.
+		//Before the engine sent this ack, every abort ended in the ENGINE_KILLTIME
+		//kill+restart cycle.
+		clearAnalysisInProgress();
+		break;
+
 	default:
 		analysis->setResults(results, status, progress);
 		break;
 	}
 }
 
-void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
+void EngineRepresentation::checkForComputedColumns(DataSet * dataSet, const Json::Value & results)
 {
+	if(!dataSet)
+		return;
+
 	if(results.isArray())
 	{
 		for(const Json::Value & row : results)
-			checkForComputedColumns(row);
+			checkForComputedColumns(dataSet, row);
 	}
 	else if(results.isObject())
 	{
@@ -678,27 +786,27 @@ void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
 
 		if(memberset.count("columnName") > 0 && memberset.count("columnType") > 0 && memberset.count("dataChanged") > 0)
 		{
-			//Log::log() << "The analysis reply contained information on changed computed columns: " << results.toStyledString() << std::endl;
-
-			//jaspColumnType	columnType	= jaspColumnTypeFromString(results["columnType"].asString()); This would work if jaspColumn wasn't defined in jaspColumn.h and Windows would not need to have that separately in a DLL... But it isn't really needed here anyway.
+			//An analysis reported that it (re)wrote one or more computed columns; treat that like a
+			//successful compute: pick the values back up from the DB, validate the column and let the
+			//columns depending on it proceed.
 			std::string		columnName	= results["columnName"].asString();
-			bool			dataChanged	= results["dataChanged"].asBool(),
-							typeChanged	= results["typeChanged"].asBool(),
-							removed 	= results["removed"]	.asBool();
+			bool			dataChanged	= results["dataChanged"].asBool();
 
-			if(removed)
-				emit computeColumnRemoved(tq(columnName));
-			else
-			{
-				emit computeColumnSucceeded(tq(columnName), "", dataChanged);
+			//The analysis reports the encoded column name; translate it to the real one.
+			std::string	decoded = columnName;
+			try { decoded = dataSet->encoder().decode(columnName); } catch(...) {}
 
-				if(typeChanged)
-					emit columnDataTypeChanged(tq(columnName));
-			}
+			//The R side is responsible for deleting the DB row (and bumping revision) when a column is
+			//removed, and for bumping revision when its type changes. checkDataSetForUpdates() below then
+			//picks both up from the shared database, so no explicit removed/typeChanged event is needed.
+			if(dataSet->column(decoded))
+				Workspace::singleton()->computedColumnSucceeded(dataSet->id(), tq(decoded), "", dataChanged);
+
+			emit checkDataSetForUpdates();
 		}
 		else
 			for(const std::string & member : members)
-				checkForComputedColumns(results[member]);
+				checkForComputedColumns(dataSet, results[member]);
 	}
 }
 
@@ -830,6 +938,7 @@ bool EngineRepresentation::busyWithData() const
 	{
 	case engineState::analysis:
 	case engineState::computeColumn:
+	case engineState::computeDataSet:
 	case engineState::filter:
 	case engineState::rCode:
 		return true;
@@ -892,19 +1001,42 @@ void EngineRepresentation::processEnginePausedReply()
 void EngineRepresentation::processEngineResumedReply(Json::Value & json)
 {
 	Log::log() << "EngineRepresentation::processEngineResumedReply() for engine #" << channelNumber() << std::endl;
-	
+
 	if(json.get("justReloadedData", false))
-		_reloadData = false;
-	
-	if(_engineState != engineState::resuming && _engineState != engineState::initializing && _engineState != engineState::reloadData && _engineState != engineState::idle)
+		_loadingProgress = 0.0;
+
+	if(_engineState != engineState::resuming && _engineState != engineState::initializing && _engineState != engineState::loadingData && _engineState != engineState::idle)
 	{
 	//	throw unexpectedEngineReply("Received an unexpected engine #" + std::to_string(channelNumber()) + " resumed reply (current state is " + engineStateToString(_engineState) +")!");
-		resend();
+
+		//A resumed reply means the engine (re)started and has NOTHING running. If we were
+		//waiting for a genuinely running analysis, resend its (possibly lost) request.
+		//But if the last message was an abort request (analysis aborting or removed),
+		//resending it here used to create an endless loop: the engine acks the abort
+		//(analysisResultStatus::aborted), yet that ack is overwritten in the single-slot
+		//IPC mailbox by the engine's idle-reload messages before we read it, so we kept
+		//resending aborts forever while the scheduler saw a never-idle engine and no
+		//analysis was ever scheduled again.
+		if(_analysisInProgress && (_analysisInProgress->status() == Analysis::Status::Running || _analysisInProgress->status() == Analysis::Status::RunningImg))
+			resend();
+		else
+		{
+			//The engine has no analysis in flight: recover to idle and let the scheduler
+			//re-dispatch. If an analysis was removed while aborting, its bookkeeping can
+			//be cleared too: the engine received the abort (and any ack it sent is moot).
+			if(_analysisInProgress == nullptr && _idRemovedAnalysis >= 0)
+			{
+				_idRemovedAnalysis	= -1;
+				_analysisAborted	= nullptr;
+			}
+			clearAnalysisInProgress();
+			restartAbortedAnalysis();
+		}
 	}
 	else
 	{
 		setState(engineState::idle);
-		
+
 		restartAbortedAnalysis();
 	}
 }
@@ -920,12 +1052,15 @@ void EngineRepresentation::processEngineStoppedReply()
 }
 
 
-void EngineRepresentation::processReloadDataReply()
+void EngineRepresentation::processLoadingDataReply(Json::Value & json)
 {
-	Log::log() << "EngineRepresentation::processReloadDataReply() for engine #" << channelNumber() << std::endl;
-
-	_reloadData = false;
-	setState(engineState::reloadData); //Its probably already in this state
+	float progress = json.get("progress", 0.0).asFloat();
+	if(std::abs(progress - _loadingProgress) > 0.001f)
+	{
+		_loadingProgress = progress;
+		emit loadingProgressChanged();
+	}
+	setState(engineState::loadingData);
 }
 
 
@@ -1123,20 +1258,6 @@ void EngineRepresentation::sendSettings()
 	_settingsChanged = false;
 }
 
-void EngineRepresentation::sendReloadData()
-{
-	Log::log() << "EngineRepresentation::sendReloadData()" << std::endl;
-
-	if(_engineState != engineState::idle)
-		throw std::runtime_error("EngineRepresentation::sendReloadData() expects to be run from an idle engine.");
-
-	setState(engineState::reloadData);
-	Json::Value msg			= Json::objectValue;
-	msg["typeRequest"]		= engineStateToString(_engineState);
-
-	sendString(msg);
-}
-
 void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 {
 	if(!PreferencesModel::prefs()) //During testing only!
@@ -1190,7 +1311,7 @@ bool EngineRepresentation::idleSoon() const
 	case engineState::settings:
 	case engineState::logCfg:
 	case engineState::moduleLoadRequest:
-	case engineState::reloadData:
+	case engineState::loadingData:
 	case engineState::idle:
 		return true;
 	

@@ -6,10 +6,16 @@ TestCase
 {
 	name:		"TestTextfield"
 
-	TextField
-	{
+	property alias form: jaspForm
 
-		id:						textField
+	Form
+	{
+		id: jaspForm
+
+		TextField
+		{
+			id:						textField
+		}
 	}
 
 	function test_displayValue()

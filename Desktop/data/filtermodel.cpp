@@ -1,346 +1,163 @@
-#include "filtermodel.h"
-#include "jsonutilities.h"
-#include "columnencoder.h"
-#include "timers.h"
 #include <QMap>
-#include "log.h"
+#include "filtermodel.h"
+#include "datasetpackage.h"
+#include "filter.h"
+#include "qutils.h"
+#include "undostack.h"
 
-FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
-	: QObject(DataSetPackage::pkg()), _labelFilterGenerator(labelFilterGenerator)
+FilterModel::FilterModel(QObject * parent)
+	: QObject(parent)
 {
-	_undoStack = DataSetPackage::pkg()->undoStack();
 
-	reset();
-	connect(this,					&FilterModel::rFilterChanged,	this, &FilterModel::rescanRFilterForColumns	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,	this, &FilterModel::dataSetPackageResetDone	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::modelInit,		this, &FilterModel::modelInit				);
+	connect(DataSetPackage::pkg(), &DataSetPackage::shownDataSetChanged,	this, &FilterModel::filterChanged);
+	connect(DataSetPackage::pkg(), &DataSetPackage::filtersCountChanged,	this, &FilterModel::filterDropDownListChanged,	Qt::QueuedConnection);
+	connect(DataSetPackage::pkg(), &DataSetPackage::shownFilterChanged,		this, &FilterModel::filterChanged									);
+	connect(DataSetPackage::pkg(), &DataSetPackage::shownFilterChanged,		this, &FilterModel::filterDropDownListChanged,	Qt::QueuedConnection);
 }
 
-QString FilterModel::rFilter()			const	{ return !DataSetPackage::filter() ? defaultRFilter()		: tq(DataSetPackage::filter()->rFilter());					}
-
-QString FilterModel::constructorR()		const	{ return !DataSetPackage::filter() ? ""						: tq(DataSetPackage::filter()->constructorR());				}
-QString FilterModel::filterErrorMsg()	const	{ return !DataSetPackage::filter() ? ""						: tq(DataSetPackage::filter()->errorMsg());					}
-QString FilterModel::generatedFilter()	const	{ return !DataSetPackage::filter() ? DEFAULT_FILTER_GEN		: tq(DataSetPackage::filter()->generatedFilter());			}
-QString FilterModel::constructorJson()	const	{ return !DataSetPackage::filter() ? DEFAULT_FILTER_JSON	: tq(DataSetPackage::filter()->constructorJson());			}
-
-const char * FilterModel::defaultRFilter()
+Filter *FilterModel::filter() const
 {
-	static std::string defaultFilter;
-
-	const std::string forceTranslatedStuffToAlwaysBeAComment =
-		tr(
-			"Above you see the code that JASP generates for both value filtering and the drag&drop filter."					"\n"
-			"This default result is stored in 'generatedFilter' and can be replaced or combined with a custom filter."		"\n"
-			"To combine you can append clauses using '&': 'generatedFilter & customFilter & perhapsAnotherFilter'"			"\n"
-			"Click the (i) icon in the lower right corner for further help."												"\n").toStdString();
-
-	defaultFilter = "# " + stringUtils::replaceBy(forceTranslatedStuffToAlwaysBeAComment, "\n", "\n# ") + "\n\ngeneratedFilter";
-
-	return defaultFilter.c_str();
+	return DataSetPackage::filter();
 }
+
 
 bool FilterModel::isJustGeneratedFilter() const
 {
-	return rFilter() == defaultRFilter() && constructorJson() == DEFAULT_FILTER_JSON;
-}
-
-void FilterModel::reset()
-{
-	setFilterVisible(false);
-	setShowEasyFilter(true);
-	
-	_setGeneratedFilter(DEFAULT_FILTER_GEN	);
-	setConstructorJson(	DEFAULT_FILTER_JSON	);
-	_setRFilter(		defaultRFilter()		);
-
-	if(DataSetPackage::pkg()->dataRowCount() > 0 && DataSetPackage::pkg()->isLoaded())
-		sendGeneratedAndRFilter();
-	
-	emit filterDropDownListChanged();
-}
-
-void FilterModel::dataSetPackageResetDone()
-{
-	if(DataSetPackage::pkg()->isLoaded())
-	{
-		_setGeneratedFilter(tq(_labelFilterGenerator->generateFilter())		);
-		setConstructorJson(	!DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->constructorJson())	);
-		_setRFilter(		!DataSetPackage::filter() ? "" : tq(DataSetPackage::filter()->rFilter())			);
-	}
-}
-
-void FilterModel::modelInit()
-{
-	if(!DataSetPackage::pkg()->isJaspFile() || DataSetPackage::pkg()->filterShouldRunInit()) //Either this wasn't a JASP file (archive) and we need to run the filter after loading, or it *is* a JASP file but it is old (<0.11) and doesn't have filterVector stored in it yet.
-		sendGeneratedAndRFilter();
-
-	DataSetPackage::pkg()->setFilterShouldRunInit(true); //Make sure next time we come here (because of computed columns or something) we do actually run the filter
-	
-	emit filterDropDownListChanged();
-}
-
-void FilterModel::setRFilter(QString newRFilter)
-{
-	if (_setRFilter(newRFilter))
-		sendGeneratedAndRFilter();
-}
-
-bool FilterModel::_setRFilter(const QString& newRFilter)
-{
-	if(newRFilter != rFilter())
-	{
-		bool oldHasFilter = hasFilter();
-
-		if(DataSetPackage::filter())
-			DataSetPackage::filter()->setRFilter(fq(newRFilter));
-
-		if(oldHasFilter != hasFilter())
-			emit hasFilterChanged();
-
-		emit rFilterChanged();
-
-		return true;
-	}
-
-	return false;
-}
-
-void FilterModel::setFilterErrorMsg(	QString newFilterErrorMsg)
-{
-	if(newFilterErrorMsg != filterErrorMsg())
-	{
-		if(DataSetPackage::filter())
-			DataSetPackage::filter()->setErrorMsg(fq(newFilterErrorMsg));
-		
-		emit filterErrorMsgChanged();
-		if(filterErrorMsg() != "")
-		{
-			setFilterVisible(true);
-			
-			//Now this might be caused by some labelfilter, or something. However, the filterwindow by default does not show the generatedFilter
-			//Maybe its better to open it on the R display then?
-			if(isJustGeneratedFilter())
-				setShowEasyFilter(false);
-				
-		}
-	}
+	return filter() && filter()->rFilter() == Filter::defaultRFilter() && filter()->constructorJson() == DEFAULT_FILTER_JSON;
 }
 
 void FilterModel::applyConstructorJson(QString newConstructorJson)
 {
-	if (newConstructorJson != constructorJson())
-		_undoStack->pushCommand(new SetJsonFilterCommand(DataSetPackage::pkg(), this, newConstructorJson));
+	if(!filter())
+		return;
+
+	if (newConstructorJson != filter()->constructorJson())
+		UndoStack::singleton()->pushCommand(new SetJsonFilterCommand(filter(), newConstructorJson));
 }
 
 void FilterModel::applyRFilter(QString newRFilter)
 {
-	if (newRFilter != rFilter())
-		_undoStack->pushCommand(new SetRFilterCommand(DataSetPackage::pkg(), this, newRFilter));
-}
-
-void FilterModel::setConstructorJson(QString newconstructorJson)
-{
-	if(newconstructorJson != constructorJson())
-	{
-		bool oldHasFilter = hasFilter();
-
-		if(DataSetPackage::filter())
-			DataSetPackage::filter()->setConstructorJson(fq(newconstructorJson));
-
-		if(oldHasFilter != hasFilter())
-			emit hasFilterChanged();
-
-		std::set<std::string> columnsUsedInConstructedFilter = JsonUtilities::convertDragNDropFilterJSONToSet(constructorJson().toStdString());
-
-		if(columnsUsedInConstructedFilter != _columnsUsedInConstructedFilter)
-			emit updateColumnsUsedInConstructedFilter(columnsUsedInConstructedFilter);
-
-		_columnsUsedInConstructedFilter = columnsUsedInConstructedFilter;
-
-		emit constructorJsonChanged();
-	}
-}
-
-void FilterModel::setConstructorR(QString newConstructorR)
-{
-	if(newConstructorR != constructorR())
-	{
-		if(DataSetPackage::filter())
-			DataSetPackage::filter()->setConstructorR(fq(newConstructorR));
-
-		emit constructorRChanged();
-		setGeneratedFilter(tq(_labelFilterGenerator->generateFilter()));
-	}
-}
-void FilterModel::setGeneratedFilter(QString newGeneratedFilter)
-{
-	JASPTIMER_SCOPE(FilterModel::setGeneratedFilter);
-
-	_setGeneratedFilter(newGeneratedFilter);
-	// After this commit https://github.com/jasp-stats/jasp-desktop/commit/65f007cba2ff8986fc3ad86ac4b1a00fa706769b  the filter was not executed.
-	// If a model reset is called just before, this will set the generatedFilter to the right value, and _setGeneratedFilter will returns false
-	// But the engine did not compute yet the filter. So send the filter to the engine always.
-	sendGeneratedAndRFilter();
-}
-
-bool FilterModel::_setGeneratedFilter(const QString& newGeneratedFilter)
-{
-	JASPTIMER_SCOPE(FilterModel::_setGeneratedFilter);
-	
-	const QString oldGeneratedFilter = generatedFilter();
-
-	if (newGeneratedFilter != oldGeneratedFilter)
-	{
-		if(DataSetPackage::filter())
-			DataSetPackage::filter()->setGeneratedFilter(fq(newGeneratedFilter));
-
-		emit generatedFilterChanged(); //does nothing?
-		return true;
-	}
-
-	return false;
-}
-
-
-void FilterModel::processFilterResult(int requestId)
-{
-	if((requestId < _lastSentRequestId))
+	if(!filter())
 		return;
 
-	if(!(DataSetPackage::pkg()->dataSet() || DataSetPackage::pkg()->dataSet()->filter()))
+	if (newRFilter != filter()->rFilter())
+		UndoStack::singleton()->pushCommand(new SetRFilterCommand(filter(), newRFilter));
+}
+
+void FilterModel::resetRFilter()
+{
+	if(!filter())
 		return;
-	
-	
 
-	//Load new filter values from database
-	if(DataSetPackage::pkg()->dataSet()->filter()->dbLoadResultAndError())
-	{
-		emit filterErrorMsgChanged();
-		emit refreshAllAnalyses();
-		emit refreshAllCompCols();
-		emit filterUpdated();
-		updateStatusBar();
-	}
+	if (filter()->defaultRFilter() != filter()->rFilter())
+		UndoStack::singleton()->pushCommand(new SetRFilterCommand(filter(), filter()->defaultRFilter()));
 }
 
-void FilterModel::processFilterErrorMsg(QString filterErrorMsg, int requestId)
-{
-	if(requestId == _lastSentRequestId || requestId == -1)
-		setFilterErrorMsg(filterErrorMsg);
-}
 
-void FilterModel::sendGeneratedAndRFilter()
+void FilterModel::processFilterResult(QString name)
 {
-	JASPTIMER_SCOPE(FilterModel::sendGeneratedAndRFilter);
+	if(!filter()) 
+		return; //Cause there probably is no data anyway then
 	
-	if(!DataSetPackage::pkg()->isLoaded())
+	if(filter()->nameQ() ==  name)
 	{
-		Log::log() << "An attempt was made to run a filter while the DataSetPackage is not loaded!" << std::endl;
+		filter()->checkFilterResults();
 		return;
 	}
 	
-	setFilterErrorMsg("");
-	_lastSentRequestId = emit sendFilter(generatedFilter(), rFilter());
+	Filter * f = DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->filter(fq(name)) : nullptr;
+	
+	if(f)
+		f->checkFilterResults();
+	
 }
 
-void FilterModel::updateStatusBar()
+void FilterModel::onFilterChanged()
 {
-	if(!DataSetPackage::pkg()->hasDataSet())
-	{
-		setStatusBarText(tr("No data loaded!"));
-		return;
-	}
-
-	int     TotalCount			= DataSetPackage::pkg()->dataRowCount(),
-	        TotalThroughFilter	= DataSetPackage::pkg()->filteredRowCount();
-	int		PercentageThrough	= (int)round(100.0 * ((double)TotalThroughFilter) / ((double)TotalCount));
-	bool	Approximate			= PercentageThrough != TotalThroughFilter;
-
-	setStatusBarText(tr("Data has %1 rows, %2 (%3%4%) passed through filter").arg(TotalCount).arg(TotalThroughFilter).arg(Approximate ? "~" : "").arg(PercentageThrough));
-}
-
-void FilterModel::rescanRFilterForColumns()
-{
-	_columnsUsedInRFilter = DataSetPackage::pkg() && DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->findUsedColumnNames(fq(rFilter())) : stringset();
+	if(filter())
+		setCurrentFilterId(filter()->id());
 }
 
 void FilterModel::computeColumnSucceeded(QString columnName, QString, bool dataChanged)
 {
-	if(dataChanged && (_columnsUsedInConstructedFilter.count(columnName.toStdString()) > 0 || _columnsUsedInRFilter.count(columnName.toStdString()) > 0))
-		sendGeneratedAndRFilter();
+	if(!filter())
+		return;
+
+	if(dataChanged && filter()->columnUsed(columnName))
+		filter()->setInvalidated(true);
 }
-
-void FilterModel::datasetChanged(	QStringList             changedColumns,
-                                    QStringList             missingColumns,
-                                    QMap<QString, QString>	changeNameColumns,
-                                    bool                    rowCountChanged,
-                                    bool                  /*hasNewColumns*/)
-{
-	bool invalidateMe = rowCountChanged;
-
-	if(!invalidateMe)
-		for(const QString & changed : changedColumns)
-			if(_columnsUsedInRFilter.count(fq(changed)) > 0 || _columnsUsedInConstructedFilter.count(fq(changed)) > 0)
-			{
-				invalidateMe = true;
-				break;
-			}
-
-	auto iUseOneOfTheseColumns = [&](std::vector<std::string> cols) -> bool
-	{
-		for(const std::string & col : cols)
-			if(_columnsUsedInRFilter.count(col) > 0 || _columnsUsedInConstructedFilter.count(col) > 0)
-				return true;
-
-		return false;
-	};
-
-	if(iUseOneOfTheseColumns(fq(changeNameColumns.keys())))
-	{
-		std::map<std::string, std::string> stdChangeNameCols(fq(changeNameColumns));
-
-		invalidateMe = true;
-
-		setRFilter(        tq(ColumnEncoder::replaceColumnNamesInRScript(fq(rFilter()),                     stdChangeNameCols)));
-		setConstructorJson( tq(JsonUtilities::replaceColumnNamesInDragNDropFilterJSONStr(fq(constructorJson()), stdChangeNameCols)));
-	}
-
-	auto missingStd = fq(missingColumns);
-	if(iUseOneOfTheseColumns(missingStd))
-	{
-		setRFilter(tq(ColumnEncoder::removeColumnNamesFromRScript(fq(rFilter()), missingStd)));
-
-		setConstructorJson( tq(JsonUtilities::removeColumnsFromDragNDropFilterJSONStr( fq(constructorJson()), missingStd)));
-
-		invalidateMe = false; //Actually, if stuff is removed from the filter it won't work will it now?
-
-		//Just reset the filter result to everything true while the user gets the change to fix their now broken filter
-		if(DataSetPackage::filter())
-			DataSetPackage::filter()->reset();
-
-		emit refreshAllAnalyses();
-		emit filterUpdated();
-		updateStatusBar();
-
-		//The following errormsg is overwritten immediately but that is because constructorJson changed triggers qml which triggers (some vents later) a send event. So yeah...
-		//Ill leave it here though because it would be nice to show this friendlier msg then "null not found"
-		setFilterErrorMsg("Some columns were removed from the data and your filter(s)!");
-	}
-
-	if(invalidateMe)
-		sendGeneratedAndRFilter();
-}
-
 
 QVariantList FilterModel::filterDropDownList() const
 {
 	typedef QMap<QString, QVariant> localMap;
 	
-	QVariantList out = { localMap({std::make_pair("value", ""), std::make_pair("label", QObject::tr("No filter"))}) };
+	QVariantList out;
 	
-	//Right now we only have 1 filter, but later we can add support here for multiple filters, or of filters from analyses (such as from ListModelFilteredDataEntry)
-	if(DataSetPackage::filter())
-		out.append(localMap{std::make_pair("value", tq(DataSetPackage::filter()->name())), std::make_pair("label", QObject::tr("Use filter"))});
+	if(DataSetPackage::pkg()->workspace())
+	{
+		//out.append(localMap{std::make_pair("value", tq("---")), std::make_pair("label", "---")});
+		
+		for(DataSet * dataSet : DataSetPackage::pkg()->workspace()->dataSets())
+		{
+			out.append(localMap{std::make_pair("value", tq(dataSet == DataSetPackage::pkg()->dataSet() ? "*" : "-")), std::make_pair("label", dataSet->title() + ":")});
+			
+			if(dataSet->defaultFilter())
+				out.append(localMap{std::make_pair("value", tq(std::to_string(dataSet->defaultFilter()->id()))), std::make_pair("label", dataSet->defaultFilter()->title())});
+			
+			for(const Filter * f : dataSet->filters())
+				if(f != dataSet->defaultFilter())
+					out.append(localMap{std::make_pair("value", tq(std::to_string(f->id()))), std::make_pair("label", f->title())});
+			
+			out.append(localMap{std::make_pair("value", tq("---")), std::make_pair("label", tq(std::to_string(dataSet->id())))});
+		}
+	}
+	
+	return out;
+}
+
+QVariantList FilterModel::filterDropDownAnalysisList() const
+{
+	typedef QMap<QString, QVariant> localMap;
+	
+	QVariantList out;
+	
+	if(DataSetPackage::pkg()->workspace())
+	{
+		out.append(localMap{std::make_pair("value", tq("---")), std::make_pair("label", "---")});
+		
+		for(DataSet * dataSet : DataSetPackage::pkg()->workspace()->dataSets())
+		{
+			out.append(localMap{std::make_pair("value", tq(dataSet == DataSetPackage::pkg()->dataSet() ? "*" : "-")), std::make_pair("label", dataSet->title() + ":")});
+			
+			if(dataSet->defaultFilter())
+				out.append(localMap{std::make_pair("value", tq(std::to_string(dataSet->defaultFilter()->id()))), std::make_pair("label", dataSet->defaultFilter()->title())});
+			
+			for(const Filter * f : dataSet->filters())
+				if(f != dataSet->defaultFilter())
+					out.append(localMap{std::make_pair("value", tq(std::to_string(f->id()))), std::make_pair("label", f->title())});
+			
+			out.append(localMap{std::make_pair("value", tq("---")), std::make_pair("label", "---")});
+		}
+	}
+	
+	return out;
+}
+
+QVariantList FilterModel::computeFilterDropDownList() const
+{
+	typedef QMap<QString, QVariant> localMap;
+	
+	QVariantList out;
+	
+	if(DataSet * dataSet = DataSetPackage::pkg()->dataSet())
+	{
+		if(dataSet->defaultFilter())
+			out.append(localMap{std::make_pair("value", tq(dataSet->defaultFilter()->name())), std::make_pair("label", dataSet->defaultFilter()->title())});
+		
+		for(const Filter * f : dataSet->filters())
+			if(f != dataSet->defaultFilter())
+				out.append(localMap{std::make_pair("value", tq(f->name())), std::make_pair("label", f->title())});
+	}
 	
 	return out;
 }
@@ -357,9 +174,6 @@ void FilterModel::setFilterVisible(bool newFilterVisible)
 	_filterVisible = newFilterVisible;
 		
 	emit filterVisibleChanged();
-	
-	if(_filterVisible)
-		setGeneratedFilter(tq(_labelFilterGenerator->generateFilter()));
 }
 
 bool FilterModel::showEasyFilter() const
@@ -373,4 +187,76 @@ void FilterModel::setShowEasyFilter(bool newShowEasyFilter)
 		return;
 	_showEasyFilter = newShowEasyFilter;
 	emit showEasyFilterChanged();
+}
+
+void FilterModel::reset()
+{
+	_showEasyFilter = true;
+	_filterVisible  = false;
+}
+
+QString FilterModel::currentFilter() const
+{
+	return !filter() ? "" : tq(filter()->name());
+}
+
+int FilterModel::currentFilterId() const
+{
+	return !filter() ? -1 : filter()->id();
+}
+
+QString FilterModel::currentFilterTitle() const
+{
+	return !filter() ? "" : filter()->title();
+}
+
+void FilterModel::setCurrentFilterId(int id)
+{
+	DataSetPackage::pkg()->workspace()->showFilter(id);
+	
+	emit filterChanged();
+	emit filterDropDownListChanged();
+	
+	DataSetPackage::pkg()->workspace()->refresh();
+	
+}
+
+void FilterModel::renameCurrentFilter(const QString &newName)
+{
+	DataSet * ds = DataSetPackage::pkg()->dataSet();
+	Filter  * f  = ds ? ds->shownFilter() : nullptr;
+
+	if(!f)
+		return;
+
+	const std::string name = fq(newName);
+
+	//Guard against empty names, renaming the (single, unnamed) default filter, and name collisions:
+	//duplicate filter names would make filter(name)/filterGetId lookups ambiguous.
+	if(name.empty() || name == DEFAULT_FILTER_NAME || (name != f->name() && !Filter::filterNameIsFree(ds, name)))
+		return;
+
+	f->setName(name);
+	emit filterChanged();
+	emit filterDropDownListChanged();
+}
+
+void FilterModel::deleteCurrentFilter()
+{
+	if(DataSetPackage::pkg()->dataSet())
+		DataSetPackage::pkg()->dataSet()->deleteShownFilter();
+	emit filterChanged();
+	emit filterDropDownListChanged();
+}
+
+void FilterModel::addFilter(int dataSetId)
+{
+	DataSet * dataSet = dataSetId == -1 
+			? DataSetPackage::pkg()->dataSet() 
+			: DataSetPackage::pkg()->workspace() 
+			  ? DataSetPackage::pkg()->workspace()->dataSetById(dataSetId) 
+			  : nullptr;
+	
+	if(dataSet)
+		dataSet->addFilter();
 }

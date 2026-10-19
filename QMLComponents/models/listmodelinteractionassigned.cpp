@@ -17,7 +17,7 @@
 //
 
 #include "listmodelinteractionassigned.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
 #include "controls/jasplistcontrol.h"

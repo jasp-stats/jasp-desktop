@@ -96,13 +96,12 @@ void VariablesFormBase::componentComplete()
 				_controlsHeightSetByForm.push_back(control);
 		}
 		else if (type == ControlType::ComboBox)
-		{
 			_controlsWidthSetByForm.push_back(control);
-			connect(control, &QQuickItem::heightChanged, this, &VariablesFormBase::setControlsSizeSlot);
-		}
 	}
 
-	QMetaObject::invokeMethod(this, "init");
+	emit availableVariablesListChanged();
+	emit allAssignedVariablesListChanged();
+	emit allJASPControlsChanged();
 
 	setInitialized();
 }
@@ -128,9 +127,4 @@ void VariablesFormBase::setMinimumHeightVariablesLists(qreal value)
 JASPControl* VariablesFormBase::availableVariablesList() const
 {
 	return _availableVariablesList;
-}
-
-void VariablesFormBase::setControlsSizeSlot()
-{
-	QMetaObject::invokeMethod(this, "setControlsSize");
 }

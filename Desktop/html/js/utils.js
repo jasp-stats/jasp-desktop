@@ -276,7 +276,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 				minLSD = lsd
 		}
 	
-		minLSD = fixDecimals ? -dp : Math.min(0, Math.max(-dp, minLSD))
+		var _minDp = isFinite(dp) ? -dp : -Infinity;
+		minLSD = fixDecimals ? -dp : Math.min(0, Math.max(_minDp, minLSD))
 		minLSD = Math.max(-20, minLSD)
 	}
 	
@@ -341,18 +342,19 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else if (content == 0)
 					{
-						formatted["content"] = isFinite(dp) ? formatFixed(content, dp, noZeroLead, thousands) : formatPrecisionWithRespectForFixedDecimals(content, sf, 0, noZeroLead, thousands)
+						formatted["content"] = (fixDecimals || isFinite(dp)) ? formatFixed(content, dp, noZeroLead, thousands) : formatPrecision(content, sf, false, thousands)
 					}
-					else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp))
+					else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp) || (!fixDecimals && Math.abs(content) >= Math.pow(10, sf)))
 					{
 						let decimalsExpon 		= fixDecimals ? dp : sf - 1;
-						let paddingNeeded 		= 0 									// var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
+						// var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
+						var paddingNeeded = 0
 						formatted["content"] 	= toExponential(content, decimalsExpon, paddingNeeded, html)
 					}
 					else 
 					{
 						if(isP)						formatted["content"] = fixDecimals || window.globSet.pExact ? toExponential(content, (isFinite(dp) ? dp : sf-1), 0, html)	: formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead, thousands)
-						else						formatted["content"] = fixDecimals							? formatFixed(content, -minLSD, false, thousands)				: formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead, thousands)
+						else						formatted["content"] = fixDecimals ? formatFixed(content, -minLSD, false, thousands) : formatPrecision(content, sf, false, thousands)
 						
 						if(html)
 							formatted["content"] = formatted["content"].replace(/-/g, "&minus;")
@@ -370,9 +372,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else if (content < p) 
 					{
-						let dpP					= 1/Math.pow(10,dp)
-						let specialP			= dpP < p ? ("~" + formatFixed(dpP, dp, noZeroLead, thousands)) : formatFixed(p, dp, noZeroLead, thousands);
-						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + specialP
+						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + formatFixed(p, dp, noZeroLead, thousands)
 						formatted["class"]		= "p-value"
 						isNumber = false
 					}

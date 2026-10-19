@@ -16,7 +16,7 @@
 //
 
 #include "excel.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <stringutils.h>
 #include <columnutils.h>
 #include <QFileInfo>

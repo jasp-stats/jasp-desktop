@@ -30,6 +30,7 @@ MouseArea
 
 		x:			theMouseArea.mouseX - (width / 2)
 		y:			theMouseArea.mouseY + height
+		background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 	}
 
 	Timer

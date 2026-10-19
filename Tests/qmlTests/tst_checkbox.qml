@@ -6,10 +6,16 @@ TestCase
 {
 	name:		"TestCheckbox"
 
-	CheckBox
-	{
+	property alias form: jaspForm
 
-		id:						control
+	Form
+	{
+		id: jaspForm
+
+		CheckBox
+		{
+			id:						control
+		}
 	}
 
 	function test_checked()

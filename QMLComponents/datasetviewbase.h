@@ -10,7 +10,7 @@
 
 #include <map>
 #include <QtQml>
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 #include <QItemSelectionModel>
 #include <QItemSelection>
@@ -240,8 +240,9 @@ public slots:
 protected:
 	void		calculateCellSizesAndClear(bool clearStorage);
 	void		determineCurrentViewPortIndices();
-    void		storeAllItems();
-    void		storeOutOfViewItems();
+	void		storeAllItems() { storeOutOfViewItems(true); }
+	void		iAmParent(QQuickItem *item);
+    void		storeOutOfViewItems(bool all = false);
 	void		buildNewLinesAndCreateNewItems();
 	void		columnIndexSelectedApply(int columnIndex, std::function<void (int)> applyThis);
 	void		columnIndexSelectedApply(int columnIndex, std::function<void (intset)> applyThis);
@@ -341,9 +342,11 @@ protected:
 	std::vector<qstringvec>									_lastJaspCopyValues,
 															_lastJaspCopyLabels;
 	std::vector<boolvec>									_lastJaspCopySelect;
-	QTimer												*	_delayViewportChangedTimer	= nullptr;
+	QTimer												*	_delayViewportChangedTimer	= nullptr,
+														*	_resetLessTimer				= nullptr;
 	strintmap												_roleNameToRole;
 
+	
 };
 
 

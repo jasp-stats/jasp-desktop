@@ -34,9 +34,9 @@
 #include "osf/onlinedatamanager.h"
 #include "osf/onlineusernodeosf.h"
 #include "widgets/filemenu/osf.h"
-#include "utilities/simplecrypt.h"
+#include "simplecrypt.h"
 #include "utilities/settings.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utilities/messageforwarder.h"
 #include <iostream>
 

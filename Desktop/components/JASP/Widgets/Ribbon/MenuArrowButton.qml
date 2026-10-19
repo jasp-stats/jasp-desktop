@@ -52,6 +52,7 @@ Rectangle
 
 	ToolTip.text:				toolTip
 	ToolTip.visible:			toolTip !== "" && mice.containsMouse
+	ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 
 	signal clicked
 

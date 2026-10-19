@@ -7,7 +7,9 @@ std::string		EmptyValues::_displayString			= "";
 const int		EmptyValues::missingValueInteger	= std::numeric_limits<int>::lowest();
 const double	EmptyValues::missingValueDouble		= NAN;
 
-EmptyValues::EmptyValues(EmptyValues * parent) : _parent(parent)
+EmptyValues::EmptyValues(EmptyValues * parent, QObject * qparent) 
+	:	QObject(qparent), 
+	  _parent(parent)
 {
 	//Log::log() << "EmptyValues::EmptyValues(" << (parent ? "a parent" : "null") << ");" << std::endl;
 }
@@ -69,6 +71,8 @@ void EmptyValues::setEmptyValues(const stringset& values, bool custom)
 	_emptyStrings	= values;
 	_emptyDoubles	= ColumnUtils::getDoubleValues(values);
 	_hasEmptyValues	= custom;
+	
+	emit emptyValuesChanged();
 }
 
 bool EmptyValues::hasEmptyValues() const

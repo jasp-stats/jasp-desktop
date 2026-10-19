@@ -91,6 +91,10 @@ if(NOT FLATPAK_USED)
       QuickControls2Impl
       QmlWorkerScript
       QuickWidgets
+      # Private headers of QQuickText/QQuickRectangle/QQuickTextInput/QQuickImage (script
+      # constructor leaf items) and QQuickCheckBox:
+      QuickPrivate
+      QuickTemplates2Private
   )
   if(NOT USE_QT_STATIC_LIBS)
     find_package(
@@ -99,6 +103,7 @@ if(NOT FLATPAK_USED)
                WebChannel
                Svg
                Network
+               HttpServer
                Xml
                Sql
                DBus
@@ -121,6 +126,7 @@ else()
                Svg
                Sql
                Network
+               HttpServer
                Xml
                DBus
                QuickTemplates2
@@ -130,7 +136,9 @@ else()
                QuickControls2
                QuickControls2Impl
                QmlWorkerScript
-               QuickWidgets)
+               QuickWidgets
+               QuickPrivate
+               QuickTemplates2Private)
 
   find_package(
     Qt6WebEngineQuick
@@ -190,8 +198,8 @@ if(LINUX)
 
     # ---- libsodium ----
     message(CHECK_START "Looking for `libsodium`")
-      set(libsodium_INCLUDE_DIR /usr/include /app/lib64/)
-      set(LIBSODIUM_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
+    set(libsodium_INCLUDE_DIR /usr/include /app/lib64/)
+    set(LIBSODIUM_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
 
     message(CHECK_START "Looking for libsodium.so")
     find_library(libsodium_LIBRARIES libsodium.so
@@ -210,8 +218,8 @@ if(LINUX)
 
     # ---- FreeXL ----
     message(CHECK_START "Looking for `libfreexl`")
-      set(LIBFREEXL_INCLUDE_DIRS /usr/include /app/lib64/)
-      set(LIBFREEXL_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
+    set(LIBFREEXL_INCLUDE_DIRS /usr/include /app/lib64/)
+    set(LIBFREEXL_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
 
     message(CHECK_START "Looking for libfreexl.so")
     find_library(LIBFREEXL_LIBRARIES libfreexl.so
@@ -230,8 +238,8 @@ if(LINUX)
 
     # ---- librdata ----
     message(CHECK_START "Looking for `librdata`")
-      set(LIBRDATA_INCLUDE_DIRS /usr/include/ /usr/include/rdata /usr/local/include /usr/local/include/rdata /app/include)
-      set(LIBRDATA_LIBRARY_DIRS /usr/local/lib /usr/lib /app/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+    set(LIBRDATA_INCLUDE_DIRS /usr/include/ /usr/include/rdata /usr/local/include /usr/local/include/rdata /app/include)
+    set(LIBRDATA_LIBRARY_DIRS /usr/local/lib /usr/lib /app/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 
     message(CHECK_START "Looking for librdata.so")
     find_library(LIBRDATA_LIBRARIES librdata.so
@@ -273,8 +281,10 @@ if(WIN32 AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   find_package(freexl 2.0.99 REQUIRED)
   find_package(libsodium 1.0.20 REQUIRED)
 
-  copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h)
-  copy_rtools_header(RTOOLS_LIBRDATA_H		rdata.h			${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h)
+  set(LIBREADSTAT_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/rtools/include/readstat")
+  set(LIBRDATA_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/rtools/include/rdata")
+  copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${LIBREADSTAT_INCLUDE_DIRS}/readstat.h)
+  copy_rtools_header(RTOOLS_LIBRDATA_H		rdata.h			${LIBRDATA_INCLUDE_DIRS}/rdata.h)
 
   find_rtools_dll_path(RTOOLS_ZLIB_DLL            "zlib1.dll")
   find_rtools_dll_path(RTOOLS_MSYS_DLL            "msys-2.0.dll")
@@ -288,6 +298,16 @@ if(WIN32 AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   find_rtools_dll_path(RTOOLS_LIBGCC_S_SEH_DLL    "libgcc_s_seh-1.dll")
   find_rtools_dll_path(RTOOLS_LIBREADSTAT_DLL_A   "libreadstat.dll.a")
   find_rtools_dll_path(RTOOLS_LIBWINPTHREAD_DLL   "libwinpthread-1.dll")
+
+  # ICU DLL: needed by Qt 6.1+ on Windows Server 2019 (build < 18362)
+  find_file(SYSTEM_ICU_DLL
+    NAMES icu.dll
+    PATHS "C:/Windows/System32"
+    DOC "Combined ICU DLL for older Windows systems"
+  )
+  if(NOT SYSTEM_ICU_DLL)
+    message(WARNING "icu.dll not found — JASP may fail to start on Windows Server 2019")
+  endif()
 
 endif()
 

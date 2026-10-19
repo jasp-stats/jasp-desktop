@@ -31,6 +31,15 @@ bool JASPConfigurationTOMLParser::parse(JASPConfiguration *target, const QString
 	if(modulesToLoad)
 		modulesToLoad->for_each([&](toml::value<std::string>& elem) { target->setAdditionalModule(QString(elem.get().c_str())); });
 
+	//override common modules
+	toml::array* overrideCommonModules = tbl.get_as<toml::array>("OverrideCommon");
+	if(overrideCommonModules)
+	{
+		QStringList overrideCommonList;
+		overrideCommonModules->for_each([&](toml::value<std::string>& elem) { overrideCommonList.append(QString(elem.get().c_str())); });
+		target->setOverrideCommon(overrideCommonList);
+	}
+
 	//root constants
 	toml::table* rootConstants = tbl.get_as<toml::table>("Constants");
 	if(rootConstants)

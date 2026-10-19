@@ -7,7 +7,7 @@
 #include <string>
 #include "version.h"
 #include <json/json.h>
-
+#include "enumutilities.h"
 
 namespace Modules
 {
@@ -16,6 +16,8 @@ typedef std::map<std::string, std::vector<std::string>> UpgradeMsgs; //option na
 extern const std::string		prefixLog;
 extern const char			*	logId;
 extern const char			*	analysisLog;
+
+DECLARE_ENUM(BoolOpType, AND, OR, NOT, XOR);
 
 
 struct upgradeError  : public std::runtime_error

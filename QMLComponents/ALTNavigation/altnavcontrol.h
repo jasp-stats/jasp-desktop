@@ -3,6 +3,8 @@
 
 #include <QHash>
 #include "altnavscope.h"
+#include "analysisbase.h"	//These seem unnecessary but they are required for compiling the moc
+#include "filter.h"			//These seem unnecessary but they are required for compiling the moc
 
 class ALTNavControl : public QObject
 {

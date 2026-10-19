@@ -243,7 +243,7 @@ ComboBoxBase
 			id:				comboBoxBackground
 			border.width:	comboBox.showBorder && !control.activeFocus ? 1					: 0
 			border.color:	comboBox.showBorder							? jaspTheme.borderColor : "transparent"
-			radius:			2
+			radius:			jaspTheme.borderRadius
 			color:			jaspTheme.controlBackgroundColor
 		}
 
@@ -258,15 +258,17 @@ ComboBoxBase
 			anchors.centerIn:	parent
 			opacity:			debug ? .3 : 1
 			visible:			comboBox.useExternalBorder
-			radius:				jaspTheme.jaspControlHighlightWidth
+			radius:				jaspTheme.borderRadius
 		}
 
 		popup: QTC.Popup
 		{
 			id:				popupRoot
 			padding:		1
-			implicitWidth:	popupView.implicitWidth + scrollBar.width + 2*padding
-			implicitHeight: Math.min(popupView.implicitHeight + 2 * padding, popupView.maxHeight)
+			implicitWidth:	contentWidth + scrollBar.width
+			implicitHeight: Math.min(contentHeight + 2 * padding, popupView.maxHeight)
+			x:				padding
+			y:				padding
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
 
@@ -320,6 +322,7 @@ ComboBoxBase
 						border.color:		jaspTheme.focusBorderColor
 						border.width:		2
 						color:				"transparent"
+						radius:				jaspTheme.borderRadius
 					}
 				}
 				
@@ -353,6 +356,7 @@ ComboBoxBase
 				border.color:			jaspTheme.borderColor
 				border.width:			1
 				color:					jaspTheme.fileMenuColorBackground
+				radius:					jaspTheme.borderRadius	
 			}
 		}
 
@@ -360,7 +364,7 @@ ComboBoxBase
 		{
 			implicitHeight:							jaspTheme.comboBoxHeight
 			implicitWidth:							popupView.width
-			enabled:								comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
+			enabled:								(comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index])
 
 			contentItem: Rectangle
 			{
@@ -371,7 +375,6 @@ ComboBoxBase
 				property bool isEmptyValue:			comboBox.addEmptyValue && index === 0
 				property bool showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
 				property bool showLine:				comboBox.addLineAfterEmptyValue && index === 0
-
 
 				Image
 				{

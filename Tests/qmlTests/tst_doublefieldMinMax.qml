@@ -7,37 +7,53 @@ TestCase
 {
 	name:		"TestDoublefieldMinMax"
 
-	DoubleField
+	property alias form: jaspForm
+
+	SignalSpy
 	{
-		id: defaultDoubleLower
-		label: "Default Double Lower Bound"
-		name: "lowerIntegerDefault"
-		value: 0.1
+		id:				spyLoader
+		target:			jaspForm
+		signalName:		"formCompletedSignal"
 	}
 
-	DoubleField
+	Form
 	{
-		id:		doubleLower
-		name:	"doubleLower"
-		label:  "Double Lower Bound"
-		max:	doubleUpper.value
-		defaultValue: defaultDoubleLower.value
-		min:	0
-	}
+		id: jaspForm
 
-	DoubleField
-	{
-		id:		doubleUpper
-		name:	"doubleUpper"
-		label:  "Double Upper Bound (Exclusive)"
-		min:	doubleLower.value
-		defaultValue: 0.50
-		max:	1
-		inclusive: JASP.MinOnly
+		DoubleField
+		{
+			id: defaultDoubleLower
+			label: "Default Double Lower Bound"
+			name: "lowerIntegerDefault"
+			value: 0.1
+		}
+
+		DoubleField
+		{
+			id:		doubleLower
+			name:	"doubleLower"
+			label:  "Double Lower Bound"
+			max:	doubleUpper.value
+			defaultValue: defaultDoubleLower.value
+			min:	0
+		}
+
+		DoubleField
+		{
+			id:		doubleUpper
+			name:	"doubleUpper"
+			label:  "Double Upper Bound (Exclusive)"
+			min:	doubleLower.value
+			defaultValue: 0.50
+			max:	1
+			inclusive: JASP.MinOnly
+		}
 	}
 
 	function test_1setDefaultValue()
 	{
+		spyLoader.wait(1000)
+		compare(spyLoader.count, 1, "The form should have completed")
 		defaultDoubleLower.value = .2
 		compare(doubleLower.boundJson(), .2, "The default value and the current value of doubleLower are both .1, so when changing the default value to .2, the current value also change to .2");
 	}

@@ -19,6 +19,7 @@
 #include "textinputbase.h"
 #include "analysisform.h"
 #include "columnutils.h"
+#include "jaspdoublevalidator.h"
 
 using namespace std;
 
@@ -49,9 +50,20 @@ void TextInputBase::bindTo(const Json::Value& value)
 	{
 	case TextInputType::IntegerInputType:
 		int intVal;
-		if (value.isNumeric())
+		//asInt() throws on values outside int range (e.g. 1e300 fuzzed into an integer
+		//option), so check the range instead of just isNumeric().
+		if (value.isInt())
 			_value = value.asInt();
-
+		else if (value.isInt64() && value.asInt64() >= INT_MIN && value.asInt64() <= INT_MAX)
+			_value = int(value.asInt64());
+		else if (value.isDouble())
+		{
+			double dbl = value.asDouble();
+			if (dbl >= INT_MIN && dbl <= INT_MAX)
+				_value = int(dbl);
+			else
+				setHasWarning(true); //Out-of-int-range: keep the old value, flag it like any other wrong option value
+		}
 		else if (value.isString() && QColumnUtils::getIntValue(tq(value.asString()), intVal))
 			_value = intVal;
 
@@ -201,9 +213,20 @@ void TextInputBase::setUp()
 	QQuickItem::connect(this, SIGNAL(editingFinished()), this, SLOT(valueChangedSlot()));
 
 	if (form())
+	{
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option
 		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setDisplayValue);
+
+		// Sync the form's relaxInputConstraints to the validator's relaxDecimals
+		auto* jdv = findChild<JASPDoubleValidator*>();
+		if (jdv)
+		{
+			jdv->setRelaxDecimals(form()->relaxInputConstraints());
+			connect(form(), &AnalysisForm::relaxInputConstraintsChanged,
+					jdv, &JASPDoubleValidator::setRelaxDecimals);
+		}
+	}
 
 	if (_value.isNull()) // If the value is not directly set, use the default value.
 		setValue(_defaultValue, false);

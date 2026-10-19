@@ -518,6 +518,20 @@ td.squash-left
 	cursor: text;
 }
 
+/* The title of an analysis is editable, the dataset/filter indication shown behind it is not.
+   While editing the title becomes a block of its own so it keeps a clickable size even when empty. */
+.toolbar-title-core.toolbar-editing {
+	display: inline-block;
+	min-width: 2em;
+}
+
+.toolbar-title-suffix {
+	margin-left: 0.8em;
+	font-size: 0.8em;
+	font-style: italic;
+	opacity: 0.6;
+}
+
 
 .jasp-editable {
 	padding-top: .5em ;

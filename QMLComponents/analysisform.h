@@ -25,13 +25,14 @@
 #include "boundcontrols/boundcontrol.h"
 #include "analysisbase.h"
 #include "models/listmodel.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <queue>
 
 class ListModelTermsAssigned;
 class JASPControl;
 class ExpanderButtonBase;
 class RSyntax;
+class Filter;
 
 ///
 /// The backend for the `Form{}` used in all JASP's well, qml forms
@@ -46,24 +47,27 @@ class AnalysisForm : public QQuickItem
 	Q_OBJECT
 	QML_ELEMENT
 
-	Q_PROPERTY(QString		title					READ title					WRITE setTitle					NOTIFY titleChanged					)
-	Q_PROPERTY(QString		errors					READ errors													NOTIFY errorsChanged				)
-	Q_PROPERTY(QString		warnings				READ warnings												NOTIFY warningsChanged				)
-	Q_PROPERTY(bool			needsRefresh			READ needsRefresh											NOTIFY needsRefreshChanged			)
-	Q_PROPERTY(bool			hasVolatileNotes		READ hasVolatileNotes										NOTIFY hasVolatileNotesChanged		)
-	Q_PROPERTY(bool			runOnChange				READ runOnChange			WRITE setRunOnChange			NOTIFY runOnChangeChanged			)
-	Q_PROPERTY(QString		info					READ info					WRITE setInfo					NOTIFY infoChanged					)
-	Q_PROPERTY(QString		infoBottom				READ infoBottom				WRITE setInfoBottom				NOTIFY infoBottomChanged			)
-	Q_PROPERTY(QString		helpMD					READ helpMD													NOTIFY helpMDChanged				)
-	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
-	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
-	Q_PROPERTY(bool			showRButton				READ showRButton											NOTIFY showRButtonChanged			)
-	Q_PROPERTY(bool			developerMode			READ developerMode											NOTIFY developerModeChanged			)
-	Q_PROPERTY(QString		rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
-	Q_PROPERTY(bool			showAllROptions			READ showAllROptions		WRITE setShowAllROptions		NOTIFY showAllROptionsChanged		)
-	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
-	Q_PROPERTY(JASPControl*	activeJASPControl		READ getActiveJASPControl									NOTIFY activeJASPControlChanged		)
-
+	Q_PROPERTY(QString			title					READ title					WRITE setTitle					NOTIFY titleChanged					)
+	Q_PROPERTY(QString			errors					READ errors													NOTIFY errorsChanged				)
+	Q_PROPERTY(QString			warnings				READ warnings												NOTIFY warningsChanged				)
+	Q_PROPERTY(bool				needsRefresh			READ needsRefresh											NOTIFY needsRefreshChanged			)
+	Q_PROPERTY(bool				hasVolatileNotes		READ hasVolatileNotes										NOTIFY hasVolatileNotesChanged		)
+	Q_PROPERTY(bool				runOnChange				READ runOnChange			WRITE setRunOnChange			NOTIFY runOnChangeChanged			)
+	Q_PROPERTY(QString			info					READ info					WRITE setInfo					NOTIFY infoChanged					)
+	Q_PROPERTY(QString			infoBottom				READ infoBottom				WRITE setInfoBottom				NOTIFY infoBottomChanged			)
+	Q_PROPERTY(QString			helpMD					READ helpMD													NOTIFY helpMDChanged				)
+	Q_PROPERTY(QVariant			analysis				READ analysis												NOTIFY analysisChanged				)
+	Q_PROPERTY(QVariantList		optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
+	Q_PROPERTY(bool				showRButton				READ showRButton											NOTIFY showRButtonChanged			)
+	Q_PROPERTY(bool				developerMode			READ developerMode											NOTIFY developerModeChanged			)
+	Q_PROPERTY(QString			rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
+	Q_PROPERTY(bool				showAllROptions			READ showAllROptions		WRITE setShowAllROptions		NOTIFY showAllROptionsChanged		)
+	Q_PROPERTY(bool				isAnnotated				READ isAnnotated											NOTIFY isAnnotatedChanged			)
+	Q_PROPERTY(bool			relaxInputConstraints	READ relaxInputConstraints	WRITE setRelaxInputConstraints	NOTIFY relaxInputConstraintsChanged)
+	Q_PROPERTY(QString			rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
+	Q_PROPERTY(JASPControl	*	activeJASPControl		READ getActiveJASPControl									NOTIFY activeJASPControlChanged		)
+	Q_PROPERTY(Filter		*	filter					READ filter													NOTIFY filterChanged				)
+	Q_PROPERTY(VariableInfo	*	varInfo					READ varInfo												CONSTANT							)
 public:
 	explicit				AnalysisForm(QQuickItem * = nullptr);
 							~AnalysisForm();
@@ -72,6 +76,10 @@ public:
 
 	void					runRScript(	const QString & script, const QString & controlName, bool whiteListedVersion);
 	void					runFilter(	const QString & name);
+	
+	Filter				*	filter();
+	VariableInfo		*	varInfo() { return _varInfo; }
+	VariableInfoProvider*	variableInfoProvider();		///< The filter of the analysis if there is one, otherwise the provider of the form's VariableInfo (e.g. in R Syntax, where there is no filter).
 
 	void					itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
 
@@ -93,10 +101,15 @@ public:
 	bool					developerMode()					const	{ return _developerMode;	}
 	QString					rSyntaxText()					const;
 	bool					showAllROptions()				const;
+	bool					isAnnotated()					const;
+	void					setIsAnnotated(bool isAnnotated = true);
+	bool					relaxInputConstraints()			const;
+	void					setRelaxInputConstraints(	bool					relax);
+	Json::Value				optionMeta(bool includeDescriptions = true)	const;
 
 public slots:
 	void					runScriptRequestDone(		const QString		&	result, const QString & requestId, bool hasError);
-	void					filterByNameDone(			const QString		&	name,	const QString & error);
+	void					filterByNameDone(			int dataSetID,	const QString		&	name,	const QString & error);
 	void					boundValueChangedHandler(	JASPControl			*	control);
 	void					setOptionNameConversion(	const QVariantList	&	conv);
 	void					setTitle(					QString					title);
@@ -124,16 +137,19 @@ signals:
 	void					rSourceChanged(const QString& name);
 	void					optionNameConversionChanged();
 	void					titleChanged();
+	void					filterChanged(Filter *);
 	void					showRButtonChanged();
 	void					developerModeChanged();
 	void					rSyntaxTextChanged();
 	void					showAllROptionsChanged();
 	void					activeJASPControlChanged();
+	void					isAnnotatedChanged();
+	void					relaxInputConstraintsChanged(bool relax);
 		
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
 	void					addModel(ListModel* model)												{ if (!model->name().isEmpty())	_modelMap[model->name()] = model;			}
-	Q_INVOKABLE JASPControl* getControl(const QString& name)										{ return _controls.contains(name) ? _controls[name] : nullptr;				}
+Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _controls.contains(name) ? _controls[name] : nullptr;				}
 	void					addListView(JASPListControl* listView, JASPListControl* sourceListView);
 	void					addControl(JASPControl* control);
 
@@ -212,6 +228,8 @@ private:
 	stringvecvec	_getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
 	QString			msgsListToString(const QStringList & list) const;
 	void			lockOptions();
+	void			_disableControls(QQuickItem * root, bool disable);
+	Json::Value		_controlOptionMeta(JASPControl* ctrl, bool includeDescriptions) const;
 
 private slots:
 	   void			formCompletedHandler();
@@ -219,6 +237,7 @@ private slots:
 
 private:
 	AnalysisBase								*	_analysis			= nullptr;
+	VariableInfo								*	_varInfo			= nullptr;
 	QMap<QString, JASPControl* >					_controls;
 
 	///Ordered on dependencies within QML, aka an assigned variables list depends on the available list it is connected to.
@@ -247,6 +266,7 @@ private:
 	RSyntax										*	_rSyntax						= nullptr;
 	bool											_showRButton					= false,
 													_developerMode					= false;
+	bool											_relaxInputConstraints			= false;
 	JASPControl*									_activeJASPControl				= nullptr;
 };
 

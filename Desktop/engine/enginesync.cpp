@@ -28,7 +28,7 @@
 #include "tempfiles.h"
 #include <json/json.h>
 #include "processinfo.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "utilities/appdirs.h"
 #include "analysis/analyses.h"
 #include "gui/preferencesmodel.h"
@@ -172,6 +172,7 @@ QVariant EngineSync::data(const QModelIndex &index, int role) const
 	case enginesListRoles::idle:			return engine->idle();
 	case enginesListRoles::idleSoon:		return engine->idleSoon();
 	case enginesListRoles::analysisStatus:	return engine->analysisStatus();
+	case enginesListRoles::loadingProgress:	return engine->loadingProgress();
 	case enginesListRoles::runsWhat:		return QString("Runs ") +(engine->runsAnalysis() ? "Analyses " : "") + (engine->runsRCmd() ? "RCmder " : "") + (engine->runsUtility() ? "Utilities " : "") ;
 	}
 
@@ -251,7 +252,10 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 			while(!channelFree(freeChannel) && freeChannel < maxEngineCount())
 				freeChannel++;
 
-			if(freeChannel > maxEngineCount())
+			//freeChannel can end up == maxEngineCount() when every channel is taken:
+			//that is still not a free channel (and writing _engineStopTimes[freeChannel]
+			//below was an out-of-bounds write), so the check must be >=.
+			if(freeChannel >= maxEngineCount())
 				throw std::runtime_error("createNewEngine but no engines can be started because no channel is free or cooled down...");
 
 			_engineStopTimes[freeChannel] = -1;
@@ -265,39 +269,38 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 
 		if(Analyses::analyses()) //Could be missing if testing
 		{
-			connect(engine,						&EngineRepresentation::rCodeReturned,					Analyses::analyses(),	&Analyses::rCodeReturned												);
-			connect(engine,						&EngineRepresentation::filterByNameDone,				Analyses::analyses(),	&Analyses::filterByNameDone,					Qt::QueuedConnection	);
-			connect(Analyses::analyses(),		&Analyses::analysisRemoved,								engine,					&EngineRepresentation::analysisRemoved									);
+			connect(engine,					&EngineRepresentation::rCodeReturned,					Analyses::analyses(),	&Analyses::rCodeReturned												);
+			connect(engine,					&EngineRepresentation::filterByNameDone,				Analyses::analyses(),	&Analyses::filterByNameDone,						Qt::QueuedConnection	);
+			connect(Analyses::analyses(),	&Analyses::analysisRemoved,								engine,					&EngineRepresentation::analysisRemoved									);
 		}
-		connect(engine,						&EngineRepresentation::engineTerminated,				this,					&EngineSync::engineTerminated											);
-		connect(engine,						&EngineRepresentation::processNewFilterResult,			this,					&EngineSync::processNewFilterResult										);
-		connect(engine,						&EngineRepresentation::filterDone,						this,					&EngineSync::filterDone													);
-		connect(engine,						&EngineRepresentation::processFilterErrorMsg,			this,					&EngineSync::processFilterErrorMsg										);
-		connect(engine,						&EngineRepresentation::columnDataTypeChanged,			this,					&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
-		connect(engine,						&EngineRepresentation::computeColumnSucceeded,			this,					&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
-		connect(engine,						&EngineRepresentation::computeColumnRemoved,			this,					&EngineSync::computeColumnRemoved,				Qt::QueuedConnection	);
-		connect(engine,						&EngineRepresentation::computeColumnFailed,				this,					&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
-		connect(engine,						&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed									);
-		connect(engine,						&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded								);
-		connect(engine,						&EngineRepresentation::moduleUninstallationSucceeded,	this,					&EngineSync::moduleUninstallationSucceeded									);
-		connect(engine,						&EngineRepresentation::moduleUninstallationFailed,		this,					&EngineSync::moduleUninstallationFailed									);
-		connect(engine,						&EngineRepresentation::moduleLoadingSucceeded,			this,					&EngineSync::moduleLoadingSucceeded										);
-		connect(engine,						&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailed										);
-		connect(engine,						&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
-		connect(engine,						&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh											);
-		connect(engine,						&EngineRepresentation::requestEngineRestartAfterCrash,	this,					&EngineSync::restartEngineAfterCrash,			Qt::QueuedConnection	);
-		connect(engine,						&EngineRepresentation::registerForModule,				this,					&EngineSync::registerEngineForModule									);
-		connect(engine,						&EngineRepresentation::unregisterForModule,				this,					&EngineSync::unregisterEngineForModule									);
-		connect(engine,						&EngineRepresentation::moduleHasEngine,					this,					&EngineSync::moduleHasEngine											);
-		connect(engine,						&EngineRepresentation::checkDataSetForUpdates,			this,					&EngineSync::checkDataSetForUpdates										);
-		connect(engine,						&EngineRepresentation::channelSignal,					this,					&EngineSync::channel,							Qt::DirectConnection	);
-		connect(engine,						&EngineRepresentation::stopAndDestroyEngine,			this,					&EngineSync::stopAndDestroyEngine,				Qt::QueuedConnection	);
-		connect(engine,						&EngineRepresentation::stopModuleEngine,				this,					&EngineSync::stopModuleEngine											);
-		connect(this,						&EngineSync::reloadData,								engine,					&EngineRepresentation::reloadData										);
-		connect(this,						&EngineSync::settingsChanged,							engine,					&EngineRepresentation::settingsChanged									);
 		
-		connect(engine,						&EngineRepresentation::stateChanged,					this,					&EngineSync::resetListModel,					Qt::QueuedConnection	);
-		connect(engine,						&EngineRepresentation::analysisStatusChanged,			this,					&EngineSync::resetListModel,					Qt::QueuedConnection	);
+		connect(engine,						&EngineRepresentation::filterByNameDone,				DataSetPackage::pkg(),	&DataSetPackage::filterByNameDone,					Qt::QueuedConnection	);
+		connect(engine,						&EngineRepresentation::engineTerminated,				this,					&EngineSync::engineTerminated												);
+		connect(engine,						&EngineRepresentation::filterDone,						this,					&EngineSync::filterDone														);
+		connect(engine,						&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed										);
+		connect(engine,						&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded									);
+		connect(engine,						&EngineRepresentation::moduleUninstallationSucceeded,	this,					&EngineSync::moduleUninstallationSucceeded									);
+		connect(engine,						&EngineRepresentation::moduleUninstallationFailed,		this,					&EngineSync::moduleUninstallationFailed										);
+		connect(engine,						&EngineRepresentation::moduleLoadingSucceeded,			this,					&EngineSync::moduleLoadingSucceeded											);
+		connect(engine,						&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailed											);
+		connect(engine,						&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived											);
+		connect(engine,						&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh												);
+		connect(engine,						&EngineRepresentation::requestEngineRestartAfterCrash,	this,					&EngineSync::restartEngineAfterCrash,				Qt::QueuedConnection	);
+		connect(engine,						&EngineRepresentation::registerForModule,				this,					&EngineSync::registerEngineForModule										);
+		connect(engine,						&EngineRepresentation::unregisterForModule,				this,					&EngineSync::unregisterEngineForModule										);
+		connect(engine,						&EngineRepresentation::moduleHasEngine,					this,					&EngineSync::moduleHasEngine												);
+		connect(engine,						&EngineRepresentation::checkDataSetForUpdates,			this,					&EngineSync::checkDataSetForUpdates											);
+		if(Workspace::singleton())
+			connect(engine,					&EngineRepresentation::computeColumnSucceeded,			Workspace::singleton(),	&Workspace::computedColumnSucceeded,						Qt::QueuedConnection		);
+		if(Workspace::singleton())
+			connect(engine,					&EngineRepresentation::computeDataSetSucceeded,			Workspace::singleton(),	&Workspace::computedDataSetSucceeded,						Qt::QueuedConnection		);
+		connect(engine,						&EngineRepresentation::channelSignal,					this,					&EngineSync::channel,								Qt::DirectConnection	);
+		connect(engine,						&EngineRepresentation::stopAndDestroyEngine,			this,					&EngineSync::stopAndDestroyEngine,					Qt::QueuedConnection	);
+		connect(engine,						&EngineRepresentation::stopModuleEngine,				this,					&EngineSync::stopModuleEngine												);
+		connect(this,						&EngineSync::settingsChanged,							engine,					&EngineRepresentation::settingsChanged										);
+		
+		connect(engine,						&EngineRepresentation::stateChanged,					this,					&EngineSync::resetListModel,						Qt::QueuedConnection	);
+		connect(engine,						&EngineRepresentation::analysisStatusChanged,			this,					&EngineSync::resetListModel,						Qt::QueuedConnection	);
 
 		resetListModel();
 
@@ -340,7 +343,10 @@ void EngineSync::start()
 
 void EngineSync::killProcessTimer()
 {
-	_timerProcess->stop();
+	//start() may never have run (tests can skip the engines entirely), in which case the timers
+	//do not exist and there is nothing to stop.
+	if(_timerProcess)
+		_timerProcess->stop();
 }
 
 void EngineSync::restartEngines()
@@ -348,7 +354,7 @@ void EngineSync::restartEngines()
 	for(auto * engine : _engines)
 		if(engine->killed())
 		{
-            engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPriviliged()));
+            engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPrivileged()));
 			Log::log() << "restarted engine " << engine->channelNumber() << std::endl;
 		}
 
@@ -361,7 +367,7 @@ void EngineSync::restartEngineAfterCrash(EngineRepresentation * engine)
 {
 	Log::log() << "restartEngineAfterCrash(" << engine->channelNumber() << ")" << std::endl;
 	
-    engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPriviliged()));
+    engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPrivileged()));
 	logCfgRequest();
 }
 
@@ -375,7 +381,7 @@ void EngineSync::restartAKilledOrStoppedEngine(EngineRepresentation * engine)
 {
 
 	if(engine->killed() || !engine->jaspEngineStillRunning())
-        engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPriviliged()));
+        engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPrivileged()));
 
 	else if(engine->stopped())
 		engine->resumeEngine();
@@ -447,24 +453,15 @@ void EngineSync::process()
 
 	if(moduleInstallRunning()) return; //First finish any module install running.
 
-	processReloadData();
-
-	//If we are waiting for an engine to load data, this might take a while, so lets not kill it for for instance a filterscript or something
-	bool anEngineIsLoadingData = false;
-	for(const EngineRepresentation * e : _engines)
-		if(e->reloadingData())
-			anEngineIsLoadingData = true;
-
 	processSettingsChanged();
 	
-	if(!anEngineIsLoadingData || !_engines.size())
-		processFilterScript();
+	processFilterScript();
 		
 	processLogCfgRequests();
 
 	if(_stopProcessing || _dataMode || _filterRunning)
 	{
-		if ((_dataMode) && processComputedColumnQueue())
+		if ((_dataMode) && (processComputedColumnQueue() || processComputedDataSetQueue()))
 			startExtraEngines(1);
 		return;
 	}
@@ -475,8 +472,9 @@ void EngineSync::process()
 	//So we try to distribute some work to each engine as below:
 	stringset	notEnoughIdlesForScript		=	processRCodeQueue();
 	bool		notEnoughIdlesForCompCol	=	processComputedColumnQueue();
+	bool		notEnoughIdlesForCompDataSet=	processComputedDataSetQueue();
 	auto		notEnoughIdlesForAnalysis	=	processAnalysisRequests();
-    bool		notEnoughIdles				=	notEnoughIdlesForCompCol || notEnoughIdlesForScript.size() || notEnoughIdlesForAnalysis.size();
+    bool		notEnoughIdles				=	notEnoughIdlesForCompCol || notEnoughIdlesForCompDataSet || notEnoughIdlesForScript.size() || notEnoughIdlesForAnalysis.size();
 	
 	// So  right now notEnoughIdles tells us we do not have enough idle engines (or free idle engines anyway)
 	// Now we join the set of missing module-engines, or engines registered for a module (and usually with that module loaded unless it is an install request)
@@ -484,11 +482,13 @@ void EngineSync::process()
 	
 	int			wantThisManyEngines			=	notEnoughIdlesSet.size();
 
-	if (notEnoughIdlesForCompCol) // Need an angine for a computed column: create one!
+	if (notEnoughIdlesForCompCol) // Need an engine for a computed column: create one!
+		wantThisManyEngines++;
+	if (notEnoughIdlesForCompDataSet) // Need an engine for a computed dataset: create one too!
 		wantThisManyEngines++;
 
 	if(notEnoughIdles)
-        Log::log() << "Not enough idle engines! Need " << (notEnoughIdlesForScript.size() ? " one for script" : "") << (notEnoughIdlesForCompCol ? " one for compcol" : "") << (notEnoughIdlesForAnalysis.size() ? std::to_string(notEnoughIdlesForAnalysis.size()) + " for analysis" : "") << ", one will " << ( !anEngineIdleSoon() ? "NOT " : "")  << "be idle soon..." << std::endl;
+        Log::log() << "Not enough idle engines! Need " << (notEnoughIdlesForScript.size() ? " one for script" : "") << (notEnoughIdlesForCompCol ? " one for compcol" : "") << (notEnoughIdlesForCompDataSet ? " one for compdata" : "") << (notEnoughIdlesForAnalysis.size() ? std::to_string(notEnoughIdlesForAnalysis.size()) + " for analysis" : "") << ", one will " << ( !anEngineIdleSoon() ? "NOT " : "")  << "be idle soon..." << std::endl;
 	
 	//First try to find or start some engines specifically for waiting analyses, and we assign them to the module immediately
 	if(notEnoughIdlesForAnalysis.size())
@@ -542,50 +542,62 @@ void EngineSync::process()
 			engine->resumeEngine();
 }
 
-int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
+int EngineSync::sendFilter(int dataSetId, const QString & generatedFilter, const QString & filter)
 {
 	JASPTIMER_SCOPE(EngineSync::sendFilter);
-	
-	bool filterTheSame = _waitingFilter && (_waitingFilter->generatedfilter == generatedFilter && _waitingFilter->script == filter);
 
-	if(!filterTheSame)
+	//Only the latest request per (dataSetId, script) needs to be kept: drop a pending filter that the
+	//new one supersedes so the queue cannot grow unboundedly while engines are busy.
+	for (auto it = _waitingFilters.begin(); it != _waitingFilters.end();)
 	{
-		delete _waitingFilter;
-	
-		_waitingFilter = new RFilterStore(generatedFilter, filter, ++_filterCurrentRequestID);
-		Log::log() << "waiting filter with requestid: " << _filterCurrentRequestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
-	}
-	else
-	{
-		_waitingFilter->requestId = ++_filterCurrentRequestID;
-		Log::log() << "waiting filter requestid increased to " << _filterCurrentRequestID << std::endl;
+		RFilterStore * w = *it;
+		if (w->dataSetId == dataSetId && w->generatedfilter == generatedFilter && w->script == filter)
+		{
+			delete w;
+			it = _waitingFilters.erase(it);
+		}
+		else
+			++it;
 	}
 
-	return _filterCurrentRequestID;
+	int requestId = ++_waitingFilterRequestIDCounter;
+	_waitingFilters.emplace_back(new RFilterStore(dataSetId, generatedFilter, filter, requestId));
+	Log::log() << "waiting filter with requestid: " << requestId << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
+
+	return requestId;
 }
 
-void EngineSync::sendFilterByName(const QString & name, const QString & module)
+void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QString & module)
 {
 	std::queue<RScriptStore *> copyQueue = _waitingScripts;
-	
+
 	if(copyQueue.size() > 0)
 		for(RScriptStore * script = copyQueue.front(); copyQueue.size() > 0; script = copyQueue.front(), copyQueue.pop())
 		{
+			//Only deduplicate against actual filter-by-name requests (the queue also holds plain R
+			//scripts) and match the dataSetId too: in a multi-dataset workspace two datasets can each
+			//have a filter with the same name, and collapsing them would never deliver one dataset's reply.
+			if(script->typeScript != engineState::filterByName)
+				continue;
+
 			auto * waiting = static_cast<RFilterByNameStore*>(script);
-			
-			if(waiting && waiting->name == name && waiting->module == module)
+
+			if(waiting->name == name && waiting->module == module && waiting->dataSetId == dataSetId)
 				return;
 		}
-					
-	_waitingScripts.push(new RFilterByNameStore(name, module));
+
+	//Unique requestId so the reply can be matched to this request (mirrors the default
+	//filter path): replies for superseded requests are dropped by EngineRepresentation
+	//and must never clear the filter's stale flag.
+	_waitingScripts.push(new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module));
 }
 
-void EngineSync::sendRCode(const QString & rCode, int requestId, bool whiteListedVersion, QString module)
+void EngineSync::sendRCode(int dataSetId, const QString & rCode, int requestId, bool whiteListedVersion, QString module)
 {
-	_waitingScripts.push(new RScriptStore(requestId, rCode, module, engineState::rCode, whiteListedVersion));
+	_waitingScripts.push(new RScriptStore(dataSetId, requestId, rCode, module, engineState::rCode, whiteListedVersion));
 }
 
-void EngineSync::computeColumn(const QString & columnName, const QString & computeCode, columnType colType)
+void EngineSync::computeColumn(int dataSetId, const QString & columnName, const QString & computeCode, columnType colType)
 {
 	//first we remove the previously sent requests for this same column!
 	std::queue<RComputeColumnStore*> copiedWaiting(_waitingCompCols);
@@ -594,17 +606,40 @@ void EngineSync::computeColumn(const QString & columnName, const QString & compu
 	while(copiedWaiting.size() > 0)
 	{
 		RComputeColumnStore * cur = copiedWaiting.front();
-		if(cur->typeScript != engineState::computeColumn || static_cast<RComputeColumnStore*>(cur)->_columnName != columnName)
-			_waitingCompCols.push(cur);
 		copiedWaiting.pop();
+
+		if(cur->typeScript != engineState::computeColumn || cur->dataSetId != dataSetId || static_cast<RComputeColumnStore*>(cur)->_columnName != columnName)
+			_waitingCompCols.push(cur);
+		else
+			delete cur; //superseded by the new request for the same column
 	}
 
-	_waitingCompCols.push(new RComputeColumnStore(columnName, computeCode, colType));
+	_waitingCompCols.push(new RComputeColumnStore(dataSetId, columnName, computeCode, colType));
+}
+
+void EngineSync::computeDataSet(int dataSetId, const QString & computeCode, int defaultInputFilterId)
+{
+	//first we remove the previously sent requests for this same dataset!
+	std::queue<RComputeDataSetStore*> copiedWaiting(_waitingCompDataSets);
+	_waitingCompDataSets = std::queue<RComputeDataSetStore*>();
+
+	while(copiedWaiting.size() > 0)
+	{
+		RComputeDataSetStore * cur = copiedWaiting.front();
+		copiedWaiting.pop();
+
+		if(cur->typeScript != engineState::computeDataSet || cur->dataSetId != dataSetId)
+			_waitingCompDataSets.push(cur);
+		else
+			delete cur; //superseded by the new request for the same dataset
+	}
+
+	_waitingCompDataSets.push(new RComputeDataSetStore(dataSetId, computeCode, defaultInputFilterId));
 }
 
 void EngineSync::processFilterScript()
 {
-	if (!_waitingFilter)
+	if(_waitingFilters.empty())
 		return;
 
 	JASPTIMER_SCOPE(EngineSync::processFilterScript);
@@ -626,8 +661,12 @@ void EngineSync::processFilterScript()
 			for (auto *engine : _engines)
 				if (engine->idle()  && engine->runsUtility())
 				{
-					engine->runScriptOnProcess(_waitingFilter);
-					_waitingFilter = nullptr;
+					RFilterStore * w = _waitingFilters.front();
+					_waitingFilters.pop_front();
+
+					_dispatchedFilterRequestID = w->requestId;
+					engine->runScriptOnProcess(w); //Copies synchronously; safe to free below.
+					delete w; //runScriptOnProcess no longer owns the store (and the old single-var path leaked it)
 					return;
 				}
 
@@ -637,7 +676,7 @@ void EngineSync::processFilterScript()
 
 void EngineSync::filterDone(int requestID)
 {
-	if(requestID != _filterCurrentRequestID)
+	if(requestID != _dispatchedFilterRequestID)
 		return;
 
 	Log::log() << "Filter with request " << requestID << " done! Starting timer for allowing analyses to run later" << std::endl;
@@ -654,16 +693,6 @@ void EngineSync::processSettingsChanged()
 
 	if(_rCmder && _rCmder->shouldSendSettings())
 		_rCmder->sendSettings();
-}
-
-void EngineSync::processReloadData()
-{
-	for(auto * engine : _engines)
-		if(engine->needsReloadData())
-			engine->sendReloadData();
-
-	if(_rCmder && _rCmder->needsReloadData())
-		_rCmder->sendReloadData();
 }
 
 
@@ -689,8 +718,20 @@ stringset EngineSync::processRCodeQueue()
 			if(waiting->typeScript == engineState::rCode || waiting->typeScript == engineState::filterByName)
 			{
 				const std::string mod = fq(waiting->module);
+				
+				bool anyEngineCanRunIt = waiting->module == "*";
 			
-				if(!moduleHasEngine(mod))	
+				if(anyEngineCanRunIt)
+				{
+					for(auto & engine : _engines)
+						if(engine->idle())
+						{
+							foundEngine		= true;
+							engine->runScriptOnProcess(waiting);
+							break;
+						}
+				}
+				else if(!moduleHasEngine(mod))	
 				{
 					for(auto & engine : _engines)
 						if(engine->idle() && engine->module() == "")
@@ -775,6 +816,82 @@ bool EngineSync::processComputedColumnQueue()
 		Log::log() << "Exception thrown in processComputedColumnQueue" << std::endl;
 	}
 	
+	return needEngine;
+}
+
+bool EngineSync::processComputedDataSetQueue()
+{
+	//Computed datasets whose input is another computed dataset are held until the producer has
+	//finished writing to the shared SQLite; this mirrors the dependency ordering already done for
+	//computed columns within a single dataset (see iShouldBeSentAgain / checkForDependents). Also
+	//prefer dispatching a dependent to the same engine that processed its input.
+	bool needEngine = false;
+	try
+	{
+		std::queue<RComputeDataSetStore*>	newWaiting;
+		std::set<int>						dispatchedThisPass;
+
+		while(_waitingCompDataSets.size() > 0)
+		{
+			RComputeDataSetStore * waiting = _waitingCompDataSets.front();
+
+			bool foundOne = false;
+
+			//Don't dispatch a computed dataset whose input is a computed dataset still being computed
+			//or that was dispatched this same pass — the producer may not have flushed its output yet.
+			bool holdForDependency = false;
+			int inputFilterId = waiting->_defaultInputFilterId;
+			if(inputFilterId >= 0 && Workspace::singleton())
+			{
+				Filter * inputFilter = Workspace::singleton()->filterById(inputFilterId);
+				if(inputFilter)
+				{
+					int inputId = inputFilter->data()->id();
+
+					for(auto * engine : _engines)
+						if(engine->isComputingDataSet(inputId))
+						{
+							holdForDependency = true;
+							break;
+						}
+					if(!holdForDependency)
+						holdForDependency = dispatchedThisPass.count(inputId) > 0;
+				}
+			}
+
+			if(!holdForDependency)
+			{
+				for(auto * engine : _engines)
+					if(engine->idle()  && engine->runsUtility())
+					{
+						engine->runScriptOnProcess(waiting);
+						dispatchedThisPass.insert(waiting->dataSetId);
+						delete waiting;
+						_waitingCompDataSets.pop();
+						foundOne = true;
+						break;
+					}
+
+				//Only report "need another engine" when we actually tried to dispatch and found none
+				//idle; a dataset held for its producer must not count as insufficient engines.
+				if(!foundOne)
+					needEngine = true;
+			}
+
+			if(!foundOne)
+			{
+				newWaiting.push(waiting);
+				_waitingCompDataSets.pop();
+			}
+		}
+
+		_waitingCompDataSets = newWaiting;
+	}
+	catch(...)
+	{
+		Log::log() << "Exception thrown in processComputedDataSetQueue" << std::endl;
+	}
+
 	return needEngine;
 }
 
@@ -1103,7 +1220,7 @@ void EngineSync::pauseEngines(bool unloadData)
 void EngineSync::startStoppedEngine(EngineRepresentation * engine)
 {
 	if(!engine->jaspEngineStillRunning())
-        engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPriviliged()));
+        engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPrivileged()));
 	else
 		engine->resumeEngine();
 }
@@ -1176,42 +1293,6 @@ void EngineSync::dataModeChanged(bool dataMode)
 	}*/
 }
 
-void EngineSync::enginesPrepareForData()
-{
-	JASPTIMER_SCOPE(EngineSync::enginesPrepareForData);
-
-	Log::log() << "EngineSync::enginesPrepareForData!" << std::endl;
-	
-	//make sure we process any received messages first.
-	for(auto * engine : _engines)
-		engine->processReplies();
-
-	std::set<EngineRepresentation *> pauseOrKillThese;
-
-	for(EngineRepresentation * e : _engines)
-		if(!e->idle())
-		{
-			pauseOrKillThese.insert(e);
-			e->pauseEngine(true);
-		}
-
-	//int64_t tryTill = Utils::currentMillis() + ENGINE_KILLTIME;
-
-	//while(!allEnginesPaused(pauseOrKillThese) && tryTill >= Utils::currentMillis())
-	//	for (auto * engine : pauseOrKillThese)
-	//		engine->processReplies();
-
-	//for (auto * engine : pauseOrKillThese)
-	//	if(!engine->paused())
-	//		engine->killEngine();
-}
-
-void EngineSync::enginesReceiveNewData()
-{
-	Log::log() << "EngineSync::enginesReceiveNewData!" << std::endl;
-	
-	emit reloadData();
-}
 
 bool EngineSync::isModuleInstallRequestActive(const QString &moduleName)
 {
@@ -1366,8 +1447,10 @@ void EngineSync::cleanRestart()
 		_waitingCompCols.pop();
 	}
 
-	delete _waitingFilter;
-	_waitingFilter = nullptr;
+	for (RFilterStore * f : _waitingFilters)
+		delete f;
+	_waitingFilters.clear();
+	_dispatchedFilterRequestID = -1;
 	_filterRunning = false;
 	
 

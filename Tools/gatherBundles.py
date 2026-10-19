@@ -1,38 +1,44 @@
 #!/usr/bin/python3
 
-from pathlib import Path
 import argparse
 import json
-import sys
-from github import Github, Auth
-import requests
 import os
+import sys
 from datetime import datetime
+from pathlib import Path
+
+import requests
+from github import Auth, Github
 
 
 def classify_asset(asset_name):
     name = asset_name.lower()
-    
+
     if "windows" in name:
         return "windows"
-    
-    if "flatpak" in name and "x86" in name:
-        return "flatpak"
-        
+
+    if "flatpak" in name and ("aarch64" in name or "arm64" in name):
+        return "flatpak_arm"
+
+    if "flatpak" in name and ("x86" in name or "x86_64" in name):
+        return "flatpak_x86"
+
     if "macos" in name:
         if "arm64" in name:
             return "mac_arm"
         if "x86" in name:
             return "mac_intel"
-            
+
     return None
+
 
 def find_latest_platform_assets(repo, include_prerelease=False, scan_depth=10):
     best = {
-        "windows":   (None, datetime.min),
+        "windows": (None, datetime.min),
         "mac_intel": (None, datetime.min),
-        "mac_arm":   (None, datetime.min),
-        "flatpak":   (None, datetime.min),
+        "mac_arm": (None, datetime.min),
+        "flatpak_x86": (None, datetime.min),
+        "flatpak_arm": (None, datetime.min),
     }
 
     releases = repo.get_releases()
@@ -41,27 +47,33 @@ def find_latest_platform_assets(repo, include_prerelease=False, scan_depth=10):
     for release in releases:
         if checked_count >= scan_depth:
             break
-        
+
         if not include_prerelease and release.prerelease:
             continue
 
         checked_count += 1
-        
+
         for asset in release.get_assets():
             platform = classify_asset(asset.name)
-            
+
             if platform:
                 asset_date = asset.updated_at.replace(tzinfo=None)
                 current_best_date = best[platform][1]
-                
+
                 if asset_date > current_best_date:
                     best[platform] = (asset, asset_date)
 
     return {k: v[0] for k, v in best.items()}
 
 
-
-def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, download_on=False):
+def gatherMod(
+    repo_list,
+    token,
+    include_prerelease=False,
+    flatpak_x86=False,
+    flatpak_arm=False,
+    download_on=False,
+):
     auth = Auth.Token(token)
     g = Github(auth=auth)
 
@@ -69,24 +81,32 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
         "windows": [],
         "mac_intel": [],
         "mac_arm": [],
-        "flatpak": []
+        "flatpak_x86": [],
+        "flatpak_arm": [],
     }
 
     for repo_str in repo_list:
         try:
             repo = g.get_repo(repo_str)
             best_assets = find_latest_platform_assets(repo, include_prerelease)
-            
-            missing_platforms = [platform for platform, asset in best_assets.items() if asset is None]
-            
+
+            missing_platforms = [
+                platform
+                for platform, asset in best_assets.items()
+                if asset is None and not platform.startswith("flatpak")
+            ]
+
             if missing_platforms:
-                raise ValueError(f"Missing assets for platforms: {', '.join(missing_platforms)}")
+                raise ValueError(
+                    f"Missing assets for platforms: {', '.join(missing_platforms)}"
+                )
 
             results["windows"].append(best_assets["windows"])
             results["mac_intel"].append(best_assets["mac_intel"])
             results["mac_arm"].append(best_assets["mac_arm"])
-            results["flatpak"].append(best_assets["flatpak"])
-            
+            results["flatpak_x86"].append(best_assets["flatpak_x86"])
+            results["flatpak_arm"].append(best_assets["flatpak_arm"])
+
         except Exception as e:
             print(f"Could not parse module {repo_str}: {e}", file=sys.stderr)
             sys.exit(1)
@@ -96,64 +116,103 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
     def download(download_url, token=""):
         headers = {
             "Authorization": f"Bearer {token}",
-            "Accept": "application/octet-stream"
+            "Accept": "application/octet-stream",
         }
         print(f"Downloading {os.path.basename(download_url)}...", file=sys.stderr)
         with requests.get(download_url, stream=True, headers=headers) as response:
             response.raise_for_status()
             with open(os.path.basename(download_url), "wb") as f:
-                for chunk in response.iter_content(chunk_size=8192): 
+                for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
 
-    if not flatpak:
-        win_list = [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["windows"]]
-        mac_arm_list = [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_arm"]]
-        mac_intel_list = [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_intel"]]
+    # Always print JSON for non-flatpak platforms
+    win_list = [
+        {"url": x.browser_download_url, "checksum": getattr(x, "digest", "")[7:]}
+        for x in results["windows"]
+    ]
+    mac_arm_list = [
+        {"url": x.browser_download_url, "checksum": getattr(x, "digest", "")[7:]}
+        for x in results["mac_arm"]
+    ]
+    mac_intel_list = [
+        {"url": x.browser_download_url, "checksum": getattr(x, "digest", "")[7:]}
+        for x in results["mac_intel"]
+    ]
 
-        json_output = {
-            "Windows-x86_64": sorted(win_list, key=lambda item: item["url"]),
-            "MacOS-arm64":    sorted(mac_arm_list, key=lambda item: item["url"]),
-            "MacOS-x86_64":   sorted(mac_intel_list, key=lambda item: item["url"])
-        }
-        print(json.dumps(json_output, indent=4))
+    json_output = {
+        "Windows-x86_64": sorted(win_list, key=lambda item: item["url"]),
+        "MacOS-arm64": sorted(mac_arm_list, key=lambda item: item["url"]),
+        "MacOS-x86_64": sorted(mac_intel_list, key=lambda item: item["url"]),
+    }
+    print(json.dumps(json_output, indent=4))
 
-    if flatpak:
-        for x in results["flatpak"]:
+    if flatpak_x86:
+        for x in results["flatpak_x86"]:
             download(x.browser_download_url, token)
-            
-    if not flatpak and download_on:
+
+    if flatpak_arm:
+        for x in results["flatpak_arm"]:
+            download(x.browser_download_url, token)
+
+    if download_on:
         all_assets = results["windows"] + results["mac_arm"] + results["mac_intel"]
         for x in all_assets:
             download(x.browser_download_url, token)
 
+
 def main():
-    parser = argparse.ArgumentParser(prog='gatherModuleJson', description='Generates module json from a dir containing jasp submodules')
-    parser.add_argument('dir', help='Directory containing the JASP submodules')
-    parser.add_argument('token', help='GitHub Personal Access Token')
-    parser.add_argument('--json', help='Path to the JSON file defining module categories', default='modules.json')
-    parser.add_argument('--prerelease', action='store_true', help='Include prerelease assets')
-    parser.add_argument('--flatpak', action='store_true', help='Download flatpak assets')
-    parser.add_argument('--download', action='store_true', help='Download all non-flatpak assets')
-    parser.add_argument('--core', action='store_true', help='Only gather modules listed as "common" in the JSON')
+    parser = argparse.ArgumentParser(
+        prog="gatherModuleJson",
+        description="Generates module json from a dir containing jasp submodules",
+    )
+    parser.add_argument("dir", help="Directory containing the JASP submodules")
+    parser.add_argument("token", help="GitHub Personal Access Token")
+    parser.add_argument(
+        "--json",
+        help="Path to the JSON file defining module categories",
+        default="modules.json",
+    )
+    parser.add_argument(
+        "--prerelease", action="store_true", help="Include prerelease assets"
+    )
+    parser.add_argument(
+        "--flatpak-x86", action="store_true", help="Download flatpak x86_64 assets"
+    )
+    parser.add_argument(
+        "--flatpak-aarch64",
+        action="store_true",
+        help="Download flatpak aarch64/arm64 assets",
+    )
+    parser.add_argument(
+        "--download", action="store_true", help="Download all non-flatpak assets"
+    )
+    parser.add_argument(
+        "--core",
+        action="store_true",
+        help='Only gather modules listed as "common" in the JSON',
+    )
 
     args = parser.parse_args()
-    
+
     core_modules = []
     if args.core:
         try:
-            with open(args.json, 'r') as f:
+            with open(args.json, "r") as f:
                 module_data = json.load(f)
                 # Map the "common" key from JSON to the "core" concept
-                core_modules = module_data.get("common", []) 
+                core_modules = module_data.get("common", [])
         except FileNotFoundError:
-            print(f"Error: JSON file '{args.json}' not found. Cannot filter by core.", file=sys.stderr)
+            print(
+                f"Error: JSON file '{args.json}' not found. Cannot filter by core.",
+                file=sys.stderr,
+            )
             sys.exit(1)
         except json.JSONDecodeError as e:
             print(f"Error parsing JSON: {e}", file=sys.stderr)
             sys.exit(1)
 
-    path = Path(args.dir) 
-    
+    path = Path(args.dir)
+
     # Helper function to check if a module should be included
     def should_include(module_name):
         if not args.core:
@@ -162,17 +221,25 @@ def main():
 
     # Construct module list with filtering
     modules = [
-        'jasp-stats-modules/' + y.name 
-        for y in path.glob('Official/*') 
+        "jasp-stats-modules/" + y.name
+        for y in path.glob("Official/*")
         if y.is_dir() and should_include(y.name)
     ]
-        
+
     if not modules:
         print("No modules found matching the criteria.", file=sys.stderr)
         return
 
     print(f"Gathering modules: {modules}", file=sys.stderr)
-    gatherMod(modules, args.token, args.prerelease, args.flatpak, args.download)
+    gatherMod(
+        modules,
+        args.token,
+        args.prerelease,
+        args.flatpak_x86,
+        args.flatpak_aarch64,
+        args.download,
+    )
+
 
 if __name__ == "__main__":
     main()

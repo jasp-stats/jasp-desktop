@@ -8,12 +8,19 @@
 #
 list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 
+set(APPINFO_CPP "${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp")
 configure_file(${CMAKE_CURRENT_LIST_DIR}/appinfo.cpp.in
-               ${CMAKE_CURRENT_LIST_DIR}/appinfo.cpp)
+               ${APPINFO_CPP})
 message(STATUS "appinfo.cpp is successfully generated...")
 
-file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+file(GLOB HEADER_FILES    "${CMAKE_CURRENT_LIST_DIR}/*.h")
+file(GLOB SOURCE_FILES    "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+file(GLOB JSON_SOURCES    "${CMAKE_CURRENT_LIST_DIR}/json/*.cpp")
+
+# Remove stale appinfo.cpp from source tree (moved to binary dir)
+list(FILTER SOURCE_FILES EXCLUDE REGEX ".*appinfo\\.cpp$")
+
+list(APPEND SOURCE_FILES ${JSON_SOURCES} ${APPINFO_CPP})
 
 add_library(Common STATIC ${SOURCE_FILES} ${HEADER_FILES})
 

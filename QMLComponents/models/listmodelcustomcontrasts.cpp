@@ -17,7 +17,8 @@
 //
 
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
+#include "filter.h"
 #include "listmodelcustomcontrasts.h"
 #include "analysisform.h"
 #include "r_functionwhitelist.h"
@@ -28,7 +29,7 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : List
 {
 	_keepRowsOnReset = false;
 
-	_tableTerms.colNames.push_back(getDefaultColName(0));
+	_tableTerms.colNames.push_back(ListModelCustomContrasts::getDefaultColName(0));
 	_tableTerms.values.push_back({});
 	_loadColumnInfo();
 
@@ -38,11 +39,14 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : List
 
 	connect(this, &ListModelCustomContrasts::variableCountChanged,		_tableView, &TableViewBase::variableCountChanged);
 	connect(listView(), SIGNAL(scaleFactorChanged()),					this,		SLOT(scaleFactorChanged()));
-	connect(VariableInfo::info(),	&VariableInfo::labelsChanged,		this,		&ListModelCustomContrasts::sourceLabelsChanged);
-	connect(VariableInfo::info(),	&VariableInfo::labelsReordered,		this,		&ListModelCustomContrasts::sourceLabelsReordered);
-	connect(VariableInfo::info(),	&VariableInfo::variablesChanged,	this,		&ListModelCustomContrasts::sourceVariablesChanged);
-	connect(infoProviderModel(),	&QAbstractItemModel::modelReset	,	this,		&ListModelCustomContrasts::sourceTermsReset);
+	
+	assert(listView()->form());
+	connect(listView()->form()->varInfo(),	&VariableInfo::labelsChanged,		this,		&ListModelCustomContrasts::sourceLabelsChanged		, Qt::UniqueConnection);
+	connect(listView()->form()->varInfo(),	&VariableInfo::labelsReordered,		this,		&ListModelCustomContrasts::sourceLabelsReordered	, Qt::UniqueConnection);
+	connect(listView()->form()->varInfo(),	&VariableInfo::variablesChanged,	this,		&ListModelCustomContrasts::sourceVariablesChanged	, Qt::UniqueConnection);
+	connect(listView()->form()->varInfo(),	&VariableInfo::refresh,				this,		&ListModelCustomContrasts::sourceTermsReset			, Qt::UniqueConnection);
 }
+
 
 void ListModelCustomContrasts::sourceTermsReset()
 {
@@ -81,7 +85,7 @@ void ListModelCustomContrasts::getVariablesAndLabels(Terms& variables, QVector<Q
 				}
 			}
 			else
-				labels = requestInfo(VariableInfo::Labels, newVariable.value()).toStringList();
+				labels = requestInfo(varInfoType::Labels, newVariable.value()).toStringList();
 		}
 
 		QVector<QVector<QVariant> > copyAllLabels = allLabels;

@@ -29,6 +29,7 @@
 
 
 ColumnEncoder				*	ColumnEncoder::_columnEncoder				= nullptr;
+ColumnEncoder				*	ColumnEncoder::_currentEncoder				= nullptr;
 std::set<ColumnEncoder*>	*	ColumnEncoder::_otherEncoders				= nullptr;
 bool							ColumnEncoder::_encodingMapInvalidated		= true;
 bool							ColumnEncoder::_decodingMapInvalidated		= true;
@@ -40,10 +41,37 @@ bool							ColumnEncoder::_encodedNamesInvalidated		= true;
 
 ColumnEncoder * ColumnEncoder::columnEncoder()
 {
+	//This static getter is the ENGINE-ONLY entry point for the R bridge encoder context, set by
+	//setCurrentEncoder() in provideAndUpdateDataSet. Desktop code must use provider->columnEncoder()
+	//(the dataset's own encoder) which reads from the instance directly.
+	if(!_currentEncoder)
+	{
+		if(!_columnEncoder)
+			_columnEncoder = new ColumnEncoder();
+		_currentEncoder = _columnEncoder;
+	}
+	return _currentEncoder;
+}
+
+ColumnEncoder * ColumnEncoder::currentEncoder()
+{
+	return _currentEncoder;
+}
+
+ColumnEncoder * ColumnEncoder::fallbackEncoder()
+{
 	if(!_columnEncoder)
 		_columnEncoder = new ColumnEncoder();
 
 	return _columnEncoder;
+}
+
+void ColumnEncoder::setCurrentEncoder(ColumnEncoder * encoder)
+{
+	if(_currentEncoder && _currentEncoder != encoder)
+		_currentEncoder->invalidateAll();
+
+	_currentEncoder = encoder;
 }
 
 void ColumnEncoder::invalidateAll()
@@ -86,6 +114,13 @@ ColumnEncoder::ColumnEncoder(const std::map<std::string, std::string> & decodeDi
 
 ColumnEncoder::~ColumnEncoder()
 {
+	//Whatever the current indirection points at, if it was us, clear it BEFORE the invalidation
+	//below: otherwise a later columnEncoder()/isColumnName() use dereferences a destroyed encoder.
+	//(Needed for non-default encoders too, e.g. a per-dataset encoder destroyed while current;
+	//DataSet also clears explicitly, but this covers every other owner.)
+	if(_currentEncoder == this)
+		_currentEncoder = nullptr;
+
 	if(this != _columnEncoder)
 	{
 		if(_otherEncoders && _otherEncoders->count(this) > 0) //The special "replacer-encoder" doesn't add itself to otherEncoders.
@@ -114,28 +149,28 @@ std::string ColumnEncoder::encode(const std::string &in)
 {
 	if(in == "") return "";
 
-	if(encodingMap().count(in) == 0)
+	if(_encodingMap.count(in) == 0)
 		throw std::runtime_error("Trying to encode columnName but '" + in + "' is not a columnName!");
 
-	return encodingMap().at(in);
+	return _encodingMap.at(in);
 }
 
 std::string ColumnEncoder::decode(const std::string &in)
 {
 	if(in == "") return "";
 
-	if(decodingMap().count(in) == 0)
+	if(_decodingMap.count(in) == 0)
 		throw std::runtime_error("Trying to decode columnName but '" + in + "' is not an encoded columnName!");
 
-	return decodingMap().at(in);
+	return _decodingMap.at(in);
 }
 
 columnType ColumnEncoder::columnTypeFromEncoded(const std::string &in)
 {
-	if(in == "" || decodingTypes().count(in) == 0) 
+	if(in == "" || _decodingTypes.count(in) == 0) 
 		return columnType::unknown;
 	
-	return decodingTypes().at(in);
+	return _decodingTypes.at(in);
 }
 
 void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding)
@@ -202,6 +237,7 @@ void ColumnEncoder::setCurrentNames(const colTypeMap & namesWithTypes)
 	}
 	
 	sortVectorBigToSmall(_originalNames);
+	sortVectorBigToSmall(_encodedNames);
 	invalidateAll();
 }
 
@@ -224,20 +260,69 @@ void ColumnEncoder::sortVectorBigToSmall(std::vector<std::string> & vec)
 	std::sort(vec.begin(), vec.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //We need this to make sure smaller columnNames do not bite chunks off of larger ones
 }
 
+ColumnEncoder::colMap ColumnEncoder::encodingMap(const ColumnEncoder * self)
+{
+	colMap map = self->_encodingMap;
+
+	if(_otherEncoders)
+		for(const ColumnEncoder * other : *_otherEncoders)
+			if(other != self)
+				for(const auto & keyVal : other->_encodingMap)
+					if(map.count(keyVal.first) == 0)
+						map[keyVal.first] = keyVal.second;
+
+	return map;
+}
+
+ColumnEncoder::colMap ColumnEncoder::decodingMap(const ColumnEncoder * self)
+{
+	colMap map = self->_decodingMap;
+
+	if(_otherEncoders)
+		for(const ColumnEncoder * other : *_otherEncoders)
+			if(other != self)
+				for(const auto & keyVal : other->_decodingMap)
+					if(map.count(keyVal.first) == 0)
+						map[keyVal.first] = keyVal.second;
+
+	return map;
+}
+
+ColumnEncoder::colVec ColumnEncoder::originalNames(const ColumnEncoder * self)
+{
+	colVec vec = self->_originalNames;
+
+	if(_otherEncoders)
+		for(const ColumnEncoder * other : *_otherEncoders)
+			if(other != self)
+				for(const std::string & name : other->_originalNames)
+					vec.push_back(name);
+
+	sortVectorBigToSmall(vec);
+	return vec;
+}
+
+ColumnEncoder::colVec ColumnEncoder::encodedNames(const ColumnEncoder * self)
+{
+	colVec vec = self->_encodedNames;
+
+	if(_otherEncoders)
+		for(const ColumnEncoder * other : *_otherEncoders)
+			if(other != self)
+				for(const std::string & name : other->_encodedNames)
+					vec.push_back(name);
+
+	sortVectorBigToSmall(vec);
+	return vec;
+}
+
 const ColumnEncoder::colMap	&	ColumnEncoder::encodingMap()
 {
 	static ColumnEncoder::colMap map;
 
 	if(_encodingMapInvalidated)
 	{
-		map = _columnEncoder->_encodingMap;
-
-		if(_otherEncoders)
-			for(const ColumnEncoder * other : *_otherEncoders)
-				for(const auto & keyVal : other->_encodingMap)
-					if(map.count(keyVal.first) == 0)
-						map[keyVal.first] = keyVal.second;
-
+		map = encodingMap(columnEncoder());
 		_encodingMapInvalidated = false;
 	}
 
@@ -250,14 +335,7 @@ const ColumnEncoder::colMap	&	ColumnEncoder::decodingMap()
 
 	if(_decodingMapInvalidated)
 	{
-		map = _columnEncoder->_decodingMap;
-
-		if(_otherEncoders)
-			for(const ColumnEncoder * other : *_otherEncoders)
-				for(const auto & keyVal : other->_decodingMap)
-					if(map.count(keyVal.first) == 0)
-						map[keyVal.first] = keyVal.second;
-
+		map = decodingMap(columnEncoder());
 		_decodingMapInvalidated = false;
 	}
 
@@ -270,7 +348,7 @@ const ColumnEncoder::colTypeMap &ColumnEncoder::decodingTypes()
 
 	if(_decodingTypeInvalidated)
 	{
-		map = _columnEncoder->_decodingTypes;
+		map = columnEncoder()->_decodingTypes;
 
 		if(_otherEncoders)
 			for(const ColumnEncoder * other : *_otherEncoders)
@@ -293,7 +371,7 @@ const ColumnEncoder::colMap	&	ColumnEncoder::decodingMapSafeHtml()
 	{
 		map.clear();
 		
-		for(const auto & keyVal : _columnEncoder->_decodingMap)
+		for(const auto & keyVal : columnEncoder()->_decodingMap)
 			if(map.count(keyVal.first) == 0)
 				map[keyVal.first] = stringUtils::escapeHtmlStuff(keyVal.second, true);
 
@@ -315,17 +393,9 @@ const ColumnEncoder::colVec	&	ColumnEncoder::originalNames()
 
 	if(_originalNamesInvalidated)
 	{
-		vec = _columnEncoder->_originalNames;
-
-		if(_otherEncoders)
-			for(const ColumnEncoder * other : *_otherEncoders)
-				for(const std::string & name : other->_originalNames)
-					vec.push_back(name);
-
+		vec = originalNames(columnEncoder());
 		_originalNamesInvalidated = false;
 	}
-
-	sortVectorBigToSmall(vec);
 
 	return vec;
 }
@@ -336,17 +406,9 @@ const ColumnEncoder::colVec	&	ColumnEncoder::encodedNames()
 
 	if(_encodedNamesInvalidated)
 	{
-		vec = _columnEncoder->_encodedNames;
-
-		if(_otherEncoders)
-			for(const ColumnEncoder * other : *_otherEncoders)
-				for(const std::string & name : other->_encodedNames)
-					vec.push_back(name);
-
+		vec = encodedNames(columnEncoder());
 		_encodedNamesInvalidated = false;
 	}
-
-	sortVectorBigToSmall(vec);
 
 	return vec;
 }
@@ -404,11 +466,11 @@ std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::stri
 
 	return text;
 }
-
 std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string> * columnNamesFound)
 {
-	return encodeRScript(text, encodingMap(), originalNames(), columnNamesFound);
+	return encodeRScript(text, _encodingMap, _originalNames, columnNamesFound);
 }
+
 
 /*!
  * \brief Replace column names with encoded column names.
@@ -426,7 +488,7 @@ std::string ColumnEncoder::encodeRScript(std::string text, std::map<std::string,
 	
 	for(auto& prefix : prefixes) {
 		stringset columnNamesFound;
-		text = encodeRScript(text, encodingMap(), originalNames(), &columnNamesFound, prefix);
+		text = encodeRScript(text, _encodingMap, _originalNames, &columnNamesFound, prefix);
 		prefixedColumnsFound.insert({prefix, columnNamesFound});
 	}
 	return text;
@@ -531,18 +593,24 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 }
 
 
-void ColumnEncoder::encodeJson(Json::Value & json, bool replaceNames, bool replaceStrict)
+std::string ColumnEncoder::encodeAll(const std::string & text) const
 {
-	//std::cout << "Json before encoding:\n" << json.toStyledString();
-	replaceAll(json, encodingMap(), originalNames(), replaceNames, replaceStrict);
-	//std::cout << "Json after encoding:\n" << json.toStyledString() << std::endl;
+	return replaceAll(text, encodingMap(this), originalNames(this));
 }
 
-void ColumnEncoder::decodeJson(Json::Value & json, bool replaceNames)
+std::string ColumnEncoder::decodeAll(const std::string & text) const
 {
-	//std::cout << "Json before encoding:\n" << json.toStyledString();
-	replaceAll(json, decodingMap(), encodedNames(), replaceNames, false);
-	//std::cout << "Json after encoding:\n" << json.toStyledString() << std::endl;
+	return replaceAll(text, decodingMap(this), encodedNames(this));
+}
+
+void ColumnEncoder::encodeJson(Json::Value & json, bool replaceNames, bool replaceStrict) const
+{
+	replaceAll(json, encodingMap(this), originalNames(this), replaceNames, replaceStrict);
+}
+
+void ColumnEncoder::decodeJson(Json::Value & json, bool replaceNames) const
+{
+	replaceAll(json, decodingMap(this), encodedNames(this), replaceNames, false);
 }
 
 void ColumnEncoder::decodeJsonSafeHtml(Json::Value & json)
@@ -662,12 +730,12 @@ std::string ColumnEncoder::replaceColumnNamesInRScript(const std::string & rCode
 
 ColumnEncoder::colVec ColumnEncoder::columnNames()
 {
-	return _columnEncoder ? _columnEncoder->_originalNames : colVec();
+	return columnEncoder() ? columnEncoder()->_originalNames : colVec();
 }
 
 ColumnEncoder::colVec ColumnEncoder::columnNamesEncoded()
 {
-	return _columnEncoder ? _columnEncoder->_encodedNames : colVec();
+	return columnEncoder() ? columnEncoder()->_encodedNames : colVec();
 }
 
 void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const std::string& optionName, colsPlusTypes& colTypes)
@@ -717,9 +785,9 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 			bool hasType = type != "unknown" && columnTypeValidName(type);
 
 			std::string columnName = jsonValue.asString();
-			if(!hasType && columnName != "" && _columnEncoder->_dataSetTypes.count(columnName))
+			if(!hasType && columnName != "" && columnEncoder()->_dataSetTypes.count(columnName))
 			{
-				type = columnTypeToString(_columnEncoder->_dataSetTypes.at(columnName));
+				type = columnTypeToString(columnEncoder()->_dataSetTypes.at(columnName));
 				hasType = type != "unknown";
 			}
 
@@ -751,9 +819,9 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				bool hasType = type != "unknown" && columnTypeValidName(type);
 				std::string columnName = jsonColumnName.asString();
 
-				if(!hasType && columnName != "" && _columnEncoder->_dataSetTypes.count(columnName))
+				if(!hasType && columnName != "" && columnEncoder()->_dataSetTypes.count(columnName))
 				{
-					type = columnTypeToString(_columnEncoder->_dataSetTypes.at(columnName));
+					type = columnTypeToString(columnEncoder()->_dataSetTypes.at(columnName));
 					hasType = type != "unknown";
 				}
 
@@ -815,9 +883,9 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 	{
 		const std::string possibleCol = options.asString();
 		
-		if(_columnEncoder->_dataSetTypes.count(possibleCol))
+		if(columnEncoder()->_dataSetTypes.count(possibleCol))
 		{
-			columnType possType = _columnEncoder->_dataSetTypes.at(possibleCol);
+			columnType possType = columnEncoder()->_dataSetTypes.at(possibleCol);
 			if(possType != columnType::unknown)
 				colTypes.insert(std::make_pair(possibleCol + "." + columnTypeToString(possType) , possType));
 		}
@@ -827,6 +895,7 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 
 ColumnEncoder::colsPlusTypes ColumnEncoder::encodeColumnNamesinOptions(Json::Value & options, bool preloadingData)
 {
+	columnEncoder();
 	colsPlusTypes getTheseCols;
 
 	_addTypeToColumnNamesInOptionsRecursively(options, preloadingData, getTheseCols);

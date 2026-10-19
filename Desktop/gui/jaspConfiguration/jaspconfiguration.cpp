@@ -137,6 +137,7 @@ void JASPConfiguration::clear()
 	_definedConstants.clear();
 	_analysisOptions.clear();
 	_modulesToLoad.clear();
+	_overrideCommon.clear();
 }
 
 void JASPConfiguration::remoteChanged()

@@ -100,6 +100,7 @@ FocusScope
 				text:		commonToolTip.text
 				visible:	firstFileOrFolderMouseArea.containsMouse
 				font:		jaspTheme.font
+				background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 			}
 		}
 
@@ -181,6 +182,7 @@ FocusScope
 				text:		toolTipText(model.action, model.type, model.associated_datafile, "datafileMouseArea")
 				visible:	datafileMouseArea.containsMouse
 				font:		jaspTheme.font
+				background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 			}
 
 			Text
@@ -238,6 +240,7 @@ FocusScope
 			text:		toolTipText(model.action, model.type, model.associated_datafile, "commonMouseArea")
 			visible:	rectTitleAndDescripton.mainHovered
 			font:		jaspTheme.font
+			background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 		}
 
 	}

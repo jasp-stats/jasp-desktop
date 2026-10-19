@@ -38,6 +38,8 @@ public:
 		QML_MAX_FLICK_VELOCITY,
 		MODULES_REMEMBER,
 		MODULES_REMEMBERED,
+		MODULES_SELECTION_MIGRATED,
+		MODULES_ORDER,
 		SAFE_GRAPHICS_MODE,
 		CRAN_REPO_URL,
 		MODULE_LIBRARY_URL,
@@ -90,6 +92,7 @@ public:
 		DIRECT_DEVMOD_NAME,
 		RIBBON_BAR_HEIGHT_SCALE,
 		ENGINE_SANDBOX,
+		ENGINE_SANDBOX_DIR,
 		REMOTE_CONFIGURATION,
 		REMOTE_CONFIGURATION_URL,
 		LOCAL_CONFIGURATION_PATH,
@@ -98,12 +101,28 @@ public:
 		STORE_STATE_ETC,
 		SHOW_INTERACTIVE_DEFAULT,
 		AUTOSAVE_ON,
-		AUTOSAVE_INTERVAL_SEC
+		AUTOSAVE_INTERVAL_SEC,
+		AI_USER_PROVIDERS,
+		AI_USER_PERSONAS,
+		AI_CURRENT_PERSONA_ID,
+		AI_COMMON_SYSTEM_PROMPT,
+		AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM,
+		AI_ANNOTATION_USE_CUSTOM,
+		AI_ANNOTATION_PROMPT,
+		AI_USER_AVATAR,
+		AI_ENABLED,
+		RPC_SERVER_ENABLED,
+		RPC_SERVER_IP,
+		RPC_SERVER_PORT,
+		SYNC_DROPPED_DATAFILE,
+		ONBOARDING_COMPLETED,
+		ONBOARDING_STEP
 	};
 
 	static QVariant value(Settings::Type key);
 	static QVariant defaultValue(Settings::Type key);
 	static void setValue(Settings::Type key, const QVariant &value);
+	static bool isSet(Settings::Type key); //Whether the user (or an admin) ever stored a value for this setting, regardless of what the (default) value is
 	static void sync();
 	static void remove(Settings::Type key);
 	static QSettings* getSettings();

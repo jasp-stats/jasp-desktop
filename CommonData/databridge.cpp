@@ -23,6 +23,7 @@
 #include "timers.h"
 
 DataBridge::DataBridge(unsigned long sessionID, bool useMemory)
+	: _extraEncodings(new ColumnEncoder(ExtraOptionsPrefix))
 {
 	JASPTIMER_START(TempFiles Attach);
 	TempFiles::attach(sessionID);
@@ -30,16 +31,38 @@ DataBridge::DataBridge(unsigned long sessionID, bool useMemory)
 
 	if(sessionID != 0) //Otherwise we are just running to fix R packages
 	{
-		_db = DatabaseInterface::singleton();
-		if (!_db)
-			_db = new DatabaseInterface(false, useMemory);
+		//singletonOrNull() and not singleton(): the latter *creates* an interface when there is none, so it
+		//can never tell us whether a host already made one and we would always end up deleting somebody
+		//else's. See resolveDb() below for why that matters.
+		_db = DatabaseInterface::singletonOrNull();				//Borrowed: whoever created it destroys it.
+
+		if(!_db)
+		{
+			_db		= new DatabaseInterface(false, useMemory);	//Nobody else made one (the engine process), so it is ours.
+			_ownsDb	= true;
+		}
 	}
 }
 
 DataBridge::~DataBridge()
 {
-	delete _dataSet;
-	_dataSet = nullptr;
+	if(_ownsWorkspace)
+		delete _workspace;
+
+	_workspace		= nullptr;
+	_ownsWorkspace	= false;
+	
+	//Re-resolve before deciding: another owner may have replaced or destroyed it, and then it is not ours.
+	DatabaseInterface * db = resolveDb();
+
+	if(db && _ownsDb)
+	{
+		db->close();
+		delete db;
+	}
+
+	_db		= nullptr;
+	_ownsDb	= false;
 }
 
 void DataBridge::provideStateFileName(std::string & root, std::string & relativePath)
@@ -87,27 +110,75 @@ int DataBridge::getColumnOriginalIndex(const std::string &columnName)
 	return provideAndUpdateDataSet()->getColumnIndex(columnName);
 }
 
-DataSet * DataBridge::provideAndUpdateDataSet()
+Workspace * DataBridge::resolveWorkspace()
+{
+	//Workspace is a process-wide singleton. In the engine we are its only owner, but when we run inside
+	//a host that already made one (SyntaxInterface via DataSetProvider, the desktop via DataSetPackage)
+	//we must use that one: constructing a second Workspace replaces the singleton with an empty one and
+	//cuts the R bridge off from the dataset that was actually loaded. There is then no shownDataSet, so
+	//ColumnEncoder::setCurrentEncoder() never runs and every rbridge_* call falls back to the empty
+	//default encoder. Resolve it on every use rather than caching, because an owner may swap it out
+	//from under us (DataSetProvider::resetDataSet() deletes and recreates it on each loadDataSet).
+	if(Workspace::singleton() != _workspace)
+	{
+		_workspace		= Workspace::singleton();	//Borrowed: whoever created it destroys it.
+		_ownsWorkspace	= false;
+	}
+
+	if(!_workspace)
+	{
+		_workspace		= new Workspace();			//Nobody else made one (the engine process), so it is ours.
+		_ownsWorkspace	= true;
+	}
+
+	return _workspace;
+}
+
+DatabaseInterface * DataBridge::resolveDb()
+{
+	//DatabaseInterface is a process-wide singleton and ownership of it is not ours to assume. In the engine
+	//we are the one who makes it, but when we run inside a host that already made one (SyntaxInterface via
+	//DataSetProvider, the desktop via DataSetPackage) it belongs to that host and must outlive us: deleting
+	//it here leaves that owner deleting freed memory on its own way out. And because ~DatabaseInterface()
+	//clears the singleton, the next DatabaseInterface::singleton() quietly opens a fresh interface instead
+	//of complaining, so an in-memory db silently loses everything that was loaded into it. Resolve it on
+	//every use rather than trusting the cached pointer, because an owner may swap it out from under us
+	//(DataSetProvider::getProvider() destroys and recreates the provider, interface and all, whenever the
+	//in-memory flag flips, and DatabaseInterface::closeInterfaces() deletes the singleton outright).
+	if(DatabaseInterface::singletonOrNull() != _db)
+	{
+		_db		= DatabaseInterface::singletonOrNull();	//Somebody replaced or destroyed what we were pointing at, so it was never ours to free.
+		_ownsDb	= false;
+	}
+
+	return _db;
+}
+
+DataSet * DataBridge::provideAndUpdateDataSet(int dataSetId, std::function<void(float)> progressCallback)
 {
 	JASPTIMER_RESUME(DataBridge::provideAndUpdateDataSet());
-
-	bool setColumnNames = !_dataSet;
-
-	if(!_dataSet && _db->dataSetGetId() == 1 && _db->tableExists(_db->dataSetName(1)))
-		_dataSet = new DataSet(_db->dataSetGetId());
-
-	if(_dataSet)
-		setColumnNames |= _dataSet->checkForUpdates();
-
-	if(_dataSet && setColumnNames)
-		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
 	
-	if(_dataSet && _datasetProvidedCallback)
-		_datasetProvidedCallback();
+	resolveWorkspace();
 
+	_workspace->checkForUpdates(progressCallback);
+	
+	if(dataSetId != -1)
+		_workspace->setShownDataSet(dataSetId);
+			
+	if(_workspace->shownDataSet())
+	{
+		DataSet * ds = _workspace->shownDataSet();
+		//Column-name encoding for the R bridge is scoped to the *current request's* shown dataset.
+		//Every rbridge_* entry runs provideAndUpdateDataSet() first, and DataSet::setShownDataSet()
+		//(desktop) / this re-point (engine) keep the indirection authoritative. Also see the
+		//EngineBridgeCallbacks/DataSet guard in ColumnEncoder::setCurrentEncoder / ~DataSet.
+		ColumnEncoder::setCurrentEncoder(&ds->encoder());
+		ds->encoder().setCurrentNames(ds->getColumnTypesMap());
+	}
+	
 	JASPTIMER_STOP(DataBridge::provideAndUpdateDataSet());
 
-	return _dataSet;
+	return _workspace->shownDataSet();
 }
 
 std::string DataBridge::createColumn(const std::string &columnName, bool computed)
@@ -116,7 +187,7 @@ std::string DataBridge::createColumn(const std::string &columnName, bool compute
 		return "";
 
 	DataSet * data = provideAndUpdateDataSet();
-	Column  * col  = data->newColumn(columnName);
+	Column  * col  = data->createColumn(columnName);
 
 	col->setAnalysisId(_analysisId);
 	col->setCodeType(computed ? computedColumnType::analysis : computedColumnType::analysisNotComputed);
@@ -152,9 +223,48 @@ bool DataBridge::setColumnDataAndType(const std::string &columnName, const std::
 	return provideAndUpdateDataSet()->column(columnName)->overwriteDataAndType(data, colType, computed);
 }
 
+bool DataBridge::setDataSet(const std::string & datasetName, const std::vector<std::string> & columnNames, const std::vector<columnType> & columnTypes, const std::vector<std::vector<std::string>> & columnData)
+{
+	DataSet * ds = resolveWorkspace()->dataSetByName(datasetName);
+
+	if(!ds)
+		return false;
+
+	size_t	colCount	= columnNames.size(),
+			rowCount	= 0;
+
+	for(const auto & col : columnData)
+		rowCount = std::max(rowCount, col.size());
+
+	//Replace the current contents of the (computed) output dataset wholesale.
+	while(ds->columnCount() > 0)
+		ds->removeColumn(0);
+
+	ds->setRowCount(rowCount);
+
+	//insertColumns starts colIdx at 0 (createColumn would leave an off-by-one gap on an empty dataset).
+	ds->insertColumns(size_t(0), colCount);
+
+	for(size_t i=0; i<colCount; i++)
+	{
+		Column * col = ds->column(i);
+
+		col->setName(columnNames[i]);
+		col->setDefaultValues(columnTypes[i], false);
+		col->setValues(columnData[i], columnData[i], 0);
+		col->setType(columnTypes[i]);
+	}
+
+	ds->incRevision();
+
+	return true;
+}
+
 void DataBridge::reloadColumnNames()
 {
-	ColumnEncoder::columnEncoder()->setCurrentColumnNames(		provideAndUpdateDataSet() == nullptr ? std::map<std::string, columnType>({})			: provideAndUpdateDataSet()->getColumnTypesMap());
+	DataSet * ds = provideAndUpdateDataSet();
+	if(ds)
+		ds->encoder().setCurrentNames(ds->getColumnTypesMap());
 }
 
 void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
@@ -185,19 +295,19 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 			if(loadFilteredData.isObject())
 			{
 				const std::string	colName = loadFilteredData["column"].asString(),
-					filterN	= loadFilteredData["filter"].asString();
+									filterN	= loadFilteredData["filter"].asString();
 				DataSet			*	data	= provideAndUpdateDataSet();
 				Column			*	col		= data->column(colName);
 
 				if(!col)
 					return;
 
-				Filter			*	filter	= new Filter(data, filterN, false);
+				Filter			*	filter	= data->filter(filterN);
 
 				if(col && filter)
 				{
 					Json::Value rowIndices	= Json::arrayValue,
-						values		= Json::arrayValue;
+								values		= Json::arrayValue;
 					doublevec	dbls		= col->dataAsRDoubles({}); //We dont pass a filter because we need to know the rowindices.
 
 					for(size_t r=0; r<dbls.size(); r++)
@@ -210,7 +320,6 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 					options["rowIndices"]	= rowIndices;
 					options["values"]		= values;
 				}
-				delete filter;
 			}
 			return;
 

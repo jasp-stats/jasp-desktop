@@ -19,7 +19,7 @@
 #include "appinfo.h"
 #include "appdirs.h"
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <fstream>
 #include <chrono>
 #include "dirs.h"

@@ -1,4 +1,4 @@
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "upgrades.h"
 #include "upgrade.h"
 #include "log.h"
@@ -59,7 +59,7 @@ void Upgrades::addStep(Upgrade * step)
 	if(_steps.count(step->fromVersion()) > 0 && _steps[step->fromVersion()].count(fq(step->functionName())) > 0 && _steps[step->fromVersion()][fq(step->functionName())]  != step)
 		throw upgradeLoadError(fq(module()), fq("Already registered an Upgrade with version '" + step->fromVersionQ() + "'"));
 	
-	Log::log() << "Registering Upgrade '" << step->toString() << "' for module '" << module() << "'." << std::endl;
+	//Log::log() << "Registering Upgrade '" << step->toString() << "' for module '" << module() << "'." << std::endl;
 	
 	_steps[step->fromVersion()][fq(step->functionName())] = step;
 }
@@ -68,7 +68,7 @@ void Upgrades::removeStep(Upgrade * step)
 {
 	if(_steps.count(step->fromVersion()) > 0 && _steps[step->fromVersion()].count(fq(step->functionName())) > 0)
 	{
-		Log::log() << "Removing Upgrade '" << step->toString() << "' from module '" << module() << "'." << std::endl;
+		//Log::log() << "Removing Upgrade '" << step->toString() << "' from module '" << module() << "'." << std::endl;
 		
 		_steps[step->fromVersion()].erase(fq(step->functionName()));	
 		_steps.erase(step->fromVersion());

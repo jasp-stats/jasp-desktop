@@ -44,6 +44,7 @@ public:
 	bool optionLocked(const QString& module, const QString& analysis, const QString& optionName);
 	Json::Value getAnalysisOptionValues(const QString& module, const QString& analysis);
 	const QStringList* getAdditionalModules() { return &_modulesToLoad; }
+	const QStringList* getOverrideCommon() { return &_overrideCommon; }
 	QString getStartupCommands() { return _startupCommands; }
 
 
@@ -52,6 +53,7 @@ public:
 	bool addOption(const QString& key, const QVariant& value, bool locked, const QString& moduleName = "", const QString& analysisName = "");
 	void setAdditionalModule(const QString& module) { _modulesToLoad.push_back(module); };
 	void setAdditionalModules(const QStringList& modules) { _modulesToLoad += modules; };
+	void setOverrideCommon(const QStringList& modules) { _overrideCommon = modules; };
 	void setStartupCommands(const QString& commands) { _startupCommands += commands; };
 	void setJASPVersion(const Version& v) { _jaspVersion = v; };
 
@@ -90,8 +92,10 @@ private:
 	QMap<QString, QMap<QString, QMap<QString, bool>>> _analysisOptionsLocked;
 	QString _startupCommands;
 	QStringList _modulesToLoad;
+	QStringList _overrideCommon;
 
 	explicit JASPConfiguration(QObject *parent = nullptr);
+	~JASPConfiguration() override { if(_instance == this) _instance = nullptr; } ///< the cached instance is parented to its creator: without this a second MainWindow would get a dangling pointer back from getInstance()
 	static JASPConfiguration* _instance;
 
 	const QString defaultConfigurationFilename = "conf.toml";

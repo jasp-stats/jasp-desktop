@@ -326,7 +326,7 @@ DropArea
 					anchors
 					{
 						left:			expanderIcon.right
-						right:			rSyntaxButton.left
+						right:			buttons.left
 						leftMargin:		expanderIcon.anchors.leftMargin
 						rightMargin:	2 * preferencesModel.uiScale
 						verticalCenter:	parent.verticalCenter
@@ -388,130 +388,164 @@ DropArea
 						}
 					}
 				}
-
-				MenuButton
+				
+				RowLayout
 				{
-					id:					rSyntaxButton
-					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "/R-roundbutton.svg" :  jaspTheme.iconPath + "/R-roundbutton-disabled.svg"
-					enabled:			expanderButton.expanded
-					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
-					toolTip:			preferencesModel.showRSyntax ? qsTr("Hide R Syntax") : qsTr("Show R syntax")
-					radius:				height
-					opacity:			editButton.opacity
-					visible:            formParent.myForm && formParent.myForm.showRButton
+					id:						buttons
+					spacing:				2 * preferencesModel.uiScale
 					anchors
 					{
-						top:			parent.top
-						right:			editButton.left
-						bottom:			parent.bottom
-						topMargin:		editButton.anchors.topMargin
-						bottomMargin:	editButton.anchors.bottomMargin
+						right:				parent.right
+						top:				parent.top
+						bottom:				parent.bottom
+						rightMargin:		jaspTheme.formMargin + jaspTheme.generalAnchorMargin
 					}
-				}
 
-				MenuButton
-				{
-					id:					editButton
-					width:				height
-					iconSource:			jaspTheme.iconPath + "/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
-					enabled:			expanderButton.expanded
-					onClicked:			analysisTitleInput.startEditing();
-					toolTip:			qsTr("Edit the title of this analysis")
-					radius:				height
-					opacity:			enabled ? 1 : 0.1
-					anchors
+					MenuButton
 					{
-						top:			parent.top
-						right:			copyButton.left
-						bottom:			parent.bottom
-						topMargin:		4 * preferencesModel.uiScale
-						bottomMargin:	4 * preferencesModel.uiScale
+						id:					editButton
+						width:				height
+						iconSource:			jaspTheme.iconPath + "/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
+						enabled:			expanderButton.expanded
+						onClicked:			analysisTitleInput.startEditing();
+						toolTip:			qsTr("Edit the title of this analysis")
+						radius:				height
+						opacity:			enabled ? 1 : 0.1
 					}
-				}
-
-				MenuButton
-				{
-					id:					copyButton
-					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "/duplicate.svg" : jaspTheme.iconPath + "/duplicate_disabled.svg"
-					enabled:			expanderButton.expanded
-					onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
-					toolTip:			qsTr("Duplicate this analysis")
-					radius:				height
-					opacity:			editButton.opacity
-					anchors
+					
+					MenuButton
 					{
-						top:			parent.top
-						right:			helpButton.left
-						bottom:			parent.bottom
-						topMargin:		editButton.anchors.topMargin
-						bottomMargin:	editButton.anchors.bottomMargin
+						id:					rSyntaxButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "/R-roundbutton.svg" :  jaspTheme.iconPath + "/R-roundbutton-disabled.svg"
+						enabled:			expanderButton.expanded
+						onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
+						toolTip:			preferencesModel.showRSyntax ? qsTr("Hide R Syntax") : qsTr("Show R syntax")
+						radius:				height
+						opacity:			editButton.opacity
+						visible:            formParent.myForm && formParent.myForm.showRButton
 					}
-				}
+	
+					MenuButton
+					{
+						id:					filterButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "/filter-button.png" :  jaspTheme.iconPath + "/filter-button-black.png"
+						enabled:			expanderButton.expanded
+						toolTip:			qsTr("Select filter/data to use for this analysis")
+						radius:				height
+						opacity:			editButton.opacity
+						visible:			formParent.myForm
+						onClicked:			showPopupMenu(filterButton, filterButton.mapToGlobal(0,height))
+						
+						function showPopupMenu(fromItem, globalPos)
+						{			
+							let menuText		= []
+							let menuShortcuts	= []
+							let menuFunctions	= []
+							let menuIcons		= []
+							let menuEnabled		= []
+							let menuSelected	= []
 
-				MenuButton
-				{
-					id:					helpButton
-					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "info-button.png" : jaspTheme.iconPath + "info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
-					opacity:			editButton.opacity
-					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
-					enabled:			expanderButton.expanded
-					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))
-										{
-											if(formParent.myForm && helpModel.markdown !== formParent.myForm.helpMD)
+							let filtersList		= filterModel.filterDropDownAnalysisList
+							
+							messages.log("filterbutton: " + JSON.stringify(filtersList))
+			
+							for (let i = 0; i < filtersList.length; i++)
+							{
+								let filter = filtersList[i]
+								
+								messages.log("filter: " + JSON.stringify(filter))
+								
+								let imSelected = formParent.myForm.analysis.filterId == filter["value"] || filter["value"] === "*"
+								
+								//The chosen data and filter are shown in bold, that reads a lot clearer than a marker in front of them
+								menuText		.push(filter["label"])
+								menuFunctions	.push(function(){ formParent.myForm.analysis.filterId = filter["value"]; })
+								menuIcons		.push("")
+								menuShortcuts	.push("")
+								menuSelected	.push(imSelected)
+								menuEnabled		.push(!(filter["value"] == "-" || filter["value"] == "*") && !imSelected)
+							}
+			
+							var props = {
+								"hasIcons":		false,
+								"model":		menuText,
+								"icons":		menuIcons,
+								"shortcut":		menuShortcuts,
+								"enabled":		menuEnabled,
+								"selected":		menuSelected,
+								"functionCall": function (index)
+								{
+									menuFunctions[index]();
+									customMenu.hide()
+								}
+							};
+			
+							var fromItemPos = fromItem.mapFromGlobal(globalPos.x, globalPos.y)
+			
+							customMenu.show(fromItem, props, fromItemPos.x, fromItemPos.y);
+						}
+					}
+	
+					MenuButton
+					{
+						id:					copyButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "/duplicate.svg" : jaspTheme.iconPath + "/duplicate_disabled.svg"
+						enabled:			expanderButton.expanded
+						onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
+						toolTip:			qsTr("Duplicate this analysis")
+						radius:				height
+						opacity:			editButton.opacity
+					}
+	
+					MenuButton
+					{
+						id:					helpButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "info-button.png" : jaspTheme.iconPath + "info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+						opacity:			editButton.opacity
+						//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
+						enabled:			expanderButton.expanded
+						onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))
 											{
-												helpModel.visible  = true;
-												helpModel.analysis	= formParent.myAnalysis;
-												helpModel.markdown  = Qt.binding(function(){ return formParent.myForm ? formParent.myForm.helpMD : ""; });
+												if(formParent.myForm && helpModel.markdown !== formParent.myForm.helpMD)
+												{
+													helpModel.visible  = true;
+													helpModel.analysis	= formParent.myAnalysis;
+													helpModel.markdown  = Qt.binding(function(){ return formParent.myForm ? formParent.myForm.helpMD : ""; });
+												}
+												else
+												{
+													helpModel.visible  = false;
+													helpModel.markdown = ""; //break binding
+													helpModel.analysis = null
+												}
+												
+													
 											}
 											else
 											{
-												helpModel.visible  = false;
-												helpModel.markdown = ""; //break binding
-												helpModel.analysis = null
+												helpModel.markdown = "";
+												helpModel.showOrTogglePageForAnalysis(formParent.myAnalysis)
 											}
 											
-												
-										}
-										else
-										{
-											helpModel.markdown = "";
-											helpModel.showOrTogglePageForAnalysis(formParent.myAnalysis)
-										}
-										
-					toolTip:			qsTr("Show info for this analysis")
-					radius:				height
-					anchors
-					{
-						top:			parent.top
-						right:			closeButton.left
-						bottom:			parent.bottom
-						topMargin:		editButton.anchors.topMargin
-						bottomMargin:	editButton.anchors.bottomMargin
+						toolTip:			qsTr("Show info for this analysis")
+						radius:				height
 					}
-				}
-
-				MenuButton
-				{
-					id:					closeButton
-					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "close-button.png" : jaspTheme.iconPath + "close-button-black.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
-					opacity:			editButton.opacity
-					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
-					enabled:			expanderButton.expanded
-					onClicked:			analysesModel.removeAnalysis(formParent.myAnalysis)
-					toolTip:			qsTr("Remove this analysis")
-					radius:				height
-					anchors
+	
+					MenuButton
 					{
-						top:			parent.top
-						right:			parent.right
-						bottom:			parent.bottom
-						topMargin:		editButton.anchors.topMargin
-						bottomMargin:	editButton.anchors.bottomMargin
-						rightMargin:	4 * preferencesModel.uiScale
+						id:					closeButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "close-button.png" : jaspTheme.iconPath + "close-button-black.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
+						opacity:			editButton.opacity
+						//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
+						enabled:			expanderButton.expanded
+						onClicked:			analysesModel.removeAnalysis(formParent.myAnalysis)
+						toolTip:			qsTr("Remove this analysis")
+						radius:				height
 					}
 				}
 			}

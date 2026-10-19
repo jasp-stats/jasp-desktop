@@ -3,7 +3,7 @@
 #include <QFileInfo>
 #include <QDir>
 
-ComputerListModel::ComputerListModel(QObject *parent)
+ComputerListModel::ComputerListModel(FileMenuObject *parent)
 	: FileMenuBasicListModel(parent, new ComputerFileSystem())
 {
 	_fsbmRecentFolders = static_cast<ComputerFileSystem*>(_model);

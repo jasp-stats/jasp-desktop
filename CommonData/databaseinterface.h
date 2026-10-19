@@ -90,25 +90,35 @@ public:
 	std::string dbFile(bool onlyPostfix = false) const;									///< Convenience function for getting the filename where sqlite db should be
 
 	static		DatabaseInterface * singleton();					///< There can be only one! https://www.youtube.com/watch?v=sqcLjcSloXs
+	static		DatabaseInterface * singletonOrNull()	{ return _singleton; }	///< Like singleton() but *without* creating one when there is none, for code that must know whether somebody else already made it before claiming ownership.
 	static		void				closeInterfaces();
 
 	bool		hasConnection() { return _db(); }
 	void		upgradeDBFromVersion(Version originalVersion);							///< Ensures that the database has all the fields configured as required for the current JASP version, useful when loading older sqlite-containing jasp-files
 
-	void		runQuery(		const std::string & query,		std::function<void(sqlite3_stmt *stmt)>		bindParameters,				std::function<void(size_t row, sqlite3_stmt *stmt)>		processRow);	///< Runs a single query and then goes through the resultrows while calling processRow for each.
-	void		runStatements(	const std::string & statements, bool ignoreFails=false);																																				///< Runs several sql statements without looking at the results.
-	int			runStatementsId(const std::string & statements, bool ignoreFails=false);																																				///< Runs several sql statements only looking for a single returned value from the results.
-	void		runStatements(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails=false);																						///< Runs several sql statements without looking at the results. Arguments can be set by supplying bindParameters.
-	int			runStatementsId(const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails=false);																						///< Runs (several) sql statements and only looks for a single value, this would usually be a id resulting from an insert
-	void		runStatements(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters,	std::function<void(size_t row, sqlite3_stmt *stmt)>	processRow, bool ignoreFails=false);						///< Runs several sql statements. Arguments can be set by supplying bindParameters and use processRow to read from the results.
+	void		runQuery(			const std::string & query,		std::function<void(sqlite3_stmt *stmt)>		bindParameters,				std::function<void(size_t row, sqlite3_stmt *stmt)>		processRow);	///< Runs a single query and then goes through the resultrows while calling processRow for each.
+	void		runStatements(		const std::string & statements, bool ignoreFails=false);																																				///< Runs several sql statements without looking at the results.
+	int			runStatementsId(	const std::string & statements, bool ignoreFails=false);																																				///< Runs several sql statements only looking for a single returned value from the results.
+	intset		runStatementsIds(	const std::string & statements, bool ignoreFails=false);
+	void		runStatements(		const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails=false);																						///< Runs several sql statements without looking at the results. Arguments can be set by supplying bindParameters.
+	int			runStatementsId(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails=false);																						///< Runs (several) sql statements and only looks for a single value, this would usually be a id resulting from an insert
+	intset		runStatementsIds(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails=false);
+	void		runStatements(		const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters,	std::function<void(size_t row, sqlite3_stmt *stmt)>	processRow, bool ignoreFails=false);						///< Runs several sql statements. Arguments can be set by supplying bindParameters and use processRow to read from the results.
 
+	//Workspaces
+	void		workspaceUpdate(		bool showRSyntax);	
+	void		workspaceLoad(			bool & showRSyntax);
+	
 	//DataSets
-	int			dataSetGetId();
+	int			dataSetCount();
+	intset		dataSetIds();
 	bool		dataSetExists(			int dataSetId);
 	void		dataSetDelete(			int dataSetId);
-	int			dataSetInsert(							const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, bool showRSyntax = false, char csvDelimiter = '\0');		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
-	void		dataSetUpdate(			int dataSetId,	const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, bool showRSyntax = false, char csvDelimiter = '\0');		///< Updates an existing DataSet row in DataSets
-	void		dataSetLoad(			int dataSetId,		  std::string & dataFilePath,	long & dataFileTimestamp,		 std::string & description,			   std::string & databaseJson,			  std::string & emptyValuesJson, int & revision, bool & dataSynch, bool & showRSyntax, char & csvDelimiter);	///< Loads an existing DataSet row into arguments
+	int			dataSetInsert(							const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, char csvDelimiter = '\0', const std::string & importLocale = "");		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
+	void		dataSetUpdate(			int dataSetId,	const std::string & title = "", const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, char csvDelimiter = '\0', const std::string & importLocale = "");		///< Updates an existing DataSet row in DataSets
+	void		dataSetLoad(			int dataSetId,		  std::string & title,		  std::string & dataFilePath,		long & dataFileTimestamp,		 std::string & description,			   std::string & databaseJson,			   std::string & emptyValuesJson, int & revision, bool & dataSynch, char & csvDelimiter, std::string & importLocale);	///< Loads an existing DataSet row into arguments
+	void		dataSetSetComputedInfo(	int dataSetId, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, int defaultInputFilter);
+	void		dataSetGetComputedInfo(	int dataSetId, bool & invalidated, computedColumnType & codeType, std::string & rCode, std::string & error, int & defaultInputFilter);
 	static int	dataSetColCount(		int dataSetId);
 	static int	dataSetRowCount(		int dataSetId);
 	void		dataSetSetRowCount(		int dataSetId, size_t rowCount);
@@ -116,29 +126,31 @@ public:
 	int			dataSetIncRevision(		int dataSetId);
 	int			dataSetGetRevision(		int dataSetId);
 	intset		dataSetGetFilters(		int dataSetId);
+	int			dataSetGetDefaultFilter(int dataSetId);
 	void		dataSetInsertEmptyRow(	int dataSetId, size_t row);
+	stringset	dataSetFilterNames(		int dataSetId);
 	void		dataSetCreateTable(		DataSet * dataSet); ///< Assumes you are importing fresh data and havent created any DataSet_? table yet
 
 	void		dataSetBatchedValuesUpdate(DataSet * data, Columns columns, std::function<void(float)> progressCallback = [](float){});
 	void		dataSetBatchedValuesUpdate(DataSet * data, std::function<void(float)> progressCallback = [](float){});
 
 	//Filters
-	std::string filterTableName(		int filterIndex) const;
+	std::string filterTableName(		int filterId) const;
 	int			filterGetId(			int dataSetId);
-	int			filterGetId(			const std::string & name);
-	bool		filterSelect(			int filterIndex,			boolvec & bools);																	///< Loads result and errorMsg and returns whether there was a change in either of those.
-	void		filterWrite(			int filterIndex,	const	boolvec & values);																	///< Overwrites the current filter values, no checks are done on the size. If too few the rest is TRUE nd superfluous bools are ignored.
+	int			filterGetId(			int dataSetId,		const std::string & name);
+	bool		filterSelect(			int filterId,				  boolvec & bools);																	///< Loads result and errorMsg and returns whether there was a change in either of those.
+	void		filterWrite(			int filterId,		const	  boolvec & values);																	///< Overwrites the current filter values, no checks are done on the size. If too few the rest is TRUE nd superfluous bools are ignored.
 	int			filterInsert(			int dataSetId,		const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "");		///< Inserts a new Filter row into Filters and creates an empty FilterValues_#id. It returns id
-	void		filterUpdate(			int filterIndex,	const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "");		///< Updates an existing Filter row in Filters
-	void		filterLoad(				int filterIndex,		  std::string & rFilter,			std::string & generatedFilter,			  std::string & constructorJson,			std::string & constructorR, int & revision, std::string & name);			///< Loads an existing Filter row into arguments
-	void		filterClear(			int filterIndex);																					///< Clears all values in Filter
-	void		filterDelete(			int filterIndex);
-	int			filterGetDataSetId(		int filterIndex);
-	std::string	filterGetName(			int filterIndex);
-	std::string	filterLoadErrorMsg(		int filterIndex);
-	void		filterUpdateErrorMsg(	int filterIndex, const	std::string & errorMsg);
-	int			filterIncRevision(		int filterIndex);
-	int			filterGetRevision(		int filterIndex);
+	void		filterUpdate(			int filterId,		const std::string & rFilter = "", const std::string & generatedFilter = "", const std::string & constructorJson = "", const std::string & constructorR = "", const std::string & name = "", bool   invalidated = false);		///< Updates an existing Filter row in Filters
+	void		filterLoad(				int filterId,			  std::string & rFilter,			std::string & generatedFilter,			  std::string & constructorJson,			std::string & constructorR, int & revision, std::string & name, bool & invalidated);			///< Loads an existing Filter row into arguments
+	void		filterClear(			int filterId);																					///< Clears all values in Filter
+	void		filterDelete(			int filterId);
+	int			filterGetDataSetId(		int filterId);
+	std::string	filterGetName(			int filterId);
+	std::string	filterLoadErrorMsg(		int filterId);
+	void		filterUpdateErrorMsg(	int filterId,		const std::string & errorMsg);
+	int			filterIncRevision(		int filterId);
+	int			filterGetRevision(		int filterId);
 
 	//Columns & Data/Values
 	//Index stuff:
@@ -157,9 +169,9 @@ public:
 	int			columnGetDataSetId(			int columnId);
 	void		columnDelete(				int columnId, bool					cleanUpRest = true);			///< Also makes sure indices stay as contiguous and correct as before. disable cleanUpRest to just clear from Columns
 	void		columnSetType(				int columnId, columnType			colType);
+	void		columnSetInvalidated(		int columnId, bool					invalidated);
 	void		columnSetAutoSort(			int columnId, bool					sort);
 	void		columnSetHasLabels(			int columnId, bool					hasLabels);
-	void		columnSetInvalidated(		int columnId, bool					invalidated);
 	void		columnSetDropLevels(		int columnId, int					dropLevels);
 	void		columnSetName(				int columnId, const std::string &	name);
 	void		columnSetTitle(				int columnId, const std::string &	title);
@@ -177,7 +189,6 @@ public:
 	void		columnGetValues(			int columnId,	intvec		& ints,						const std::string & postFix = "");
 	void		columnGetValues(			int columnId,	doublevec	& dbls, stringvec & strs,	const std::string & postFix = "");
 	std::string columnBaseName(				int columnId,	const std::string & postFix = "") const;
-
 	
 	void		dataSetBatchedValuesLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
 	void		dataSetBatchedLabelsLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
@@ -190,6 +201,7 @@ public:
 	void		labelLoad(		int id,	int & columnId,	int & value,	 std::string & label, bool & filterAllows,		std::string & description,				std::string & originalValueJson,	int & order, bool & userAdded);
 	void		labelSetOrder(	int id, int order);
 	bool		labelExists(	int	columnId, int intsId);
+	intset		labelsExisting(	int columnId);
 	void		labelsLoad(			Column  * column);
 	void		labelsLoad(	const	Columns & columns);//, std::function<void(float)> progressCallback);
 	void		labelsWrite(const	Columns & columns, std::function<void(float)> progressCallback);
@@ -203,7 +215,6 @@ public:
 	void		transactionReadEnd();							///< runs COMMIT and ends the transaction. Tracks whether nested and only does BEGIN+COMMIT at lowest depth
 	
 	//Miscellaneous
-	void		doWalCheckPoint();
 	void		truncateAllTables();
 	bool		tableHasColumn(const std::string & tableName, const std::string & columnName);
 	bool		tableExists(const std::string & name);
@@ -215,8 +226,10 @@ public:
 	void		load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 
 	
+	
 private:
 	sqlite3	*	_db();
+	void		_upgradeDBStatements(Version originalVersion);							///< The bare migration ALTER statements; upgradeDBFromVersion() wraps these in a transaction with rollback-on-failure.
 	void		_doubleTroubleBinder(sqlite3_stmt *stmt, int param, double dbl);	///< Needed to work around the lack of support for NAN, INF and NEG_INF in sqlite, converts those to string to make use of sqlite flexibility
 	double		_doubleTroubleReader(sqlite3_stmt *stmt, int colI, std::string * textReturn = nullptr);					///< The reading counterpart to _doubleTroubleBinder to convert string representations of NAN, INF and NEG_INF back to double
 	void		_runStatements(				const std::string & statements,						std::function<void(sqlite3_stmt *stmt)> *	bindParameters = nullptr,	std::function<void(size_t row, sqlite3_stmt *stmt)> *	processRow = nullptr, bool ignoreFails = false);	///< Runs several sql statements without looking at the results. Unless processRow is not NULL, then this is called for each row.

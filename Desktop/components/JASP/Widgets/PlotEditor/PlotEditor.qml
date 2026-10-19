@@ -164,8 +164,8 @@ Popup
 				Item
 				{
 					id:							axes
-					SplitView.preferredWidth:	parent.width * .45
-					SplitView.minimumWidth:		parent.width * .45
+					SplitView.preferredWidth:	parent.width * .55
+					SplitView.minimumWidth:		parent.width * .2
 					SplitView.maximumWidth:		parent.width * .9
 
 					property real	tabBarHeight:		28 * preferencesModel.uiScale
@@ -207,19 +207,18 @@ Popup
 						
 						PlotEditTabHead
 						{
-							buttonText:				qsTr("References")
+							buttonText:				qsTr("Elements")
 							visible:				INTERACTIVE_PLOTS
 						}
 						Component.onCompleted:		setCurrentIndex(0);
 					}
 					
-					JASPC.MenuButton
+					JASPC.HelpButton
 					{
 						id:				helpButton
-						iconSource:		jaspTheme.iconPath + "info-button.png"
 						width:			height
-						radius:			height
-						onClicked:		helpModel.showOrTogglePage("other/plotediting");
+						helpMD:			allHelp.plotediting
+						buttonPadding:  6 * preferencesModel.uiScale
 						toolTip:		qsTr("Open Documentation")
 						anchors
 						{
@@ -242,6 +241,7 @@ Popup
 					{
 						id:				axesScrollbar
 						flickable:		axesFlickable
+
 						vertical:		true
 					}
 
@@ -258,6 +258,8 @@ Popup
 						clip:					true
 
 						flickableDirection:		Flickable.VerticalFlick
+						contentHeight:			stack.height
+
 
 						onFlickStarted:			forceActiveFocus();
 
@@ -385,6 +387,48 @@ Popup
 							JASPW.ImageInverter
 							{
 								src:			plotImg
+							}
+
+							// Overlay shown while the engine is re-rendering
+							Rectangle
+							{
+								id:						updatingOverlay
+								anchors.fill:			parent
+								color:					jaspTheme.white
+								opacity:				plotEditorModel.updating ? 0.85 : 0.0
+								visible:				plotEditorModel.updating
+								Behavior on opacity { NumberAnimation { duration: 150 } }
+
+								ColumnLayout
+								{
+									anchors.centerIn:	parent
+									spacing:			jaspTheme.generalAnchorMargin
+
+									Image
+									{
+										source:				jaspTheme.iconPath + "loading.svg"
+										sourceSize.width:	32 * preferencesModel.uiScale
+										sourceSize.height:	32 * preferencesModel.uiScale
+										Layout.alignment:	Qt.AlignHCenter
+
+										NumberAnimation on rotation
+										{
+											from:		0
+											to:			360
+											duration:	1200
+											loops:		Animation.Infinite
+											running:	plotEditorModel.updating
+										}
+									}
+
+									JASPC.Text
+									{
+										text:				qsTr("Rerendering…")
+										font:				jaspTheme.fontLabel
+										color:				jaspTheme.textEnabled
+										Layout.alignment:	Qt.AlignHCenter
+									}
+								}
 							}
 						}
 					}

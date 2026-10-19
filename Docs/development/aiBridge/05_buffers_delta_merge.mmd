@@ -1,0 +1,75 @@
+flowchart TD
+    NET["Network: TCP bytes arrive"]
+    SB["m_sseBuffer += bytes"]
+    SL["Slice by newline into lines"]
+    PSL["processSSELine(line)"]
+    TC{"line starts with 'data:'?"}
+    EV{"line starts with 'event:'?"}
+    DONE{"data == '[DONE]'?"}
+    JSON["Parse JSON"]
+    CHOICES{"choices array non-empty?"}
+    DELTA["Extract delta = choices[0].delta"]
+    TCC{"delta.tool_calls?"}
+    PT["processToolCalls()\n→ key by call id\n→ order in m_toolCallOrder\n→ null-id → m_lastToolCallId fallback"]
+    LOOP["Iterate ALL keys in delta"]
+    CONTENT{"key == 'content'\nand val is string?"}
+    EMIT["emit onStreamChunk(text)\n→ frontend renders text"]
+    MERGE_STR{"val is string\nand key exists in\nm_assistantDelta?"}
+    CONCAT["concatenate to\nm_assistantDelta[key]"]
+    OVERWRITE["set m_assistantDelta[key] = val"]
+    NULL_VAL{"val is null?"}
+    SKIP_NULL["skip (don't clear field)"]
+    MORE{"more lines?"}
+    STREAM_END["Stream ends → onReplyFinished()"]
+
+    subgraph REPLY["onReplyFinished()"]
+        direction TB
+        R_PROCESS["Process remaining SSE buffer"]
+        R_HTTP{"HTTP ≥ 400?"}
+        R_ERR["emit onStreamError\nemit onStreamClose"]
+        R_FLUSH["flushToolCalls()"]
+        R_TOOLS{"m_pendingToolCalls\nnot empty?"}
+        R_DEFER{"m_deferredClearChat?"}
+        R_ABORT["abort loop:\nclearConversation\nonClearChat\nsendIntroMessage"]
+        R_LOOP["continue loop:\nemit onStreamOpen\nsendToAI() again"]
+        R_SAVE["Save m_assistantDelta\nas assistant message\nappend to m_conversation"]
+        R_DEFER2{"m_deferredClearChat?"}
+        R_CLEAN["execute deferred clearChat"]
+        R_CLOSE["m_streaming = false\nemit onStreamClose"]
+    end
+
+    NET --> SB --> SL --> PSL
+    PSL --> TC
+    TC -->|no| EV
+    EV -->|no| SL
+    TC -->|yes| DONE
+    DONE -->|yes| STREAM_END
+    DONE -->|no| JSON --> CHOICES
+    CHOICES -->|no empty| SL
+    CHOICES -->|yes| DELTA --> TCC
+    TCC -->|yes| PT
+    TCC -->|no| LOOP
+    LOOP --> CONTENT
+    CONTENT -->|yes| EMIT
+    CONTENT -->|no| MERGE_STR
+    EMIT --> MERGE_STR
+    MERGE_STR -->|yes| CONCAT --> LOOP
+    MERGE_STR -->|no| NULL_VAL
+    NULL_VAL -->|yes| SKIP_NULL --> LOOP
+    NULL_VAL -->|no| OVERWRITE --> LOOP
+    LOOP -->|more keys| LOOP
+    LOOP -->|done → more lines?| SL
+
+    STREAM_END --> REPLY
+    R_PROCESS --> R_HTTP
+    R_HTTP -->|yes| R_ERR
+    R_HTTP -->|no| R_FLUSH --> R_TOOLS
+    R_TOOLS -->|yes| R_DEFER
+    R_DEFER -->|yes| R_ABORT
+    R_DEFER -->|no| R_LOOP
+    R_TOOLS -->|no| R_SAVE --> R_DEFER2
+    R_DEFER2 -->|yes| R_CLEAN
+    R_DEFER2 -->|no| R_CLOSE
+    R_CLEAN --> R_CLOSE
+
+    R_LOOP --> NET

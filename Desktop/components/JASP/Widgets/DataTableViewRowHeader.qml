@@ -26,6 +26,7 @@ Rectangle
 		ToolTip.text:		qsTr("Click here to select the row, hold shift for selecting multiple.")
 		ToolTip.timeout:	3000
 		ToolTip.delay:		500
+		ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 		cursorShape:		Qt.PointingHandCursor
 		acceptedButtons:	Qt.LeftButton | Qt.RightButton
 		onClicked: 			(mouseEvent)=>

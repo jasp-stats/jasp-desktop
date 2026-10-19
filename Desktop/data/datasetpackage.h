@@ -18,34 +18,28 @@
 #ifndef FILEPACKAGE_H
 #define FILEPACKAGE_H
 
-#include <cstddef>
-#include <QAbstractItemModel>
-#include <QFileInfo>
-#include <QUrl>
-#include "common.h"
-#include "version.h"
 #include <map>
-#include <json/json.h>
+#include <QUrl>
 #include <QTimer>
+#include <cstddef>
+#include "version.h"
+#include <QFileInfo>
+#include <json/json.h>
+#include "workspace.h"
 #include "databaseinterface.h"
-#include "dataset.h"
-#include "datasetpackageenums.h"
-#include "undostack.h"
+#include <QSortFilterProxyModel>
 
 class EngineSync;
-class DataSetPackageSubNodeModel;
 
 ///
-/// This class is meant as the single bottleneck between the main application and Qt and the data stored in sqlite.
-/// To this end a clean separation has been attempted between any access of the data so that it can easily be controlled.
+/// DataSetPackage is the Desktop-side wrapper around a Workspace (the multi-dataset model in CommonData).
 ///
-/// In order to have all that data available through this class a tree-model has been chosen here.
-///
-/// The structure of this tree should be described here...
-class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
+/// It handles loading and creation of DataSets, which handle interaction with the database via themselves and the other DataSetBaseNodes
+/// 
+class DataSetPackage : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(int			columnsFilteredCount	READ columnsFilteredCount										NOTIFY columnsFilteredCountChanged	)
+
 	Q_PROPERTY(QString		folder					READ folder						WRITE setFolder					NOTIFY folderChanged				)
 	Q_PROPERTY(QString		windowTitle				READ windowTitle												NOTIFY windowTitleChanged			)
 	Q_PROPERTY(bool			modified				READ isModified					WRITE setModified				NOTIFY isModifiedChanged			)
@@ -53,84 +47,38 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 	Q_PROPERTY(bool			loaded					READ isLoaded					WRITE setLoaded					NOTIFY loadedChanged				)
 	Q_PROPERTY(QString		currentFile				READ currentFile				WRITE setCurrentFile			NOTIFY currentFileChanged			)
 	Q_PROPERTY(bool			dataMode				READ dataMode													NOTIFY dataModeChanged				)
-	Q_PROPERTY(bool			synchingExternally		READ synchingExternally			WRITE setSynchingExternally		NOTIFY synchingExternallyChanged	) //might have to be moved to dataset when we have multiple datasets, alse CurrentDataFile in FileMenu will need to be looked at...
-	Q_PROPERTY(bool			manualEdits				READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged			) ///< Did the user change something in the data in such a way that external synching should be disabled if enabled?
-
-	typedef DataSetPackageSubNodeModel							SubNodeModel;
-
+	Q_PROPERTY(bool			manualEdits				READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged			) ///< Did the user change the *shown* dataset by hand, so that external synching should be off? The flag itself lives on DataSet.
+	Q_PROPERTY(DataSet *	dataSet					READ dataSet													NOTIFY shownDataSetChanged			) 
+	Q_PROPERTY(Workspace *	workspace				READ workspace													NOTIFY workspaceChanged				)
 public:
-	typedef dataPkgRoles specialRoles;
-
+	
 	static DataSetPackage *	pkg() { return _singleton; }
 
 							DataSetPackage(QObject * parent);
 							~DataSetPackage();
 		static Filter	*	filter();
-		DataSet			*	dataSet() { return _dataSet; }
+		Workspace		*	workspace() const { return _workspace; }
+		DataSet			*	dataSet() const { return _workspace ? _workspace->shownDataSet() : nullptr; } 
 		void				setEngineSync(EngineSync * engineSync);
 		void				reset(bool newDataSet = true);
-		void				setDataSetSize(size_t columnCount, size_t rowCount);
-		void				setDataSetRowCount(size_t rowCount)					{ setDataSetSize(dataColumnCount(),		rowCount); }
-		void				increaseDataSetColCount(size_t rowCount)			{ setDataSetSize(dataColumnCount() + 1,	rowCount); }
 
-		void				createDataSet();	///< Creates *OR* recreates a dataset in database
-        void                loadDataSet(std::function<void(float)> progressCallback = [](float){});      ///< Assumes internal.sqlite has just been loaded from a JASPFile and will init DataSet etc with it.
-		void				deleteDataSet();	///< Deletes dataset from memory but not from database
-		bool				hasDataSet() { return _dataSet; }
+		void				createWorkspace();
+		DataSet			*	createDataSet();	///< Creates *OR* recreates a dataset in database
+		void				connectWorkspace();
+        void                loadWorkspace(std::function<void(float)> progressCallback = [](float){});      ///< Assumes internal.sqlite has just been loaded from a JASPFile and will init DataSet etc with it.
+		void				deleteWorkspace(bool dbDeletePlease=true);	///< Deletes dataset from memory but not from database
+		bool				hasDataSet() { return dataSet(); }
 
 		void				pauseEngines();
 		void				resumeEngines();
-		void				enginesPrepareForData();
-		void				enginesReceiveNewData();
 		bool				enginesInitializing()	{ return emit enginesInitializingSignal();	}
 
-		SubNodeModel	*	dataSubModel	() { return _dataSubModel;		}
-		SubNodeModel	*	filterSubModel	() { return _filterSubModel;	}
-		SubNodeModel	*	labelsSubModel	() { return _labelsSubModel;	}
-		UndoStack		*	undoStack		() { return _undoStack;			}
-		
-		DataSetBaseNode *	indexPointerToNode(			const QModelIndex	& index	) const;
-		bool				dataSetBaseNodeStillExists(	DataSetBaseNode		* node	) const;
-		
 		void				waitForExportResultsReady();
 
-		void				beginLoadingData(	bool informEngines = true);
 		void				stopEngines();
 		void				restartEngines();
-		void				endLoadingData(		bool informEngines = true);
-		void				beginSynchingData(	bool informEngines = true);
-		void				endSynchingDataChangedColumns(stringvec	&	changedColumns,		bool hasNewColumns = false, bool informEngines = true);
-		void				endSynchingData(const stringvec		&	changedColumns,
-											const stringvec		&	missingColumns,
-											const strstrmap		&	changeNameColumns,  //origname -> newname
-											bool										rowCountChanged,
-											bool										hasNewColumns,		bool informEngines = true);
 
-		
-		
-
-		QHash<int, QByteArray>		roleNames()																						const	override;
-				int					rowCount(		const QModelIndex &parent = QModelIndex())										const	override;
-				int					columnCount(	const QModelIndex &parent = QModelIndex())										const	override;
-				QVariant			data(			const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
-				QVariant			headerData(		int section, Qt::Orientation orientation, int role = Qt::DisplayRole )			const	override;
-				bool				setData(		const QModelIndex &index, const QVariant &value, int role)								override;
-				Qt::ItemFlags		flags(			const QModelIndex &index)														const	override;
-				QModelIndex			parent(			const QModelIndex & index)														const	override;
-				QModelIndex			index(			int row,		int column, const QModelIndex & parent = QModelIndex())			const	override;
-				bool				insertRows(		int row,		int count, const QModelIndex & aparent = QModelIndex())					override;
-				bool				insertColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
-				bool				removeRows(		int row,		int count, const QModelIndex & aparent = QModelIndex())					override;
-				bool				removeColumns(	int column,		int count, const QModelIndex & aparent = QModelIndex())					override;
-				QString				insertColumnSpecial(int column, const QMap<QString, QVariant>& props, bool setManualEdits=true);
-				QString				appendColumnSpecial(			const QMap<QString, QVariant>& props, bool setManualEdits=true);
-
-				QModelIndex			indexForSubNode(DataSetBaseNode * node)														const;
-				int					filteredRowCount()																			const { return _dataSet->filter()->filteredRowCount(); }
-	static		QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true);
-
-				int					dataRowCount()		const;
-				int					dataColumnCount()	const;
+				void				refresh();
 
 
 				std::string			id()								const	{ return _id;							}
@@ -138,24 +86,19 @@ public:
 				QString				folder()							const	{ return _folder;						}
 				bool				dataMode()							const;
 				
+				
 				bool				isReady()							const	{ return _analysesHTMLReady;			}
 				bool				isLoaded()							const	{ return _isLoaded;						 }
-				bool				isJaspFile()						const	{ return _isJaspFile;					  } ///< for readability
+				bool				isJaspFile()						const	{ return _isJaspFile;					  }
 				bool				isModified()						const	{ return _isModified;					   }
 				bool				isModifiedAfterAutoSave()			const	{ return _isModifiedAfterAutoSave;	 	    }
 				bool				hasAnalysesWithoutData()			const	{ return _hasAnalysesWithoutData;			 }
 				std::string			initialMD5()						const	{ return _initialMD5;						 }
-				bool				manualEdits()						const;
 				QString				windowTitle()						const;
 				QString				description()						const;
 				QString				currentFile()						const	{ return _currentFile;						 }
 				QString				autoSavedFileName()					const;
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;				}
-				bool				synchingData()						const	{ return _synchingData;								}
-				std::string			dataFilePath()						const	{ return _dataSet ? _dataSet->dataFilePath() : "";  }
-				bool				dataFileCanHaveLabels()				const;
-				bool				isDatabase()						const	{ return _database != Json::nullValue;				}
-		const	Json::Value		&	databaseJson()						const	{ return _database;								}
 		const	QString			&	analysesHTML()						const	{ return _analysesHTML;							}
 		const	Json::Value		&	analysesData()						const	{ return _analysesData;							}
 		const	std::string		&	warningMessage()					const	{ return _warningMessage;						}
@@ -163,218 +106,123 @@ public:
 		const	Version			&	jaspVersion()						const	{ return _jaspVersion;							}
 
 				// The data file might be read-only if it comes from the examples or read from an external database
-				bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						}
+				bool				isReadOnlyFile()					const	{ return _fileReadOnly;						}
 				bool				currentJaspFileIsNonSaveable()		const;
 				bool				filePathIsNonSaveable(const QString &path) const;
-				long				dataFileTimestamp()					const	{ return _dataSet ? _dataSet->dataFileTimestamp() : 0;	}
-				bool				isDatabaseSynching()				const	{ return _databaseIntervalSyncher.isActive();	}
-				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit && isLoaded();					}
-
-
-				void				setFilterShouldRunInit(bool shouldIt)				{ _filterShouldRunInit			= shouldIt;			}
+				
 				void				setAnalysesData(const Json::Value & analysesData);
 				void				setArchiveVersion(Version archiveVersion)			{ _archiveVersion				= archiveVersion;	}
 				void				setJaspVersion(Version jaspVersion)					{ _jaspVersion					= jaspVersion;		}
 				void				updateDbToCurrentVersion();							///< Should be ran immediately after loading the jasp file
 				void				setWarningMessage(std::string message)				{ _warningMessage				= message;			}
-				void				setDataFilePath(std::string filePath, long timestamp = 0);
-				void				setDatabaseJson(const Json::Value & dbInfo);
 				void				setInitialMD5(std::string initialMD5)				{ _initialMD5					= initialMD5;		}
-				void				setDataFileReadOnly(bool readOnly)					{ _dataFileReadOnly				= readOnly;			}
+				void				setFileReadOnly(bool readOnly)						{ _fileReadOnly					= readOnly;			}
 				void				setAnalysesHTML(const QString & html)				{ _analysesHTML					= html;				}
 				void				setIsJaspFile(bool isJaspFile)						{ _isJaspFile					= isJaspFile;		}
 				void				setHasAnalysesWithoutData()							{ _hasAnalysesWithoutData		= true;				}
 				void				setModifiedAfterAutoSave(bool value);
-				void				setModified(bool value);
+				void				setModified(bool value = true);
+				void				setModifiedFileMenu() { setModified(); }
 				void				setAnalysesHTMLReady()								{ _analysesHTMLReady			= true;				}
 				void				setId(std::string id)								{ _id							= id;				}
 				void				setWaitingForReady()								{ _analysesHTMLReady			= false;			}
-				void				setManualEdits(bool newManualEdits);
 				void				setLoaded(bool loaded = true);
 				void				setDescription(const QString& description);
 				
-				void						initializeComputedColumns();
+	static		int					thresholdScale();
+	static		int					orderByValueByDefault();
+				const stringset&	currentDataSetEmptyValues()										const;
+				bool				workspaceShowRSyntax()										const;
+				void				setDataSetEmptyValues(const stringset& emptyValues, bool resetModel = true);
+				void				setDefaultWorkspaceEmptyValues();
+				void				setWorkspaceShowRSyntax(bool show);
+				void				dbDelete();
+				void				resetVariableTypes();
 				
-				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & values, const std::vector<std::vector<QString>> & labels, const intvec & colTypes, const QStringList & colNames, const std::vector<boolvec> & selected = {}); ///< If selected.size() >0 it is assumed to be the same size as labels/values. And it will make sure that it will only overwrite values where it is `true`
+				bool				manualEdits() const;
+				void				setManualEdits(bool newManualEdits);
 
-				void						columnSetDefaultValues(	const std::string	& columnName, columnType colType = columnType::unknown, bool emitSignals = true);
-				Column *					createColumn(			const std::string	& name,		columnType colType);
-				Column *					createComputedColumn(	const std::string	& name,		columnType type, computedColumnType desiredType, Analysis * analysis = nullptr);
-				void						renameColumn(			const std::string	& oldColumnName, const std::string & newColumnName);
-				void						removeColumn(			const std::string	& name);
-				bool						columnExists(			Column				* column);
-				void						columnsReorder(			const stringvec		& order);
-
-				stringvec					getColumnNames();
-		std::map<std::string, columnType>	getColumnTypesMap();
-				bool						isColumnDifferentFromStringLookUps(const std::string & columnName, const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals);
-				int							findIndexByName(const std::string & name)	const;
-
-				bool						getRowFilter(				int						row)		const;
-				QVariant					getColumnTypesWithIcons()										const;
-				std::string					getComputedColumnError(		size_t					colIndex)	const;
-
-				bool						isColumnUsedInEasyFilter(	const std::string	&	name)		const;
-				bool						isColumnNameFree(			const std::string	&	name)		const;
-				bool						isColumnNameFree(			const QString		&	name)		const	{ return isColumnNameFree(name.toStdString()); }
-				bool						isColumnComputed(			size_t					colIndex)	const;
-				bool						isColumnComputed(			const std::string	&	name)		const;
-				bool						isColumnAnalysisNotComputed(const std::string	&	name)		const;
-
-				bool						isColumnInvalidated(		size_t					colIndex)	const;
-
-				bool						setColumnType(int		columnIndex,	columnType newColumnType);
-				bool						setColumnTypes(intset	columnIndexes,	columnType newColumnType);
-				
-
-				int							columnsFilteredCount();
-
-				void						writeDataSetToOStream(std::ostream & out, bool includeComputed);
-
-				int							getColumnIndex(						const std::string & name)			const	{ return !_dataSet ? -1 : _dataSet->getColumnIndex(name); }
-				int							getColumnIndex(						const QString	  & name)			const	{ return getColumnIndex(name.toStdString()); }
-				Column*						getColumn(							const std::string & name)					{ return _dataSet->column(name); }
-				enum columnType				getColumnType(						size_t				columnIndex)	const;
-				enum columnType				getColumnType(						const QString	  &	name)			const;
-				std::string					getColumnName(						size_t				columnIndex)	const;
-				stringvec					getColumnDataStrs(					size_t				columnIndex);
-				void						setColumnName(						size_t				columnIndex, const std::string	& newName);
-				void						setColumnTitle(						size_t				columnIndex, const std::string	& newTitle);
-				void						setColumnDropLevels(				size_t					columnIndex, dropLevelsType dropLevels);
-				void						setColumnHasLabels(					size_t					columnIndex, bool hasLabels);
-				void						setColumnDescription(				size_t				columnIndex, const std::string	& newDescription);
-				void						setColumnComputedType(				size_t				columnIndex, computedColumnType	type);
-				void						setColumnComputeFilter(				size_t columnIndex, const std::string &newFilter);
-				void						setColumnHasCustomEmptyValues(		size_t				columnIndex, bool				  hasCustomEmptyValue);
-				void						setColumnCustomEmptyValues(			size_t				columnIndex, const stringset	& customEmptyValues);
-				void						columnsReverseValues(				intset				columnIndex);
-				void						columnsSetAutoSortForColumns(		std::map<int,bool>	columnutoSort);
-				qsizetype					getMaximumColumnWidthInCharacters(	int					columnIndex)				const;
-				QStringList					getColumnLabelsAsStringList(		size_t				columnIndex)				const;///< Has the same amount of levels as the data has rows!
-				stringvec					getColumnLabelsAsStrVec(			size_t				columnIndex)				const;///< Has the same amount of levels as the data has rows!
-				stringvec					getColumnLevelsAsStrVec(			size_t				columnIndex)				const;///< Has the same amount of levels as the labeleditor shows!
-				std::map<std::string, bool>	getColumnFilterAllows(				size_t				columnIndex)				const;
-				QList<QVariant>				getColumnValuesAsDoubleList(		size_t				columnIndex)				const; ///< Has the same amount of values as the data has rows!
-				Json::Value					serializeColumn(					const std::string & columnName)					const;
-				void						deserializeColumn(					const std::string & columnName, const Json::Value& col);
-
-				void						resetFilterAllows(					size_t				columnIndex);
-				int							filteredOut(						size_t				columnIndex)				const;
-				bool						labelNeedsFilter(					size_t				columnIndex)				const;
-				void						labelMoveRows(						size_t				columnIndex, std::vector<size_t> rows, bool up);
-				void						labelReverse(						size_t				columnIndex);
-				void						resetAllFilters();
-				std::vector<bool>			filterVector();
-				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->filter()->setFilterVector(newFilterVector); }
-				
-	static		int							thresholdScale();
-	static		int							orderByValueByDefault();
-				const stringset&			workspaceEmptyValues()										const;
-				bool						workspaceShowRSyntax()										const;
-				void						setWorkspaceEmptyValues(const stringset& emptyValues, bool resetModel = true);
-				void						setWorkspaceShowRSyntax(bool show);
-				void						setDefaultWorkspaceValues();
-				void						setDefaultWorkspaceEmptyValues();
-
-				void						databaseStartSynching(bool syncImmediately);
-				void						databaseStopSynching();
-				bool						synchingExternally() const;
-				void						checkComputedColumnDependenciesForAnalysis(	Analysis * analysis);
-				stringset					columnsCreatedByAnalysis(					Analysis * analysis);
-				std::string					freeNewColumnName(size_t startHere);
-				void						dbDelete();
-				void						emitColumnChanged(const QString &colName); //temporary until ColumnQ exists
-				
-				
-
-				
-				
+				/// Is the shown dataset actually being kept in synch with an external data file (or database)?
+				bool				synchingExternally() const;
 				
 signals:
-				void				datasetChanged(	QStringList				changedColumns,
+				void				datasetChanged(	int						dataSetID,
+													QStringList				changedColumns,
 													QStringList				missingColumns,
 													QMap<QString, QString>	changeNameColumns,
 													bool					rowCountChanged,
 													bool					hasNewColumns);
-				void				columnsFilteredCountChanged();
 				void				runFilter();
 				void				badDataEntered(const QModelIndex index);
 				void				allFiltersReset();
-				void				labelFilterChanged();
-				void				labelChanged(			QString columnName, QString originalLabel, QString newLabel);
-				void				columnDataTypeChanged(	QString columnName);
-				void				labelsReordered(		QString columnName);
-				void				columnAddedManually(	QString columnName);
-				void				chooseColumn(			int		colId);
+				
+				void				columnAddedManually(	QString		columnName);
+				void				chooseColumn(			int			colId); /// In the currently shown DataSet!
+				void				showAnalysis(			int			analysisId);
 				void				isModifiedChanged();
 				void				isModifiedAfterAutoSaveChanged();
-				void				enginesPrepareForDataSignal();
-				void				enginesReceiveNewDataSignal();
 				bool				enginesInitializingSignal();
 				void				filteredOutChanged(int column);
 				bool				checkDoSync();
-				void				modelInit();
 				void				nameChanged();
 				void				folderChanged();
 				void				windowTitleChanged();
 				void				loadedChanged();
 				void				currentFileChanged();
-				void				synchingIntervalPassed();
 				void				newDataLoaded();
 				void				dataModeChanged(bool dataMode);
-				void				synchingExternallyChanged(bool);
 				bool				askUserForExternalDataFile();
 				void				checkForDependentColumnsToBeSent(	QString columnName);
 				void				showWarning(						QString title, QString msg);
-				void				manualEditsChanged();
-				void				columnsBeingRemoved(				int columnIndex, int count);
 				void				workspaceEmptyValuesChanged();
 				void				descriptionChanged();
-				void				refreshAllAnalyses();
-				void				refreshAllCompCols();
-				void				setDataMode(bool mode);
+				void				refreshAllAnalyses(Filter * f);
+				void				refreshAllCompCols(Filter * f);
 				void				makeAnAutoSave();
-
+				void				shownDataSetChanged(DataSet * dataSet);
+				void				shownFilterChanged();
+				void				dataSetCreated(int dataSetId);
+				void				dataSetRemoved(int dataSetId);
+				void				sendFilter(			int dataSetID, const QString & generatedFilter, const QString & filter);
+				void				sendFilterByName(	int dataSetID, const QString & name, const QString & module);
+				void				filtersCountChanged();
+				void				workspaceChanged();
+				void				runComputedColumn(int dataSetId, QString columnName, QString code, columnType columnType);
+				void				runComputedDataSet(int dataSetId, QString code, int defaultInputFilterId);
+				void				filterByNameDone(int dataSetId, const QString &name, const QString &error);
+				void				manualEditsChanged();
+				void				synchingExternallyChanged(bool synchingExternally);
+				void				checkForDependentAnalyses(Column * column);
+				
 public slots:
-				void				refresh()							{ beginResetModel(); endResetModel(); }
-				void				refreshWithDelay();
 				void				refreshColumn(						QString columnName);
 				void				columnWasOverwritten(				const std::string & columnName, const std::string & possibleError);
-				void				notifyColumnFilterStatusChanged(	int columnIndex);
-				void				setColumnsUsedInEasyFilter(			stringset usedColumns);
 				void				setCurrentFile(						QString currentFile);
 				void				setFolder(							QString folder);
 				void				generateEmptyData();
 				void				onDataModeChanged(					bool dataMode);
-				void				setSynchingExternallyFriendly(		bool synchingExternally);
-				void				setSynchingExternally(				bool synchingExternally);
-				Column			 *	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
-				bool				requestColumnCreation(				const std::string & columnName, Analysis * analysis, columnType type);
-				bool				requestComputedColumnDestruction(	const std::string & columnName, Analysis * analysis);
 				void				checkDataSetForUpdates();
-				void				delayedRefresh();
-				void				doWalCheckPoint();
 				void				handleAutoSave();
-				void				resetFilterCounters();
+
 				void				prepareForLanguageChange();
 				void				languageChangeDone();
 				void				handleAutoSavePrefChange();
+
+				void				setSynchingExternally(			bool synchingExternally);	///< (Re)starts or stops the synching of the shown dataset with its external data file
+				void				setSynchingExternallyFriendly(	bool synchingExternally);	///< Same, but lets the user generate or find a data file first when there is none (or when it was edited by hand)
 				
 private:
+				void				emitSynchingExternallyChanged();
 				bool				isThisTheSameThreadAsEngineSync();
-				bool				setLabelAllowFilter(	const QModelIndex & index, bool newAllowValue);
-				bool				setLabelDescription(	const QModelIndex & index, const QString & newDescription);
-				bool				setLabelDisplay(		const QModelIndex & index, const QString & newLabel);
-				bool				setLabelValue(			const QModelIndex & index, const QString & newLabel);
-				QModelIndex			lastCurrentCell();
-				int					getColIndex(QVariant colID);
-				void				columnsApply(intset columnIndexes, std::function<bool (Column *)> applyThis);
-				void				columnsApply(intset columnIndexes, std::function<bool (Column *, int)> applyThis);
+				void				columnsApply(int dataSetId, intset		columnIndxs, std::function<bool (Column *)>			applyThis);
+				void				columnsApply(int dataSetId, stringset	columnNames, std::function<bool (Column *)>			applyThis);
+				void				columnsApply(int dataSetId, intset		columnIndxs, std::function<bool (Column *, int)>	applyThis);
+				void				columnsApply(int dataSetId, stringset	columnNames, std::function<bool (Column *, int)>	applyThis);
 
 private:
 	static DataSetPackage	*	_singleton;
 	DatabaseInterface		*	_db							= nullptr;
-	DataSet					*	_dataSet					= nullptr;
+	Workspace				*	_workspace					= nullptr;
 	EngineSync				*	_engineSync					= nullptr;
 
 	QString						_currentFile,
@@ -385,35 +233,17 @@ private:
 								_initialMD5;
 
 	bool						_isJaspFile					= false,
-								_dataFileReadOnly,
+								_fileReadOnly				= false,
 								_isModified					= false,
 								_isModifiedAfterAutoSave	= false,
 								_isLoaded					= false,
 								_hasAnalysesWithoutData		= false,
 								_analysesHTMLReady			= false,
-								_filterShouldRunInit		= false,
-								_dataMode					= false,
-								_manualEdits				= false,
 								_waitingForLanguageChange	= false;
-
-	Json::Value					_analysesData,
-								_database					= Json::nullValue;
+	Json::Value					_analysesData;
 	Version						_archiveVersion,
 								_jaspVersion;
-
-	bool						_synchingData				= false;
-	std::map<std::string, bool> _columnNameUsedInEasyFilter;
-
-	SubNodeModel			*	_dataSubModel,
-							*	_filterSubModel,
-							*	_labelsSubModel;
-	
-	QTimer						_databaseIntervalSyncher,
-								_delayedRefreshTimer,
-								_doWalCheckPointTimer,
-								_autoSaveTimer;
-	UndoStack				*	_undoStack					= nullptr;
-	
+	QTimer						_autoSaveTimer;
 };
 
 #endif // FILEPACKAGE_H

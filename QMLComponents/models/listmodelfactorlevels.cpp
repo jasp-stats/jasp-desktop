@@ -17,7 +17,7 @@
 //
 
 #include "listmodelfactorlevels.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "log.h"
 #include "controls/factorlevellistbase.h"
 

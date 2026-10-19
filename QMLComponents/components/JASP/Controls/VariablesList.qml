@@ -533,6 +533,7 @@ VariablesListBase
 				// Use the ToolTip Attached property to avoid creating ToolTip object for each item
 				QTCONTROLS.ToolTip.visible:		mouseArea.containsMouse && !itemRectangle.containsDragItem && toolTip.trim() !== ""
 				QTCONTROLS.ToolTip.text:		toolTip
+				QTCONTROLS.ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 				Component.onCompleted:
 				{
 					if (extraItem)

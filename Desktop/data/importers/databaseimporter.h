@@ -2,7 +2,7 @@
 #define DATABASEIMPORTER_H
 
 #include "importer.h"
-#include "data/databaseconnectioninfo.h"
+#include "databaseconnectioninfo.h"
 
 class DatabaseImporter : public Importer
 {
@@ -15,7 +15,7 @@ public:
 	
 	ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) override;
 	
-	DatabaseConnectionInfo _info;
+	DatabaseConnectionInfo * _info = nullptr;
 };
 
 #endif // DATABASEIMPORTER_H

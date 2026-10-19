@@ -1,6 +1,6 @@
 #include "encryptionsettingsmodel.h"
 #include "data/jaspencryptiondata.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 
 EncryptionSettingsModel::EncryptionSettingsModel(

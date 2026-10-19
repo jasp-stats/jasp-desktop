@@ -6,9 +6,16 @@ TestCase
 {
 	name:		"TestIntegerfield"
 
-	IntegerField
+	property alias form: jaspForm
+
+	Form
 	{
-		id:						control
+		id: jaspForm
+
+		IntegerField
+		{
+			id:						control
+		}
 	}
 
 	function test_displayValue()

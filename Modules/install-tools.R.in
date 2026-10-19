@@ -18,6 +18,8 @@ mkdir(c(R_CPP_INCLUDES_LIBRARY, JASP_MODULE_BUNDLE_MANAGER_LIBRARY))
 .libPaths(RENV_LIBRARY)
 options(repos = c(CRAN = "https://packagemanager.posit.co/cran/latest"))
 options(INSTALL_opts = "--no-test-load")
+Sys.setenv(CPPFLAGS = "-DENABLE_LEGACY_NONAPI")
+
 cat("Restoring Rcpp & RInside\n")
 renv::restore(
   library  = R_CPP_INCLUDES_LIBRARY,

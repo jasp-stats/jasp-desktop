@@ -30,9 +30,10 @@ Reporter * Reporter::reporter() { return _reporter; }
 
 bool Reporter::isJaspFileNotDabaseOrSynching() const
 {
+	throw std::runtime_error("Reimplement Reporter::isJaspFileNotDabaseOrSynching");
 	//We report through cerr because otherwise it might get messy if JASP is started hidden from a service.
 	//The service will just have to catch the output from std::cerr
-	if(!DataSetPackage::pkg()->isLoaded() || !DataSetPackage::pkg()->hasDataSet())
+	/*if(!DataSetPackage::pkg()->isLoaded() || !DataSetPackage::pkg()->hasDataSet())
 	{
 		std::cerr << "There is no file loaded or it has no data..." << std::endl;
 		return false;
@@ -62,7 +63,7 @@ bool Reporter::isJaspFileNotDabaseOrSynching() const
 		DataSetPackage::pkg()->setSynchingExternally(true);
 	}
 			
-	return true;
+	return true;*/
 }
 
 void Reporter::analysesFinished()

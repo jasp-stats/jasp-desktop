@@ -79,6 +79,10 @@ VariablesFormBase
 
 			property double	_lastListWidth		: 0
 			property double _comboBoxHeight		: 0
+	readonly property var	_activeAssignedListNames	: allAssignedVariablesList.filter((list) => list.visible && list.enabled).map((list) => list.name)
+	readonly property var	_layoutControls				: allJASPControls.filter((control) => !removeInvisibles || control.visible)
+	readonly property real	_changeableHeight			: _computeChangeableHeight(_layoutControls)
+	readonly property var	_tabItems					: _computeTabItems()
 
 	Item { id: items }
 
@@ -98,22 +102,164 @@ VariablesFormBase
 
 	onListWidthChanged: if (initialized && listWidth > 0 && listWidth != _lastListWidth) _lastListWidth = listWidth;
 
-	onHeightChanged:			if (initialized)	setControlsSize()
-	onRemoveInvisiblesChanged:	if (initialized)	setControlsSize()
+	// Assigned lists that are invisible or disabled are removed from the drop keys:
+	// the first drop key is the target of a double click, and should not be such a list.
+	Binding
+	{
+		target:			variablesForm.availableVariablesList
+		property:		"dropKeys"
+		value:			variablesForm._activeAssignedListNames
+		restoreMode:	Binding.RestoreNone
+	}
+
+	Instantiator
+	{
+		model: variablesForm.allAssignedVariablesList.length
+
+		Binding
+		{
+			// The available list must stay the first key: it is the related list of the assigned list (see VariablesListBase::getRelatedModel)
+			target:			variablesForm.allAssignedVariablesList[index]
+			property:		"dropKeys"
+			value:			[variablesForm.availableVariablesList.name].concat(variablesForm._activeAssignedListNames)
+			restoreMode:	Binding.RestoreNone
+		}
+	}
+
+	// The available list takes the height of the form, and the list width if its width is not set explicitly
+	Binding
+	{
+		target:			variablesForm.availableVariablesList
+		property:		"height"
+		value:			variablesForm.height
+		restoreMode:	Binding.RestoreNone
+	}
+
+	Binding
+	{
+		target:			variablesForm.availableVariablesList
+		property:		"width"
+		when:			variablesForm.widthSetByForm(variablesForm.availableVariablesList)
+		value:			variablesForm.listWidth
+		restoreMode:	Binding.RestoreNone
+	}
+
+	// The other controls are placed one below the other on the right side of the form:
+	// the lists with a changeable height share the height left, so that this column is as long as the available list.
+	Instantiator
+	{
+		model: variablesForm.allJASPControls.length
+
+		Item
+		{
+			id: controlLayout
+
+			readonly property var	control:			variablesForm.allJASPControls[index]
+			readonly property int	position:			variablesForm._layoutControls.indexOf(control) // -1 when the control is removed from the layout
+			readonly property bool	hasWidthSetByForm:	variablesForm.widthSetByForm(control)
+
+			Binding
+			{
+				target:			controlLayout.control
+				property:		"anchors.right"
+				value:			variablesForm.right
+				restoreMode:	Binding.RestoreNone
+			}
+
+			Binding
+			{
+				target:			controlLayout.control
+				property:		"anchors.top"
+				value:			controlLayout.position > 0 ? variablesForm._layoutControls[controlLayout.position - 1].bottom : variablesForm.top
+				restoreMode:	Binding.RestoreNone
+			}
+
+			Binding
+			{
+				target:			controlLayout.control
+				property:		"anchors.topMargin"
+				value:			controlLayout.position > 0 ? variablesForm.marginBetweenVariablesLists : 0
+				restoreMode:	Binding.RestoreNone
+			}
+
+			Binding
+			{
+				// A list removed from the layout already gets the height it will have when it is back in the layout
+				target:			controlLayout.control
+				property:		"height"
+				when:			variablesForm._hasChangeableHeight(controlLayout.control)
+				value:			variablesForm._changeableHeightOf(controlLayout.control)
+				restoreMode:	Binding.RestoreNone
+			}
+
+			Binding
+			{
+				// Change the width of a list only if it was not set explicitly
+				target:			controlLayout.control
+				property:		"width"
+				when:			controlLayout.hasWidthSetByForm && variablesForm._isList(controlLayout.control)
+				value:			variablesForm.listWidth
+				restoreMode:	Binding.RestoreNone
+			}
+
+			Binding
+			{
+				target:			controlLayout.control
+				property:		"setLabelAbove"
+				when:			controlLayout.hasWidthSetByForm && controlLayout.control.controlType === JASPControl.ComboBox
+				value:			true
+				restoreMode:	Binding.RestoreNone
+			}
+
+			Binding
+			{
+				target:			controlLayout.control
+				property:		"fieldWidth"
+				when:			controlLayout.hasWidthSetByForm && controlLayout.control.controlType === JASPControl.ComboBox
+				value:			variablesForm.listWidth
+				restoreMode:	Binding.RestoreNone
+			}
+		}
+	}
+
+	// Tab order: the available list, the assign buttons and then the controls of the form, skipping the invisible or disabled ones.
+	// When KeyNavigation.tab is null (no next control, or a control like a Group whose children take the focus), Qt's own Tab handling takes over.
+	Binding
+	{
+		target:			variablesForm.availableVariablesList
+		property:		"KeyNavigation.tab"
+		value:			variablesForm._nextTabItem(variablesForm.availableVariablesList)
+		restoreMode:	Binding.RestoreNone
+	}
+
+	Instantiator
+	{
+		model: variablesForm.allJASPControls.length
+
+		Binding
+		{
+			target:			variablesForm._tabKeyItem(variablesForm.allJASPControls[index])
+			property:		"KeyNavigation.tab"
+			value:			variablesForm._nextTabItem(variablesForm.allJASPControls[index])
+			restoreMode:	Binding.RestoreNone
+		}
+	}
 
 	Repeater
 	{
 		id: assignButtonRepeater
-		model: 0
+		model: variablesForm.allAssignedVariablesList.length
 		
 		AssignButton
 		{
+			id:				assignButton
 			x:				(allAssignedVariablesList[index].x + availableVariablesList.width - 40 * preferencesModel.uiScale) / 2
 			y:				allAssignedVariablesList[index].y  + allAssignedVariablesList[index].rectangleY
 			z:				10
 			leftSource:		availableVariablesList
 			rightSource:	allAssignedVariablesList[index]
 			enabled:		allAssignedVariablesList[index].enabled
+			KeyNavigation.tab:	variablesForm._nextTabItem(assignButton)
 
 			Component.onCompleted:
 			{
@@ -123,122 +269,79 @@ VariablesFormBase
 		}
 	}
 	
-	function init()
+	function _isList(control)
 	{
-		for (var i in allJASPControls)
-		{
-			var control					= allJASPControls[i]
-			control.anchors.right		= variablesForm.right;
-			control.visibleChanged.connect(setControlsSize)
-
-			var isControlList		= ((control.controlType === JASPControl.VariablesListView) || (control.controlType === JASPControl.FactorLevelList) || (control.controlType === JASPControl.InputListView))
-			var isControlComboBox	= (control.controlType === JASPControl.ComboBox)
-
-			if (isControlList && widthSetByForm(control))
-				// Change the width of the VariablesList only if was not set explicitely
-				control.width = Qt.binding(function() {return variablesForm.listWidth; })
-			else if (isControlComboBox && widthSetByForm(control))
-			{
-				control.setLabelAbove	= true
-				control.fieldWidth = Qt.binding(function() {return variablesForm.listWidth; })
-			}
-		}
-
-		var countAssignedList = 0
-		var availableDropKeys = []
-		for (var key in allAssignedVariablesList)
-		{
-			countAssignedList++;
-			var assignedList = allAssignedVariablesList[key]
-			var assignedDropKeys = [];
-			availableDropKeys.push(assignedList.name);
-			assignedDropKeys.push(availableVariablesList.name);
-
-			for (var key2 in allAssignedVariablesList)
-				assignedDropKeys.push(allAssignedVariablesList[key2].name);
-
-			assignedList.dropKeys = assignedDropKeys;
-		}
-
-		availableVariablesList.dropKeys = availableDropKeys
-		setControlsSize()
-		assignButtonRepeater.model = countAssignedList;
-		setTabOrder();
-
-		availableVariablesList.height = Qt.binding(function() { return variablesForm.height; })
-		// Set the width of the VariablesList to listWidth only if it is not set explicitely
-		// Implicitely, the width is set to the parent width.
-		if (widthSetByForm(availableVariablesList))
-			availableVariablesList.width = Qt.binding(function() { return variablesForm.listWidth; })
-
+		return (control.controlType === JASPControl.VariablesListView) || (control.controlType === JASPControl.FactorLevelList) || (control.controlType === JASPControl.InputListView)
 	}
 
-	function setControlsSize()
+	function _hasChangeableHeight(control)
 	{
-		var firstControl				= true;
-		var minHeightOfAssignedControls = 0;
-		var	changeableHeightControls	= [];
-		var anchorTop					= variablesForm.top
-		
-		for (var key in allJASPControls)
-		{
-			var control				= allJASPControls[key]
+		// The height of a list is changeable if the list has more than one row and if its height is not set explicitly
+		return _isList(control) && control.maxRows !== 1 && heightSetByForm(control)
+	}
 
-			if (removeInvisibles && !control.visible)
-				control.anchors.top			= variablesForm.top;
+	// Height of the lists with a changeable height when these controls are placed in the column
+	function _computeChangeableHeight(controls)
+	{
+		var count		= 0;
+		var fixedHeight	= Math.max(controls.length - 1, 0) * marginBetweenVariablesLists;
+
+		for (var control of controls)
+		{
+			if (!_hasChangeableHeight(control))
+				fixedHeight += control.height;
 			else
 			{
-				control.anchors.top			= anchorTop;
-				control.anchors.topMargin	= firstControl ? 0 : marginBetweenVariablesLists;
-				anchorTop					= control.bottom;
-
-				if (!firstControl)
-					minHeightOfAssignedControls += marginBetweenVariablesLists;
-
-				firstControl = false;
-
-				var isControlList = ((control.controlType === JASPControl.VariablesListView) || (control.controlType === JASPControl.FactorLevelList) || (control.controlType === JASPControl.InputListView))
-
-				if (!isControlList)
-					minHeightOfAssignedControls += control.height;
-				else if (control.maxRows === 1 || !heightSetByForm(control))
-				{
-					// console.log("Control " + control.name + " has height " + control.height)
-					minHeightOfAssignedControls += control.height;
-				}
-				else
-				{
-					changeableHeightControls.push(control);
-					if (control.title)
-						minHeightOfAssignedControls += jaspTheme.variablesListTitle;
-				}
+				count++;
+				if (control.title)
+					fixedHeight += jaspTheme.variablesListTitle;
 			}
 		}
 
-		// Set the height of controls (that have not singleVariable set or where the height is already specifically set)
-        // so that the AssignedVariablesList column is as long as the AvailableVariablesList column.
-		if (changeableHeightControls.length > 0)
-		{
-            var controlHeight = (availableVariablesList.height - minHeightOfAssignedControls) / changeableHeightControls.length;
-
-			if (controlHeight < minimumHeightVariablesLists)
-				controlHeight = minimumHeightVariablesLists; // Set a minimum height
-
-			for (var i = 0; i < changeableHeightControls.length; i++)
-                changeableHeightControls[i].height = changeableHeightControls[i].title ? (jaspTheme.variablesListTitle + controlHeight) : controlHeight;
-		}
+		return count > 0 ? Math.max((availableVariablesList.height - fixedHeight) / count, minimumHeightVariablesLists) : 0;
 	}
 
-	function setTabOrder()
+	function _changeableHeightOf(control)
 	{
-		availableVariablesList.KeyNavigation.tab = assignButtonRepeater.itemAt(0);
-		for (var i = 0; i < allAssignedVariablesList.length - 1; i++)
-			assignButtonRepeater.itemAt(i).KeyNavigation.tab = assignButtonRepeater.itemAt(i + 1);
+		var height = _layoutControls.includes(control) ? _changeableHeight : _computeChangeableHeight(_layoutControls.concat(control));
+		return control.title ? jaspTheme.variablesListTitle + height : height;
+	}
 
-		if(allAssignedVariablesList.length > 0)
-			assignButtonRepeater.itemAt(allAssignedVariablesList.length - 1).KeyNavigation.tab = allAssignedVariablesList[0]
+	// Items reached with the Tab key, in this order: the available list, the assign buttons and the controls of the form
+	function _computeTabItems()
+	{
+		var items = [availableVariablesList];
 
-		for (var j = 0; j < allAssignedVariablesList.length - 1; j++)
-			allAssignedVariablesList[j].KeyNavigation.tab = allAssignedVariablesList[j + 1];
+		for (var i = 0; i < assignButtonRepeater.count; i++)
+			items.push(assignButtonRepeater.itemAt(i));
+
+		for (var j = 0; j < allJASPControls.length; j++)
+			items.push(allJASPControls[j]);
+
+		return items;
+	}
+
+	// Next item that gets the focus with the Tab key: invisible or disabled items are skipped.
+	// A control that does not take the focus itself (e.g. a Group) gives null, so that Qt moves the focus to its children.
+	function _nextTabItem(item)
+	{
+		var position = _tabItems.indexOf(item);
+		if (position < 0)
+			return null;
+
+		for (var i = position + 1; i < _tabItems.length; i++)
+		{
+			var next = _tabItems[i];
+			if (next && next.visible && next.enabled)
+				return next.activeFocusOnTab ? next : null;
+		}
+
+		return null;
+	}
+
+	// Item receiving the Tab key of a control: its inner control if this one takes the Tab focus itself (e.g. the ComboBox of a DropDown)
+	function _tabKeyItem(control)
+	{
+		return control.innerControl && control.innerControl.activeFocusOnTab ? control.innerControl : control;
 	}
 }

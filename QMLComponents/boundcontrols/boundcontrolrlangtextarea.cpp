@@ -21,7 +21,21 @@
 #include "log.h"
 #include "columnencoder.h"
 #include "analysisform.h"
+#include "variableinfo.h"
+#include "filter.h"
 #include <QQuickTextDocument>
+
+ColumnEncoder * BoundControlRlangTextArea::_encoder() const
+{
+	//Desktop-only: never use the process-global ColumnEncoder (that is only meaningful inside the engine's
+	//request context). Resolve the encoder for the data this control's form is bound to instead.
+	if (VariableInfo * vi = _textArea->form()->varInfo())
+		if (VariableInfoProvider * provider = vi->provider())
+			if (ColumnEncoder * encoder = provider->columnEncoder())
+				return encoder;
+
+	return ColumnEncoder::fallbackEncoder();
+}
 
 BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea, RLangType type)
 	: BoundControlTextArea(textArea), _langType(type)
@@ -31,7 +45,8 @@ BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea, RLa
 	if (textDocumentQQuick)
 	{
 		QTextDocument* doc = textDocumentQQuick->textDocument();
-        _rLangHighlighter = new RSyntaxHighlighter(doc);
+        _rLangHighlighter = new RSyntaxHighlighter(doc, textArea->form()->varInfo());
+		
 		//connect(doc, &QTextDocument::contentsChanged, this, &BoundQMLTextArea::contentsChangedHandler);
 	}
 	else
@@ -82,7 +97,7 @@ void BoundControlRlangTextArea::checkSyntax()
 
 	// get the column names of the data set
 	_prefixedUsedColumnNames.clear();
-	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(text)), _prefixedUsedColumnNames, _allowedVarPrefixes));
+	_textEncoded = tq(_encoder()->encodeRScript(stringUtils::stripRComments(fq(text)), _prefixedUsedColumnNames, _allowedVarPrefixes));
 
 	if(_prefixedUsedColumnNames.find("") != _prefixedUsedColumnNames.end()) 
 	{
@@ -107,7 +122,7 @@ void BoundControlRlangTextArea::checkSyntax()
 	for (const std::string& column : _noPrefixUsedColumnNames)
 	{
 		if (!firstCol) encodedColNames.append(", ");
-		encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
+		encodedColNames.append("'" + tq(_encoder()->encode(column)) + "'");
 		firstCol = false;
 	}
 
@@ -115,7 +130,7 @@ void BoundControlRlangTextArea::checkSyntax()
 		for (const std::string& column : prefixSet.second)
 		{
 			if (!firstCol) encodedColNames.append(", ");
-			encodedColNames.append("'" + tq(prefixSet.first) + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
+			encodedColNames.append("'" + tq(prefixSet.first) + tq(_encoder()->encode(column)) + "'");
 			firstCol = false;
 		}
 
@@ -181,7 +196,7 @@ void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 	for (const std::string& column : _noPrefixUsedColumnNames)
 	{
 		terms.add(Term(column, _textArea->getVariableType(tq(column))));
-		columns.append(ColumnEncoder::columnEncoder()->encode(column));
+		columns.append(_encoder()->encode(column));
 		value.append(column);
 	}
 
@@ -196,7 +211,7 @@ void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 	for(auto& prefixSet : _prefixedUsedColumnNames) {
 		prefixedColumns[prefixSet.first] = Json::Value(Json::arrayValue);
 		for (const std::string& column : prefixSet.second) {
-			prefixedColumns[prefixSet.first].append(ColumnEncoder::columnEncoder()->encode(column));
+			prefixedColumns[prefixSet.first].append(_encoder()->encode(column));
 		}
 	}
 	boundValue["prefixedColumns"] = prefixedColumns;

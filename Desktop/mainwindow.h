@@ -29,12 +29,11 @@
 #include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
 #include "data/columnsmodel.h"
-#include "data/computedcolumnmodel.h"
-#include "data/datasettablemodel.h"
+#include "datasettablemodel.h"
 #include "data/fileevent.h"
+#include "batchresult.h"
 #include "data/filtermodel.h"
 #include "data/columnmodel.h"
-#include "data/labelfiltergenerator.h"
 #include "engine/enginesync.h"
 #include "gui/aboutmodel.h"
 #include "gui/encryptionsettingsmodel.h"
@@ -58,6 +57,10 @@
 #include "data/workspacemodel.h"
 #include "utilities/languagemodel.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
+#include "rpc/jasprpcdispatcher.h"
+#include "rpc/jasprpcserver.h"
+#include "ai/aiBridge.h"
+#include "gui/aiconfigmodel.h"
 
 using namespace std;
 
@@ -66,7 +69,9 @@ using Modules::Upgrader;
 
 
 class Application;
-
+class AllHelp;
+class QQuickWebEngineDownloadRequest;
+class QTimer;
 ///
 /// Not only the main window of the application but also the main class.
 /// Instantiates relevant models and loads QML (see loadQml)
@@ -86,6 +91,8 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
 	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
+    Q_PROPERTY(bool			aiChatVisible	READ aiChatVisible              WRITE setAiChatVisible                NOTIFY aiChatVisibleChanged	)
+	Q_PROPERTY(bool			chatWindowActive READ chatWindowActive											NOTIFY chatWindowActiveChanged	)
 	Q_PROPERTY(QString		commUrl				READ commUrl												CONSTANT							)
 	Q_PROPERTY(QString		commGold			READ commGold												CONSTANT							)
 	Q_PROPERTY(QString		commSilver			READ commSilver												CONSTANT							)
@@ -98,16 +105,19 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
 	Q_PROPERTY(QString		questionsUrl		READ questionsUrl											CONSTANT							)
 	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
+	Q_PROPERTY(bool			startedForBatch		READ startedForBatch										CONSTANT							)
 
 	friend class FileMenu;
+	friend class TestAll; ///< drives the command-line open/synchronize chain through a real MainWindow
 public:
-	explicit MainWindow(Application *application);
+	explicit MainWindow(Application *application, bool batchRun = false);
 			~MainWindow() override;
 
 	static MainWindow * singleton() { return _singleton; }
 
 	void				showNewData();
-	void				open(QString filepath);
+
+	void				open(const QString & mainFilePath, const QString & inputDataFile = "", const QString & exportFile = "", bool keepJASPOpen = false, bool save = false);
 	void				open(const Json::Value & dbJson);
 	void				testLoadedJaspFile(int timeOut, bool save);
 	void				reportHere(QString dir);
@@ -124,6 +134,8 @@ public:
 	bool				checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
 	bool				contactVisible()		const;
 	bool				communityVisible()		const;
+    bool				aiChatVisible()     const   {return _aiChatVisible; }
+	bool				chatWindowActive()	const	{ return _chatWindowActive; }
 	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 	const QStringList & commThankYou()			const;
 	const QString &		commGold()				const;
@@ -136,11 +148,23 @@ public:
 	const QString 		contactUrlFeatures()	const;
 	const QString 		contactUrlCrashReport()	const;
 	const QString 		contactText()			const;
-	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
+	const QString		questionsUrl()			const
+	{
+#ifdef PRO
+		return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new";
+#else
+		return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor";
+#endif
+	}
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
+
+	bool				startedForBatch()					const	{ return _startedForBatch; }	///< whether this JASP was started to process a data file for another JASP, see setStartedForBatch()
+	void				setStartedForBatch(bool startedForBatch);
+	void                configureBatchRun(int timeoutMinutes);
 	
 public slots:
+	void addNewDataSet();
 	void setImageBackgroundHandler(QString value);
 	void plotPPIChangedHandler(int ppi, bool wasUserAction);
 	void setProgressBarProgress(int progressBarProgress);
@@ -152,7 +176,9 @@ public slots:
 	void setScreenPPI(int screenPPI);
 	void setContactVisible(bool newContactVisible);
 	void setCommunityVisible(bool newCommunityVisible);
+	void onWorkspaceChanged();
 	void setDefaultWorkspaceEmptyValues();
+    void setAiChatVisible(bool visible) { if(_aiChatVisible != visible) { _aiChatVisible = visible; emit aiChatVisibleChanged(); } }
 
 	void showRCommander();
 
@@ -175,7 +201,7 @@ public slots:
 	void zoomResetKeyPressed();	
 	void undo();
 	void redo();
-	void openURLFile(QString fileURLPath);
+    bool openURLFile(QString fileURLPath);
 
 	QObject * loadQmlData(QString data, QUrl url);
 
@@ -189,9 +215,17 @@ public slots:
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
 
 	void	showEnginesWindow(); //For debugging
+	void	toggleChat();
+	Q_INVOKABLE void	annotateAnalysis();
+	void	checkChatWindowActive();
 	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;
 	void	reloadResults() const;
+	void	updateShownFilterInQmlContext();
+	void	_open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save);
+	void	waitForAllAnalysesFinishedBeforeStartingEvent();
+	void	_startWaitingEventIfAnalysesStillFinished();
+	void	waitingEventTimedOut();
 
 private slots:
 	void _setProgressBarVisible(bool progressBarVisible);
@@ -217,6 +251,7 @@ private:
 	void			analysesCountChangedHandler();
 	void			analysisChangedDownstreamHandler(int id, QString options);
 	void			analysisSaveImageHandler(int id, QString options);
+	void			webEngineDownloadRequested(QQuickWebEngineDownloadRequest * download);
 	void			analysisEditImageHandler(int id, QString options);
 	void			removeAnalysisRequestHandler(int id);
 	Json::Value		getResultsMeta();
@@ -231,15 +266,14 @@ private:
 	void pauseEngines();
 	void resumeEngines();
 
-	void _openFile();
 	void _openDbJson();
-	void connectFileEventCompleted(FileEvent * event);
 	void refreshPlotsHandler(bool askUserForRefresh = true);
 	void checkEmptyWorkspace();
+	void registerRpcHandlers();
 
 signals:
 	void saveJaspFile();
-	void editImageCancelled(		int			id);
+	void editImageCancelled(		int			id, QString name);
 	void updateAnalysesUserData(	QString		userData);
 	void runButtonTextChanged(		QString		runButtonText);
 	void runButtonEnabledChanged(	bool		runButtonEnabled);
@@ -262,19 +296,20 @@ signals:
 	void contactTextChanged();
 	void resizeData(int row, int col);
 	void qmlLoadedChanged();
-
+    void aiChatVisibleChanged();
+	void chatWindowActiveChanged();
+	void resetVariableTypes();
 	void hadFatalErrorChanged();
 	
 private slots:
-	void resultsPageLoaded();
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 	void removeAllAnalyses();
 
-	void dataSetIORequestHandler(FileEvent *event);
-	void dataSetIOCompleted(FileEvent *event);
-	void populateUIfromDataSet();
-	void startDataEditorEventCompleted(FileEvent *event);
+	void fileEventRequestHandler(FileEvent *event);
+	void fileEventRequestFinalize(FileEvent *event);
+	void populateUIfromDataSet(bool loadAnalyses = false);
+	void startDataEditorEventCompleted(FileEvent *event, bool startEditor = true);
 	void analysisAdded(Analysis *analysis);
 	void resendResultsToWebEngine();
 
@@ -316,11 +351,8 @@ private:
 	ResultsJsInterface			*	_resultsJsInterface		= nullptr;
 	MessageForwarder			*	_msgForwarder			= nullptr;
 	DataSetPackage				*	_package				= nullptr;
-	DataSetTableModel			*	_datasetTableModel		= nullptr,
-								*	_dataSetModelVarInfo	= nullptr;
-	labelFilterGenerator		*	_labelFilterGenerator	= nullptr;
+	DataSetTableModel			*	_datasetTableModel		= nullptr;
 	ColumnsModel				*	_columnsModel			= nullptr;
-	ComputedColumnModel			*	_computedColumnsModel	= nullptr;
 	FilterModel					*	_filterModel			= nullptr;
 	OnlineDataManager			*	_odm					= nullptr;
 	DynamicModules				*	_dynamicModules			= nullptr;
@@ -330,6 +362,7 @@ private:
 	Application					*	_application 			= nullptr;
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;
+	AllHelp						*	_allHelp				= nullptr;
 	AboutModel					*	_aboutModel				= nullptr;
 	EncryptionSettingsModel		*	_encryptionModel		= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
@@ -352,8 +385,7 @@ private:
 	int								_progressBarProgress,	//Runs from 0 to 100
 									_screenPPI				= 1;
 
-	QString							_openOnLoadFilename,
-									_fatalError				= "The engine crashed...",
+	QString							_fatalError				= "The engine crashed...",
 									_progressBarStatus,
 									_downloadNewJASPUrl		= "";
 	Json::Value						_openOnLoadDbJson		= Json::nullValue;
@@ -362,8 +394,6 @@ private:
 	AsyncLoaderThread				_loaderThread;
 
 	bool							_applicationExiting		= false,
-									_resultsPageLoaded		= false,
-									_qmlLoaded				= false,
 									_openedUsingArgs		= false,
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
@@ -374,9 +404,32 @@ private:
 									_checkAutomaticSync		= false,
 									_contactVisible			= false,
 									_communityVisible		= false,
-									_hadFatalError			= false;
+                                    _hadFatalError			= false,
+									 _aiChatVisible			= false,
+									_chatWindowActive		= false,
+									_startedForBatch		= false;
 	QFont							_defaultFont;
+	QPointer<QWindow>				_chatWindow				= nullptr;
 	QTimer					*		_progressBarTimer		= nullptr;
+	JaspRpcDispatcher		*		_rpcDispatcher			= nullptr;
+	JaspRpcServer			*		_rpcServer				= nullptr;
+	AiBridge				*		_aiBridge				= nullptr;
+	AIConfigModel			*		_aiConfigModel			= nullptr;
+
+	// RPC async data-load job tracking
+	struct RpcLoadJob
+	{
+		std::string	status;	// "running", "complete", "error"
+		std::string	error;
+	};
+	std::unordered_map<int, RpcLoadJob>	_rpcJobs;
+	int									_nextRpcJobId = 1;
+	FileEvent					*	_waitingEvent			= nullptr;
+	QTimer						*	_waitingEventStartTimer		= nullptr; ///< debounces the start of a waiting event until the analyses have stopped changing status (see waitForAllAnalysesFinishedBeforeStartingEvent)
+	QTimer						*	_waitingEventTimeoutTimer	= nullptr; ///< deadline for the whole batch worker, including import and export
+	BatchResult _batchResult;
+	bool _batchRunning = false, _batchKeepOpen = false, _batchWaitingForAnalyses = false;
+	void finishBatchRun();
 };
 
 #endif // MAINWIDGET_H

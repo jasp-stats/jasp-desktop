@@ -1,7 +1,7 @@
 
 #include "ploteditorreferencelines.h"
-
-#include "utilities/qutils.h"
+#include "dataenums.h"
+#include "qutils.h"
 #include "utilities/utiltypes.h"
 #include "ploteditormodel.h"
 

@@ -55,6 +55,8 @@ public:
 	QString	defaultValue()	const	{ return _defaultValue; }
 	void	setDefaultValue(const QString& defaultValue);
 
+	QList<RadioButtonBase*> buttons() const { return _buttons; }
+
 public slots:
 	Q_INVOKABLE void unregisterAll();
 
@@ -67,13 +69,12 @@ signals:
 protected:
 
 	RadioButtonBase* checkedButton() { return _selectedButton; }
-	QList<RadioButtonBase*> buttons() { return _buttons.values(); }
 
 	void _setCheckedButtonHandler();
 	void _setCheckedButton(RadioButtonBase* button);
 
 
-	QSet<RadioButtonBase*>					_buttons;
+	QList<RadioButtonBase*>					_buttons; // In registration order, so the default and generated wrappers do not depend on pointer hashes
 	RadioButtonBase*						_selectedButton = nullptr;
 	QString									_defaultValue;
 };

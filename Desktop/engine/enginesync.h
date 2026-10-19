@@ -22,6 +22,7 @@
 #include <QAbstractListModel>
 #include "enginerepresentation.h"
 #include <queue>
+#include <list>
 
 /// EngineSync is responsible for launching the background
 /// processes, scheduling analyses, and for sending and
@@ -65,10 +66,11 @@ public:
 public slots:
 	void		destroyEngine(EngineRepresentation * engine);
 	void		stopAndDestroyEngine(EngineRepresentation * engine);
-	int			sendFilter(			const QString & generatedFilter,	const QString & filter);
-	void		sendFilterByName(	const QString & name,				const QString & module);
-	void		sendRCode(			const QString & rCode,				int requestId,					bool whiteListedVersion, QString module);
-	void		computeColumn(		const QString & columnName,			const QString & computeCode,	columnType columnType);
+	int			sendFilter(			int dataSetId, const QString & generatedFilter,	const QString & filter);
+	void		sendFilterByName(	int dataSetId, const QString & name,				const QString & module);
+	void		sendRCode(			int dataSetId, const QString & rCode,				int requestId,					bool whiteListedVersion, QString module);
+	void		computeColumn(		int dataSetId, const QString & columnName,			const QString & computeCode,	columnType columnType);
+	void		computeDataSet(		int dataSetId, const QString & computeCode,			int defaultInputFilterId);
 	void		pauseEngines(bool  unloadData = false);
 	void		stopEngines();
 	void		resumeEngines();
@@ -85,23 +87,14 @@ public slots:
 	void		killModuleEngine(Modules::DynamicModule * mod);
 	void		killEngine(int channelNumber);
 	void		stopOrKillEngine(int channelNumber);
-	void		enginesPrepareForData();
-	void		enginesReceiveNewData();
 	bool		isModuleInstallRequestActive(const QString & moduleName);
 	void		dataModeChanged(bool dataMode);
 	
 
 signals:
-	void		processNewFilterResult(int requestId);
-	void		processFilterErrorMsg(const QString & error, int requestID);
 	void		engineTerminated();
 	void		filterUpdated(int requestID);
-	void		filterErrorTextChanged(const QString & error);
-
-	void		computeColumnSucceeded(			const QString & columnName, const QString & warning, bool dataChanged);
-	void		computeColumnRemoved(			const QString & columnName);
-	void		computeColumnFailed(			const QString & columnName, const QString & error);
-	void		columnDataTypeChanged(			const QString & columnName);
+	void		filterErrorTextChanged(			const QString & error);
 
 	void		moduleInstallationSucceeded(	const QString & moduleName);
 	void		moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
@@ -113,7 +106,6 @@ signals:
 	void		refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 	void		plotEditorRefresh();
 	void		settingsChanged();
-	void		reloadData();
 	void		checkDataSetForUpdates();
 
 	void		activateUtilEngineChanged();
@@ -122,13 +114,13 @@ private:
 	//These process functions can request a new engine to be started:
 	stringset	processRCodeQueue();
 	bool		processComputedColumnQueue();
+	bool		processComputedDataSetQueue();
     bool		processDynamicModules();
 	stringset	processAnalysisRequests();	///< Returns modules that still need an engine
 	
 	void		processLogCfgRequests();
 	void		processFilterScript();
 	void		processSettingsChanged();
-	void		processReloadData();
 	
 	void		shutdownBoredEngines();
 	bool		allEnginesStopped(	std::set<EngineRepresentation *> these = {}); ///< If `these` isn't filled all engines are checked
@@ -176,17 +168,22 @@ private:
 	QTimer							*	_filterRunningResetTimer		= nullptr,
 									*	_timerProcess					= nullptr,
 									*	_timerBeat						= nullptr;
-	RFilterStore					*	_waitingFilter					= nullptr;
+	///Pending filters, deduplicated per (dataSetId, script): with a per-dataset workspace more than
+	///one dataset can request a filter before the single engine slot is free, so a single _waitingFilter
+	///would silently drop the previous dataset's filter. Only one is dispatched at a time.
+	std::list<RFilterStore*>			_waitingFilters;
+	int									_waitingFilterRequestIDCounter	= 0;
+	int									_dispatchedFilterRequestID		= -1; //requestId of the filter currently in flight
 	bool								_stopProcessing					= false,
 										_dataMode						= false,
 										_filterRunning					= false,
 										_activateUtilEngine				= false;
-	int									_filterCurrentRequestID			= 0;
 	std::string							_memoryName,
 										_engineInfo;
 
 	std::queue<RScriptStore*>			_waitingScripts;
 	std::queue<RComputeColumnStore*>	_waitingCompCols;
+	std::queue<RComputeDataSetStore*>	_waitingCompDataSets;
 	std::map<std::string,
 		EngineRepresentation * >		_moduleEngines;					///< An engine per module active. Engines will be started and closed as needed.
 	std::set<EngineRepresentation*>		_engines,						///< All analysis/utility/module engines, excepting _rCmder

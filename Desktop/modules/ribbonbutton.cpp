@@ -19,13 +19,13 @@
 #include "ribbonbutton.h"
 #include "modules/dynamicmodule.h"
 #include "modules/analysisentry.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "log.h"
 
 using namespace Modules;
 
 RibbonButton::RibbonButton(QObject * parent)
-	: _enabled(true), _special(true), _separator(true)
+	: _enabled(true), _remember(false), _special(true), _separator(true) //Separators are pure decoration: they are neither selectable nor part of the remembered selection, so they must stay enabled and outside of it
 {
 	static int separatorCount = 0;
 
@@ -44,6 +44,8 @@ RibbonButton::RibbonButton(QObject *parent, DynamicModule * module)  : QObject(p
 	setIsCommon(		_module->isCommon()					);
 	setModuleName(		_module->name()						);
 	setIconSource(tq(	_module->iconFilePath())			);
+	
+	connect(_module, &DynamicModule::isCommonChanged,	this, &RibbonButton::setIsCommon);
 
 	bindYourself();
 }
@@ -145,7 +147,7 @@ void RibbonButton::setReady(bool ready)
 	_ready = ready;
 	emit readyChanged(_ready);
 	
-	if(_ready && dynamicModule() && dynamicModule()->isDevMod())
+	if(_ready && module() && module()->isDevMod())
 		setEnabled(true); 
 }
 
@@ -211,13 +213,15 @@ void RibbonButton::setEnabled(bool enabled)
 
 	if(DynamicModules::dynMods())
 	{
-		if(!isSpecial())
-		{
-			if(enabled)	DynamicModules::dynMods()->loadModule(_module->name());
-			else		DynamicModules::dynMods()->unloadModule(_module->name());
-		}
+		//We only load here and never unload: deselecting a module should merely hide it from the ribbon, not destroy anything.
+		//DynamicModules::unloadModule removes any running analyses of the module (through dynamicModuleUnloadBegin) and is reserved for actually uninstalling or replacing a module.
+		if(enabled && !isSpecial())
+			DynamicModules::dynMods()->loadModule(_module->name());
 
-		emit DynamicModules::dynMods()->moduleEnabledChanged(nameQ(), enabled);
+		//Only buttons that participate in the remembered selection (modules and the R-console) may touch it;
+		//specials such as the data-buttons change enabled-state constantly and would otherwise pollute the stored selection.
+		if(_remember)
+			emit DynamicModules::dynMods()->moduleEnabledChanged(nameQ(), enabled);
 	}
 }
 
@@ -242,9 +246,6 @@ void RibbonButton::setIsCommon(bool isCommon)
 
 	_isCommonModule = isCommon;
 	emit isCommonChanged();
-
-	if(!_enabled && _isCommonModule)
-		_enabled = true;
 }
 
 void RibbonButton::setModuleName(std::string moduleName)
@@ -256,7 +257,7 @@ void RibbonButton::setModuleName(std::string moduleName)
 	emit moduleNameChanged();
 }
 
-DynamicModule * RibbonButton::dynamicModule()
+DynamicModule * RibbonButton::module()
 {
 	return _module;
 }

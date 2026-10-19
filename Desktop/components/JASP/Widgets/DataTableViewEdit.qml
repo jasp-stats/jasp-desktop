@@ -176,9 +176,9 @@ Item
 	Rectangle
 	{
 		id:					highlighter
-		color:				editItem.isEditing ? "transparent" : jaspTheme.itemHighlight
+		color:				jaspTheme.itemHighlight
 		z:					-1
-		visible:			ribbonModel.dataMode
+		visible:			ribbonModel.dataMode && editItem && editItem.isEditing
 		border.width:		2
 		border.color:		jaspTheme.itemHighlight
 		anchors

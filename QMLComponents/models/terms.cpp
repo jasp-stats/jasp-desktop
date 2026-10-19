@@ -19,7 +19,7 @@
 #include "terms.h"
 
 #include <QSet>
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "variableinfo.h"
 
 using namespace std;
@@ -521,7 +521,7 @@ Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) con
 
 	auto changedType = [&, onlyChanged, info] (const QString& variable, columnType type) -> Json::Value
 	{
-		if (onlyChanged && info && (columnType)info->requestInfo(VariableInfo::VariableType, variable).toInt() == type)
+		if (onlyChanged && info && (columnType)info->requestInfo(varInfoType::VariableType, variable).toInt() == type)
 			return Json::nullValue;
 		else
 			return columnTypeToString(type);

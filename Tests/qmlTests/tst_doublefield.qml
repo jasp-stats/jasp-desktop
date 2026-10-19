@@ -6,10 +6,16 @@ TestCase
 {
 	name:		"TestDoublefield"
 
-	DoubleField
-	{
+	property alias form: jaspForm
 
-		id:						control
+	Form
+	{
+		id: jaspForm
+
+		DoubleField
+		{
+			id:						control
+		}
 	}
 
 	function test_displayValue()

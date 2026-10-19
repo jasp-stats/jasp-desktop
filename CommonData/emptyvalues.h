@@ -1,13 +1,15 @@
 #ifndef EMPTYVALUES_H
 #define EMPTYVALUES_H
 
+#include <QObject>
 #include "utils.h"
 #include "json/value.h"
 
-class EmptyValues
+class EmptyValues : public QObject
 {
+	Q_OBJECT
 public:
-	explicit					EmptyValues(EmptyValues * parent = nullptr);
+	explicit					EmptyValues(EmptyValues * parent = nullptr, QObject * qparent = nullptr);
 								~EmptyValues();
 								
 			void				resetEmptyValues();
@@ -31,6 +33,9 @@ public:
 
 	static	const int			missingValueInteger;
 	static	const double		missingValueDouble;
+	
+signals:
+			void				emptyValuesChanged();
 
 private:
 	

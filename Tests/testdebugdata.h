@@ -16,11 +16,21 @@ private slots:
 	void    initTestCase();
 	void    testColumnStuff();
 	void	testEmptyValues();
+	void	testEmptyValuesWithoutLabels();
 	void	testChangeLabel();
+	void	testChangeLabelValueTwice();
 	void    testReverseLabels();
-    void    testReverseNumericals();
+	void    testReverseNumericals();
 	void	testShadowDisplay();
+	void	testValueEqualsDisplayStorage();
+	void	testSequentialValueChanges();
+	void	testEmptyValueLabel();
+	void	testNumericToStringConversion();
+	void	testStringToNumericConversion();
+	void	testBatchOperationsWithFilters();
+	//void	testUndoRedoAfterLabelChanges();
 	
+
 private:
 	DataSetPackage		*	_pkg		= nullptr;
 	DataSet				*	_data		= nullptr;

@@ -3,7 +3,7 @@
 
 #include <QQuickItem>
 #include <QPropertyAnimation>
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "columntype.h"
 
 class AnalysisForm;
@@ -123,7 +123,7 @@ public:
 	virtual QString		generateMDHelp(int depth = 0) const;
 	virtual QString		generateDoxygenHelp()		const;
 	virtual bool		hasInfoSomewhere()					const;
-	bool				isBound()					const	{ return _isBound;					}
+	bool				isBound()					const	{ return _isBound && form();		} //If there is no form it cannot be bound now can it?
 	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;		}
 	bool				indent()					const	{ return _indent;					}
 	bool				isDependency()				const	{ return _isDependency;				}
@@ -179,7 +179,7 @@ public:
 	void							runRScript(			const QString & script, bool whiteListedVersion = true);
 	void							runFilter(			const QString & name);
 	virtual void					rScriptDoneHandler(	const QString & result);
-	virtual void					filterDoneHandler(	const QString & name, const QString & error);
+	virtual void					filterDoneHandler(	int dataSetID, const QString & name, const QString & error);
 
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();
@@ -267,6 +267,7 @@ signals:
 	void	usedVariablesChanged();
 	void	explicitDependsChanged();
 	void	mouseAreaZoneChanged();
+	void	formIsKnown(AnalysisForm * form);
 
 	void					requestColumnCreation(std::string columnName, columnType columnType);
 	void					requestComputedColumnCreation(std::string columnName);

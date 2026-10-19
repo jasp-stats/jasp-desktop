@@ -27,7 +27,7 @@ if(USE_CONAN)
   # When using RelWithDebInfo or MinSizeRel, generate a Conan profile that
   # sets the consumer build type while forcing all dependencies to Release.
   # This avoids slow/broken dependency builds and reuses cached Release binaries.
-  if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+  if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CONAN_PROFILE_PATH "${CMAKE_BINARY_DIR}/_conan_build/relwithdebinfo_override.profile")
     file(WRITE "${CONAN_PROFILE_PATH}"
 "include(default)
@@ -35,6 +35,7 @@ if(USE_CONAN)
 [settings]
 build_type=${CMAKE_BUILD_TYPE}
 *:build_type=Release
+&:build_type=${CMAKE_BUILD_TYPE}
 ")
     # For conan install: use profile so JASP builds as RelWithDebInfo, deps as Release
     set(CONAN_INSTALL_BUILD_TYPE_ARGS "--profile=${CONAN_PROFILE_PATH}")

@@ -2,6 +2,8 @@
 #include "column.h"
 #include <cassert>
 #include "timers.h"
+#include "qutils.h"
+#include "dataenums.h"
 #include "columnutils.h"
 #include "databaseinterface.h"
 
@@ -14,6 +16,9 @@ Label::Label(Column * column, const std::string &label, int value, bool filterAl
 
 	if(id == -1)	dbCreate();
 	else			_dbId = id;
+	
+	connect(this, &Label::labelFilterChanged,	column, &Column::labelFilterChanged);
+	connect(this, &Label::manualEditMade,		column, &Column::manualEditMade);
 }
 
 void Label::dbDelete()
@@ -145,6 +150,8 @@ bool Label::setLabel(const std::string & label)
 		_column->labelDisplayChanged(this, oldLabel);
 
 		dbUpdate();
+		
+		emit _column->labelChanged(_column, tq(oldLabel), tq(_label));
 		return true;
 	}
 	
@@ -223,6 +230,9 @@ bool Label::setFilterAllows(bool allowFilter)
 	{
 		_filterAllows = allowFilter;
 		dbUpdate();
+
+		emit labelFilterChanged();
+
 		return true;
 	}
 	return false;
@@ -277,8 +287,8 @@ std::string Label::labelDisplay() const
 bool Label::isEmptyValue() const
 {
 	if(!std::isnan(_dblValue) && _column->isEmptyValue(_dblValue))
-			return true;
-		
+		return true;
+	
 	return _column->isEmptyValue(originalValueAsString(false)) || _column->isEmptyValue(label());
 }
 
@@ -329,3 +339,64 @@ std::string Label::str() const
 	return "Label of column '" + _column->name() + "' has display: '" + label() + "' for value " + std::to_string(intsId()) + ", order " + std::to_string(order()) + " and " + ( isEmptyValue() ? "considers itself to be " : "is not ") + "a missing value!";
 }
 
+int Label::rowCount(const QModelIndex &parent) const
+{
+	return parent.isValid() ? 0 : 1;
+}
+
+int Label::columnCount(const QModelIndex &parent) const
+{
+	return parent.isValid() ? 0 : 1;
+}
+
+QVariant Label::data(const QModelIndex &index, int role) const
+{
+	if(!index.isValid())
+		return QVariant();
+	
+	
+	if(index.row() >= rowCount() || index.column() >= columnCount())
+		return QVariant(); // if there is no data then it doesn't matter what role we play
+	
+	switch(role)
+	{
+	case Qt::DisplayRole:									
+	case int(dataPkgRoles::label):							return tq(label());
+	case int(dataPkgRoles::value):							return tq(originalValueAsString());
+	case int(dataPkgRoles::filter):							return filterAllows();
+	}
+	
+	return QVariant();
+}
+
+
+
+std::string Label::getValue(bool fancyEmptyValue, bool ignoreEmptyValue, bool sepas, columnType asType) const
+{
+	if(asType == columnType::unknown)
+		asType = _column->type();
+	
+	if (asType == columnType::scale)
+		return _column->doubleToDisplayString(originalValueAsDouble(), fancyEmptyValue, ignoreEmptyValue, sepas);
+
+	return originalValueAsString(fancyEmptyValue, ignoreEmptyValue);	
+}
+
+std::string Label::getLabel(bool ignoreEmptyValue) const
+{
+	return ignoreEmptyValue ?	label() 	:	labelDisplay();
+}
+
+std::string Label::getDisplay(bool fancyEmptyValue, bool sepas) const
+{
+	return _column->type() == columnType::scale	
+		?	getValue(fancyEmptyValue, false, sepas)
+		:	getLabel(false);
+}
+
+std::string Label::getShadow(bool fancyEmptyValue, bool sepas) const
+{
+	return _column->type() != columnType::scale	
+		?	getValue(fancyEmptyValue, true, sepas)
+		:	getLabel(fancyEmptyValue);
+}

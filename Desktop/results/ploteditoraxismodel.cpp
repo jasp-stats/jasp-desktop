@@ -1,6 +1,6 @@
 #include "ploteditoraxismodel.h"
 #include "ploteditormodel.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "jsonutilities.h"
 #include "log.h"
 #include "columnutils.h"
@@ -425,8 +425,8 @@ void AxisModel::fillFromJSON(std::vector<double> &obj, Json::Value value)
 		
 		switch(entry.type())
 		{
-		case Json::intValue:		v = entry.asInt();		break;
-		case Json::uintValue:		v = entry.asUInt();		break;
+		case Json::intValue:		v = entry.asInt64();	break;
+		case Json::uintValue:		v = entry.asUInt64();	break;
 		case Json::realValue:		v = entry.asDouble();	break;
 		case Json::booleanValue:	v = entry.asBool();		break;
 		default:					v = 0;					break;
@@ -446,8 +446,8 @@ void AxisModel::fillFromJSON(std::vector<QString> &obj, Json::Value value)
 
 		switch(entry.type())
 		{
-		case Json::intValue:		str = std::to_string(entry.asInt());		break;
-		case Json::uintValue:		str = std::to_string(entry.asUInt());		break;
+		case Json::intValue:		str = std::to_string(entry.asInt64());		break;
+		case Json::uintValue:		str = std::to_string(entry.asUInt64());		break;
 		case Json::realValue:		str = std::to_string(entry.asDouble());		break;
 		case Json::stringValue:		str = entry.asString();						break;
 		case Json::booleanValue:	str = entry.asBool() ? "True" : "False";	break;

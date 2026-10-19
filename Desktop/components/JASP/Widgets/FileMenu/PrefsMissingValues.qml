@@ -100,6 +100,7 @@ FocusScope
 
 							QTC.ToolTip.text:		qsTr("Remove missing value")
 							QTC.ToolTip.visible:	containsMouse
+							QTC.ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 
 							Image
 							{

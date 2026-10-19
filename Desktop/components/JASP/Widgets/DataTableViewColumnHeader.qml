@@ -12,12 +12,15 @@ Rectangle
 				) 
 				? jaspTheme.itemSelectedNoFocusColor 
 				: jaspTheme.buttonColor
+	
+	border.width: 1
+	border.color: jaspTheme.borderColor
 
 	readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
 	function getColumnTypeIcon(type)
 	{
-		return String(dataSetModel.getColumnTypesWithIcons()[type]) === "" ? "" : jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[type]
+		return String(dataSetModel.columnTypesWithIcons()[type]) === "" ? "" : jaspTheme.iconPath + dataSetModel.columnTypesWithIcons()[type]
 	}
 
 
@@ -100,6 +103,7 @@ Rectangle
 			ToolTip.text:		qsTr("Click here to change column type")
 			ToolTip.timeout:	3000
 			ToolTip.delay:		500
+			ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 			cursorShape:		enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
 		}
 	}
@@ -180,16 +184,6 @@ Rectangle
 			{
 				columnModel.chosenColumn	= columnIndex;
 				columnModel.visible			= true;
-
-				if(dataSetModel.columnUsedInEasyFilter(columnIndex))
-				{
-					filterModel.showEasyFilter = true
-					filterModel.filterVisible = true
-				}
-				
-				//A button in VariablesWindow will do this? in any case, it is kind of annoying to have the analysis always pop up instead of variableswindow...
-				//if(computedColumnType == computedColumnTypeAnalysis || computedColumnType == computedColumnTypeAnalysisNotComputed)
-				//    computedColumnsInterface.showAnalysisFormForColumn(headerText) //headerText should be columnName
 			}
 
 		}

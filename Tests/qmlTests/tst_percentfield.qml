@@ -6,10 +6,16 @@ TestCase
 {
 	name:		"TestPercentfield"
 
-	PercentField
-	{
+	property alias form: jaspForm
 
-		id:						control
+	Form
+	{
+		id: jaspForm
+
+		PercentField
+		{
+			id:						control
+		}
 	}
 
 	function test_displayValue()

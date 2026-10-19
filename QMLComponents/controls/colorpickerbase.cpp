@@ -3,7 +3,7 @@
 ColorPickerBase::ColorPickerBase(QQuickItem* parent)
 	: JASPControl(parent), BoundControlBase(this)
 {
-	_controlType = ControlType::CheckBox;
+	_controlType = ControlType::ColorPicker;
 }
 
 bool ColorPickerBase::isJsonValid(const Json::Value &value) const

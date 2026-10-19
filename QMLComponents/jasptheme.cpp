@@ -1,6 +1,6 @@
 #include "jasptheme.h"
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "preferencesmodelbase.h"
 #include <QFontDatabase>
 

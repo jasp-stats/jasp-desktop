@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import JASP.Controls		as JaspControls
 import QtQml.Models
-
+import QtQuick.Layouts
 
 FocusScope
 {
@@ -10,7 +10,8 @@ FocusScope
 
 	signal doubleClicked()
 	
-	property alias isMainDataViewer: dataTableView.isMainDataViewer
+	property alias isMainDataViewer:		dataTableView.isMainDataViewer
+	property real calculatedMinimumHeight:	200 * jaspTheme.uiScale + (!computeDataSetPanel.visible ? 0 : computeDataSetPanel.height + jaspTheme.generalAnchorMargin)
 
 	Rectangle
 	{
@@ -69,10 +70,10 @@ FocusScope
 			focus:					__myRoot.focus
 
 			id:						dataTableView
-			anchors.top:			parent.top
+			anchors.top:			dataStatusBar.bottom
 			anchors.left:			parent.left
 			anchors.right:			parent.right
-			anchors.bottom:			dataStatusBar.top
+			anchors.bottom:			computeDataSetPanel.visible ? computeDataSetPanel.top : dataSelectionBar.top
 
 			itemHorizontalPadding:	8 * jaspTheme.uiScale
 			itemVerticalPadding:	8 * jaspTheme.uiScale
@@ -307,30 +308,194 @@ FocusScope
 
 		}
 
+		
 		Rectangle
 		{
-			id:				dataStatusBar
-			objectName:		"dataStatusBar"
-			anchors.left:	parent.left
-			anchors.right:	parent.right
-			anchors.bottom: parent.bottom
-
+			id:				dataStatusBar			
 			color:			jaspTheme.grayMuchLighter
 			border.color:	jaspTheme.grayLighter
 			border.width:	1
-
-			height:			dataFilterStatusText.text.length > 0 ? dataFilterStatusText.contentHeight + (16 * preferencesModel.uiScale) : 0
-
-			Text
+			
+			anchors.left:	parent.left
+			anchors.right:	parent.right
+			anchors.top:	parent.top
+			
+			height:			rowLayoutStatusBar.height + jaspTheme.generalAnchorMargin * 2
+			
+		
+			Flickable
 			{
-				id:						dataFilterStatusText
-				text:					filterModel.statusBarText
-				font:					jaspTheme.font
-				color:					jaspTheme.textEnabled
-				anchors.left:			parent.left
-				anchors.verticalCenter:	parent.verticalCenter
-				anchors.leftMargin:		8 * preferencesModel.uiScale
+				
+				
+				contentWidth:		rowLayoutStatusBar.width
+				contentHeight:		rowLayoutStatusBar.height
+	
+				anchors.fill:		parent
+				anchors.margins:	jaspTheme.generalAnchorMargin
+				
+				
+				RowLayout
+				{
+					id:				rowLayoutStatusBar
+					height:			24 * jaspTheme.uiScale
+					
+					//JaspControls.DropDown
+					Text
+					{
+						id:					filterDropDown
+						text:				qsTr("Showing: ") + filterModel.currentFilterTitle
+						font:				jaspTheme.font
+						color:				jaspTheme.textEnabled						
+					}
+					
+					Repeater
+					{
+						model: dataSetModel.currentTypeIcons
+						
+						JaspControls.RoundedButton
+						{
+							
+							iconSource:			jaspTheme.currentIconPath() + modelData
+							
+							implicitWidth:		rowLayoutStatusBar.height
+							implicitHeight:		rowLayoutStatusBar.height
+							
+							onClicked:			dataSetModel.toggleColType(index, false)
+							onDoubleClicked:	dataSetModel.toggleColType(index, true)
+						}
+					}
+					
+					TextField
+					{
+						id:						columnFilterInput
+						text:					""
+						placeholderText:		qsTr("Columnfilter")
+						font:					jaspTheme.font
+						color:					jaspTheme.textEnabled
+						onTextChanged:			dataSetModel.columnFilter = text
+						height:					rowLayoutStatusBar.height
+						padding:				0
+						
+						background:				Rectangle
+						{
+							color:				jaspTheme.controlBackgroundColor
+							border.color:		jaspTheme.buttonBorderColor
+							border.width:		1
+							radius:				jaspTheme.borderRadius
+							implicitWidth:		200 * jaspTheme.uiScale
+							implicitHeight:		rowLayoutStatusBar.height	
+						}
+					}
+					
+	
+					//Text
+					//{
+					//	id:						dataFilterStatusText
+					//	text:					filterModel.filter.statusBarText
+					//	font:					jaspTheme.font
+					//	color:					jaspTheme.textEnabled
+					//}
+					
+				}
 			}
+		}
+		
+		Rectangle
+		{
+			id:				dataSelectionBar			
+			color:			jaspTheme.uiBackground
+			border.color:	jaspTheme.grayLighter
+			border.width:	1
+			
+			anchors.left:	parent.left
+			anchors.right:	parent.right
+			anchors.bottom:	parent.bottom
+			
+			height:			dataTabButtons.height + jaspTheme.generalAnchorMargin * 2
+			//z:				-1
+			
+			Rectangle
+			{
+				anchors
+				{
+					top:			parent.top
+					left:			parent.left
+					right:			parent.right
+					bottom:			dataTabButtonsFlickable.top
+					topMargin:		border.width * -1
+					bottomMargin:	-1
+				}
+				
+				//z:				1
+				
+				color:			jaspTheme.white
+				border.color:	jaspTheme.uiBorder
+				border.width:	1
+				
+			}
+			
+		
+			Flickable
+			{
+				id:					dataTabButtonsFlickable
+				clip:				true
+				contentWidth:		dataTabButtons.width
+				contentHeight:		dataTabButtons.height
+					
+	
+				anchors
+				{
+					top:		parent.top
+					left:		parent.left
+					right:		parent.right
+					bottom:		parent.bottom
+					topMargin:	jaspTheme.generalAnchorMargin
+				}
+				
+				RowLayout
+				{
+					id:		dataTabButtons
+					
+					Repeater
+					{
+						model:			dataSetPackage.workspace
+						
+						DataSetTabButton
+						{
+							required property string	name
+							required property string	title
+							required property string	description
+							required property bool		columnIsComputed
+							
+							dataSetName:		name
+							description:		description
+							text:				title
+							isComputed:			columnIsComputed
+							//buttonActive:		dataSetPackage.workspace.shownDataSet && dataSetPackage.workspace.shownDataSet.name === name
+							//showTextField:		buttonActive
+							onClicked:			dataSetPackage.workspace.setShownDataSet(name)
+						}
+					
+					}
+					
+					JaspControls.MenuButton
+					{
+						id:						addDataSetButtonEasy
+						iconSource:				jaspTheme.iconPath + "/round_addition.png"
+						onClicked:				mainWindow.addNewDataSet()
+						radius:					height
+					}
+				}
+			}
+		}
+		
+		ComputeDataSetPanel
+		{
+			id:						computeDataSetPanel
+			anchors.left:			parent.left
+			anchors.right:			parent.right
+			anchors.bottom:			dataSelectionBar.top
+			visible:				dataSetPackage.workspace.shownDataSet && dataSetPackage.workspace.shownDataSet.codeType === computedColumnTypeRCode
 		}
 	}
 }

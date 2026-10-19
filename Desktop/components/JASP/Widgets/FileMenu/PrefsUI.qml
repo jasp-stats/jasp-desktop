@@ -38,7 +38,7 @@ PrefsScrollView
 	{
 		id:				menuHeader
 		headertext:		qsTr("User Interface Options")
-		helpfile:		"preferences/PrefsUI"
+		helpMD:			allHelp.PrefsUI
 		addMargin:		false
 
 		Connections
@@ -179,7 +179,7 @@ PrefsScrollView
 				onCheckedChanged:	if (checked) preferencesModel.currentThemeName  =  "darkTheme"
 				toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
 
-				KeyNavigation.tab:		languages
+				KeyNavigation.tab:	languageGroup
 			}
 		}
 	}
@@ -222,7 +222,35 @@ PrefsScrollView
 			KeyNavigation.tab:	uiScaleSpinBox
 
 		}
+	}
+	
+	PrefsGroupRect
+	{
+		title: qsTr("Onboarding")
 
+		CheckBox
+		{
+			id:					showOnboardingCheckbox
+			label:				qsTr("Show onboarding tour on next start")
+			checked:			!preferencesModel.onboardingCompleted
+			onCheckedChanged:
+			{
+				preferencesModel.onboardingStep = 0
+				preferencesModel.onboardingCompleted = !checked
+			}
+			toolTip:			qsTr("Enable this to see the guided tour again the next time JASP starts.")
+
+			KeyNavigation.tab:	startTutorialButton
+		}
+
+		RoundedButton
+		{
+			id:					startTutorialButton
+			text:				qsTr("Start tutorial")
+			onClicked:			mainWindowRoot.startTutorial()
+			activeFocusOnTab:	true
+			KeyNavigation.tab:	uiScaleSpinBox
+		}
 	}
 
 	PrefsGroupRect

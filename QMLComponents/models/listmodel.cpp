@@ -16,18 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "listmodel.h"
-#include "controls/jasplistcontrol.h"
-#include "analysisform.h"
-#include "controls/rowcontrols.h"
-#include "controls/sourceitem.h"
 #include "log.h"
+#include "listmodel.h"
+#include "jasptheme.h"
+#include "analysisform.h"
+#include "analysisbase.h"
 #include "jsonutilities.h"
+#include "controls/sourceitem.h"
+#include "controls/rowcontrols.h"
+#include "controls/jasplistcontrol.h"
 
 ListModel::ListModel(JASPListControl* listView) 
 	: QAbstractTableModel(listView)
+	,  VariableInfoConsumer()
 	, _listView(listView)
-{
+{	
 	// Connect all apecific signals to a general signal
 	connect(this,	&ListModel::modelReset,				this,	&ListModel::termsChanged);
 	connect(this,	&ListModel::rowsRemoved,			this,	&ListModel::termsChanged);
@@ -47,18 +50,18 @@ QHash<int, QByteArray> ListModel::roleNames() const
 	{
 		roles[TypeRole]						= "type";
 		roles[InfoRole]						= "info";
+		roles[NameRole]						= "name";
+		roles[ColumnPreviewRole]			= "preview";
 		roles[SelectedRole]					= "selected";
 		roles[SelectableRole]				= "selectable";
 		roles[ColumnTypeRole]				= "columnType";
-		roles[ColumnPreviewRole]			= "preview";
 		roles[ColumnDescriptionRole]		= "description";
 		roles[ColumnRealTypeRole]			= "columnRealType";
-		roles[ColumnTypeIconRole]			= "columnTypeIcon";
 		roles[ColumnTypeDisabledIconRole]	= "columnTypeDisabledIcon";
-		roles[NameRole]						= "name";
+		roles[ColumnTypeIconRole]			= "columnTypeIcon";
 		roles[RowComponentRole]				= "rowComponent";
-		roles[VirtualRole]					= "virtual";
 		roles[DeletableRole]				= "deletable";
+		roles[VirtualRole]					= "virtual";
 
 		setMe = false;
 	}
@@ -313,7 +316,11 @@ void ListModel::setVariableType(int ind, columnType type)
 
 	Term newTerm = term;
 	newTerm.setType(type);
-	sourceVariableTypeChanged(newTerm);
+
+	if(newTerm.components().isEmpty())
+		return;
+
+	sourceVariableTypeChanged(newTerm.components()[0], newTerm.type());
 }
 
 columnType ListModel::getVariableType(const QString& value) const
@@ -322,17 +329,17 @@ columnType ListModel::getVariableType(const QString& value) const
 	if (i >= 0)
 		return terms().at(i).type();
 
-	return (columnType)requestInfo(VariableInfo::VariableType, value).toInt();
+	return (columnType)requestInfo(varInfoType::VariableType, value).toInt();
 }
 
 QString ListModel::getVariableDescription(const QString &name) const
 {
-	return requestInfo(VariableInfo::ColumnDescription, name).toString();
+	return requestInfo(varInfoType::ColumnDescription, name).toString();
 }
 
 columnType ListModel::getVariableRealType(const QString& name) const
 {
-	return (columnType)requestInfo(VariableInfo::VariableType, name).toInt();
+	return (columnType)requestInfo(varInfoType::VariableType, name).toInt();
 }
 
 QString ListModel::getVariablePreview(const QString& name) const
@@ -343,13 +350,13 @@ QString ListModel::getVariablePreview(const QString& name) const
 	if(chosenType == realType)
 		return "";
 	
-	VariableInfo::InfoType		previewType;
+	varInfoType		previewType;
 	
 	switch(chosenType)
 	{
-	default:					previewType = VariableInfo::PreviewScale;		break;
-	case columnType::ordinal:	previewType	= VariableInfo::PreviewOrdinal;		break;
-	case columnType::nominal:	previewType	= VariableInfo::PreviewNominal;		break;
+	default:					previewType = varInfoType::PreviewScale;		break;
+	case columnType::ordinal:	previewType	= varInfoType::PreviewOrdinal;		break;
+	case columnType::nominal:	previewType	= varInfoType::PreviewNominal;		break;
 	}
 	
 	return requestInfo(previewType, name).toString();
@@ -482,6 +489,11 @@ void ListModel::cleanUp()
 	blockSignals(true);
 }
 
+//void ListModel::variableTypeChanged(QString columnName, columnType columnType)
+//{
+//	sourceVariableTypeChanged(Term(columnName, columnType));
+//}
+
 void ListModel::sourceTermsReset()
 {
 	_initTerms(getSourceTerms(), Terms::RelatedValuesPerTerm(), false);
@@ -565,8 +577,8 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 			{
 			case ListModel::ColumnTypeRole:								return columnTypeToQString(colType);
 			case ListModel::ColumnRealTypeRole:							return columnTypeToQString(colRealType);
-			case ListModel::ColumnTypeIconRole:							return colType == columnType::unknown ? "" : (VariableInfo::info()->getIconFile(colType, colType == colRealType ? VariableInfo::DefaultIconType : VariableInfo::TransformedIconType));
-			case ListModel::ColumnTypeDisabledIconRole:					return colType == columnType::unknown ? "" : (VariableInfo::info()->getIconFile(colType, VariableInfo::DisabledIconType));
+			case ListModel::ColumnTypeIconRole:							return colType == columnType::unknown ? "" : (JaspTheme::currentIconPath() + getIconFilename(colType, colType == colRealType ? varIconType::DefaultIconType : varIconType::TransformedIconType));
+			case ListModel::ColumnTypeDisabledIconRole:					return colType == columnType::unknown ? "" : (JaspTheme::currentIconPath() + getIconFilename(colType, varIconType::DisabledIconType));
 			}
 		}
 	}
@@ -644,7 +656,7 @@ QStringList	ListModel::allLevels(const Terms& terms) const
 {
 	QStringList result;
 	for (const Term& term : terms)
-		result.append(requestInfo(VariableInfo::Labels, term.value()).toStringList());
+		result.append(requestInfo(varInfoType::Labels, term.value()).toStringList());
 
 	return result;
 }
@@ -682,9 +694,11 @@ void ListModel::sourceVariableNamesChanged(QMap<QString, QString> map)
 		emit variableNamesChanged(changedNamesMap);
 }
 
-bool ListModel::sourceVariableTypeChanged(Term sourceTerm)
+bool ListModel::sourceVariableTypeChanged(QString columnName, columnType colType)
 {
 	bool change = false;
+	Term sourceTerm(columnName, colType);
+
 	for (int i = 0; i < _terms.size(); i++)
 	{
 		Term& term = _terms.at(i);
@@ -707,7 +721,7 @@ bool ListModel::sourceVariableTypeChanged(Term sourceTerm)
 			QModelIndex ind = index(i, 0);
 
 			emit dataChanged(ind, ind, {ListModel::ColumnTypeRole, ListModel::ColumnTypeIconRole, ListModel::ColumnTypeDisabledIconRole, ListModel::ColumnPreviewRole});
-			emit variableTypeChanged(term);
+			emit variableTypeChanged(columnName, colType);
 
 			change = true;
 		}

@@ -33,8 +33,10 @@
 /// It can be used both directly, through columnEncoder()->, in that scenario it only en- and decodes actual columnNames from the dataset.
 /// If you want to en- or decode other names then you instantiate a separate copy and use it's functions.
 /// It will then also use the columnnames if they are set btw.
+class DataSet;
 class ColumnEncoder
 {
+	friend class DataSet;
 public:
 	typedef std::map<std::string, std::string>					colMap;
 	typedef std::map<std::string, columnType>					colTypeMap;	
@@ -48,6 +50,12 @@ public:
 								ColumnEncoder(const std::map<std::string, std::string> & decodeDifferently);
 								~ColumnEncoder();
 	static ColumnEncoder	*	columnEncoder();
+	/// Like columnEncoder() but never consults/repopulates the process-global current-encoder
+	/// indirection (_currentEncoder). Used by the desktop so it never depends on the global,
+	/// which is only meaningful in the engine's request context.
+	static ColumnEncoder	*	fallbackEncoder();
+	static ColumnEncoder	*	currentEncoder();
+	static void					setCurrentEncoder(ColumnEncoder * encoder);
 
 	static	bool				isColumnName(const std::string & in)							{ return columnEncoder()->shouldEncode(in); }
 	static	bool				isEncodedColumnName(const std::string & in)						{ return columnEncoder()->shouldDecode(in); }
@@ -67,6 +75,7 @@ public:
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);
 			void				setCurrentNames(const colTypeMap & names);
+			const colTypeMap&	currentNames() const { return _dataSetTypes; }
 			void				updateColumnTypesOnly(const colTypeMap & names);
 			void				setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding=true);	///< Do not use! Deprecated
 			void				setCurrentColumnTypePerName(const colTypeMap & theMap);									///< Do not use! Deprecated
@@ -83,17 +92,20 @@ public:
 			std::string			encodeRScript(std::string text, std::map<std::string, std::set<std::string>>& prefixedColumnsFound, const std::set<std::string>& allowedPrefixes);
 			std::string			encodeRScript(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, std::set<std::string> * columnNamesFound = nullptr, const std::string& acceptedPrefix = "");
 
-			///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
-	static	std::string			encodeAll(const std::string & text) { return replaceAll(text, encodingMap(), originalNames()); }
+		///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
+		///Instance method: en/decode against *this* encoder. Engine callers use the process-global
+		///current encoder (columnEncoder()) and desktop callers the dataset's own encoder.
+			std::string			encodeAll(const std::string & text) const;
 
 			///Replace all occurences of encoded columnNames in a string by their decoded versions, regardless of word boundaries or parentheses.
-	static	std::string			decodeAll(const std::string & text) { return replaceAll(text, decodingMap(), encodedNames());  }
+			std::string			decodeAll(const std::string & text) const;
 
 			///Replace all occurences of columnNames in a string by their encoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
-	static	void				encodeJson(Json::Value & json, bool replaceNames = false, bool replaceStrict = false);
+			void				encodeJson(Json::Value & json, bool replaceNames = false, bool replaceStrict = false) const;
 
 			///Replace all occurences of encoded columnNames in a string by their decoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
-	static	void				decodeJson(Json::Value & json, bool replaceNames = true);
+			void				decodeJson(Json::Value & json, bool replaceNames = true) const;
+
 	static	void				decodeJsonSafeHtml(Json::Value & json);
 
 	static	colsPlusTypes		encodeColumnNamesinOptions(Json::Value & options, bool preloadingData);
@@ -117,6 +129,12 @@ private:
 	static	const colMap	&	decodingMapSafeHtml();
 	static	const colVec	&	originalNames();
 	static	const colVec	&	encodedNames();
+	//Merged-map builders rooted at a specific encoder (used by the instance en/decode helpers, which
+	//must include the extra encodings from _otherEncoders exactly like the process-global getters).
+	static	colMap				encodingMap(const ColumnEncoder * self);
+	static	colMap				decodingMap(const ColumnEncoder * self);
+	static	colVec				originalNames(const ColumnEncoder * self);
+	static	colVec				encodedNames(const ColumnEncoder * self);
 	static	void				invalidateAll();
 
 	static	bool				_encodingMapInvalidated,
@@ -127,6 +145,7 @@ private:
 								_encodedNamesInvalidated;
 
 	static ColumnEncoder	*	_columnEncoder;
+	static ColumnEncoder	*	_currentEncoder;
 	static ColumnEncoders	*	_otherEncoders;
 
 	colMap						_encodingMap,

@@ -17,8 +17,8 @@
 //
 
 #include "datasetprovider.h"
-#include "utilities/qutils.h"
 #include "columnencoder.h"
+#include "qutils.h"
 
 #include <memory>
 
@@ -42,8 +42,7 @@ DataSetProvider* DataSetProvider::getProvider(bool inMemory, bool reset, QObject
 DataSetProvider::~DataSetProvider()
 {
 	assert(_singleton == this);
-	delete VariableInfo::info();
-	delete _dataSet;
+	delete _workspace;
 	delete _db;
 	_singleton = nullptr;
 }
@@ -51,7 +50,7 @@ DataSetProvider::~DataSetProvider()
 DataSetProvider::DataSetProvider(bool inMemory, QObject *parent) : QAbstractTableModel(parent), _inMemory(inMemory)
 {
 	_db	= new DatabaseInterface(true, inMemory);
-	_dataSet = new DataSet();
+	_workspace = new Workspace();
 
 	new VariableInfo(this);
 	_singleton = this;
@@ -59,66 +58,69 @@ DataSetProvider::DataSetProvider(bool inMemory, QObject *parent) : QAbstractTabl
 
 void DataSetProvider::resetDataSet()
 {
-	beginResetModel();
-	if (_dataSet)
+	if (_workspace)
 	{
-		_dataSet->dbDelete();
-		delete _dataSet;
+		_workspace->dbDelete();
+		delete _workspace;
 	}
-
-	_dataSet = new DataSet();
-	endResetModel();
+	
+	_workspace = new Workspace(this);
+	_workspace->createDataSet();
 }
 
 int	DataSetProvider::rowCount(const QModelIndex &) const
 {
-	return _dataSet->columnCount();
+	return dataSet()->columnCount();
 }
 
 int	DataSetProvider::columnCount(const QModelIndex &) const
 {
-	return _dataSet->rowCount();
+	return dataSet()->rowCount();
 }
 
 QVariant DataSetProvider::data(const QModelIndex & index, int role) const
 {
-	Column * column = index.row() > columnCount() ? nullptr : _dataSet->column(index.row());
+	Column * column = index.row() >= rowCount() ? nullptr : dataSet()->column(index.row());
 
 	if (!column)						return QVariant();
 	else if (role == Qt::DisplayRole)	return tq(column->name());
 	else								return QVariant(); //QAbstractTableModel::data(index, role);
 }
 
-void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold, bool orderLabelsByValue)
+void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSetStrings, int threshold, bool orderLabelsByValue)
 {
+	if (!dataSet())
+		_workspace->createDataSet();
 
-	_dataSet->beginBatchedToDB();
+	dataSet()->beginBatchedToDB();
 
 	int rowCount = 0;
-	for (const auto it : dataSet)
+	for (const auto it : dataSetStrings)
 		rowCount = rowCount >= it.second.size() ? rowCount : it.second.size();
 
 
-	_dataSet->setColumnCount(dataSet.size());
-	_dataSet->setRowCount(rowCount);
+	dataSet()->setColumnCount(dataSetStrings.size());
+	dataSet()->setRowCount(rowCount);
 
 	int colNr = 0;
 
-	for (const auto it : dataSet)
+	for (const auto it : dataSetStrings)
 	{
 		auto lookup = [&](size_t r)
 		{
-			return dataSet.at(it.first)[r];
+			return dataSetStrings.at(it.first)[r];
 		};
 
-		_dataSet->column(colNr)->initFromLookups(it.first, rowCount, lookup, lookup, it.first, columnType::unknown, {}, threshold, orderLabelsByValue);
+		dataSet()->column(colNr)->initFromLookups(it.first, rowCount, lookup, lookup, it.first, columnType::unknown, {}, threshold, orderLabelsByValue);
 
 		colNr++;
 	}
 
-	_dataSet->endBatchedToDB([](float f) {});
+	dataSet()->endBatchedToDB([](float f) {});
 
-	ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
+	//The desktop must not rely on the process-global ColumnEncoder (that is only meaningful inside the
+	//engine's request context); consumers get the dataset's own encoder via provider->columnEncoder().
+	dataSet()->encoder().setCurrentNames(dataSet()->getColumnTypesMap());
 
 }
 
@@ -129,9 +131,8 @@ void DataSetProvider::closeDatabase()
 
 void DataSetProvider::loadDatabase(const Version & jaspVersion)
 {
-	beginResetModel();
-	delete _dataSet;
-	_dataSet = nullptr;
+	delete _workspace;
+	_workspace = nullptr;
 
 	try
 	{
@@ -139,85 +140,62 @@ void DataSetProvider::loadDatabase(const Version & jaspVersion)
 		_db->load();
 		_db->upgradeDBFromVersion(jaspVersion);
 
-		std::unique_ptr<DataSet> loadedDataSet(new DataSet(0)); // Setting 0 for "do nothing" because otherwise we can't pass on jaspVersion
-		loadedDataSet->dbLoad(1, [](float p) {}, jaspVersion);
+		_workspace = new Workspace(this);
+		_workspace->createDataSet();
+		dataSet()->dbLoad(1, [](float p) {}, jaspVersion);
 
-		_dataSet = loadedDataSet.release();
-		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
-		endResetModel();
+		dataSet()->encoder().setCurrentNames(dataSet()->getColumnTypesMap());
 	}
 	catch (...)
 	{
-		_dataSet = new DataSet();
-		endResetModel();
+		_workspace = new Workspace(this);
+		_workspace->createDataSet();
 		throw;
 	}
 }
 
 QVariantList DataSetProvider::_getDoubleList(Column * column) const
 {
-	QVariantList list;
-
-	if (!column)
-		return list;
-
-	for (double value : column->dbls())
-		list.append(value);
-
-	return list;
-
+	return !column ? QVariantList() : column->getColumnValuesAsDoubleList();
 }
 
 QVariantList DataSetProvider::_getStringList(Column * column) const
 {
-	QVariantList list;
 
-	if (!column)
-		return list;
-
-	int rows = _dataSet->rowCount();
-	for (int r = 0; r < rows; r++)
-		list.append(tq(column->getDisplay(r)));
-
-	return list;
+	return !column ? QVariantList() : tvl(tq(column->displaysAsStrings()));
 }
 
 QStringList DataSetProvider::_getColumnNames() const
 {
-	QStringList result;
-
-	int cols = _dataSet->columnCount();
-	for (int i = 0; i < cols; i++)
-		result.append(tq(_dataSet->column(i)->name()));
-	return result;
+	return tq(dataSet()->getColumnNames());
 }
 
 
-QVariant DataSetProvider::provideInfo(VariableInfo::InfoType info, const QString& colName, int row) const
+QVariant DataSetProvider::provideInfo(varInfoType info, const QString& colName, int row) const
 {
 	try
 	{
-		Column * column = _dataSet->column(fq(colName));
+		Column * column = dataSet()->column(fq(colName));
 
 		switch(info)
 		{
-		case VariableInfo::VariableType:				return	int(!column ? columnType::unknown : column->type());
-		case VariableInfo::DoubleValues:				return	_getDoubleList(column);
-		case VariableInfo::TotalNumericValues:			return	!column ? 0 : column->nonFilteredNumericsCount();
-		case VariableInfo::TotalLevels:					return	!column ? 0 : (int)column->nonFilteredLevels().size();
-		case VariableInfo::Labels:						return	!column ? QStringList() : tq(column->nonFilteredLevels());
-		case VariableInfo::NameRole:					return	Qt::DisplayRole;
-		case VariableInfo::DataSetRowCount:				return  _dataSet->rowCount();
-		case VariableInfo::DataSetValue:				return	!column ? "" : tq(column->getValue(row));
-		case VariableInfo::DataSetValues:				return	_getStringList(column);
-		case VariableInfo::MaxWidth:					return	100;
-		case VariableInfo::SignalsBlocked:				return	false;
-		case VariableInfo::VariableNames:				return	_getColumnNames();
-		case VariableInfo::DataAvailable:				return	_dataSet->columnCount() > 0;
-		case VariableInfo::PreviewScale:				return	"";
-		case VariableInfo::PreviewOrdinal:				return	"";
-		case VariableInfo::PreviewNominal:				return	"";
-		case VariableInfo::DataSetPointer:				return	QVariant::fromValue<void*>(_dataSet);
+		case varInfoType::VariableType:				return	int(!column ? columnType::unknown : column->type());
+		case varInfoType::DoubleValues:				return	_getDoubleList(column);
+		case varInfoType::TotalNumericValues:			return	!column ? 0 : column->nonFilteredNumericsCount();
+		case varInfoType::TotalLevels:					return	!column ? 0 : (int)column->nonFilteredLevels().size();
+		case varInfoType::Labels:						return	!column ? QStringList() : tq(column->nonFilteredLevels());
+		case varInfoType::NameRole:					return	Qt::DisplayRole;
+		case varInfoType::DataSetRowCount:				return  dataSet()->rowCount();
+		case varInfoType::DataSetValue:				return	!column ? "" : tq(column->getValue(row));
+		case varInfoType::DataSetValues:				return	_getStringList(column);
+		case varInfoType::MaxWidth:					return	100;
+		case varInfoType::SignalsBlocked:				return	false;
+		case varInfoType::VariableNames:				return	_getColumnNames();
+		case varInfoType::DataAvailable:				return	dataSet()->columnCount() > 0;
+		case varInfoType::PreviewScale:				return	"";
+		case varInfoType::PreviewOrdinal:				return	"";
+		case varInfoType::PreviewNominal:				return	"";
+		case varInfoType::DataSetPointer:				return	QVariant::fromValue<void*>(dataSet());
 
 
 		default: break;
@@ -230,26 +208,26 @@ QVariant DataSetProvider::provideInfo(VariableInfo::InfoType info, const QString
 	return QVariant("");
 }
 
-bool DataSetProvider::absorbInfo(VariableInfo::InfoType info, const QString &colName, int row, QVariant value)
+bool DataSetProvider::absorbInfo(varInfoType info, const QString &colName, int row, QVariant value)
 {
 	try
 	{
-		Column * column = _dataSet->column(fq(colName));
+		Column * column = dataSet()->column(fq(colName));
 		if (!column)
 			return false;
 
 		switch(info)
 		{
 		default:								return false;
-		case VariableInfo::DataSetValue:		return column->setStringValue(row, fq(value.toString()));
-		case VariableInfo::DataSetValues:
+		case varInfoType::DataSetValue:		return column->setStringValue(row, fq(value.toString()));
+		case varInfoType::DataSetValues:
 		{
 			int r=0;
-			if(_dataSet->rowCount() < value.toList().size())
-				_dataSet->setRowCount(value.toList().size(), false);
+			if(dataSet()->rowCount() < value.toList().size())
+				dataSet()->setRowCount(value.toList().size(), false);
 
 			for(const QVariant & val : value.toList())
-				if (row + r < _dataSet->rowCount())
+				if (row + r < dataSet()->rowCount())
 					column->setStringValue(row + r++, fq(val.toString()), "", false);
 			return true;
 		}

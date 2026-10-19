@@ -20,6 +20,8 @@
 #include "csv/csv.h"
 #include "timers.h"
 #include "utilities/desktopcommunicator.h"
+#include "qutils.h"
+#include "columnutils.h"
 
 using namespace std;
 
@@ -58,9 +60,41 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 	{
 		char knownDelimiter = DesktopCommunicator::singleton()->knownCsvDelimiter();
 		if (knownDelimiter != '\0')
-			delimiter = knownDelimiter;
+		{
+			if (knownDelimiter != detectedDelimiter && _askForDelimeter && !_synching)
+			{
+				try {
+					delimiter = DesktopCommunicator::singleton()->askCsvDelimiter(detectedDelimiter, QString::fromStdString(csv.firstRowsPlease()));
+				} catch (...) {
+					delimiter = detectedDelimiter;
+				}
+
+				if (!delimiter)
+					return nullptr;
+
+				DesktopCommunicator::singleton()->setKnownCsvDelimiter(delimiter);
+			}
+			else
+				delimiter = knownDelimiter;
+		}
+		else if (_askForDelimeter && !_synching)
+		{
+			try {
+				delimiter = DesktopCommunicator::singleton()->askCsvDelimiter(delimiter, QString::fromStdString(csv.firstRowsPlease()));
+			} catch (...) {
+				delimiter = detectedDelimiter;
+			}
+
+			if (!delimiter)
+				return nullptr;
+
+			DesktopCommunicator::singleton()->setKnownCsvDelimiter(delimiter);
+		}
 	}
 
+	//The preview dialog also picked the locale the numbers of this file are written in (see CsvPreviewModel), and every column reads its numbers that way
+	const std::optional<QLocale> &	importLocale	= DesktopCommunicator::singleton()->knownImportLocale();
+	ColumnUtils::toDoubleF			readNumbersAs	= importLocale ? QColumnUtils::stringToDoubleFor(*importLocale) : nullptr;
 
 	csv.setDelimiter(delimiter);
 	csv.readLine(colNames);
@@ -90,36 +124,51 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 
 		*it = colName;
 
-		importColumns.push_back(new CSVImportColumn(result, colName, csv.numRows()));
+		importColumns.push_back(new CSVImportColumn(result, colName, csv.numRows(), readNumbersAs));
 	}
 
-	unsigned long long progress;
 	unsigned long long lastProgress = -1;
 
-	size_t columnCount = colNames.size();
+	size_t columnCount = importColumns.size();
 
 	stringvec line;
-	bool success = csv.readLine(line);
-
-	while (success)
+	while (csv.readLine(line))
 	{
-		progress = 50 * csv.pos() / csv.size();
+		unsigned long long progress = 50 * csv.pos() / csv.size();
 		if (progress != lastProgress)
 		{
 			progressCallback(progress);
 			lastProgress = progress;
 		}
 
-		if (line.size() != 0) //ignore empty lines
-			for(size_t i = 0; i<columnCount; i++)
-				importColumns.at(i)->addValue(i < line.size() ? line[i] : ""); //add components and add empty vals for missing columns
+		if (line.empty()) continue;
+
+		if (line.size() > columnCount)
+		{
+			size_t currentRowCount = importColumns.empty() ? 0 : importColumns[0]->size();
+
+			for (size_t i = columnCount; i < line.size(); ++i)
+			{
+				string newColName = "V" + std::to_string(i + 1);
+
+				CSVImportColumn* newColumn = new CSVImportColumn(result, newColName, csv.numRows());
+
+				for (size_t row = 0; row < currentRowCount; ++row)
+					newColumn->addValue("");
+
+				importColumns.push_back(newColumn);
+			}
+			columnCount = line.size();
+		}
+
+		for (size_t i = 0; i < columnCount; ++i)
+			importColumns[i]->addValue(i < line.size() ? line[i] : "");
 
 		line.clear();
-		success = csv.readLine(line);
 	}
 
-	for (vector<CSVImportColumn *>::iterator it = importColumns.begin(); it != importColumns.end(); ++it)
-		result->addColumn(*it);
+	for (auto* col : importColumns)
+		result->addColumn(col);
 
 	// Build dictionary for sync.
 	result->buildDictionary();

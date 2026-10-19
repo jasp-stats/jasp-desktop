@@ -21,11 +21,15 @@ void ResourceButtons::loadButtonData()
 		{ButtonType::OSF,			tr("OSF"),			false,	"./OSF.qml"				, true},
 #endif
 		{ButtonType::Database,		tr("Database"),		false,	"./Database.qml"		, true},
+#ifdef PRO
+		{ButtonType::Batch,			tr("Batch"),		false,	"./Batch.qml"			, true},
+#endif
 		{ButtonType::DataLibrary,	tr("Data Library"),	false,	"./DataLibrary.qml"		, true},
 		{ButtonType::PrefsData,		tr("Data"),			false,	"./PrefsData.qml"		, true},
 		{ButtonType::PrefsResults,	tr("Results"),		false,	"./PrefsResults.qml"	, true},
 		{ButtonType::PrefsUI,		tr("Interface"),	false,	"./PrefsUI.qml"			, true},
-		{ButtonType::PrefsAdvanced,	tr("Advanced"),		false,	"./PrefsAdvanced.qml"	, true}
+		{ButtonType::PrefsAdvanced,	tr("Advanced"),		false,	"./PrefsAdvanced.qml"	, true},
+				{ButtonType::PrefsAI,		tr("AI"),			false,	"./PrefsAI.qml"		, true}
 	};
 }
 

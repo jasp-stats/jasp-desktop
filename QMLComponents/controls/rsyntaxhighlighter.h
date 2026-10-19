@@ -36,25 +36,31 @@ class RSyntaxHighlighter : public QSyntaxHighlighter, public VariableInfoConsume
 		QTextCharFormat			format;
 	};
 	
+	Q_PROPERTY(VariableInfo			* varInfo			READ varInfo		WRITE setVarInfo		NOTIFY varInfoChanged)
+	
 public:
-				RSyntaxHighlighter(QTextDocument *parent);
-				
-	void		highlightBlock(const QString &text) override;
-    void		setStringsFormat(const QString &text, QChar c);
+					RSyntaxHighlighter(QTextDocument *parent, VariableInfo * info = nullptr);
+					
+	void			highlightBlock(const QString &text) override;
+    void			setStringsFormat(const QString &text, QChar c);
 	
-	void		applyRule(const QString & text,  const HighlightingRule   & rule)											{ applyRule(text, rule.pattern, rule.format); }
-	void		applyRule(const QString & text,  const QRegularExpression & pattern, const QTextCharFormat & format);
+	void			applyRule(const QString & text,  const HighlightingRule   & rule)											{ applyRule(text, rule.pattern, rule.format); }
+	void			applyRule(const QString & text,  const QRegularExpression & pattern, const QTextCharFormat & format);
 	
-	
+	VariableInfo *	varInfo() const { return _varInfo; }
+	void			setVarInfo(VariableInfo * info);
 	
 protected slots:
-	void		handleNamesChanged(QMap<QString, QString> changedNames)	{ rehighlight(); }
-	void		handleRowCountChanged()									{ rehighlight(); }
+	void			handleNamesChanged(QMap<QString, QString> changedNames)	{ rehighlight(); }
+	void			handleRowCountChanged()									{ rehighlight(); }
+	
+signals:
+	void			varInfoChanged();
 
 private:
 
-	
-	QTextDocument			*	_textDocument = nullptr;
+	VariableInfo			*	_varInfo		= nullptr;;
+	QTextDocument			*	_textDocument	= nullptr;
 	
 	QVector<HighlightingRule>	_highlightingRules;
 	QTextCharFormat				_punctuationFormat,
@@ -74,21 +80,27 @@ class RSyntaxHighlighterQuick : public QQuickItem
 	Q_OBJECT
 	QML_ELEMENT
 
-	Q_PROPERTY(QQuickTextDocument* textDocument		READ textDocument	WRITE setTextDocument NOTIFY textDocumentChanged)
+	Q_PROPERTY(QQuickTextDocument	* textDocument		READ textDocument	WRITE setTextDocument	NOTIFY textDocumentChanged)
+	Q_PROPERTY(VariableInfo			* varInfo			READ varInfo		WRITE setVarInfo		NOTIFY varInfoChanged)
 	
 public:
-	RSyntaxHighlighterQuick(QQuickItem * parent = nullptr) : QQuickItem(parent)	{}
+	RSyntaxHighlighterQuick(QQuickItem * parent = nullptr);
 	
 	QQuickTextDocument * textDocument() { return _textDocument; }
 	
 	void setTextDocument(QQuickTextDocument * textDocument);
 	
+	VariableInfo *varInfo() const;
+	void setVarInfo(VariableInfo *newVarInfo);
+	
 signals:
 	void textDocumentChanged();
+	void varInfoChanged();
 	
 private:
 	RSyntaxHighlighter		* _highlighter  = nullptr;
 	QQuickTextDocument		* _textDocument = nullptr;
+	VariableInfo			* _varInfo		= nullptr;
 };
 
 #endif // RLANGSYNTAXHIGHLIGHTER_H

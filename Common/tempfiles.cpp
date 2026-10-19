@@ -53,7 +53,7 @@ void TempFiles::createSessionDir()
 
 	std::filesystem::path sessionPath = _sessionDirName;
 	
-	std::cout<< "'" << sessionPath.string() << "' about to be (removed and re)created." << std::endl;
+	Log::log() << "'" << sessionPath.string() << "' about to be (removed and re)created." << std::endl;
 
 	std::filesystem::remove_all(sessionPath, error);
 	std::filesystem::create_directories(sessionPath, error);
@@ -228,9 +228,16 @@ void TempFiles::createSpecific(const string &name, int id, string &root, string 
 bool TempFiles::stateFileExists(int id)
 {
 	std::filesystem::path stateFilePath = (id >= 0) ? (std::filesystem::path(_sessionDirName) / "resources" / std::to_string(id) / "state") : (std::filesystem::path(_sessionDirName) / "resources" / "state");
-	
+		
 	std::error_code error;
 	return std::filesystem::exists(stateFilePath, error) && !error;
+}
+
+std::string TempFiles::analysisResourcePath(int id, const std::string &filename)
+{
+	return id >= 0
+		? _sessionDirName + "/resources/" + std::to_string(id) + "/" + filename
+		: _sessionDirName + "/resources/" + filename;
 }
 
 void TempFiles::create(const string &extension, int id, string &root, string &relativePath)
@@ -340,7 +347,7 @@ void TempFiles::deleteStrayRootFiles(const stringvec& validIDs, long outOfDateDe
 	{
 		std::filesystem::path p = itr->path();
 
-		Log::log() << "looking at file " << p.string() << std::endl;
+		//Log::log() << "looking at file " << p.string() << std::endl;
 
 		string fileName		= p.filename().generic_string();
 		bool is_directory	= std::filesystem::is_directory(p, error);

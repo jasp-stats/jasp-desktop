@@ -26,6 +26,7 @@
 #include "controls/rowcontrols.h"
 #include "log.h"
 #include "rsyntax.h"
+#include "filter.h"
 #include "boundcontrols/boundcontrolterms.h"
 #include "controls/componentslistbase.h"
 #include "controls/variableslistbase.h"
@@ -370,7 +371,7 @@ std::pair<Terms, Json::Value> FormulaSource::_onlyTrueTerms(const QString& contr
 Terms::RelatedValuesPerTerm  FormulaSource::_getTermsFromExtraOptions(const Json::Value& options) const
 {
 	Terms::RelatedValuesPerTerm extraTermsMap;
-	for (const QString& extraControlName : _extraOptions.keys())
+	for (const QString & extraControlName : _extraOptions.keys())
 	{
 		const Json::Value& extraOptionJson = options[fq(_extraOptions[extraControlName].optionName)];
 		if (extraOptionJson.isObject())
@@ -378,7 +379,7 @@ Terms::RelatedValuesPerTerm  FormulaSource::_getTermsFromExtraOptions(const Json
 			FormulaParser::ParsedTerms parsedTerms;
 			QString error;
 
-			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error))
+			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error, model()->listView()->form()->variableInfoProvider()))
 			{
 				for (const Term& parsedTerm : parsedTerms.fixedTerms)
 					extraTermsMap[parsedTerm.value()][extraControlName] = true;

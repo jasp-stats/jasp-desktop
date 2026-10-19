@@ -20,7 +20,7 @@
 #include "models/listmodelmeasurescellsassigned.h"
 #include "models/listmodelfactorlevels.h"
 #include "controls/jasplistcontrol.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 #include <QTimer>
 

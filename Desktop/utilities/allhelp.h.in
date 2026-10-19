@@ -1,0 +1,23 @@
+#ifndef ALLHELP_H
+#define ALLHELP_H
+
+#include <QObject>
+
+
+class AllHelp : public QObject
+{
+	Q_OBJECT
+
+	@ALLHELP_PROPERTIES@
+
+public:
+	AllHelp(QObject * parent) : QObject(parent) {};
+
+	@ALLHELP_READMETHODS@
+
+signals:
+	void helpChanged();
+};
+
+
+#endif // ALLHELP_H

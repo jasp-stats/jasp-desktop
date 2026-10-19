@@ -5,6 +5,8 @@ import QtQuick.Controls as QTC
 
 FocusScope
 {
+	property bool autoSorted:	columnModel.column ? autoSorted : false
+
 	Rectangle
 	{
 		color:			jaspTheme.uiBackground
@@ -79,7 +81,7 @@ FocusScope
 				{ 
 					target:		columnModel
 					property:	"rowWidth"
-					value:		levelsTableView.width - levelsTableView.itemHorizontalPadding * 2; //Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
+					value:		levelsTableView.width //- (levelsTableView.itemHorizontalPadding * 2); //Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
 				}
 				
 				Connections
@@ -107,49 +109,51 @@ FocusScope
 				
 				property real	maxTransName:		Math.max(measureFilterName.width, measureEraseName.width)*/
 				property real	filterColWidth:		80  * jaspTheme.uiScale //Math.max(maxTransName, 60  * jaspTheme.uiScale)
-				property real	remainingWidth:		width - (2* filterColWidth) - randomWidths
+				property real	remainingWidth:		columnModel.rowWidth - (2.2 * filterColWidth) - randomWidths
 				property real	valueColWidth:		Math.min((columnModel.valueMaxWidth + 10) * jaspTheme.uiScale, remainingWidth * 0.5)
 				property real	labelColWidth:		Math.min((columnModel.labelMaxWidth + 10) * jaspTheme.uiScale, remainingWidth * 0.5) 
-				property real	labelColWidthMaxed:	Math.max(labelColWidth, remainingWidth - valueColWidth)
+				property real	labelColWidthMaxed:	Math.max(labelColWidth, remainingWidth - (valueColWidth + view.rowNumberWidth))
 				property int	selectedRow:		-1
-				property real	randomWidths:		3 + (6 * jaspTheme.uiScale)// :'(
+				property real	randomWidths:		0//3 + (6 * jaspTheme.uiScale)// :'(
 				
 				property bool	isBasicComputed:	columnModel.computedType == "rCode" || columnModel.computedType == "constructorCode"
 				property bool	valueEditable:		!isBasicComputed || columnModel.currentColumnType != "scale"
 				property bool	labelEditable:		!isBasicComputed || columnModel.currentColumnType == "scale"
 				property bool	filterEditable:		true // columnModel.computedType == "notComputed"
 
-				columnHeaderDelegate:	Rectangle
+				columnHeaderDelegate:	Item
 				{
 						z:				-2
-						implicitWidth:	levelsTableView.width
-						color:			"transparent"
-						border.width:	1
-						border.color:	jaspTheme.uiBorder
-						
+				
 						Rectangle
 						{
 							color:						jaspTheme.uiBackground
 							anchors
 							{
-									top:                    parent.top
-									left:                   parent.left
-									right:					parent.right
-									bottom:                 parent.bottom
-									topMargin:				-2 //otherwise you see bits of the items scrolling by above headers
-
+									fill:				everyHeaderInARow
+									topMargin:			-2 //otherwise you see bits of the items scrolling by above headers
 							}
+						}
+						
+						Rectangle
+						{
+							anchors.fill:	everyHeaderInARow
+							
+							color:			"transparent"
+							border.width:	1
+							border.color:	jaspTheme.uiBorder
 						}
 						
 						Row
 						{
+							id:			everyHeaderInARow
 							anchors
 							{
 									top:                    parent.top
 									left:                   parent.left
-									right:					parent.right
+									//right:					parent.right
 									bottom:                 parent.bottom
-									leftMargin:				-0.5 //compensate for datasetview moving everything 0.5 x/y for headers
+									//leftMargin:				-0.5 //compensate for datasetview moving everything 0.5 x/y for headers
 									/*
 									topMargin:              -levelsTableView.itemVerticalPadding
 									leftMargin:             -levelsTableView.itemHorizontalPadding
@@ -212,27 +216,28 @@ FocusScope
 							}
 							Item
 							{
-								width:					levelsTableView.filterColWidth;
+								width:					levelsTableView.filterColWidth * 1.2;
 								height:					parent.height
 								Text
 								{
 									id:						removeText
 									text:					qsTr("Remove")
 									font:					jaspTheme.font
-									color:					enabled  ? jaspTheme.textEnabled : jaspTheme.textDisabled
+									color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 									anchors.centerIn:		parent
 								}
 							}
 						}
 				}
 
-				rowNumberDelegate:	Item { width: 0; height: 0; }
+				//rowNumberDelegate: Item { width: 0; height: 0; implicitWidth: 0; implicitHeight: 0; }
 
 				itemDelegate: FocusScope
 				{
 					id:				backgroundItem
 					
-					implicitWidth:			levelsTableView.width -  (levelsTableView.itemHorizontalPadding * 2)
+					width:					columnModel.rowWidth
+					implicitWidth:			columnModel.rowWidth
 					
 					onActiveFocusChanged:	if(activeFocus)	levelsTableView.selectedRow = rowIndex
 					
@@ -564,7 +569,7 @@ FocusScope
 					Rectangle
 					{
 						id:					selectionRectangle
-						color:				itemSelected ? jaspTheme.itemHighlight : "transparent"
+						color:				enabled && itemSelected ? jaspTheme.itemHighlight : "transparent"
 						width:				columnModel.rowWidth
 						anchors
 						{
@@ -579,6 +584,8 @@ FocusScope
 					}	
 					
 				}
+			
+				leftTopCornerItem: Item { width: 0; height: 0; implicitWidth: 0; implicitHeight: 0; }
 			}
 		}
 		
@@ -667,7 +674,7 @@ FocusScope
 				iconSource:		jaspTheme.iconPath +  "addition-sign-small.svg"
 				onClicked:		
 				{ 
-					if(!columnModel.hasLabels)
+					if(!columnModel.column.hasLabels)
 						return;
 					
 					if(newLevelValueInput.text == "" && newLevelLabelInput.text == "")
@@ -703,6 +710,7 @@ FocusScope
 			width:				buttonColumnVariablesWindow.width
 			contentWidth:		buttonColumnVariablesWindow.width
 			contentHeight:		buttonColumnVariablesWindow.height
+			clip:				true
 			
 			anchors
 			{
@@ -744,7 +752,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					color:			enabled && columnModel.autoSort ? jaspTheme.jaspBlue : defaultColor
+					color:			enabled && autoSorted ? jaspTheme.jaspBlue : defaultColor
 				}
 				
 				RoundedButton
@@ -765,12 +773,12 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
 					onClicked:		{ forceActiveFocus(); columnModel.reverse(); }
 	
-					toolTip:		!columnModel.autoSort ? qsTr("Reverse order of all labels") : qsTr("Turn automatically ordering off to reverse order of all labels")
+					toolTip:		!autoSorted ? qsTr("Reverse order of all labels") : qsTr("Turn automatically ordering off to reverse order of all labels")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					enabled:		!columnModel.autoSort && columnModel.rowsTotal > 1
+					enabled:		!autoSorted && columnModel.column && columnModel.column.rowCount > 1
 				}
 	
 				RoundedButton
@@ -778,12 +786,12 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "arrow-up.png"
 	
 					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionUp(); levelsTableView.selectedRow--; }
-					toolTip:		!columnModel.autoSort ? qsTr("Move selected labels up") : qsTr("Turn automatically ordering off to move labels up manually")
+					toolTip:		!autoSorted ? qsTr("Move selected labels up") : qsTr("Turn automatically ordering off to move labels up manually")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					enabled:		!columnModel.autoSort && levelsTableView.selectedRow > 0
+					enabled:		!autoSorted && levelsTableView.selectedRow > 0
 				}
 	
 				RoundedButton
@@ -791,12 +799,12 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "arrow-down.png"
 	
 					onClicked:		{ forceActiveFocus(); columnModel.moveSelectionDown(); levelsTableView.selectedRow++; }
-					toolTip:		!columnModel.autoSort ? qsTr("Move selected labels down") : qsTr("Turn automatically ordering off to move labels down manually")
+					toolTip:		!autoSorted ? qsTr("Move selected labels down") : qsTr("Turn automatically ordering off to move labels down manually")
 	
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					enabled:		!columnModel.autoSort && levelsTableView.selectedRow >= 0 && levelsTableView.selectedRow < columnModel.rowCount() - 1
+					enabled:		!autoSorted && levelsTableView.selectedRow >= 0 && levelsTableView.selectedRow < columnModel.rowCount() - 1
 				}
 	
 				RoundedButton

@@ -22,7 +22,7 @@
 #include "boundcontrols/boundcontroljagstextarea.h"
 #include "boundcontrols/boundcontrolrlangtextarea.h"
 
-
+#include "filter.h"
 #include <QFontDatabase>
 #include <QRegularExpression>
 #include <QList>
@@ -42,15 +42,17 @@ void TextAreaBase::setUpModel()
 	{
 		_model = new ListModelTermsAvailable(this);
 		_model->setNeedsSource(_textType == TextType::TextTypeCSem || _textType == JASPControl::TextType::TextTypeMetaSem);
-		connect(VariableInfo::info(),	&VariableInfo::dataSetChanged,		this,	&TextAreaBase::checkSyntaxHandler);
+		connect(form()->varInfo(),	&VariableInfo::dataSetChanged,		this,	&TextAreaBase::checkSyntaxHandler);
 
 		if (_textType == TextType::TextTypeLavaan)
 		{
 			// Lavaan TextArea does not have a source, but the script contains variables: so it the variables types or names change, the model must be updated.
-			VariableInfo* variableInfo = VariableInfo::info();
-			connect(variableInfo,	&VariableInfo::variableNamesChanged,	_model,	&ListModel::sourceVariableNamesChanged	);
-			connect(variableInfo,	&VariableInfo::variableTypeChanged,		_model,	&ListModel::sourceVariableTypeChanged	);
 
+			connect(form()->varInfo(),	&VariableInfo::variableNamesChanged,	_model, &ListModel::sourceVariableNamesChanged,	Qt::UniqueConnection);
+			connect(form()->varInfo(),	&VariableInfo::variableTypeChanged,		_model, &ListModel::sourceVariableTypeChanged,	Qt::UniqueConnection);
+			//If "rowCount" changes on VariableInfo it means a column has been added or removed, this means the model should be reencoded and checked
+			//Fixes https://github.com/jasp-stats/jasp-issues/issues/2462
+			connect(form()->varInfo(),	&VariableInfo::rowCountChanged,			this,	&TextAreaBase::checkSyntaxMaybeHandler,	Qt::UniqueConnection);
 		}
 
 		JASPListControl::setUpModel();
@@ -80,9 +82,14 @@ void TextAreaBase::setUp()
 
 	JASPListControl::setUp();
 
-	//If "rowCount" changes on VariableInfo it means a column has been added or removed, this means the model should be reencoded and checked
-	//Fixes https://github.com/jasp-stats/jasp-issues/issues/2462
-	connect(VariableInfo::info(),	&VariableInfo::rowCountChanged,		this,		&TextAreaBase::checkSyntaxMaybeHandler);
+	QList<QVariant> separators = property("separators").toList();
+	if (separators.isEmpty())
+		_separators.push_back(property("separator").toString());
+	else
+	{
+		for (QVariant& separator : separators)
+			_separators.push_back(separator.toString());
+	}
 
 	//Also do it on request of course ;)
 	connect(this,					&TextAreaBase::applyRequest,		this,		&TextAreaBase::checkSyntaxHandler);

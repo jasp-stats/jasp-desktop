@@ -21,9 +21,10 @@
 #include "analysisform.h"
 #include "jasplistcontrol.h"
 #include "models/listmodeltermsavailable.h"
-#include "log.h"
 #include "rowcontrols.h"
 #include <QQmlEngine>
+#include "filter.h"
+#include "log.h"
 
 const QString SourceItem::SourceValueLabel = "label";
 const QString SourceItem::SourceValueValue = "value";
@@ -101,8 +102,11 @@ void SourceItem::_setUp()
 		_sourceNativeModel = new ListModelTermsAvailable(_targetListControl, _values);
 	else if (_isDataSetVariables)
 	{
+		if(_targetListControl->form())
+			setVarInfo(_targetListControl->form()->varInfo());
+
 		_sourceNativeModel	= infoProviderModel();
-		_nativeModelRole	= requestInfo(VariableInfo::NameRole).toInt();
+		_nativeModelRole	= requestInfo(varInfoType::NameRole).toInt();
 	}
 	else if (_targetListControl->form() && !_sourceName.isEmpty())
 	{
@@ -190,6 +194,7 @@ void SourceItem::connectModels()
 		connect(_sourceNativeModel, &QAbstractItemModel::rowsMoved,			this, &SourceItem::_resetModel);
 		connect(_sourceNativeModel, &QAbstractItemModel::modelReset,		this, &SourceItem::_resetModel);
 	}
+	
 	if (_targetListControl->useSourceLevels() && _sourceNativeModel != infoProviderModel())
 	{
 		QAbstractItemModel* providerModel = infoProviderModel(); // When the levels/labels of the source is used, then any change of the provider model must also be signalled
@@ -201,14 +206,14 @@ void SourceItem::connectModels()
 
 	if (_isDataSetVariables)
 	{
-		VariableInfo* variableInfo = VariableInfo::info();
-		connect(variableInfo,	&VariableInfo::variableNamesChanged,	controlModel, &ListModel::sourceVariableNamesChanged );
-		connect(variableInfo,	&VariableInfo::variableTypeChanged,		controlModel, &ListModel::sourceVariableTypeChanged );
-		connect(variableInfo,	&VariableInfo::labelsChanged,		controlModel, &ListModel::sourceLabelsChanged );
-		connect(variableInfo,	&VariableInfo::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
-		connect(variableInfo,	&VariableInfo::filterChanged,		controlModel, &ListModel::filterChanged );
-		connect(variableInfo,	&VariableInfo::variablesChanged,	controlModel, &ListModel::sourceVariablesChanged );
-		connect(variableInfo,	&VariableInfo::refresh,				controlModel, &ListModel::refresh );
+		connect(form->varInfo(),	&VariableInfo::variableNamesChanged,	_targetListControl->model(), &ListModel::sourceVariableNamesChanged );
+		connect(form->varInfo(),	&VariableInfo::variableTypeChanged,		_targetListControl->model(), &ListModel::sourceVariableTypeChanged );
+		connect(form->varInfo(),	&VariableInfo::labelsChanged,			_targetListControl->model(), &ListModel::sourceLabelsChanged );
+		connect(form->varInfo(),	&VariableInfo::labelsReordered,			_targetListControl->model(), &ListModel::sourceLabelsReordered );
+		connect(form->varInfo(),	&VariableInfo::filterChanged,			_targetListControl->model(), &ListModel::filterChanged );
+		connect(form->varInfo(),	&VariableInfo::variablesChanged,		_targetListControl->model(), &ListModel::sourceVariablesChanged );
+		connect(form->varInfo(),	&VariableInfo::dataSetChanged,			_targetListControl->model(), &ListModel::sourceTermsReset );
+		connect(form->varInfo(),	&VariableInfo::refresh,					_targetListControl->model(), &ListModel::refresh );
 	}
 
 	if (_sourceListModel)
@@ -245,8 +250,11 @@ void SourceItem::disconnectModels()
 	if (_sourceNativeModel)
 		_sourceNativeModel->disconnect(this);
 
+	//Null whenever there is no provider, and during teardown also once the form's VariableInfo is gone,
+	//so this may not be dereferenced blindly the way connectModels() never has to.
 	if (_isDataSetVariables)
-		infoProviderModel()->disconnect(controlModel);
+		if (QAbstractItemModel * providerModel = infoProviderModel())
+			providerModel->disconnect(controlModel);
 
 	if (_sourceListModel)
 		_sourceListModel->disconnect(controlModel);
@@ -257,7 +265,7 @@ void SourceItem::disconnectModels()
 
 void SourceItem::_resetModel()
 {
-	if (!_isDataSetVariables || !requestInfo(VariableInfo::SignalsBlocked).toBool())
+	if (!_isDataSetVariables || !requestInfo(varInfoType::SignalsBlocked).toBool())
 		_targetListControl->model()->sourceTermsReset();
 }
 
@@ -564,10 +572,10 @@ Terms SourceItem::_readAllTerms()
 	}
 	else if (_isDataSetVariables)
 	{
-		QStringList variableNames = requestInfo(VariableInfo::VariableNames).toStringList();
+		QStringList variableNames = requestInfo(varInfoType::VariableNames).toStringList();
 		for (const QString& name : variableNames)
 		{
-			Term term(name, columnType(requestInfo(VariableInfo::VariableType, name).toInt()));
+			Term term(name, columnType(requestInfo(varInfoType::VariableType, name).toInt()));
 			terms.add(term);
 		}
 		if (!_sourceFilter.empty())
@@ -589,7 +597,7 @@ Terms SourceItem::_readAllTerms()
 			{
 				QString name = _sourceNativeModel->data(_sourceNativeModel->index(i, j), _nativeModelRole).toString();
 				row.append(name);
-				types.push_back(columnType(requestInfo(VariableInfo::VariableType, name).toInt()));
+				types.push_back(columnType(requestInfo(varInfoType::VariableType, name).toInt()));
 			}
 			Term term(row, types);
 			terms.add(term, false);
@@ -678,15 +686,11 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 						bool 				addValue  = true;
 						const Json::Value & jsonValue = boundControl->boundValue();
 
-						switch (jsonValue.type())
-						{
-						case Json::booleanValue:		value = jsonValue.asBool();			break;
-						case Json::uintValue:			value = jsonValue.asUInt();			break;
-						case Json::intValue:			value = jsonValue.asInt();			break;
-						case Json::realValue:			value = jsonValue.asDouble();		break;
-						case Json::stringValue:			value = tq(jsonValue.asString());	break;
-						default:						addValue = false;					break;
-						}
+						if (jsonValue.isBool())			value = jsonValue.asBool();
+						else if (jsonValue.isInt())		value = jsonValue.asInt();
+						else if (jsonValue.isDouble())	value = jsonValue.asDouble();
+						else if (jsonValue.isString())	value = tq(jsonValue.asString());
+						else addValue = false;
 
 						if (addValue)
 						{

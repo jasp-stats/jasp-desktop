@@ -33,6 +33,7 @@ class ModuleLibrary : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool isInstalling READ isInstalling NOTIFY isInstallingChanged)
+    Q_PROPERTY(QStringList updatableModuleNames READ updatableModuleNames WRITE setUpdatableModuleNames NOTIFY updatableModuleNamesChanged)
 
 public:
     explicit ModuleLibrary(QObject *parent = 0);
@@ -47,10 +48,14 @@ public:
 	QString getEnvironmentInfoJson() const;
 		
     bool isInstalling() const { return _isInstalling; }
+    QStringList updatableModuleNames() const { return _updatableModuleNames; }
+    void setUpdatableModuleNames(const QStringList &names);
 
 signals:
     void environmentInfoChanged(const QVariantMap &environmentInfo);
     void isInstallingChanged();
+    void updatableModuleNamesChanged();
+    void requestModulePageRefresh();
 
 private:
     QVariantMap installedModulesInfo() const;
@@ -61,6 +66,7 @@ private:
 private:
     static ModuleLibrary *_singleton;
     bool _isInstalling = false;
+    QStringList _updatableModuleNames;
 };
 
 #endif // MODULELIBRARY_H

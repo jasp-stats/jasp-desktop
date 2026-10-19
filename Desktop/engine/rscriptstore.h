@@ -9,12 +9,13 @@
 /// Base class for storing requests to run some R-script in an engine
 struct RScriptStore
 {
-	RScriptStore(int requestId, QString script, QString module, engineState typeScript = engineState::rCode, bool whiteListedVersion = true, bool returnLog = false)
-		: typeScript(typeScript), script(script), module(module), requestId(requestId), whiteListedVersion(whiteListedVersion), returnLog(returnLog) {}
+	RScriptStore(int dataSetId, int requestId, QString script, QString module, engineState typeScript = engineState::rCode, bool whiteListedVersion = true, bool returnLog = false)
+		: typeScript(typeScript), script(script), module(module), requestId(requestId), dataSetId(dataSetId), whiteListedVersion(whiteListedVersion), returnLog(returnLog) {}
 
 	engineState typeScript; //should be filter/rcode/etc
 	QString		script, module;
-	int			requestId;
+	int			requestId,
+				dataSetId;
 	bool		whiteListedVersion,
 				returnLog;
 
@@ -24,7 +25,7 @@ struct RScriptStore
 /// For when you want to run a filter use this override
 struct RFilterStore : public RScriptStore
 {
-	RFilterStore(QString generatedfilter, QString filter, int requestID) : RScriptStore(requestID, filter, "", engineState::filter), generatedfilter(generatedfilter) { }
+	RFilterStore(int dataSetId, QString generatedfilter, QString filter, int requestID) : RScriptStore(dataSetId, requestID, filter, "", engineState::filter), generatedfilter(generatedfilter) { }
 
 	QString generatedfilter;
 };
@@ -33,8 +34,7 @@ struct RFilterStore : public RScriptStore
 /// For when you want to run a filter from a qmlcomponent or something use this override
 struct RFilterByNameStore : public RScriptStore
 {
-	RFilterByNameStore(QString name, QString module) : RScriptStore(-1, "Filter selected by name", module, engineState::filterByName), name(name) { }
-
+	RFilterByNameStore(int dataSetId, int requestId, QString name, QString module) : RScriptStore(dataSetId, requestId, "Filter selected by name", module, engineState::filterByName), name(name) { }
 
 	QString name;
 };
@@ -43,12 +43,23 @@ struct RFilterByNameStore : public RScriptStore
 /// For when a computed column must be, well, computed
 struct RComputeColumnStore : public RScriptStore
 {
-	RComputeColumnStore(QString columnName, QString computeCode, columnType colType) 
-		: RScriptStore(-1, computeCode, "", engineState::computeColumn), _columnName(columnName), _columnType(colType)
+	RComputeColumnStore(int dataSetId, QString columnName, QString computeCode, columnType colType) 
+		: RScriptStore(dataSetId, -1, computeCode, "", engineState::computeColumn), _columnName(columnName), _columnType(colType)
 	{ }
 
 	QString		_columnName;
 	columnType	_columnType;
+};
+
+///
+/// For when a whole computed dataset must be (re)computed
+struct RComputeDataSetStore : public RScriptStore
+{
+	RComputeDataSetStore(int dataSetId, QString computeCode, int defaultInputFilterId) 
+		: RScriptStore(dataSetId, -1, computeCode, "", engineState::computeDataSet), _defaultInputFilterId(defaultInputFilterId)
+	{ }
+
+	int			_defaultInputFilterId;
 };
 
 #endif // RSCRIPTSTORE_H

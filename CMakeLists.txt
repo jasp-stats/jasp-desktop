@@ -7,8 +7,8 @@ set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 # ------ Build Toolchain
 
 if (UNIX)
-#Please just give me errors when there is no proper return defined in non-void functions:
-add_compile_options(-Werror=return-type)
+  #Please just give me errors when there is no proper return defined in non-void functions:
+  add_compile_options(-Werror=return-type)
 endif()
 
 if(WIN32)
@@ -25,33 +25,33 @@ if(APPLE)
   message(STATUS "Host processor is ${HOST_PROCESSOR}")
 
   if("${CMAKE_OSX_ARCHITECTURES}" STREQUAL "")
-	set(CMAKE_OSX_ARCHITECTURES ${HOST_PROCESSOR})
+    set(CMAKE_OSX_ARCHITECTURES ${HOST_PROCESSOR})
     set(CROSS_COMPILING 0)
     message(STATUS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
   else()
-	if(NOT ("${CMAKE_OSX_ARCHITECTURES}" STREQUAL "${HOST_PROCESSOR}"))
+    if(NOT ("${CMAKE_OSX_ARCHITECTURES}" STREQUAL "${HOST_PROCESSOR}"))
       set(CROSS_COMPILING 1)
-	  message(STATUS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
+      message(STATUS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
     endif()
   endif()
 
   if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-	set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "armv8")
   else()
-	set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "x86_64")
   endif()
 
 
   if("${CMAKE_OSX_SYSROOT}" STREQUAL "macosx" OR "${CMAKE_OSX_SYSROOT}" STREQUAL "")
-	  execute_process(COMMAND xcrun --sdk macosx --show-sdk-path
-		OUTPUT_VARIABLE SDKROOT
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
-	set(CMAKE_OSX_SYSROOT ${SDKROOT})
-	message(STATUS "Got CMAKE_OSX_SYSROOT from xcrun as '${SDKROOT}'")
+    execute_process(COMMAND xcrun --sdk macosx --show-sdk-path
+  OUTPUT_VARIABLE SDKROOT
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(CMAKE_OSX_SYSROOT ${SDKROOT})
+    message(STATUS "Got CMAKE_OSX_SYSROOT from xcrun as '${SDKROOT}'")
   else()
-	message(STATUS "CMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}")
+    message(STATUS "CMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}")
   endif()
 
 
@@ -59,7 +59,7 @@ endif()
 
 project(
   JASP
-  VERSION 0.97.1.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
+  VERSION 1.0.0.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
   LANGUAGES CXX C
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
@@ -84,7 +84,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_FIND_FRAMEWORK ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(INTERACTIVE_PLOTS OFF)
+set(INTERACTIVE_PLOTS ON)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE
@@ -116,8 +116,8 @@ include(Conan)
 #   - All other configs (Release, RelWithDebInfo, MinSizeRel) get /MD (MultiThreadedDLL)
 # This must be set after include(Conan) to override any Conan toolchain settings.
 if(WIN32)
-	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-	message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY is set to ${CMAKE_MSVC_RUNTIME_LIBRARY}")
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+  message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY is set to ${CMAKE_MSVC_RUNTIME_LIBRARY}")
 endif()
 
 
@@ -127,13 +127,6 @@ endif()
 include(Programs)
 
 # Looking for libraries, e.g., Boost, Qt
-# When dependencies are built in Release but the consumer is RelWithDebInfo,
-# CMake needs to know to fall back to Release properties on imported targets.
-if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-  set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release "")
-elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-  set(CMAKE_MAP_IMPORTED_CONFIG_MINSIZEREL Release "")
-endif()
 include(Libraries)
 
 # Preparing irregular dependencies, e.g., ReadStat
@@ -164,8 +157,8 @@ if(WIN32)
 
   message(CHECK_START "Setting path to libR-Interface.dll")
   set(_LIB_R_INTERFACE_DLL
-	  "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll"
-	  CACHE STRING "Path to libR-Interface.dll")
+   "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll"
+   CACHE STRING "Path to libR-Interface.dll")
   set(_LIB_R_INTERFACE_NORINSIDE_DLL
           "${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll"
           CACHE STRING "Path to libR-InterfaceNoRInside.dll" FORCE)
@@ -174,8 +167,8 @@ if(WIN32)
 
   message(CHECK_START "Setting path to libR-Interface.dll.a")
   set(_LIB_R_INTERFACE_STATIC_DLL_A
-	  "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a"
-	  CACHE STRING "Path to libR-Interface.dll.a")
+   "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a"
+   CACHE STRING "Path to libR-Interface.dll.a")
   set(_LIB_R_INTERFACE_NORINSIDE_STATIC_DLL_A
           "${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll.a"
           CACHE STRING "Path to libR-InterfaceNoRInside.dll.a" FORCE)
@@ -206,23 +199,28 @@ else()
                ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll
                ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll.a
         COMMAND
-      ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B
-      ${CMAKE_BINARY_DIR}/R-Interface "-DRTOOLS_PATH:PATH=${RTOOLS_PATH}"
+      ${CMAKE_COMMAND} -E env
+      "PATH=${RTOOLS_STATIC_TOOLCHAIN_BIN};${RTOOLS_BUILD_TOOLS_BIN};$ENV{PATH}"
+      ${CMAKE_COMMAND} -G "${RTOOLS_R_INTERFACE_GENERATOR}" -S . -B
+      ${CMAKE_BINARY_DIR}/R-Interface
       "-DCMAKE_C_COMPILER:PATH=${RTOOLS_C_COMPILER}"
       "-DCMAKE_CXX_COMPILER:PATH=${RTOOLS_CXX_COMPILER}"
       "-DCMAKE_MAKE_PROGRAM:PATH=${RTOOLS_MAKE_PROGRAM}"
       "-DJASP_BINARY_DIR:PATH=${CMAKE_BINARY_DIR}"
       "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
       "-DR_VERSION:STRING=${R_VERSION}"
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
-    USES_TERMINAL
+    COMMAND
+      ${CMAKE_COMMAND} -E env
+      "PATH=${RTOOLS_STATIC_TOOLCHAIN_BIN};${RTOOLS_BUILD_TOOLS_BIN};$ENV{PATH}"
+      ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
+    VERBATIM
     COMMENT "------ Configuring and Building the libR-Interface")
 
   add_dependencies(SyntaxInterface R-Interface)
 
 endif()
 
-if(NOT USE_QT_STATIC_LIBS)
+if(NOT USE_QT_STATIC_LIBS AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   add_subdirectory(Engine)
   add_subdirectory(Desktop)
 endif()
@@ -236,18 +234,18 @@ endif()
 include(Modules)
 
 # Install logic, usually staging a deploy-able JASP in Build/Install/ folder
-if(NOT USE_QT_STATIC_LIBS)
+if(NOT USE_QT_STATIC_LIBS AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   include(Install)
 endif()
 
 # Packs and creates installer executable for Windows, and macOS
-if(NOT LINUX)
+if(NOT LINUX AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   if("${NIGHTLY_BUILD}" STREQUAL "ON")
     SET(MACOS_JENKINS_SKIPPER "--skip-jenkins")
   else()
     SET(MACOS_JENKINS_SKIPPER "")
   endif()
-	include(Pack)
+  include(Pack)
 endif()
 
 if(NOT

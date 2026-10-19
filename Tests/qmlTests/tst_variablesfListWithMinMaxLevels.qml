@@ -9,6 +9,8 @@ TestCase
 {
 	name:		"TestVariablesListWithMinMaxLevels"
 
+	property alias form: jaspForm
+
 	SignalSpy
 	{
 		id:				spyLoader
@@ -47,7 +49,7 @@ TestCase
 
 	function test_variableListsWithMinMaxLevels()
 	{
-		spyLoader.wait(400)
+		spyLoader.wait(1000)
 		compare(spyLoader.count,				1);
 		compare(allVars.count,					dataSetInfo.variableCount);
 

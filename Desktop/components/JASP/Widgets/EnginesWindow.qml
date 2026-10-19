@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Window
+import QtQuick.Controls
 import QtWebEngine
 import JASP.Widgets
 import JASP.Controls
@@ -36,7 +37,7 @@ Window
 		delegate:	Item
 		{
 
-			height:			150 * jaspTheme.uiScale
+			height:			engineState !== "loadingData" ? 150 * jaspTheme.uiScale : 170 * jaspTheme.uiScale
 			width:			ListView.view.width
 
 			Rectangle
@@ -59,6 +60,24 @@ Window
 						left:			parent.left
 						leftMargin:		jaspTheme.generalAnchorMargin
 						verticalCenter: parent.verticalCenter
+					}
+				}
+
+				ProgressBar
+				{
+					visible:			model.engineState === "loadingData"
+					from:				0
+					to:					1
+					value:				model.loadingProgress
+					height:				jaspTheme.uiScale * 12
+					anchors
+					{
+						left:			parent.left
+						right:			parent.right
+						bottom:			parent.bottom
+						leftMargin:		jaspTheme.generalAnchorMargin
+						rightMargin:	jaspTheme.generalAnchorMargin
+						bottomMargin:	jaspTheme.generalAnchorMargin
 					}
 				}
 

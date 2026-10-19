@@ -7,37 +7,53 @@ TestCase
 {
 	name:		"TestIntegerfieldMinMax"
 
-	IntegerField
+	property alias form: jaspForm
+
+	SignalSpy
 	{
-		id: defaultIntegerLower
-		label: "Default Integer Lower Bound"
-		name: "lowerDefault"
-		value: 1
+		id:				spyLoader
+		target:			jaspForm
+		signalName:		"formCompletedSignal"
 	}
 
-	IntegerField
+	Form
 	{
-		id:		integerLower
-		name:	"integerLower"
-		label:  "Integer Lower Bound"
-		max:	integerUpper.value
-		defaultValue: defaultIntegerLower.value
-		min:	0
-	}
+		id: jaspForm
 
-	IntegerField
-	{
-		id:		integerUpper
-		name:	"integerUpper"
-		label:  "Integer Upper Bound (Exclusive)"
-		min:	integerLower.value
-		defaultValue: 5
-		max:	10
-		inclusive: JASP.MinOnly
+		IntegerField
+		{
+			id: defaultIntegerLower
+			label: "Default Integer Lower Bound"
+			name: "lowerDefault"
+			value: 1
+		}
+
+		IntegerField
+		{
+			id:		integerLower
+			name:	"integerLower"
+			label:  "Integer Lower Bound"
+			max:	integerUpper.value
+			defaultValue: defaultIntegerLower.value
+			min:	0
+		}
+
+		IntegerField
+		{
+			id:		integerUpper
+			name:	"integerUpper"
+			label:  "Integer Upper Bound (Exclusive)"
+			min:	integerLower.value
+			defaultValue: 5
+			max:	10
+			inclusive: JASP.MinOnly
+		}
 	}
 
 	function test_1setDefaultValue()
 	{
+		spyLoader.wait(1000)
+		compare(spyLoader.count, 1, "The form should have completed")
 		defaultIntegerLower.value = 2
 		compare(integerLower.boundJson(), 2, "The default value and the current value of integerLower are both 1, so when changing the default value to 2, the current value also change to 2")
 	}

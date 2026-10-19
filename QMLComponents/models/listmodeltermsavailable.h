@@ -49,7 +49,7 @@ public slots:
 			void sourceTermsReset()															override;
 			void sourceVariableNamesChanged(QMap<QString, QString> map)						override;
 			void sourceVariablesChanged(QStringList columns)								override;
-			bool sourceVariableTypeChanged(Term name)										override;
+			bool sourceVariableTypeChanged(QString columnName, columnType colType)						override;
 			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})		override;
 			bool sourceLabelsReordered(QString columnName)									override;
 			void removeAssignedModel(ListModelAssignedInterface *assignedModel);

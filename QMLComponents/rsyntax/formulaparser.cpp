@@ -6,7 +6,7 @@
 const char FormulaParser::interactionSeparator			= ':';
 const char FormulaParser::allInterationsSeparator		= '*';
 
-Terms FormulaParser::parseTerm(QString termStr)
+Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 {
 	auto trim = [] (const QString& input) -> QString
 	{
@@ -32,7 +32,7 @@ Terms FormulaParser::parseTerm(QString termStr)
 		return output;
 	};
 
-	auto readTermWithType = [] (const QString& input) -> std::pair<QString, columnType>
+	auto readTermWithType = [provider] (const QString& input) -> std::pair<QString, columnType>
 	{
 		QString term = input;
 		columnType type = columnType::unknown;
@@ -46,8 +46,9 @@ Terms FormulaParser::parseTerm(QString termStr)
 				term = input.first(index);
 			}
 		}
+		
 		if (type == columnType::unknown)
-			type = columnType(VariableInfo::info()->provider()->provideInfo(VariableInfo::VariableType, input).toInt());
+			type = columnType(provider->provideInfo(varInfoType::VariableType, input).toInt());
 
 		return std::make_pair(term, type);
 	};
@@ -83,10 +84,10 @@ Terms FormulaParser::parseTerm(QString termStr)
 	return result;
 }
 
-Terms FormulaParser::parseTerm(const Json::Value& jsonString)
+Terms FormulaParser::parseTerm(const Json::Value& jsonString, VariableInfoProvider * provider)
 {
 	if (jsonString.isString())
-		return parseTerm(tq(jsonString.asString()));
+		return parseTerm(tq(jsonString.asString()), provider);
 	else
 	{
 		Log::log() << "Wrong kind of object for the vars in formula" << jsonString.toStyledString() << std::endl;
@@ -94,17 +95,18 @@ Terms FormulaParser::parseTerm(const Json::Value& jsonString)
 	}
 }
 
-Terms FormulaParser::parseTerms(const Json::Value& json)
+Terms FormulaParser::parseTerms(const Json::Value& json, VariableInfoProvider * provider)
 {
 	Terms result;
-	if (json.isNull())	return result;
+	if (json.isNull())	
+		return result;
 
 	if (json.isString())
-		result.add(parseTerm(json));
+		result.add(parseTerm(json, provider));
 	else if (json.isArray())
 	{
 		for (const Json::Value& col : json)
-			result.add(parseTerm(col));
+			result.add(parseTerm(col, provider));
 	}
 	else
 	{
@@ -115,7 +117,7 @@ Terms FormulaParser::parseTerms(const Json::Value& json)
 	return result;
 }
 
-bool FormulaParser::parse(const Json::Value& formula, bool isLhs, ParsedTerms& parsedTerms, QString& error)
+bool FormulaParser::parse(const Json::Value& formula, bool isLhs, ParsedTerms& parsedTerms, QString& error, VariableInfoProvider * provider)
 {
 	error.clear();
 
@@ -138,7 +140,7 @@ bool FormulaParser::parse(const Json::Value& formula, bool isLhs, ParsedTerms& p
 		}
 
 		parsedTerms.intercept = fixedTerms["intercept"].asBool();
-		parsedTerms.fixedTerms = parseTerms(fixedTerms["vars"]);
+		parsedTerms.fixedTerms = parseTerms(fixedTerms["vars"], provider);
 	}
 
 	if (!isLhs)
@@ -155,7 +157,7 @@ bool FormulaParser::parse(const Json::Value& formula, bool isLhs, ParsedTerms& p
 			{
 				const Json::Value& randomValues = randomTerms[col];
 				RandomTerm randomTerm;
-				randomTerm.terms = parseTerms(randomValues["vars"]);
+				randomTerm.terms = parseTerms(randomValues["vars"], provider);
 				randomTerm.correlated = randomValues["correlated"].asBool();
 				randomTerm.intercept = randomValues["intercept"].asBool();
 				parsedTerms.randomTerms[tq(col)] = randomTerm;

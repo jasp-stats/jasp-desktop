@@ -1,0 +1,64 @@
+flowchart TD
+    ON_OPEN["onStreamOpen()"]
+    ON_CHUNK["onStreamChunk(text)"]
+    ON_CLOSE["onStreamClose()"]
+    ON_ERR["onStreamError(errorMsg)"]
+    CS{"currentSignals == null ?"}
+
+    subgraph INTRO["Intro path"]
+        OP_NULL["_introBuf = ''"]
+        CH_NULL["_introBuf += text"]
+        CL_NULL1["chat = querySelector('deep-chat')"]
+        CL_NULL2["chat.clearMessages()"]
+        CL_NULL3{"_introBuf ?"}
+        CL_NULL4["chat.addMessage(text, role: 'ai')"]
+        CL_NULL5["_introBuf = ''"]
+    end
+
+    subgraph USER["User path"]
+        OP_SIG["signals.onOpen()"]
+        OP_NEEDLE{"streamHasContent?"}
+        OP_NL["signals._needNewline = true"]
+
+        CH_SIG_NL{"_needNewline?"}
+        CH_SIG_PRE["prepend newline to text"]
+        CH_SIG["signals.onResponse({text})"]
+
+        CL_SIG["signals.onClose()"]
+    end
+
+    subgraph ERR["Error path"]
+        ERR_SIG_ON["signals.onOpen()"]
+        ERR_SIG_TXT["signals.onResponse({text: errorMsg})"]
+        ERR_SIG_CL["signals.onClose()"]
+        ERR_NULL["clearMessages, addMessage as ai"]
+    end
+
+    subgraph SHARED["Shared state"]
+        IS["_isStreaming toggle on open/close/error"]
+        HAS["streamHasContent = true"]
+        TABLE["_scheduleEnhance deferred table render"]
+        KEEP["Keep currentSignals for tool-call loops"]
+    end
+
+    ON_OPEN --> CS
+    CS -->|"intro path"| OP_NULL
+    CS -->|"user path"| OP_SIG --> OP_NEEDLE
+    OP_NEEDLE -->|yes| OP_NL
+    OP_NEEDLE -->|no| DONE_STATE(["done"])
+
+    ON_CHUNK --> CS
+    CS -->|"intro path"| CH_NULL --> HAS
+    CS -->|"user path"| CH_SIG_NL
+    CH_SIG_NL -->|yes| CH_SIG_PRE --> CH_SIG --> HAS
+    CH_SIG_NL -->|no| CH_SIG --> HAS
+
+    ON_CLOSE --> CS
+    CS -->|"intro path"| CL_NULL1 --> CL_NULL2 --> CL_NULL3
+    CL_NULL3 -->|yes| CL_NULL4 --> CL_NULL5 --> TABLE --> KEEP
+    CL_NULL3 -->|no| CL_NULL5 --> TABLE --> KEEP
+    CS -->|"user path"| CL_SIG --> TABLE --> KEEP
+
+    ON_ERR --> CS
+    CS -->|"intro path"| ERR_NULL --> HAS --> TABLE --> DONE2(["done"])
+    CS -->|"user path"| ERR_SIG_ON --> ERR_SIG_TXT --> ERR_SIG_CL

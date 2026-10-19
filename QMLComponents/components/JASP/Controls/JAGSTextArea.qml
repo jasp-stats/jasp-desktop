@@ -45,10 +45,12 @@ import JASP
 */
 TextArea
 {
-	textType: JASP.TextTypeJAGSmodel
+	textType:		JASP.TextTypeJAGSmodel
 	showLineNumber: true
+	
 	RSyntaxHighlighterQuick
 	{
 		textDocument:		parent.textDocument
+		varInfo:			form.filter.varInfo
 	}
 }

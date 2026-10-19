@@ -29,10 +29,11 @@
 #include <QAbstractItemModel>
 #include "models/listmodel.h"
 
-class Options;
-class RowControls;
 class Terms;
+class Filter;
+class Options;
 class SourceItem;
+class RowControls;
 class ColumnTypesModel;
 
 class JASPListControl : public JASPControl
@@ -82,6 +83,9 @@ public:
 
 			bool					hasSource()					const			{ return _sourceItems.size() > 0; }
 			bool					hasNativeSource()			const;
+			
+			
+			
 
 	Q_INVOKABLE JASPControl		*	getRowControl(const QString& key, const QString& name)	const;
 	virtual	bool					addRowControl(const QString& key, JASPControl* control);
@@ -92,6 +96,7 @@ public:
 			JASPControl			*	getChildControl(const QString & key, const QString & name) override;
 
 	Q_INVOKABLE columnType			getVariableType(const QString& name);
+	Q_INVOKABLE columnType			getVariableRealType(const QString& name);
 
 			const QVariant		&	source()					const			{ return _source;				}
 			const QVariant		&	values()					const			{ return _values;				}
@@ -163,6 +168,7 @@ protected slots:
 			void					setOptionKeyLabel(const QString& optionKeyLabel)		{ _optionKeyLabel = optionKeyLabel; }
 			bool					checkLevelsConstraints();
 			void					checkTermsTypes();
+			void					whenFormIsKnown(AnalysisForm * form);
 
 protected:
 	void							_setInitialized(const Json::Value& value = Json::nullValue)				override;

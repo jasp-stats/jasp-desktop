@@ -17,7 +17,7 @@
 //
 
 #include "term.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 const char * Term::separator =
 #ifdef _WIN32
@@ -31,11 +31,13 @@ Term::Term(const std::string				& value,		const columnType		type)	{ initFrom(tq(
 Term::Term(const std::string				& value,		const columnTypeVec	&	type)	{ initFrom(tq(value),		"", type);		}
 Term::Term(const QStringList				& components,	const columnTypeVec	&	types)	{ initFrom(components,		"", types);		}
 Term::Term(const QString					& value,		const columnType		type)	{ initFrom(value,			"", {type});	}
-Term::Term(const QString					& value,		const QString		&	label,	const QString	& info) { initFrom(value, label, {columnType::unknown}, info); }
+Term::Term(const QString					& value,		const QString		&	label,	const QString	& info, const columnType type) { initFrom(value, label, {type}, info); }
 
 Term::Term(const Json::Value &json, const std::string& keyValue, const std::string& keyLabel, const columnTypeVec& types)
 {
-	if (!json.isMember(keyValue))
+	//isMember/get throw on non-objects (e.g. a fuzzed non-object element inside an
+	//options array), so guard the type first.
+	if (!json.isObject() || !json.isMember(keyValue))
 	{
 		initFrom("", "", {columnType::unknown});
 		return;

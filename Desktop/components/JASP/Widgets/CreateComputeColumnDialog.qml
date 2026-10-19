@@ -50,9 +50,9 @@ Popup
 				if(!isNaN(nameEdit.text)) //Its a number!
 					nameEdit.text = 'V' + nameEdit.text
 
-				if(computedColumnsInterface.isColumnNameFree(nameEdit.text))
+				if(columnModel.isColumnNameFree(nameEdit.text))
 				{
-					computedColumnsInterface.createComputedColumn(nameEdit.text, computeColumnIconFocusScope.selectedColumnType, popupCreateComputedColumn.computeTypeIsJson)
+					columnModel.createComputedColumn(nameEdit.text, computeColumnIconFocusScope.selectedColumnType, popupCreateComputedColumn.computeTypeIsJson)
 					focus = true
 					popupCreateComputedColumn.close()
 				}
@@ -147,6 +147,7 @@ Popup
 	
 							ToolTip.visible:		columnNameInUse
 							ToolTip.text:			qsTr("Column name is already used, please choose a different one.")
+							ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 	
 							Keys.onReturnPressed:	(event)=>	rootCreateComputedColumn.createComputedColumn()
 								
@@ -291,7 +292,7 @@ Popup
 	
 									anchors.verticalCenter: parent.verticalCenter
 	
-									source:					jaspTheme.iconPath + dataSetModel.getColumnTypesWithIcons()[iconRepeater.model[index]]
+									source:					jaspTheme.iconPath + dataSetModel.columnTypesWithIcons()[iconRepeater.model[index]]
 									width:					height
 									height:					parent.height
 									sourceSize.width:		width
@@ -331,13 +332,13 @@ Popup
 				}
 			}
 
-			JaspControls.RoundedButton
+			JaspControls.HelpButton
 			{
 				id:						helpButton
-				iconSource:				jaspTheme.iconPath + "info-button.png"
 				width:					height
 				height:					createButton.height
-				onClicked:				helpModel.showOrTogglePage("other/computedcolumns");
+				helpMD:					allHelp.computedcolumns
+				buttonPadding:			6 * preferencesModel.uiScale
 				toolTip:				qsTr("Open Documentation")
 				KeyNavigation.right:	createButton
 				anchors

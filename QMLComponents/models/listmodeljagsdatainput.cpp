@@ -17,7 +17,7 @@
 //
 
 #include "log.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "listmodeljagsdatainput.h"
 #include "analysisform.h"
 #include "r_functionwhitelist.h"

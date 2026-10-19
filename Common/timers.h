@@ -57,6 +57,15 @@ struct _JaspTimerScopeMeasure
 
 	const char * _name;
 };
+
+/// Same as _JaspTimerScopeMeasure but with a runtime (std::string) timer name.
+struct _JaspRuntimeTimerScopeMeasureC
+{
+	explicit _JaspRuntimeTimerScopeMeasureC(std::string name) : _name(std::move(name)) { try{ _getTimer(_name)->resume();	} catch(...) {} }
+	~_JaspRuntimeTimerScopeMeasureC()						{ try{ _getTimerC(_name)->stop();	} catch(...) {} }
+
+	std::string _name;
+};
 #define JASPTIMER_SCOPE(TIMERNAME) _JaspTimerScopeMeasure singleScopeTimer(#TIMERNAME)
 #define JASPTIMER_CLASS(TIMERNAME) _JaspTimerScopeMeasure singleScopeTimer = #TIMERNAME;
 

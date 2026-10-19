@@ -1,6 +1,8 @@
+#include "log.h"
+#include "filter.h"
+#include "workspace.h"
 #include "analysisbase.h"
 #include "analysisform.h"
-#include "log.h"
 #include "utilities/qmlutils.h"
 
 const std::string AnalysisBase::emptyString;
@@ -11,12 +13,32 @@ AnalysisBase::AnalysisBase(QObject* parent)
 {
 	// If the parent object is the form, just use it. This is used in R-Syntax mode when the AnalysisForm::parseOptions creates a dummy AnalysisBase
 	_analysisForm = qobject_cast<AnalysisForm*>(parent);
+
+	connectDataSpecChanges();
 }
 
 AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	: QObject(parent)
 	, _boundValues(duplicateMe->boundValues())
 {
+	connectDataSpecChanges();
+}
+
+void AnalysisBase::connectDataSpecChanges()
+{
+	//dataSpec only shows what distinguishes this analysis' data from that of the others, so it changes
+	//along with the datasets and filters that exist, and with the title of the dataset it runs on.
+	//A workspace can be replaced (loading a file) while the analyses stay, so this is called again
+	//whenever the analysis gets a filter and the connections are made unique to keep that harmless.
+	Workspace * workspace = Workspace::singleton();
+
+	if(!workspace)
+		return;
+
+	connect(workspace, &Workspace::dataSetCreated,		this, &AnalysisBase::dataSpecChanged, Qt::UniqueConnection);
+	connect(workspace, &Workspace::dataSetRemoved,		this, &AnalysisBase::dataSpecChanged, Qt::UniqueConnection);
+	connect(workspace, &Workspace::dataSetTitleChanged,	this, &AnalysisBase::dataSpecChanged, Qt::UniqueConnection);
+	connect(workspace, &Workspace::filtersCountChanged,	this, &AnalysisBase::dataSpecChanged, Qt::UniqueConnection);
 }
 
 QQuickItem* AnalysisBase::formItem() const
@@ -35,7 +57,18 @@ void AnalysisBase::destroyForm()
 		_analysisForm->setParent(		nullptr);
 		_analysisForm->setParentItem(	nullptr);
 
-		delete _analysisForm;
+		//The form is a live QML item tree. The AnalysisFormExpander delegate that spawned
+		//it is torn down deferred (Repeater deleteLater semantics after the model row
+		//removal) and still holds JS wrappers/references to this form (myForm, Connections,
+		//closures) until then. A synchronous delete here frees the whole tree under the
+		//QV4 incremental GC's feet -> intermittent EXC_BAD_ACCESS in QV4::markDrain.
+		//Defer the deletion to the next event-loop pass, at the same quiet point where
+		//the delegate's JS references get invalidated.
+		//Until then the form must stay inert, as it does before the deferred delete in
+		//Analyses::clear/removeAnalysis (Analysis::remove): it no longer reacts to data or
+		//engine signals while its analysis or module may already be on their way out.
+		_analysisForm->cleanUpForm();
+		_analysisForm->deleteLater();
 		_analysisForm = nullptr;
 
 		emit formItemChanged();
@@ -116,6 +149,16 @@ void AnalysisBase::setQmlError(const QString &newQmlError)
 	emit qmlErrorChanged();
 }
 
+void AnalysisBase::setIsAnnotated(bool isAnnotated)
+{
+	if (!_analysisForm || _isAnnotated == isAnnotated)
+		return;
+
+	_isAnnotated = isAnnotated;
+
+	_analysisForm->setIsAnnotated(isAnnotated);
+}
+
 // This method tries to find the parent keys in _boundValues Json object
 // If found, it sets the path to this reference to parentNames and returns a reference of the sub Json object
 Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, QVector<std::string>& parentNames, bool& found, bool createAnyway)
@@ -157,6 +200,12 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 			{
 				for (Json::Value & boundValue : (*parentBoundValues))
 				{
+					//isMember throws on non-objects (e.g. fuzzed garbage, or an array
+					//left half-bound after an interrupted option bind), which would
+					//escape through QML signal handlers and terminate the process.
+					if (!boundValue.isObject())
+						continue;
+
 					if (boundValue.isMember(parent.key))
 					{
 						Json::Value* keyValue = &(boundValue[parent.key]);
@@ -272,4 +321,63 @@ const Json::Value &AnalysisBase::boundValue(const std::string &name, const QVect
 
 	if (found && !parentBoundValue.isNull() && parentBoundValue.isObject())	return parentBoundValue[name];
 	else																	return Json::Value::null;
+}
+
+
+Filter *AnalysisBase::filter() const
+{
+	return _filter;
+}
+
+bool AnalysisBase::usesDataSet(int dataSetId) const
+{
+	//An analysis without an explicit dataset binding applies to any dataset (e.g. reports, unbound analyses).
+	return !_filterDataSet || _filterDataSet->id() == dataSetId;
+}
+
+QString AnalysisBase::filterName() const
+{
+	return _filter ? _filter->nameQ() : "";
+}
+
+int AnalysisBase::filterId() const
+{
+	return _filter ? _filter->id() : -1;
+}
+
+QString AnalysisBase::dataSpec() const
+{
+	DataSet * data = dataSet();
+
+	if(!data)
+		return "";
+
+	bool showDataSet	= data->workspace() && data->workspace()->dataSets().size()	> 1,
+		 showFilter		= _filter			&& data->filters().size()				> 1;
+
+	return	showDataSet && showFilter	?	QString("%1 - %2").arg(data->title(), _filter->title())
+		:	showDataSet					?	data->title()
+		:	showFilter					?	_filter->title()
+		:									"";
+}
+
+void AnalysisBase::setFilterId(int filterId)
+{
+	if(!Workspace::singleton())
+		return;
+	
+	Filter * f = Workspace::singleton()->filterById(filterId);
+		
+	if(f == _filter)
+		return;
+
+	_filter			= f;
+	_filterDataSet	= _filter ? _filter->data() : nullptr;
+
+	connectDataSpecChanges();
+
+	emit filterChanged(_filter);
+	emit dataSpecChanged();
+
+	refresh();
 }

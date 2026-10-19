@@ -23,13 +23,17 @@
 #include "enginedefinitions.h"
 
 #include <set>
+#include <deque>
+#include <vector>
 #include "analysisbase.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "modules/dynamicmodules.h"
 #include <QFileSystemWatcher>
 #include <QQuickItem>
 
+class Filter;
 class Column;
+class DataSet;
 class AnalysisForm;
 
 
@@ -50,6 +54,7 @@ class Analysis : public AnalysisBase
 public:
 
 	enum Status { Empty, Running, RunningImg, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, KeepStatus };
+	
 
 	void				setStatus(Status status);
 	static std::string	statusToString(Status status);
@@ -59,6 +64,7 @@ public:
 
 						Analysis(size_t id, Analysis * duplicateMe);
 						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options);
+						Analysis(size_t id, const std::string & title); // report constructor — no module
 
 	virtual				~Analysis();
 
@@ -73,12 +79,14 @@ public:
 	void				setResults(			const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
 	void				setResults(			const Json::Value & results, Status					status, const Json::Value & progress = Json::nullValue);
 	void				imageSaved(			const Json::Value & results);
+
 	void				saveImage(			const Json::Value & options);
 	void				editImage(			const Json::Value & options);
 	void				imageEdited(		const Json::Value & results);
 	void				imagesRewritten(	const Json::Value & results);
 	void				rewriteImages();
 	bool				isColumnFreeOrMine(const QString & columnName)				const override;
+	DataSet		*		dataSet()													const override;
 
 	void				setRFile(const std::string &file)							{ _rfile = file;								}
 	void				setRSources(const Json::Value& rSources);
@@ -89,6 +97,7 @@ public:
 	void				setErrorInResults(const std::string	& msg);
 
 	Json::Value			editOptionsOfPlot(		const std::string & uniqueName, bool emitError = true);
+	Json::Value			editOptionsOfPlotFromEdits(const std::string & uniqueName);
 	void				setEditOptionsOfPlot(	const std::string & uniqueName, const Json::Value & editOptions);
 	bool				checkAnalysisEntry();
 
@@ -98,6 +107,8 @@ public:
 
 	const	Json::Value		&	results()			const				{ return _results;							}
 	const	Json::Value		&	userData()			const				{ return _userData;							}
+	const	Json::Value		&	plotEdits()			const				{ return _plotEdits;						}
+				void			setPlotEdits(const Json::Value & edits)				{ _plotEdits = edits;						}
 	const	std::string		&	name()				const	override	{ return _name;								}
 	const	std::string		&	qml()				const				{ return _qml;								}
 	const	std::string		&	title()				const	override	{ return _title;							}
@@ -116,9 +127,11 @@ public:
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
-			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form();	}
-			bool				beingTranslated()						{ return _beingTranslated; };
-			void				setBeingTranslated(bool value)			{ _beingTranslated = value; };
+			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && !_isReport;	}
+			bool				isReport()			const				{ return _isReport;						}
+			void				setReport(bool report)					{ _isReport = report;							}
+			bool				beingTranslated()						{ return _beingTranslated;					};
+			void				setBeingTranslated(bool value)			{ _beingTranslated = value;					};
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}
 			void				setTitle(const std::string& title)	override;
 			void				run()						override;
@@ -157,11 +170,12 @@ public:
 	const stringvec &		upgradeMsgsForOption(const std::string & name)		const	override;
 	const Version	&		moduleVersion()										const	override	{ return _dynamicModule ? _dynamicModule->version() : AppInfo::version; }
 
-	const Json::Value			&	getRSource(const std::string & name)		const	override	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
-	Json::Value						rSources()									const;
-	bool							isOwnComputedColumn(const std::string& col)	const	override;
-	void							preprocessMarkdownHelp(QString & md)		const				{ if (_dynamicModule) _dynamicModule->preprocessMarkdownHelp(md);}
+	const Json::Value	&	getRSource(const std::string & name)		const	override	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
+	Json::Value				rSources()									const;
+	bool					isOwnComputedColumn(const std::string& col)	const	override;
+	void					preprocessMarkdownHelp(QString & md)		const				{ if (_dynamicModule) _dynamicModule->preprocessMarkdownHelp(md);}
 
+	
 signals:
 	void					titleChanged();
 	void					needsRefreshChanged();
@@ -187,6 +201,8 @@ signals:
 	void					analysisInitialized();
 	void					userModifiedSomething();
 
+	
+	
 public slots:
 	void					setDynamicModule(	Modules::DynamicModule * module);
 	void					emitDuplicationSignals();
@@ -197,8 +213,9 @@ public slots:
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
 	void					setRSyntaxTextInResult(bool show);
-	void					filterByNameDone(const QString &name, const QString &error);
+	void					filterByNameDone(int dataSetId, const QString &name, const QString &error);
 	void					onUsedVariablesChanged()																	override;
+	void					filterRemoved(Filter * f);
 
 protected:
 	void					abort();
@@ -209,9 +226,22 @@ private:
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const	Json::Value & results, const std::string & uniqueName,			Json::Value & editOptions);
 	bool					_setEditOptionsOfPlot(		Json::Value & results, const std::string & uniqueName, const	Json::Value & editOptions);
+	bool					_updatePlotField(			Json::Value & results, const std::string & uniqueName, const std::string & fieldName, const Json::Value & value);
+	bool					_getPlotDimensions(const Json::Value & results, const std::string & uniqueName, int & width, int & height) const;
 	void					storeUserDataEtc();
 	void					fitOldUserDataEtc();
-	bool					updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root);
+	// Phase 1: stamp saved editOptions and sizes into fresh engine results.
+	// Returns names of plots whose dimensions changed (need engine re-render).
+	std::set<std::string>		applyPlotEdits();
+	
+	// Phase 2: batch-trigger engine re-edits for plots that changed dimensions.
+	// This is a separate flow from user-initiated queueing (_editQueue).
+	void					applyPlotReEdits(const std::set<std::string> & plotNames);
+	
+	// Dispatches a single image-edit to the engine. Called from the
+	// user-edit queue (editImage) and from applyPlotReEdits (batch re-edits).
+	void					_dispatchEditImage(const Json::Value &options);
+	
 	void					checkForRSources();
 	void					clearRSources();
 	void					initAnalysis();
@@ -226,10 +256,22 @@ protected:
 								_resultsMeta		= Json::nullValue,
 								_imgResults			= Json::nullValue,
 								_userData			= Json::nullValue,
+								_plotEdits			= Json::nullValue,
 								_imgOptions			= Json::nullValue,
+								// The full image-edit options submitted by the last user-initiated
+								// edit. Only set when options contains "editOptions" (not
+								// size-only re-edits). Used in imageEdited to merge the user's
+								// intended edits over the engine's response (which may be stale).
+								_imgOptionsUserEdit	= Json::nullValue,
 								_progress			= Json::nullValue,
 								_oldUserData		= Json::nullValue,
 								_oldMetaData		= Json::nullValue;
+	// Tracks which in-flight imageEdited responses belong to
+	// applyPlotReEdits (batch) rather than user-initiated edits.
+	// When set, imageEdited does NOT update _plotEdits (re-edits
+	// are just re-rendering already-stored edits).
+	std::set<std::string>		_pendingReEdits;
+	std::deque<Json::Value>		_editQueue; // Serializes user-initiated image edits: only one dispatched at a time, the rest queue up
 	std::string					_preUpgraderVersion	= "0";
 
 
@@ -247,20 +289,22 @@ private:
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
 								_optionsFromDifferentVersion	= false,
-								_storedWithoutState				= false,
-								_tryToFixNotes					= false,
-								_hasReport						= false,
-								_beingTranslated				= false;
-	int							_revision						= 0;
+								_storedWithoutState			= false,
+								// True while results are restored from a .jasp file; setResults must not
+								// dispatch engine re-edits then (see loadResultsUserdataAndRSourcesFromJASPFile).
+								_restoringFromJaspFile		= false,
+								_tryToFixNotes				= false,
 
+								_hasReport					= false,
+								_beingTranslated			= false,
+								_isReport				= false;
+	Json::Value					_lastSentMeta				= Json::nullValue;
+	int							_revision						= 0;
 	Modules::AnalysisEntry	*	_moduleData						= nullptr;
 	Modules::DynamicModule	*	_dynamicModule					= nullptr;
 	QFileSystemWatcher			_QMLFileWatcher;
-
 	QString						_helpFile;
-
 	Modules::UpgradeMsgs		_msgs;
-
 	std::map<std::string,
 	Json::Value>				_rSources;
 

@@ -17,7 +17,7 @@
 //
 
 #include "listmodelinputvalue.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "log.h"
 
 ListModelInputValue::ListModelInputValue(JASPListControl* listView, int minRows)

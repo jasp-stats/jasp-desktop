@@ -324,8 +324,9 @@ public:
 	QFont				fontALTNavTag()						const	{ return _fontALTNavTag;				}
 	QString				iconPath()							const	{ return _iconPath;						}
 	QString				themeName()							const	{ return _themeName;					}
-	static QString		currentIconPath();
 	bool				isDark()							const	{ return _isDark;						}
+	
+	static Q_INVOKABLE QString		currentIconPath();
 	
 	float columnTypeScaleHovered() const;
 	void setColumnTypeScaleHovered(float newColumnTypeScaleHovered);

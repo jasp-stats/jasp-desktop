@@ -1,0 +1,40 @@
+{
+	"$schema": "https://raw.githubusercontent.com/open-rpc/meta-schema/master/schema.json",
+	"capabilities": [
+		{
+			"id": "base",
+			"displayName": "Base",
+			"description": "Basic JASP functionality. Provides module discovery and workspace awareness.",
+			"methods": ["modules_list"]
+		},
+		{
+			"id": "run-analyses",
+			"displayName": "Run Analyses",
+			"description": "Create, run, inspect, and compose statistical analyses. Full analysis lifecycle.",
+			"methods": ["analysis_create", "analysis_run", "get_analyses_state"]
+		},
+		{
+			"id": "write-reports",
+			"displayName": "Write Reports",
+			"description": "Create reports — compose results from multiple analyses interleaved with Markdown annotations.",
+			"methods": ["write_report", "analysis_createAnnotation"]
+		},
+		{
+			"id": "inspect-analyses",
+			"displayName": "Inspect Analyses",
+			"description": "View analysis options and results for existing analyses. Read-only — cannot create or run.",
+			"methods": [
+				"analyses_list",
+				"get_analyses_state",
+				"analysis_results",
+				"analysis_context"
+			]
+		},
+		{
+			"id": "data-metadata",
+			"displayName": "Data Metadata",
+			"description": "Retrieve column names, types, distinct counts, and dataset dimensions.",
+			"methods": ["data_info"]
+		}
+	]
+}

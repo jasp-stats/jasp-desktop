@@ -18,7 +18,7 @@
 #include "excelimporter.h"
 #include "data/importers/excel/excel.h"
 #include "data/importers/excel/excelimportcolumn.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include <columnutils.h>
 #include <string>
 #include <QFileInfo>

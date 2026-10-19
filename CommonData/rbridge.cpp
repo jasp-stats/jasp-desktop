@@ -65,12 +65,12 @@ void rbridge_setDataBridge(DataBridge * dataBridge)
 {
 	data_bridge = dataBridge;
 	rbridge_dataSet = nullptr;
+	extraEncodings = dataBridge ? dataBridge->extraEncodings() : nullptr;
 }
 
 void rbridge_clearDataBridge()
 {
-	data_bridge = nullptr;
-	rbridge_dataSet = nullptr;
+	rbridge_setDataBridge(nullptr);
 }
 
 const std::string jaspBaseDistributionSamplersR =
@@ -102,14 +102,12 @@ const std::string jaspBaseTransformPowerR =
 		#include "jaspBase_transformPower.h"
 		;
 
-void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont, bool insideJasp)
+void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
 
+	Log::log() << "Setting DataBridge and extraEncodings." << std::endl;
 	rbridge_setDataBridge(dataBridge);
-	
-	Log::log() << "Setting extraEncodings." << std::endl;
-	extraEncodings = extraEncoder;
 
 	Log::log() << "Collecting RBridgeCallBacks." << std::endl;
 	RBridgeCallBacks callbacks = {
@@ -142,7 +140,8 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 		rbridge_shouldEncodeColumnName,
 		rbridge_shouldDecodeColumnName,
 		rbridge_allColumnNames,
-		rbridge_computedColumnFilterIs
+		rbridge_computedColumnFilterIs,
+		rbridge_setDataSetData
 	};
 
 	JASPTIMER_START(jaspRCPP_init);
@@ -211,12 +210,12 @@ extern "C" int STDCALL rbridge_decodeColumnType(const char * in)
 
 extern "C" bool STDCALL rbridge_shouldEncodeColumnName(const char * in)
 {
-	return ColumnEncoder::columnEncoder()->shouldEncode(in);
+	return (extraEncodings && extraEncodings->shouldEncode(in)) || ColumnEncoder::columnEncoder()->shouldEncode(in);
 }
 
 extern "C" bool STDCALL rbridge_shouldDecodeColumnName(const char * in)
 {
-	return ColumnEncoder::columnEncoder()->shouldDecode(in);
+	return (extraEncodings && extraEncodings->shouldDecode(in)) || ColumnEncoder::columnEncoder()->shouldDecode(in);
 }
 
 extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
@@ -430,7 +429,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	datasetColMax = colMax;
 	datasetStatic = static_cast<RBridgeColumn*>(calloc(datasetColMax + 1, sizeof(RBridgeColumn)));
 
-	size_t filteredRowCount = obeyFilter ? rbridge_dataSet->filter()->filteredRowCount() : rbridge_dataSet->rowCount();
+	size_t filteredRowCount = obeyFilter ? rbridge_dataSet->shownFilter()->filteredRowCount() : rbridge_dataSet->rowCount();
 
 	// lets make some rownumbers/names for R that takes into account being filtered or not!
 	datasetStatic[colMax].ints		= filteredRowCount == 0 ? nullptr : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
@@ -440,9 +439,9 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	//If you change anything here, make sure that "label outliers" in Descriptives still works properly (including with filters)
 	for(size_t i=0; i<rbridge_dataSet->rowCount() && filteredRow < datasetStatic[colMax].nbRows; i++)
 		if(
-				!obeyFilter ||
-				(rbridge_dataSet->filter()->filtered().size() > i && rbridge_dataSet->filter()->filtered()[i])
-			)
+			!obeyFilter ||
+					(rbridge_dataSet->shownFilter()->filtered().size() > i && rbridge_dataSet->shownFilter()->filtered()[i])
+		)
 			datasetStatic[colMax].ints[filteredRow++] = int(i + 1); //R needs 1-based index
 
 	//std::cout << "reading " << colMax << " columns!\nRowCount: " << filteredRowCount << "" << std::endl;
@@ -472,7 +471,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 			
 			boolvec filterToUse;
 			if(obeyFilter)
-				filterToUse = rbridge_dataSet->filter()->filtered();
+				filterToUse = rbridge_dataSet->shownFilter()->filtered();
 
 			for(double value : column->dataAsRDoubles(filterToUse))
 				resultCol.doubles[rowNo++] = value;
@@ -486,7 +485,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 			intvec vals;
 			boolvec filterToUse;
 			if(obeyFilter)
-				filterToUse = rbridge_dataSet->filter()->filtered();
+				filterToUse = rbridge_dataSet->shownFilter()->filtered();
 			
 			stringvec levels = column->dataAsRLevels(vals, filterToUse);
 			
@@ -510,6 +509,13 @@ void __freeRBridgeColumnType(RBridgeColumnType *columns, size_t colMax)
 
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, bool obeyFilter)
 {
+	//Point the process-global ColumnEncoder at the shown dataset before encoding the wanted columns
+	//below. rbridge_readDataSet() at the end of this function does this too, but by then the names
+	//have already been encoded - against the empty fallback encoder if nothing else provided the
+	//dataset first. See the invariant documented in DataBridge::provideAndUpdateDataSet().
+	if(data_bridge)
+		rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
+
 	*colMax = 0;
 	RBridgeColumnType * requestedColumns = new RBridgeColumnType[datasetWanted.size()];
 
@@ -654,6 +660,33 @@ extern "C" bool STDCALL rbridge_setColumnDataAndType(const char* columnName, con
 	return data_bridge->setColumnDataAndType(colName, nominals, columnType(_columnType), computed);
 }
 
+extern "C" bool STDCALL rbridge_setDataSetData(const char* datasetName, const char ** columnNames, const int * columnTypes, const char *** columnData, const size_t * columnLengths, size_t colCount)
+{
+	std::vector<std::string>							names;
+	std::vector<columnType>								types;
+	std::vector<std::vector<std::string>>				data;
+
+	types.reserve(colCount);
+	data.reserve(colCount);
+	names.reserve(colCount);
+
+	for(size_t i=0; i<colCount; i++)
+	{
+		//The R data.frame's column names are encoded (the user code was encoded before evaluation);
+		//decode them back to the plain names (no type suffix) so the output dataset gets the real
+		//column titles. New/user-authored names are not encodable, so keep them as-is.
+		const std::string & colName = columnNames[i];
+		names.push_back(ColumnEncoder::columnEncoder()->shouldDecode(colName)
+			? ColumnEncoder::columnEncoder()->decode(colName)
+			: colName);
+
+		types.push_back(columnType(columnTypes[i]));
+		data.emplace_back(columnData[i], columnData[i] + columnLengths[i]);
+	}
+
+	return data_bridge->setDataSet(datasetName, names, types, data);
+}
+
 extern "C" int	STDCALL rbridge_dataSetRowCount()
 {
 	return data_bridge->dataSetRowCount();
@@ -663,6 +696,11 @@ void rbridge_memoryCleaning()
 {
 	freeRBridgeColumns();
 	jaspRCPP_purgeGlobalEnvironment();
+}
+
+void rbridge_clearDataSet()
+{
+	rbridge_dataSet = nullptr;
 }
 
 void freeRBridgeColumns()
@@ -883,9 +921,11 @@ std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::str
 	if(!rbridge_dataSet)
 		return "null"; // How would doing a computed column make any sense without data?
 	
-	computedColumnFilter = filterToUse;
+	computedColumnFilter = filterToUse == "" ? "DEFAULT_FILTER" : filterToUse;
+	
+	rbridge_dataSet->showFilter(computedColumnFilter);
 
-	int rowCount	= computedColumnFilter == "" ? rbridge_dataSet->rowCount() : Filter(rbridge_dataSet, computedColumnFilter, false).filteredRowCount();
+	int rowCount	= rbridge_dataSet->shownFilter()->filteredRowCount();
 
 	jaspRCPP_resetErrorMsg();
 
@@ -897,12 +937,68 @@ std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::str
 
 	rbridge_setupRCodeEnv(rowCount);
 	std::string result = jaspRCPP_evalComputedColumn(rCode64.c_str(), setColumnFunc.c_str());
-	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
+	jaspRCPP_runScript("detach(data)");	//a	nd afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
 	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
 
 	computedColumnFilter = "";
 	
+	return result;
+}
+
+std::string rbridge_evalRComputedDataSet(const std::string & rCode, const std::string & outputDataSetName, const std::string & filterToUse)
+{
+	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
+
+	if(!rbridge_dataSet)
+		return "null";
+
+	computedColumnFilter = filterToUse.empty() ? DEFAULT_FILTER_NAME : filterToUse;
+
+	rbridge_dataSet->showFilter(computedColumnFilter);
+
+	int rowCount	= rbridge_dataSet->shownFilter()->filteredRowCount();
+
+	jaspRCPP_resetErrorMsg();
+
+	std::string rCode64(rbridge_encodeColumnNamesInScript(rCode));
+
+	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
+	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
+
+	rbridge_setupRCodeEnv(rowCount);
+
+	//The user code is expected to produce a data.frame (kept in .jaspResult), which is then written
+	//into the output (computed) dataset by name. The name is user-editable, so escape it for use inside
+	//a single-quoted R string to avoid breaking the generated code on ' \ or newlines.
+	std::string escapedName = outputDataSetName;
+	{
+		std::string out;
+		out.reserve(escapedName.size());
+		for (char c : escapedName)
+		{
+			switch (c)
+			{
+			case '\\':	out += "\\\\";	break;
+			case '\'':	out += "\\'";	break;
+			case '\n':	out += "\\n";	break;
+			case '\r':	out += "\\r";	break;
+			case '\t':	out += "\\t";	break;
+			default:	out += c;		break;
+			}
+		}
+		escapedName = out;
+	}
+	//Wrap in toString() because .setDataSet returns an R logical, and
+	//jaspRCPP_parseEvalStringReturn only returns a string result (else "null").
+	std::string setDataSetCode = "toString(.setDataSet('" + escapedName + "', .jaspResult))";
+	std::string result = jaspRCPP_evalComputedDataSet(rCode64.c_str(), setDataSetCode.c_str());
+	jaspRCPP_runScript("detach(data)");	//afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
+
+	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
+
+	computedColumnFilter = "";
+
 	return result;
 }
 

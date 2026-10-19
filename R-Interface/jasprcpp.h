@@ -82,6 +82,8 @@ bool jaspRCPP_setColumnDataAsScale(			const std::string & columnName,	Rcpp::RObj
 bool jaspRCPP_setColumnDataAsOrdinal(		const std::string & columnName,	Rcpp::RObject ordinalData,              int computed = 0);
 bool jaspRCPP_setColumnDataAsNominal(		const std::string & columnName,	Rcpp::RObject nominalData,              int computed = 0);
 bool _jaspRCPP_setColumnDataAndType(		const std::string & columnName, Rcpp::RObject data, columnType colType, bool computed = false);
+bool jaspRCPP_setDataSet(					const std::string & datasetName, Rcpp::RObject df);
+const char* jaspRCPP_evalComputedDataSet(	const char * rCode, const char * setDataSetCode);
 
 void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *& outputData, size_t & numLevels, const char **& labelPointers, std::string *& labels);
 

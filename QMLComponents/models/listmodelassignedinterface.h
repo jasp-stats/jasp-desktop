@@ -32,7 +32,6 @@ public:
 
 	virtual void					setAvailableModel(ListModelTermsAvailable *availableModel);
 	ListModelTermsAvailable*		availableModel() const													{ return _availableModel; }
-	bool							checkAllowedTerms(Terms& terms);
 
 public slots:
 	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)				{}

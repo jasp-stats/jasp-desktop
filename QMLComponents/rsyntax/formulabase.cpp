@@ -23,6 +23,7 @@
 #include "analysisform.h"
 #include "log.h"
 #include "formulaparser.h"
+#include "filter.h"
 
 FormulaBase::FormulaBase(QQuickItem *parent) : QQuickItem(parent)
 {
@@ -155,7 +156,9 @@ bool FormulaBase::parseRSyntaxOptions(Json::Value &options) const
 	FormulaParser::ParsedTerms leftParsedTerms, rightParsedTerms;
 	QString error;
 
-	if (!FormulaParser::parse(lhs, true, leftParsedTerms, error) || !FormulaParser::parse(rhs, false, rightParsedTerms, error))
+	VariableInfoProvider * provider = form()->variableInfoProvider();
+
+	if (!FormulaParser::parse(lhs, true, leftParsedTerms, error, provider) || !FormulaParser::parse(rhs, false, rightParsedTerms, error, provider))
 	{
 		_rSyntax->addError(error);
 		return false;

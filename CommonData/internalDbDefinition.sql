@@ -1,16 +1,27 @@
 -- This file is automatically converted to an includable string at internalDbDefintion.h for inclusion
 
-CREATE TABLE DataSets ( 
-	id				INTEGER PRIMARY KEY, 
-	dataFilePath	TEXT, 
-	dataFileTimestamp INT DEFAULT 0,
-	description		TEXT,
-	databaseJson	TEXT, 
-	emptyValuesJson TEXT, 
-	revision		INT DEFAULT 0, 
-	dataFileSynch	INT,
-	showRSyntax		INT DEFAULT 0,
-	csvDelimiter	INT DEFAULT 0
+CREATE TABLE Workspace ( 
+	id					INTEGER PRIMARY KEY,
+	showRSyntax			INT DEFAULT 0	
+);
+
+CREATE TABLE DataSets (
+	id					INTEGER PRIMARY KEY,
+	dataFilePath		TEXT,
+	dataFileTimestamp	INT DEFAULT 0,
+	description			TEXT,
+	title				TEXT DEFAULT '',
+	databaseJson		TEXT, 
+	emptyValuesJson		TEXT, 
+	revision			INT DEFAULT 0, 
+	dataFileSynch		INT,
+	csvDelimiter		INT DEFAULT 0,
+	importLocale		TEXT DEFAULT "",
+	codeType			TEXT NULL, 
+	rCode				TEXT NULL, 
+	invalidated			INT NULL,
+	error				TEXT NULL, 
+	defaultInputFilter	INT NULL
 );
 
 CREATE TABLE Filters ( 
@@ -22,6 +33,7 @@ CREATE TABLE Filters (
 	constructorJson TEXT, 
 	constructorR	TEXT, 
 	errorMsg		TEXT,
+	invalidated		INT DEFAULT 1,
 	revision		INT DEFAULT 0, 
 	
 	FOREIGN KEY(dataSet) REFERENCES DataSets(id)

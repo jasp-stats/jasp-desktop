@@ -22,6 +22,8 @@
 #include "boundcontroltextarea.h"
 #include <QSet>
 
+class ColumnEncoder;
+
 class BoundControlJAGSTextArea : public BoundControlTextArea
 {
 public:
@@ -34,6 +36,8 @@ public:
 	void		checkSyntax()											override;
 
 private:
+	ColumnEncoder *					_encoder()							const;
+
 	std::set<std::string>		_usedColumnNames;
 	QSet<QString>				_usedParameters;
 	QString						_textEncoded;

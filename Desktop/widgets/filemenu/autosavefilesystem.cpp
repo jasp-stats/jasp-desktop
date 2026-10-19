@@ -1,6 +1,6 @@
+#include "qutils.h"
 #include "json/json.h"
 #include "data/fileevent.h"
-#include "utilities/qutils.h"
 #include "utilities/appdirs.h"
 #include "autosavefilesystem.h"
 #include "gui/preferencesmodel.h"

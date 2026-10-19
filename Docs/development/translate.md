@@ -1,8 +1,12 @@
 
-# Guide to Create a Version of JASP in Your Own Language
+# Technical background on how translation works in JASP
 ## Summary
 
-<br>Since JASP version 0.12 it is possible to make JASP available in different languages. The following sections describe the different steps needed to create an international version of JASP. The translation of JASP depends on so-called portable object, '.po' files. These .po files contain all the strings in JASP that need translating. For translators, section 5 is most important. The other sections are written for developers, and provide an overview of the changes in the source code necessary for internationalization. <br>
+<br>
+If you want to help to translate JASP, see:[guideline for translators](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-guideline-translators.md)
+This document gives technical background informations only, no instructions for the actual translation workflow. 
+<br>
+Since JASP version 0.12 it is possible to make JASP available in different languages. This document provide an overview of the changes in the source code necessary for internationalization.The following sections describe the different steps needed to create an international version of JASP. The translation of JASP depends on so-called portable object, '.po' files. These .po files contain all the strings in JASP that need translating.  <br>
 
 ## Contents:
 

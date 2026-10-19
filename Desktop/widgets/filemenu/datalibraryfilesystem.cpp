@@ -26,7 +26,7 @@
 #include <QJsonObject>
 
 #include "utilities/appdirs.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 #include "log.h"
 #include "utilities/languagemodel.h"
 

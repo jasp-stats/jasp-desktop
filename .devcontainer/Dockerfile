@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/devcontainers/cpp:ubuntu-24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG QT_VERSION=6.10.3
-ARG QT_MODULES="qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor"
+ARG QT_MODULES="qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor qthttpserver"
 
 # 1) Base OS packages per Docs/development/jasp-build-guide-linux.md
 RUN apt-get update && apt-get install -y --no-install-recommends \

@@ -4,7 +4,6 @@
 #include <QQuickItem>
 #include "version.h"
 #include "upgradeDefinitions.h"
-#include <unordered_set>
 
 namespace Modules
 {

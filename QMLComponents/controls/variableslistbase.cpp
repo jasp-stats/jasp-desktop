@@ -277,8 +277,12 @@ void VariablesListBase::setDropKeys(const QStringList &dropKeys)
 {
 	if (dropKeys != _dropKeys)
 	{
+		// The first key gives the related list: when only the other keys change (e.g. when a list becomes invisible),
+		// the relations must not be set again, otherwise this list would be added once more to its available model.
+		bool relatedListChanged = dropKeys.value(0) != _dropKeys.value(0);
 		_dropKeys = dropKeys;
-		_setRelations();
+		if (relatedListChanged)
+			_setRelations();
 		emit dropKeysChanged();
 	}
 

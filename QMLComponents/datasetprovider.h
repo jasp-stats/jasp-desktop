@@ -21,19 +21,19 @@
 
 #include <QAbstractTableModel>
 #include "variableinfo.h"
-#include "dataset.h"
+#include "workspace.h"
 #include "databaseinterface.h"
 
 
+class ColumnEncoder;
 class DataSetProvider : public QAbstractTableModel, public VariableInfoProvider
 {
-
 public:
 	static DataSetProvider	*	getProvider(bool inMemory, bool reset = true, QObject * parent = nullptr);
 
 	~DataSetProvider();
 
-	DataSet					*	dataSet()	{ return _dataSet; }
+	DataSet					*	dataSet()	const	{ return _workspace ? _workspace->shownDataSet() : nullptr; }
 	void						resetDataSet();
 
 	int							rowCount(	const QModelIndex & parent = QModelIndex())									const	override;
@@ -44,9 +44,11 @@ public:
 	void						closeDatabase();
 	void						loadDatabase(const Version & jaspVersion);
 
-	QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)		const	override;
-	bool						absorbInfo(	VariableInfo::InfoType info, const QString& name, int row, QVariant value)			override;
+	QVariant					provideInfo(varInfoType info, const QString& colName = "", int row = 0)		const	override;
+	bool						absorbInfo(	varInfoType info, const QString& name, int row, QVariant value)			override;
 	QAbstractItemModel		*	providerModel()																					override	{ return this;	}
+	ColumnEncoder			*	columnEncoder()																					override	{ DataSet * ds = dataSet(); return ds ? &ds->encoder() : nullptr;	}
+
 
 
 private:
@@ -59,7 +61,7 @@ private:
 	QStringList					_getColumnNames()				const;
 
 	DatabaseInterface		*	_db					= nullptr;
-	DataSet					*	_dataSet			= nullptr;
+	Workspace				*	_workspace			= nullptr;
 	bool						_inMemory			= true;
 
 };

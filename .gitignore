@@ -91,3 +91,21 @@ Modules/local
 
 # User configurations
 .qmlls.ini
+
+# Leaked local test/session artifacts (not part of the repo)
+/[0-9][0-9][0-9][0-9][0-9][0-9]/
+/session-*.md
+/Tests/__pycache__/
+/Tests/run_*.sh
+/Tests/debug_*.py
+/Tests/test_file_dialog_trigger.py
+/Desktop/modules/activemodules.h
+
+# Runtime/IPC leftovers from engine + test runs
+JASP-IPC-*
+/[0-9][0-9][0-9][0-9][0-9]*/
+Tests/qmlTests/[0-9][0-9][0-9][0-9][0-9]*/
+
+# Gate/fuzzer test artifacts
+Tests/gatetest/.venv/
+__pycache__/

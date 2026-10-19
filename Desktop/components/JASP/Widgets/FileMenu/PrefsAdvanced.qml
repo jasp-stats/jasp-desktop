@@ -10,7 +10,7 @@ PrefsScrollView
 	{
 		id:				menuHeader
 		headertext:		qsTr("Advanced Preferences")
-		helpfile:		"preferences/PrefsAdvanced"
+		helpMD:			allHelp.PrefsAdvanced
 		addMargin:		false
 	}
 
@@ -540,15 +540,136 @@ PrefsScrollView
 			onCheckedChanged:	preferencesModel.engineSandbox = checked
 			toolTip:			qsTr("Strengthen security on Windows by isolating Engines running R-code")
 
-			KeyNavigation.tab:		showEnginesWindow
+			KeyNavigation.tab:	browseEngineSandboxDirButton
+		}
+
+		Item
+		{
+			id:				engineSandboxDirItem
+			width:			parent.width
+			height:			browseEngineSandboxDirButton.height
+			visible:			Qt.platform.os === "windows"
+			enabled:			Qt.platform.os === "windows"
+
+			RoundedButton
+			{
+				id:						browseEngineSandboxDirButton
+				text:				qsTr("Sandbox folder:")
+				onClicked:			preferencesModel.browseEngineSandboxDir()
+				anchors.left:		parent.left
+				anchors.leftMargin:	jaspTheme.subOptionOffset
+				toolTip:				qsTr("Browse to the folder used as home for the sandboxed Engines. This is where JASP stores logs, clipboard images and where sandboxed Engines may read and write files. Leave empty to use the default: JASP_Sandbox in your home-folder (chosen over Documents because that one tends to be synced by OneDrive).")
+
+				KeyNavigation.tab:		engineSandboxDirText.textInput
+				activeFocusOnTab:	true
+			}
+
+			PrefsTextInput
+			{
+				id:					engineSandboxDirText
+
+				text:				preferencesModel.engineSandboxDir
+				onEditingFinished:	preferencesModel.engineSandboxDir = text
+				nextEl:				showEnginesWindow
+				toolTip:				qsTr("The folder used as home for the sandboxed Engines. Leave empty to use the default: JASP_Sandbox in your home-folder.")
+
+				height:				browseEngineSandboxDirButton.height
+				anchors
+				{
+					left:			browseEngineSandboxDirButton.right
+					right:			parent.right
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
 		}
 
 		RoundedButton
 		{
-			id:					showEnginesWindow
-			text:				qsTr("Show engines")
+			id:				showEnginesWindow
+			text:			qsTr("Show engines")
 			onClicked:			mainWindow.showEnginesWindow()
-			activeFocusOnTab:		true
+			activeFocusOnTab:	true
+		}
+	}
+
+	PrefsGroupRect
+	{
+		title: qsTr("Remote control")
+
+		CheckBox
+		{
+			id:					rpcServerEnabled
+			label:				qsTr("Enable JASP-RPC server")
+			checked:			preferencesModel.rpcServerEnabled
+			onCheckedChanged:		preferencesModel.rpcServerEnabled = checked
+			toolTip:			qsTr("Allow external applications to control JASP via HTTP RPC.")
+			KeyNavigation.tab:		rpcServerIp
+		}
+
+		Item
+		{
+			width:				parent.width
+			height:				rpcServerIp.height
+			enabled:			preferencesModel.rpcServerEnabled
+
+			Label
+			{
+				text:			qsTr("IP address:")
+				anchors
+				{
+					left:			parent.left
+					verticalCenter:	parent.verticalCenter
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
+
+			PrefsTextInput
+			{
+				id:					rpcServerIp
+				text:				preferencesModel.rpcServerIp
+				onEditingFinished:		preferencesModel.rpcServerIp = text
+				nextEl:				rpcServerPort
+				anchors
+				{
+					left:			parent.left
+					leftMargin:		80 * preferencesModel.uiScale
+					right:			parent.right
+					margins:		jaspTheme.generalAnchorMargin
+				}
+				KeyNavigation.tab:	rpcServerPort
+			}
+		}
+
+		Item
+		{
+			width:				parent.width
+			height:				rpcServerPort.height
+			enabled:			preferencesModel.rpcServerEnabled
+
+			Label
+			{
+				text:			qsTr("Port:")
+				anchors
+				{
+					left:			parent.left
+					verticalCenter:	parent.verticalCenter
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
+
+			PrefsTextInput
+			{
+				id:					rpcServerPort
+				text:				preferencesModel.rpcServerPort
+				onEditingFinished:		preferencesModel.rpcServerPort = parseInt(text)
+				anchors
+				{
+					left:			parent.left
+					leftMargin:		80 * preferencesModel.uiScale
+					right:			parent.right
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
 		}
 	}
 }

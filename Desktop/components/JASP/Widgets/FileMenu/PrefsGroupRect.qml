@@ -10,6 +10,7 @@ Rectangle
 	color:			"transparent"
 	border.color:	jaspTheme.fileMenuLightBorder
 	border.width:	1
+	radius:			5 * preferencesModel.uiScale
 
 	width:			parent.width
 	implicitHeight:	contentColumn.y + contentColumn.height + jaspTheme.generalAnchorMargin
