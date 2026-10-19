@@ -997,7 +997,16 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				newOption.append(jsonValueOrg);
 			}
 
-			if (!columnNameWithType.empty() && hasType)
+			//mds-plan post (nominal-FactorsForm fatal): an EXPLICIT type must be trusted for the
+			//TYPE of a term, never for the column's EXISTENCE in the resolved namespace - the
+			//collector used to insert every typed term into the slice's wanted columns, and
+			//rbridge_readDataSetRequested then refused the whole run ("gets 'X.type' but its not
+			//a columnname at all"). Unreachable pre-plan (one dataset: a term always lived in
+			//its namespace), but the aware path can stamp a hostless panel's term into a
+			//namespace lacking the column (FactorsForm panels are hostless, D3.2 NOTE) - the
+			//missing guard became a run-fatal. The option VALUE is left untouched: R simply sees
+			//a value that does not index its slice, like any other unresolved one.
+			if (!columnNameWithType.empty() && hasType && encoder && encoder->currentNames().count(columnName))
 				colTypes.insert(std::make_pair(columnNameWithType, columnTypeFromString(type)));
 		}
 		else if (jsonValue.isArray())
@@ -1021,7 +1030,10 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				std::string columnNameWithType = columnName.empty() ? "" : (columnName + (hasType ? "." + type : ""));
 				newColumnNames.append(columnNameWithType);
 
-				if (!columnNameWithType.empty() && hasType)
+				//Same existence guard as the single-term case above (mds-plan post): a typed
+				//component of an interaction whose column the resolved namespace lacks must not
+				//enter the slice queue either.
+				if (!columnNameWithType.empty() && hasType && encoder && encoder->currentNames().count(columnName))
 					colTypes.insert(std::make_pair(columnNameWithType, columnTypeFromString(type)));
 			}
 			if (optionKey.empty())
@@ -1108,7 +1120,10 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 
 		ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, filterId, encoderFor);	//may re-attribute dataSetId
 
-		if(encoder->currentNames().count(possibleCol))
+		//The count() check already refuses columns the resolved namespace does not have - the
+		//existence guard the typed-term conversion below needed too (mds-plan post: see the
+		//nominal-FactorsForm fatal note in _convertPreloadingDataOption).
+		if(encoder && encoder->currentNames().count(possibleCol))
 		{
 			columnType possType = encoder->currentNames().at(possibleCol);
 			if(possType != columnType::unknown)
