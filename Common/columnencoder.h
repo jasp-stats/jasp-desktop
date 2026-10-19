@@ -264,6 +264,14 @@ public:
 	//                     the caller's C7 legacy fallback). A positional node never inherits
 	//                     parent->child, which structurally avoids the old provenance-meta walk's
 	//                     parent-stamp leak into child nodes.
+	//   array(array(int|null))  PER-FACTOR positional (FactorsForm family, mds-plan post): the
+	//                     option value is an array of factor OBJECTS (each carrying its terms
+	//                     under the optionKey) and element i is factor i's per-term array, resolved
+	//                     factor-positionally then term-positionally. The discriminator is the
+	//                     option VALUE's element shape (objects ⟹ per-factor) AND the sidecar
+	//                     element shape (arrays) - the two co-occur only for the per-factor
+	//                     generator, so no existing flat family can misfire (documented at the
+	//                     walk sites in columnencoder.cpp).
 	//   object            container: named members are child-option nodes (row controls placed
 	//                     under this option's path); the reserved member FILTERIDS_SELF ("$")
 	//                     carries this option's own int|array node when one exists and would
@@ -311,6 +319,7 @@ private:
 	const std::vector<std::pair<std::string, columnType>> & mintReverse() const		{ return _mode == Mode::view && _canonical ? _canonical->_mintReverse : _mintReverse;	}
 
 	static	void				_convertPreloadingDataOption(Json::Value & option, const std::string& optionName, perDataSetColsPlusTypes & colTypesPerDataSet, int dataSetId, int filterId, const Json::Value & sidecar, const EncoderFor & encoderFor);
+	static	void				_handleTermOptionObject(Json::Value & parentObject, const std::string & optionName, int dataSetId, int filterId, const Json::Value & sidecar, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor);
 	static	void				_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, const Json::Value & meta, const Json::Value & sidecar, int dataSetId, int filterId, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor);
 	static	void				_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, const Json::Value & sidecar, int dataSetId, int filterId, const EncoderFor & encoderFor);
 	static	ColumnEncoder	*	_encoderForDataSetId(int & dataSetId, int filterId, const EncoderFor & encoderFor);

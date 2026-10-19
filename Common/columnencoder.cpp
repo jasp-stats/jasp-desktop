@@ -1054,6 +1054,27 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 	options[optionName] = !useSingleVal ? newOption : newOption[0];
 }
 
+void ColumnEncoder::_handleTermOptionObject(Json::Value & parentObject, const std::string & optionName, int dataSetId, int filterId, const Json::Value & sidecar, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor)
+{
+	//The {value, types} term-option shape shared by every term-bearing family: convert it (and
+	//collect the wanted cols per resolved dataset). Extracted from the object case of
+	//_addTypeToColumnNamesInOptionsRecursively so the per-factor array case can drive the SAME
+	//handling for the term member nested inside a factor object (mds-plan post: the option's
+	//sidecar arrives pre-resolved per factor there).
+	if(preloadingData)
+		_convertPreloadingDataOption(parentObject, optionName, colTypesPerDataSet, dataSetId, filterId, sidecar, encoderFor);
+	else //make sure "optionname".types is available for analyses incapable of preloadingData, this should be considered deprecated
+	{
+		parentObject[optionName + ".types"] = parentObject[optionName]["types"];
+
+		std::string		optionKey			= parentObject[optionName].isMember("optionKey") ? parentObject[optionName]["optionKey"].asString() : "";
+		bool			keepOriginalOption	= (!optionKey.empty() && parentObject[optionName].size() > 3); // The option has other members: this must be kept
+
+		if (!keepOriginalOption)
+			parentObject[optionName] = parentObject[optionName]["value"];
+	}
+}
+
 void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, const Json::Value & meta, const Json::Value & sidecar, int dataSetId, int filterId, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor)
 {
 	if (options.isObject())
@@ -1076,20 +1097,7 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 			const int			childFlId	= ownFlId >= 0 ? ownFlId : filterId;
 
 			if (options[optionName].isObject() && options[optionName].isMember("value") && options[optionName].isMember("types"))
-			{
-				if(preloadingData)
-					_convertPreloadingDataOption(options, optionName, colTypesPerDataSet, dataSetId, childFlId, childSidecar, encoderFor);
-				else //make sure "optionname".types is available for analyses incapable of preloadingData, this should be considered deprecated
-				{
-					options[optionName + ".types"] = options[optionName]["types"];
-
-					std::string		optionKey			= options[optionName].isMember("optionKey") ? options[optionName]["optionKey"].asString() : "";
-					bool			keepOriginalOption	= (!optionKey.empty() && options[optionName].size() > 3); // The option has other members: this must be kept
-
-					if (!keepOriginalOption)
-						options[optionName] = options[optionName]["value"];
-				}
-			}
+				_handleTermOptionObject(options, optionName, dataSetId, childFlId, childSidecar, preloadingData, colTypesPerDataSet, encoderFor);
 			else
 				_addTypeToColumnNamesInOptionsRecursively(options[optionName], childMeta, childSidecar, dataSetId, childFlId, preloadingData, colTypesPerDataSet, encoderFor);
 		}
@@ -1111,7 +1119,37 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 			const Json::Value & elementSidecar	= sidecar.isObject() ? sidecar : elementNode;
 			const int			elementFlId		= positional ? (elementNode.isInt() ? elementNode.asInt() : -1) : filterId;
 
-			_addTypeToColumnNamesInOptionsRecursively(options[i], elementMeta, elementSidecar, dataSetId, elementFlId, preloadingData, colTypesPerDataSet, encoderFor);
+			//mds-plan post (per-factor provenance, FactorsForm): a factor-form option value is an
+			//array of factor OBJECTS, each carrying its terms under the optionKey (still the
+			//{value, types} shape at this stage), and its sidecar node is an ARRAY-OF-ARRAYS:
+			//element i = factor i's per-term positional filterId array (generator:
+			//FactorsFormBase::createFilterIds). Discriminator - why this cannot misfire on the
+			//existing families: the option VALUE's element must be an object AND the sidecar
+			//element must be an array, and the two co-occur only for the per-factor generator.
+			//Flat term arrays have string/array elements (never objects); ComponentsList /
+			//InputList row values are consumed inside _convertPreloadingDataOption (never this
+			//generic array case) and their sidecar elements are ints (or a named-children
+			//container whose "$" entries are ints); FactorLevelList rows carry a SCALAR sidecar
+			//node (positional == null here); MeasuresCells/pairs values are string arrays. The
+			//old flat read of an array-of-arrays misaligned it element-wise (factor count = term
+			//count) - that misread is what this case replaces.
+			if (elementNode.isArray() && options[i].isObject())
+			{
+				for (const std::string & memberName : options[i].getMemberNames())
+				{
+					if (options[i][memberName].isObject() && options[i][memberName].isMember("value") && options[i][memberName].isMember("types"))
+						//the factor's term member: its per-term array IS the sidecar, and the
+						//factor level itself says nothing (nulls never inherit, the D3.2 leak rule -
+						//the per-term entries carry the ids, backfilled by the generator)
+						_handleTermOptionObject(options[i], memberName, dataSetId, elementFlId, elementNode, preloadingData, colTypesPerDataSet, encoderFor);
+					else
+						//structural members (factor name/title/...): keep the element-level
+						//resolution exactly like the flat read gave them (-1 here)
+						_addTypeToColumnNamesInOptionsRecursively(options[i][memberName], elementMeta, Json::Value::null, dataSetId, elementFlId, preloadingData, colTypesPerDataSet, encoderFor);
+				}
+			}
+			else
+				_addTypeToColumnNamesInOptionsRecursively(options[i], elementMeta, elementSidecar, dataSetId, elementFlId, preloadingData, colTypesPerDataSet, encoderFor);
 		}
 	}
 	else if (options.isString())
@@ -1269,10 +1307,41 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 				for(Json::ArrayIndex i = 0; i < options.size(); i++)
 				{
 					const Json::Value &	termId	= i < positional->size() ? (*positional)[i] : Json::Value::null;
-					int					elemDsId = dataSetId;
-					ColumnEncoder *		elemEncoder = _encoderForDataSetId(elemDsId, termId.isInt() ? termId.asInt() : -1, encoderFor);
 
-					elemEncoder->encodeJson(options[i], false, true); //same call as today's, per term
+					//mds-plan post (per-factor provenance, FactorsForm): a PER-FACTOR element - the
+					//option value element is a factor OBJECT and the sidecar element is that
+					//factor's per-term filterId array (discriminator + byte-identity argument
+					//documented at the twin case in _addTypeToColumnNamesInOptionsRecursively; the
+					//flat int|null entries of every existing positional family take the else arm
+					//below unchanged). The factor's array members (the converted term strings, and
+					//the "<optionKey>.types" copy the conversion writes next to them) are encoded
+					//term by term through their own filters; a factor's non-array members (its
+					//structural name/title) are NOT column references and stay untouched - the flat
+					//read would have run them through the element-level fallback, a factor named
+					//exactly like a column is not a column reference.
+					if(termId.isArray() && options[i].isObject())
+						for(const std::string & memberName : options[i].getMemberNames())
+						{
+							Json::Value & member = options[i][memberName];
+
+							if(!member.isArray())
+								continue;
+
+							for(Json::ArrayIndex j = 0; j < member.size(); j++)
+							{
+								int				elemDsId	= dataSetId;
+								ColumnEncoder *	elemEncoder	= _encoderForDataSetId(elemDsId, termId[j].isInt() ? termId[j].asInt() : -1, encoderFor);
+
+								elemEncoder->encodeJson(member[j], false, true); //same call as today's, per term
+							}
+						}
+					else
+					{
+						int					elemDsId	= dataSetId;
+						ColumnEncoder *		elemEncoder = _encoderForDataSetId(elemDsId, termId.isInt() ? termId.asInt() : -1, encoderFor);
+
+						elemEncoder->encodeJson(options[i], false, true); //same call as today's, per term
+					}
 				}
 			else
 				encoder->encodeJson(options, false, true); //If we already think we have columnNames just change it all

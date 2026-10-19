@@ -161,6 +161,14 @@ private slots:
 	void	testPreAttachOptionsParkAndAreNeverReadForBehaviour();
 	void	testRestampOwnershipRuleKeepsForeignStamps();
 
+	// mds-plan post (the FactorsForm deferral closed): per-factor provenance transport. The
+	// factors option's sidecar is an array-of-arrays (element i = factor i's per-term array,
+	// FactorsFormBase::createFilterIds); the engine walk resolves it factor-positionally then
+	// term-positionally via the documented array-of-objects discriminator, the collector walks
+	// the nested arrays, and the flat families keep byte-identical shapes (no-misfire pins).
+	void	testPerFactorProvenanceEncodesViaOwnViews();
+	void	testPerFactorSidecarCollectorAndDiscriminatorNoMisfire();
+
 	// mds-plan D5.1: the final Storage format - per-term {name, filterId?, types} objects for the
 	// term families (simple, interaction, row-bearing; optionKey kept, row children kept), the
 	// single JSON->Terms applier accepting BOTH the new Storage shape and the legacy Engine-shape

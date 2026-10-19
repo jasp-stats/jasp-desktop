@@ -3217,6 +3217,238 @@ void TestAll::testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder()
 	QVERIFY2(classicTree["dependent"][0].asString() != token1, "a classic run must not be dragged into a sidecar filter's namespace");
 }
 
+void TestAll::testPerFactorProvenanceEncodesViaOwnViews()
+{
+	//mds-plan post (the FactorsForm deferral closed): a factors option's sidecar is an
+	//ARRAY-OF-ARRAYS - element i = factor i's per-term positional filterId array (the generator
+	//FactorsFormBase::createFilterIds; here the generated shape is hand-written exactly as the
+	//walk consumes it). The engine walk must resolve it factor-positionally then term-positionally:
+	//  (1) a factor whose terms come from DIFFERENT filters encodes each term through ITS filter's
+	//      view (the D3.7 flagship, per factor), and both factors' filters join the slice queue;
+	//  (2) the flagship twins ACROSS factors: the same column name in two factors of one form,
+	//      stamped with different filterIds, gets two distinct tokens (the same-name-different-
+	//      source case that motivated C9, at factor granularity);
+	//  (3) an unqualified term position (null inside a factor's array) takes the C7 shown-filter
+	//      fallback, exactly like a null in a flat per-term array (nulls never inherit);
+	//  (4) the boundary strip removes the whole sidecar; what R sees carries no provenance.
+	//Factor values are OBJECTS {name, title, indicators:{value, types}} - the discriminator shape
+	//(see the walk comment) - and the conversion produces the "<optionKey>" + "<optionKey>.types"
+	//members the encode arm then tokenizes per term.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();
+	Filter * f1 = a->shownFilter();
+	a->addFilter();
+	Filter * f2 = a->shownFilter();
+	QVERIFY2(f1 && f2 && f1 != f2, "two distinct named filters required");
+
+	a->showFilter(a->defaultFilter());	//neither factor term's filter is the shown one
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	QVERIFY2(colA && colA->type() != columnType::unknown, "debug.csv must hold a typed contNormal");
+	const std::string qualified = colName + "." + columnTypeToString(colA->type());
+
+	const std::string token1 = f1->columnEncoder()->encode(qualified);
+	const std::string token2 = f2->columnEncoder()->encode(qualified);
+	const std::string tokenShown = a->defaultFilter()->columnEncoder()->encode(qualified);
+	QVERIFY2(token1 != token2 && token1 != tokenShown, "the three views must mint distinct tokens");
+
+	//--- (1)+(2)+(3): two factors; factor 1 holds the twin contNormal@f1 + contNormal@null,
+	//factor 2 holds contNormal@f2. The option key ("indicators") is the FactorsForm default for
+	//non-interaction forms; the shape mirrors FactorsFormBase::createEngineValue.
+	Json::Value options(Json::objectValue);
+	Json::Value factor1(Json::objectValue), factor2(Json::objectValue);
+	factor1["name"] = "Factor1";	factor1["title"] = "Factor 1";
+	factor1["indicators"]["value"].append(colName);
+	factor1["indicators"]["value"].append(colName);
+	factor1["indicators"]["types"].append("scale");
+	factor1["indicators"]["types"].append("scale");
+	factor2["name"] = "Factor2";	factor2["title"] = "Factor 2";
+	factor2["indicators"]["value"].append(colName);
+	factor2["indicators"]["types"].append("scale");
+	options["factors"] = Json::Value(Json::arrayValue);
+	options["factors"].append(factor1);
+	options["factors"].append(factor2);
+	options[".meta"]["factors"]["shouldEncode"] = true;
+	options[".filterIds"]["factors"] = Json::Value(Json::arrayValue);
+	options[".filterIds"]["factors"].append(Json::Value(Json::arrayValue));		//factor 1: two terms
+	options[".filterIds"]["factors"][0].append(f1->id());
+	options[".filterIds"]["factors"][0].append(Json::Value());					//null = unqualified term
+	options[".filterIds"]["factors"].append(Json::Value(Json::arrayValue));		//factor 2: one term
+	options[".filterIds"]["factors"][1].append(f2->id());
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "perFactor");
+
+	//factor 1, term 0: through f1's view; term 1 (null): the C7 shown fallback; factor 2: f2's view.
+	//The converted value lives under the option key ("indicators"), the types copy next to it.
+	QCOMPARE(QString::fromStdString(options["factors"][0]["indicators"][0].asString()), QString::fromStdString(token1));
+	QCOMPARE(QString::fromStdString(options["factors"][0]["indicators"][1].asString()), QString::fromStdString(tokenShown));
+	QCOMPARE(QString::fromStdString(options["factors"][1]["indicators"][0].asString()), QString::fromStdString(token2));
+	//the structural factor members are not column references - they stay untouched
+	QCOMPARE(QString::fromStdString(options["factors"][0]["name"].asString()), QString("Factor1"));
+	QCOMPARE(QString::fromStdString(options["factors"][1]["title"].asString()), QString("Factor 2"));
+	//the types copy rides along, untouched (type names are not column names)
+	QCOMPARE(QString::fromStdString(options["factors"][0]["indicators.types"][0].asString()), QString("scale"));
+
+	//the queue: both factor filters (the null position contributes nothing, the analysis' own
+	//default filter always rides along)
+	bool queued1 = false, queued2 = false;
+	for(const Json::Value & id : plan.multiDataSetJson["ids"])
+	{
+		if(id.asString() == std::to_string(f1->id())) queued1 = true;
+		if(id.asString() == std::to_string(f2->id())) queued2 = true;
+	}
+	QVERIFY2(queued1 && queued2, "both factors' filters are queued as slices");
+
+	//the walk's wanted cols are attributed per term to the term filter's dataset (re-attribution)
+	QVERIFY(plan.primaryCols.count(std::make_pair(qualified, columnType::scale)) >= 1);
+
+	//--- (4) the strip: R never sees the sidecar (C11), tokens intact
+	Json::Value forR = options;
+	DataBridge::stripTransientProvenanceForR(forR);
+	QVERIFY(!forR.isMember(".filterIds"));
+	QCOMPARE(QString::fromStdString(forR["factors"][1]["indicators"][0].asString()), QString::fromStdString(token2));
+	QVERIFY(forR.toStyledString().find("filterId") == std::string::npos);
+}
+
+void TestAll::testPerFactorSidecarCollectorAndDiscriminatorNoMisfire()
+{
+	//mds-plan post, the two remaining walk-level pins:
+	//  (1) the queue collector recurses the ARRAY-OF-ARRAYS sidecar (int leaves nested two levels
+	//      deep) - the D3.3 queue build must see every factor's every term filter;
+	//  (2) the discriminator CANNOT misfire on the existing flat shapes - each is pinned by
+	//      running the walk and asserting the pre-post byte identity:
+	//      (a) a flat term array with a flat int|null sidecar (BoundControlTerms shape) keeps the
+	//          flat per-term semantics - an array ELEMENT can never be read as a factor array;
+	//      (b) an array-of-OBJECTS value (the FactorLevelList shape) with a SCALAR sidecar node
+	//          stays on the whole-element path (positional == null, the new case never fires);
+	//      (c) the ComponentsList container shape ({"$": flat ints, named child}) over a
+	//          row-object array keeps the per-ROW semantics pinned by
+	//          testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder - the "$" entries are
+	//          ints, never arrays, so the per-factor case cannot fire;
+	//      (d) a value that is an array of objects with NO sidecar at all stays untouched.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();
+	Filter * f1 = a->shownFilter();
+	a->addFilter();
+	Filter * f2 = a->shownFilter();
+	a->showFilter(a->defaultFilter());
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName = "contNormal";
+	Column * colA = a->column(colName);
+	const std::string qualified = colName + "." + columnTypeToString(colA->type());
+	const std::string token1 = f1->columnEncoder()->encode(qualified);
+	const std::string token2 = f2->columnEncoder()->encode(qualified);
+
+	//--- (1) the collector walks the array-of-arrays ---------------------------------------------
+	std::set<int> ids;
+	Json::Value perFactor(Json::arrayValue);
+	perFactor.append(Json::Value(Json::arrayValue));
+	perFactor[0].append(f1->id());
+	perFactor[0].append(Json::Value());
+	perFactor.append(Json::Value(Json::arrayValue));
+	perFactor[1].append(f2->id());
+	ColumnEncoder::collectFilterIdsFromSidecar(perFactor, ids);
+	QVERIFY2(ids == std::set<int>({ f1->id(), f2->id() }), "the collector sees every factor's term filters through the nested arrays");
+	//and through the container-demoted shape (placeOptionFilterIds collision) just the same
+	Json::Value container(Json::objectValue);
+	container[ColumnEncoder::FILTERIDS_SELF] = perFactor;
+	std::set<int> idsContainer;
+	ColumnEncoder::collectFilterIdsFromSidecar(container, idsContainer);
+	QVERIFY2(idsContainer == ids, "the container-wrapped array-of-arrays collects identically");
+
+	//--- (2a) flat term array + flat sidecar: byte-identical to the pre-post flat semantics -------
+	//Controlling case: even a sidecar whose elements are ARRAYS (the new shape) must NOT be
+	//applied per-factor when the value's elements are NOT objects - the discriminator is the
+	//value's element shape first. Here the value is a flat string array, so the old flat read
+	//applies: element arrays read as non-int positions -> the C7 fallback for every term.
+	Json::Value flat(Json::objectValue);
+	flat["list"]["value"].append(colName);
+	flat["list"]["value"].append(colName);
+	flat["list"]["types"].append("scale");
+	flat["list"]["types"].append("scale");
+	flat[".meta"]["list"]["shouldEncode"] = true;
+	flat[".filterIds"]["list"] = Json::Value(Json::arrayValue);
+	flat[".filterIds"]["list"].append(Json::Value(Json::arrayValue));	//a "factor" element on a FLAT value...
+	flat[".filterIds"]["list"][0].append(f1->id());
+	flat[".filterIds"]["list"].append(Json::Value(Json::arrayValue));
+	flat[".filterIds"]["list"][1].append(f2->id());
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	bridge.prepareMultiDataSetRun(flat, a->id(), "", "discriminatorFlat");
+
+	//both terms fell back to the shown filter (the array elements are not term ids) - the flat
+	//read is preserved, the per-factor case never fired on a non-object value element
+	QCOMPARE(QString::fromStdString(flat["list"][0].asString()), QString::fromStdString(a->defaultFilter()->columnEncoder()->encode(qualified)));
+	QCOMPARE(QString::fromStdString(flat["list"][1].asString()), QString::fromStdString(a->defaultFilter()->columnEncoder()->encode(qualified)));
+
+	//--- (2b) array-of-objects value + SCALAR sidecar: whole-element path (FactorLevelList shape) -
+	Json::Value levels(Json::objectValue);
+	Json::Value lvlRow(Json::objectValue);
+	lvlRow["name"] = "FacA 1";
+	lvlRow["levels"].append("contNormal");
+	levels["facLevels"] = Json::Value(Json::arrayValue);
+	levels["facLevels"].append(lvlRow);
+	levels[".meta"]["facLevels"]["shouldEncode"] = true;
+	levels[".meta"]["facLevels"]["encodeThis"] = "FacA 1";
+	levels[".filterIds"]["facLevels"] = f1->id();		//scalar node: positional == null
+
+	DataBridge bridge2(ProcessInfo::currentPID());
+	bridge2.prepareMultiDataSetRun(levels, a->id(), "", "discriminatorScalarSidecar");
+
+	//the whole element rode the scalar node's view (today's semantics, unchanged): the level name
+	//inside the row object is encoded through f1's view, exactly like the pre-post scalar read
+	QCOMPARE(QString::fromStdString(levels["facLevels"][0]["levels"][0].asString()), QString::fromStdString(token1));
+
+	//--- (2c) ComponentsList container shape: "$" ints drive per-row (pin stays green) -----------
+	Json::Value rows(Json::objectValue);
+	Json::Value row1(Json::objectValue), row2(Json::objectValue);
+	row1["value"] = colName;	row2["value"] = colName;
+	rows["comp"] = Json::Value(Json::arrayValue);
+	rows["comp"].append(row1);
+	rows["comp"].append(row2);
+	rows[".meta"]["comp"]["shouldEncode"] = true;
+	rows[".filterIds"]["comp"][ColumnEncoder::FILTERIDS_SELF].append(f1->id());
+	rows[".filterIds"]["comp"][ColumnEncoder::FILTERIDS_SELF].append(f2->id());
+
+	DataBridge bridge3(ProcessInfo::currentPID());
+	bridge3.prepareMultiDataSetRun(rows, a->id(), "", "discriminatorContainer");
+
+	QCOMPARE(QString::fromStdString(rows["comp"][0]["value"].asString()), QString::fromStdString(token1));
+	QCOMPARE(QString::fromStdString(rows["comp"][1]["value"].asString()), QString::fromStdString(token2));
+
+	//--- (2d) array-of-objects value, NO sidecar at all: untouched by the new case ---------------
+	Json::Value plain(Json::objectValue);
+	Json::Value plainRow(Json::objectValue);
+	plainRow["name"] = "FacA 1";
+	plainRow["levels"].append(colName);
+	plain["facLevels"] = Json::Value(Json::arrayValue);
+	plain["facLevels"].append(plainRow);
+	plain[".meta"]["facLevels"]["shouldEncode"] = true;
+
+	DataBridge bridge4(ProcessInfo::currentPID());
+	bridge4.prepareMultiDataSetRun(plain, a->id(), "", "discriminatorNoSidecar");
+
+	//no sidecar -> the enclosing (C7 fallback shown filter) namespace, exactly the pre-post read
+	QCOMPARE(QString::fromStdString(plain["facLevels"][0]["levels"][0].asString()),
+			 QString::fromStdString(a->defaultFilter()->columnEncoder()->encode(qualified)));
+}
+
 void TestAll::testPlaceOptionFilterIdsCollisionDemotion()
 {
 	//mds-plan D3.3/D3.7: the generators' sidecar placement (AnalysisBase::placeOptionFilterIds).
