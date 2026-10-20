@@ -228,6 +228,7 @@ private:
 	bool					_setEditOptionsOfPlot(		Json::Value & results, const std::string & uniqueName, const	Json::Value & editOptions);
 	bool					_updatePlotField(			Json::Value & results, const std::string & uniqueName, const std::string & fieldName, const Json::Value & value);
 	bool					_getPlotDimensions(const Json::Value & results, const std::string & uniqueName, int & width, int & height) const;
+	std::string				_plotTitle(const Json::Value & results, const std::string & uniqueName, const std::string & defaultTitle) const;
 	void					storeUserDataEtc();
 	void					fitOldUserDataEtc();
 	// Phase 1: stamp saved editOptions and sizes into fresh engine results.
@@ -271,6 +272,7 @@ protected:
 	// When set, imageEdited does NOT update _plotEdits (re-edits
 	// are just re-rendering already-stored edits).
 	std::set<std::string>		_pendingReEdits;
+	std::set<std::string>		_plotEditsNotApplied; // Edited plots that are not editable after the last run: their stored edits wait until they are again
 	std::deque<Json::Value>		_editQueue; // Serializes user-initiated image edits: only one dispatched at a time, the rest queue up
 	std::string					_preUpgraderVersion	= "0";
 
