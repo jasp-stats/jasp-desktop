@@ -847,9 +847,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 					//FIXME: The dragged item is represented by the helper thumbnail above;shrink + hide the in-flow source so sortable's follow-offset math is not applied to a zoomed element.
 					collapseItem(ui.item);
 					ui.item.css("visibility", "hidden");
-					//FIXME: zoom changed every item's layout AFTER sortable cached their geometry at mousedown; without this refresh the placeholder
-					//jumps between stale rects for the first few mousemoves.
-					self.$el.sortable("refresh");
+
+					var sortable = self.$el.sortable("instance");
+					sortable.refreshPositions(true);
+					sortable.options.placeholder.update(sortable, sortable.placeholder); 	//zoom changed every item's layout AFTER sortable cached their geometry at mousedown; without this refreshPositions/update the placeholder jumps between stale rects for the first few mousemoves.
 				},
 				stop: function (event, ui) {
 					ui.item.css("visibility", "");
