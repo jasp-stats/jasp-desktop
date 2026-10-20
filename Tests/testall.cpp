@@ -35,6 +35,7 @@
 #include "data/datasetloader.h"
 #include "data/expanddataproxymodel.h"
 #include "mainwindow.h"
+#include "utilities/messageforwarder.h"
 #include "results/resultsjsinterface.h"
 #include "scriptconstructormodel.h"
 #include "scriptnode.h"
@@ -3031,6 +3032,100 @@ void TestAll::testCliSyncExportWaitsForAnalysesToSettle()
 
 	//The MainWindow teardown took the session directory (and its database) with it; following tests
 	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+void TestAll::testPlotEditsNotAppliedToNonEditablePlot()
+{
+	//Regression: an edited plot that a re-run turns into one that cannot be edited (a survival plot
+	//with a risk table becomes a patchwork) must not get its stored edit sent to the engine, where
+	//jaspBase:::editImage failed and took the engine down. The user is warned once, the edit is kept
+	//and applied again as soon as the plot can be edited again.
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	QStringList warnings;
+	MessageForwarder::setWarningHandler([&warnings](const QString &, const QString & message, bool) { warnings << message; });
+	auto resetHandler = qScopeGuard([](){ MessageForwarder::setWarningHandler(nullptr); });
+
+	Json::Value analysisData;
+	analysisData["id"]		= 1;
+	analysisData["title"]	= "PlotEditTest";
+	analysisData["isReport"]= true;
+	analysisData["status"]	= "complete";
+	Analysis * analysis = mw->_analyses->createFromJaspFileEntry(analysisData, nullptr);
+	QVERIFY(analysis);
+
+	Json::Value edits;
+	edits["survivalPlot"]["editOptions"]["xAxis"]["settings"]["title"] = "Time !";
+	analysis->setPlotEdits(edits);
+
+	auto resultsWith = [](const Json::Value & editOptions)
+	{
+		Json::Value results;
+		results["survivalPlot"]["name"]			= "survivalPlot";
+		results["survivalPlot"]["title"]		= "Survival Plot";
+		results["survivalPlot"]["width"]		= 450;
+		results["survivalPlot"]["height"]		= 450;
+		results["survivalPlot"]["editOptions"]	= editOptions;
+		return results;
+	};
+
+	Json::Value editable;
+	editable["error"]								= "success";
+	editable["xAxis"]["settings"]["title"]			= "Time";
+	editable["yAxis"]["settings"]["title"]			= "Survival";
+
+	Json::Value notEditable;
+	notEditable["errorType"]						= "validationError";
+	notEditable["reasonNotEditable"]				= "This plot cannot be edited because it consists of multiple smaller figures.";
+
+	auto finishEdit = [analysis]()
+	{
+		Json::Value response;
+		response["name"] = analysis->imgOptions()["name"];
+		analysis->imageEdited(response);
+	};
+
+	//An editable plot gets its edit re-applied:
+	analysis->setResults(resultsWith(editable), Analysis::Complete);
+	QVERIFY(analysis->isEditImg());
+	QCOMPARE(analysis->imgOptions()["editOptions"]["xAxis"]["settings"]["title"].asString(), std::string("Time !"));
+	finishEdit();
+	QVERIFY(warnings.isEmpty());
+
+	//Once it cannot be edited, nothing is sent to the engine and the user is told why, once:
+	analysis->setResults(resultsWith(notEditable), Analysis::Complete);
+	QVERIFY(!analysis->isEditImg());
+	QCOMPARE(warnings.size(), 1);
+	QVERIFY(warnings[0].contains("Survival Plot"));
+	QVERIFY(warnings[0].contains("multiple smaller figures"));
+
+	analysis->setResults(resultsWith(notEditable), Analysis::Complete);
+	QVERIFY(!analysis->isEditImg());
+	QCOMPARE(warnings.size(), 1);
+
+	//Meanwhile the plot editor gets the reason why it cannot edit the plot:
+	QVERIFY(analysis->editOptionsOfPlotFromEdits("survivalPlot").isMember("reasonNotEditable"));
+
+	//The edit is kept, without the not-editable state, and applied again when the plot is editable again:
+	QCOMPARE(analysis->plotEdits()["survivalPlot"]["editOptions"]["xAxis"]["settings"]["title"].asString(), std::string("Time !"));
+	QVERIFY(!analysis->plotEdits()["survivalPlot"]["editOptions"].isMember("reasonNotEditable"));
+
+	analysis->setResults(resultsWith(editable), Analysis::Complete);
+	QVERIFY(analysis->isEditImg());
+	QCOMPARE(analysis->imgOptions()["editOptions"]["xAxis"]["settings"]["title"].asString(), std::string("Time !"));
+	finishEdit();
+
+	QVERIFY(!analysis->editOptionsOfPlotFromEdits("survivalPlot").isMember("reasonNotEditable"));
+
+	//...and a later switch back to a non-editable plot warns again:
+	analysis->setResults(resultsWith(notEditable), Analysis::Complete);
+	QCOMPARE(warnings.size(), 2);
+
+	delete exitSpy;
+	delete mw;
+
 	TempFiles::init(ProcessInfo::currentPID());
 }
 

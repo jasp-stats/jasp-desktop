@@ -581,18 +581,44 @@ std::set<std::string> Analysis::applyPlotEdits()
 
 	for (const std::string & uniqueName : _plotEdits.getMemberNames())
 	{
-		const Json::Value & edit = _plotEdits[uniqueName];
+		Json::Value engineEditOpts;
+		bool plotInResults = _editOptionsOfPlot(_results, uniqueName, engineEditOpts);
 
-		if (edit.isMember("editOptions"))
+		// The re-run may have produced a plot that cannot be edited at all (e.g. a
+		// survival plot that became a patchwork once a risk table was added).
+		// Sending the stored edits to the engine would then fail, so they are kept
+		// unapplied until the plot becomes editable again, and the user is told
+		// once why the edits are gone.
+		if (plotInResults && engineEditOpts.isMember("reasonNotEditable"))
+		{
+			if (_plotEditsNotApplied.insert(uniqueName).second)
+				MessageForwarder::showWarning(tr("Plot edits not applied"),
+					tr("The edits made to plot '%1' could not be applied anymore:\n%2\nThey will be applied again when the plot becomes editable.")
+						.arg(tq(_plotTitle(_results, uniqueName, uniqueName)))
+						.arg(tq(engineEditOpts["reasonNotEditable"].asString())));
+
+			Log::log() << "applyPlotEdits: plot '" << uniqueName << "' is not editable, edits are not applied: " << engineEditOpts["reasonNotEditable"].asString() << std::endl;
+		}
+		else
+			_plotEditsNotApplied.erase(uniqueName);
+
+		const bool	editable	= !_plotEditsNotApplied.count(uniqueName);
+		const Json::Value & edit = _plotEdits[uniqueName];
+		const bool	hasEdits	= editable && edit.isMember("editOptions");
+
+		if (hasEdits)
 		{
 			// _plotEdits is now the sole authority for editOptions.
 			// _results stays pure engine output — never patched by us.
 			// Merge only the keys the stored edits do not have yet, so a fresh run can add what
-			// it newly describes (a "reasonNotEditable" for instance) while everything the user
-			// set stays theirs. Taking the engine's value whenever it differs would undo exactly
-			// the keys the user changed, which is what an edit is.
-			Json::Value engineEditOpts;
-			if (_editOptionsOfPlot(_results, uniqueName, engineEditOpts))
+			// it newly describes while everything the user set stays theirs. Taking the engine's
+			// value whenever it differs would undo exactly the keys the user changed, which is
+			// what an edit is. A not-editable state is never stored (see editOptionsOfPlotFromEdits),
+			// as it would keep the plot editor closed once the plot is editable again.
+			_plotEdits[uniqueName]["editOptions"].removeMember("reasonNotEditable");
+			_plotEdits[uniqueName]["editOptions"].removeMember("errorType");
+
+			if (plotInResults)
 				for (const std::string & key : engineEditOpts.getMemberNames())
 					if (!_plotEdits[uniqueName]["editOptions"].isMember(key))
 						_plotEdits[uniqueName]["editOptions"][key] = engineEditOpts[key];
@@ -621,7 +647,7 @@ std::set<std::string> Analysis::applyPlotEdits()
 					_updatePlotField(_results, uniqueName, "originalWidth",		engineW);
 					_updatePlotField(_results, uniqueName, "originalHeight",	engineH);
 
-					if (!edit.isMember("editOptions") && (storedW != engineW || storedH != engineH))
+					if (!hasEdits && (storedW != engineW || storedH != engineH))
 						reEditNames.insert(uniqueName);
 				}
 			}
@@ -645,13 +671,17 @@ void Analysis::applyPlotReEdits(const std::set<std::string> & plotNames)
 			continue;
 
 		const Json::Value & edit = _plotEdits[uniqueName];
-		if (!edit.isMember("editOptions") && !edit.isMember("width"))
+		// The edits of a plot that is not editable anymore are not sent, only its size (as a
+		// plain resize: an interactive request without editOptions errors in R)
+		const bool hasEdits = !_plotEditsNotApplied.count(uniqueName) && edit.isMember("editOptions");
+
+		if (!hasEdits && !edit.isMember("width"))
 			continue;
 
 		Json::Value imgOpts;
 		imgOpts["name"] = uniqueName;
-		imgOpts["type"] = "interactive";
-		if (edit.isMember("editOptions"))
+		imgOpts["type"] = hasEdits || !_plotEditsNotApplied.count(uniqueName) ? "interactive" : "resize";
+		if (hasEdits)
 			imgOpts["editOptions"] = edit["editOptions"];
 		if (edit.isMember("width") && edit.isMember("height"))
 		{
@@ -661,7 +691,7 @@ void Analysis::applyPlotReEdits(const std::set<std::string> & plotNames)
 
 		_pendingReEdits.insert(uniqueName);
 
-		Log::log() << "applyPlotReEdits: re-edit '" << uniqueName << "' type=interactive w=" << imgOpts.get("width", -1).asInt() << " h=" << imgOpts.get("height", -1).asInt() << " hasEditOpts=" << imgOpts.isMember("editOptions") << std::endl;
+		Log::log() << "applyPlotReEdits: re-edit '" << uniqueName << "' type=" << imgOpts["type"].asString() << " w=" << imgOpts.get("width", -1).asInt() << " h=" << imgOpts.get("height", -1).asInt() << " hasEditOpts=" << imgOpts.isMember("editOptions") << std::endl;
 		editImage(imgOpts);
 	}
 }
@@ -1159,7 +1189,8 @@ Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName, bool emi
 
 Json::Value Analysis::editOptionsOfPlotFromEdits(const std::string & uniqueName)
 {
-	if (_plotEdits.isMember(uniqueName) && _plotEdits[uniqueName].isMember("editOptions"))
+	// While the plot cannot be edited, the editor must get the engine's reason why, not the stored edits
+	if (_plotEdits.isMember(uniqueName) && _plotEdits[uniqueName].isMember("editOptions") && !_plotEditsNotApplied.count(uniqueName))
 		return _plotEdits[uniqueName]["editOptions"];
 	return editOptionsOfPlot(uniqueName, false);
 }
@@ -1188,6 +1219,32 @@ bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string
 	}
 
 	return false;
+}
+
+std::string Analysis::_plotTitle(const Json::Value & results, const std::string & uniqueName, const std::string & defaultTitle) const
+{
+	if(results.isArray())
+		for(const Json::Value & entry : results)
+		{
+			std::string title = _plotTitle(entry, uniqueName, "");
+			if(!title.empty())
+				return title;
+		}
+
+	if(results.isObject())
+	{
+		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
+			return results.get("title", defaultTitle).asString();
+
+		for(const std::string & member : results.getMemberNames())
+		{
+			std::string title = _plotTitle(results[member], uniqueName, "");
+			if(!title.empty())
+				return title;
+		}
+	}
+
+	return defaultTitle;
 }
 
 bool Analysis::_getPlotDimensions(const Json::Value & results, const std::string & uniqueName, int & width, int & height) const

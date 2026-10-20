@@ -142,6 +142,7 @@ private slots:
 	void	testCliSyncExportChainFromFreshWorkspace();
 	void	testCliSyncExportChainFailsOnBadDataFile();
 	void	testCliSyncExportWaitsForAnalysesToSettle();
+	void	testPlotEditsNotAppliedToNonEditablePlot();
 
 	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
 	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the
