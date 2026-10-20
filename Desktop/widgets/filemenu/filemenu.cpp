@@ -59,8 +59,8 @@ FileMenu::FileMenu(QObject *parent) : FileEventRouter(parent)
 	_actionButtons->setEnabled(ActionButtons::SyncData,			false);
 	_actionButtons->setEnabled(ActionButtons::Close,			false);
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
-	_actionButtons->setEnabled(ActionButtons::Contact,			true);
-	_actionButtons->setEnabled(ActionButtons::Community,		true);
+	// Contact/Community: no setEnabled here — the rows are dropped entirely
+	// by ActionButtons::loadButtonData() when externalLinksEnabled is off.
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
 	setResourceButtonsVisibleFor(_fileoperation);

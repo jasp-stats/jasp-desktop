@@ -52,7 +52,11 @@ if(length(remoteBundleURLS) > 0) {
     #draft-release assets are only reachable through api.github.com asset urls
     #and need authentication; their explicit "name" says what the file should be
     #called (the api url basename is just the asset id)
+    #BUNDLE_PAT is honoured for backwards compatibility, but GITHUB_PAT —
+    #the variable CI already exports for the build — works just as well.
     githubToken <- Sys.getenv("BUNDLE_PAT")
+    if (!nzchar(githubToken))
+        githubToken <- Sys.getenv("GITHUB_PAT")
     bundleFileName <- function(bundle) if (is.null(bundle$name)) basename(bundle$url) else bundle$name
     bundleFileNames <- function(urls) {
         out <- basename(urls)
@@ -86,7 +90,7 @@ if(length(remoteBundleURLS) > 0) {
             }, error = function(e) { print(e); list(status_code=404) })
             if(req$status_code != 200) {
                 if(startsWith(bundle$url, "https://api.github.com/") && !nzchar(githubToken))
-                    cat("Hint: api.github.com asset url failed and BUNDLE_PAT is not set -- draft-release bundles need it\n")
+                    cat("Hint: api.github.com asset url failed and neither BUNDLE_PAT nor GITHUB_PAT is set -- draft-release bundles need one of them\n")
                 return(FALSE)
             }
             TRUE

@@ -39,6 +39,16 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/main.cpp")
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
 
+# The embedded executable icon must follow the PRO flag, otherwise the
+# enterprise build carries the community logo in the taskbar (the loose
+# icon.ico next to the executable is already swapped by Install.cmake —
+# this covers the resource compiled into JASP.exe itself).
+if(PRO)
+  set(JASP_ICON_RC icon-pro.rc)
+else()
+  set(JASP_ICON_RC icon.rc)
+endif()
+
 qt_add_library(
   JASPDesktopLib
   STATIC
@@ -51,7 +61,7 @@ qt_add_executable(
   ${SYSTEM_TYPE}
   ${BUNDLE_RESOURCES}
   ${CMAKE_SOURCE_DIR}/Desktop/main.cpp
-  $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/${JASP_ICON_RC}>
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
 )

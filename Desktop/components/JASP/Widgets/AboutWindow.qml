@@ -76,6 +76,7 @@ WavyWindow
 		
 			Row
 			{
+				visible:				mainWindow.externalLinksEnabled
 				Label { text: "<b>" + qsTr("Source:") + "</b>";		color: labelcolor; width: aboutWindow.labelwidth; id: sourceLabel		}
 				Text
 				{
@@ -94,7 +95,8 @@ WavyWindow
 		
 			Row
 			{
-				Label { text: "<b>" + qsTr("Download:") + "</b>";		color:	labelcolor; width: aboutWindow.labelwidth; id:	downloadLabel	}
+				visible:				mainWindow.externalLinksEnabled
+				Label { text: "<b>" + qsTr("Download:") + "</b>";	color:	labelcolor; width: aboutWindow.labelwidth; id:	downloadLabel	}
 				Text
 				{
 					text:			"<u>" + aboutModel.downloadUrl + "</u>"
@@ -158,6 +160,7 @@ WavyWindow
 		
 					Text
 					{
+						visible:			mainWindow.externalLinksEnabled
 						text:			"<u>" + qsTr("BibTeX") + "</u>"
 						color:			jaspTheme.blue
 		
@@ -241,8 +244,9 @@ WavyWindow
 
 		Text
 		{
-			id:						openSourceText
-			text:					"<u>" + qsTr("Open Source Components") + "</u>"
+			id:					openSourceText
+			visible:			mainWindow.externalLinksEnabled
+			text:				"<u>" + qsTr("Open Source Components") + "</u>"
 			color:					jaspTheme.blue
 			wrapMode:				Text.WrapAtWordBoundaryOrAnywhere
 			width:					parent.width

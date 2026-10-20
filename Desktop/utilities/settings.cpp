@@ -176,7 +176,43 @@ const Settings::Setting Settings::Values[] = {
 	// Module store (the browser pane in the + menu). Enterprise admins can
 	// hide it by policy (moduleStoreEnabled) to pin the module set shipped by
 	// the installer. Bound by ModulesMenu.qml; a policy change needs a restart.
-	{"moduleStoreEnabled",			true}
+	{"moduleStoreEnabled",			true},
+	// Outward-facing links and windows in community builds: the About-window
+	// links (sources, download, BibTeX, open-source components), the
+	// welcome-page community links (logo, version, request-feature,
+	// ask-a-question, website), the File-menu Contact/Community entries, the
+	// help-window external navigation and the translation link. Enterprise
+	// admins deactivate them (externalLinksEnabled) to keep users inside the
+	// managed deployment. JASP Services links (Enterprise Support; the PRO
+	// website/contact/question links and the PRO Contact window) are
+	// intentionally exempt so the enterprise-support channel stays reachable.
+	// Bound by MainWindow and the QML files above; a change needs a restart.
+	{"externalLinksEnabled",		true},
+	// Support-channel URLs — one binary, per-client configuration: community
+	// defaults live here, enterprise MSIs override them through forced.json
+	// (or group policy). These replaced the compile-time PRO_COMPANY_NAME URL
+	// generation. Read once per launch by MainWindow (CONSTANT properties);
+	// a change needs a restart. An explicit empty string disables the
+	// channel: the front-page link hides (same rule `bugReportUrl` always
+	// had), and with all three contact URLs empty the Contact window is
+	// dropped entirely.
+	{"contactUrlFeatures",		"https://jasp-stats.org/request-feature"},
+	{"contactUrlBugs",			"https://jasp-stats.org/report-bug"},
+	{"contactUrlCrashReport",	"https://jasp-stats.org/report-bug"},
+	{"questionsUrl",				"https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"},
+	// Company logo on the welcome page (bottom centre). Empty — the default —
+	// shows nothing. A relative path is resolved beside the executable and in
+	// its Resources/ subfolder (the MSI layer stages client logos in
+	// CustomAssets/, so clients ship "CustomAssets/logo.png"); an absolute
+	// path is used as-is (QA machines, network shares, UNC). A
+	// configured-but-missing file logs a warning and hides the logo. Bound by
+	// MainWindow::companyLogoUrl() and WelcomePage.qml; needs a restart.
+	{"companyLogoPath",			""},
+	// Base height of the company logo in welcome-page units — the page scales
+	// it with the window (scaler 0.85–2.0), so 35 renders roughly 30–70px.
+	// Clamped to 0–200 when read. Only meaningful together with a non-empty
+	// companyLogoPath.
+	{"companyLogoHeight",		35}
 };
 
 // Shipped JSON files beside the application: the per-client MSI layer.
