@@ -45,8 +45,21 @@ set(JASP_SHORT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
 message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
 
 set(JASP_VERSION_MSIX_PATCH_POSTFIX
-    "5"
-    CACHE STRING "Microsoft does not allow packages of same version to be uploaded to store and forces TWEAK 0, so we add a large version postfix to PATCH in the appmanifest in case we publish a broken version and wish to switch it out. Nobody sees it anyway")
+    "0"
+    CACHE STRING "Microsoft does not allow packages of same version to be uploaded to store and forces TWEAK 0, so we add a large version postfix to PATCH in the appmanifest in case we publish a broken version and wish to switch it out. Nobody sees it anyway. 0 (the default) or empty means no postfix at all.")
+
+# MSIX versions must match the store schema: no leading zeros in any
+# component (0.99.0 + postfix "5" must NOT become 0.99.05.0). So a
+# numeric postfix is folded into PATCH arithmetically instead of
+# string-concatenated: patch 8 + postfix 5 -> 85 (matches every
+# historical store upload), patch 0 + postfix 5 -> 5. A postfix of 0 or
+# empty leaves PATCH untouched. Components must stay <= 65535, so the
+# patch itself may not exceed 6553 — far beyond JASP's 0.x.y scheme.
+if(JASP_VERSION_MSIX_PATCH_POSTFIX MATCHES "^[1-9][0-9]*$")
+  math(EXPR JASP_VERSION_MSIX_PATCH "${PROJECT_VERSION_PATCH} * 10 + ${JASP_VERSION_MSIX_PATCH_POSTFIX}")
+else()
+  set(JASP_VERSION_MSIX_PATCH ${PROJECT_VERSION_PATCH})
+endif()
 
 set(MSIX_STORE_PUBLISHER
     "CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
