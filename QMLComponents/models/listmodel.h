@@ -110,28 +110,40 @@ public:
 			Terms					checkTermsTypes(const Terms& terms)								const;
 			Terms					checkTermsTypes(const std::vector<Term>& terms)					const;
 			void					checkTermsTypes();
-			///< mds-plan D2.5 (host-switch propagation, typed half): move the typed filterId of the
-			///  terms this model holds to the selection the list resolves through RIGHT NOW
-			///  (_currentSelectionFilterId, C13 host-bound) - names and types are untouched, only
-			///  the typed provenance moves, exactly like the .meta restamp moves the stamped one.
-			///  ownership (mds-plan D3.5): a term is restamped only when the host OWNS it -
-			///  filterId equals the host's OLD filter id (previously moved with this host) or -1
-			///  (never qualified). Terms carrying a foreign filterId (a typed bindTo copy from
-			///  another host, mds-plan D6.2) own their stamp and keep it: the generated sidecar
-			///  hands them to the engine per term (D3.3), so clobbering would silently re-route
-			///  their data. Called by HostFilterSelection on every control below the switching
-			///  host with the filter the host moved FROM. No signal: the display shows name+type
-			///  (unchanged, and the VariableInfo::dataSetChanged/filterChanged/refresh emissions
-			///  of the re-pointed provider already drive the data-side refresh), and the option
-			///  JSON carries no filterId (mds-plan D2.1) - emitting termsChanged here would churn
-			///  row controls and dependent lists for desktop-internal bookkeeping.
-			void					restampTermsFilterId(int oldHostFilterId);
-			///< mds-plan D3.5 owns-the-stamp rule (see restampTermsFilterId): true when a term
-			///< with `termFilterId` follows a host switch away from `oldHostFilterId`.
-			static bool			termFollowsHostRestamp(int termFilterId, int oldHostFilterId)
+			///< mds-plan post (ORIGIN-AUTHORITATIVE participation rule): a term follows a provider
+			///  update iff it is a reference into the provider that changed - its stamp equals
+			///  `filterIdToUpdate`, the filterId the affected terms CURRENTLY carry (the old
+			///  selection id on a host switch, the unchanged selection id on a data change, -1
+			///  for a hostless/default-provider pool). Plain equality, no special cases: a -1
+			///  term participates exactly when the key is -1 (a hostless pool's update - the
+			///  default provider IS that pool's provider, and the replacement it delivers is
+			///  -1-stamped too, so -1 terms never change identity through this); on a qualified
+			///  update a -1 term is a reference into the provider WITHOUT host selection, which
+			///  resolves at use time through the C13 chain and is governed by THAT provider, so
+			///  it is never touched here. A foreign stamp (a typed copy picked/bound through
+			///  another pool, mds-plan D6.2) belongs to that other provider and keeps its
+			///  provenance.
+			static bool			termFollowsProviderChange(int termFilterId, int filterIdToUpdate)
 			{
-				return termFilterId == -1 || termFilterId == oldHostFilterId;
+				return termFilterId == filterIdToUpdate;
 			}
+			///< mds-plan post: ONE reconcile routine for a provider update (the signal-driven
+			///  successor of the deleted restamp walk, HostFilterSelection::restampValuesUnderHost
+			///  / restampTermsFilterId). `filterIdToUpdate` is the participation key (see
+			///  termFollowsProviderChange); `newUniverse` is the pool's rebuilt universe, whose
+			///  terms are birth-stamped by the pool (FIX 1). A participating term whose NAME the
+			///  universe still serves (NAME-ONLY comparison - the provenance pre-selection
+			///  already happened via the key, so the value-only lookup is deliberate) is
+			///  REPLACED BY the delivered universe term - stamp and fresh type ride the
+			///  replacement, never an in-place re-point (the same identity-change class as a
+			///  rename, so the row maps re-key exactly like the rename flow,
+			///  ListModelTermsAssigned::changeTerm); a vanished name is collected into the
+			///  returned Terms for the caller to remove with its own family machinery. Emits
+			///  dataChanged for the replaced rows (which folds into termsChanged ->
+			///  usedVariablesChanged), so the update is never silent.
+			///  Virtual: the multi-column and interaction families reconcile their own shapes (the
+			///  tuples / the components), the base version is the single-column rule.
+			virtual Terms		reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse);
 			///< Introspection (QML tests, mds-plan D2.5): "name@filterId" per model term - the
 			///< typed proof that a host switch restamped exactly the controls of the host that
 			///< moved. Empty filterId part (-1) means unqualified (no explicit host).
@@ -171,6 +183,9 @@ public slots:
 			void dataChangedHandler(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 
 protected:
+			///< The one init write path; protected like the other _-helpers below (subclasses and
+			///  test harnesses seed models without the listView-dependent source connecting).
+			void	_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool initRowControls = true);
 			void	_setTerms(const Terms& terms);
 			void	_setTerms(const Terms& terms, const Terms& parentTerms);
 			void	_removeTerms(const Terms& terms);
@@ -196,7 +211,6 @@ protected:
 			QStringList						_columnsUsedForLabels;
 
 private:
-			void	_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool initRowControls = true);
 			void	_connectSourceControls(SourceItem* sourceItem);
 
 			JASPListControl*				_listView = nullptr;

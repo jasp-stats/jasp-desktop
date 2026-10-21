@@ -160,76 +160,29 @@ void HostFilterSelection::applyFilter(Filter * filter)
 	if (newId == _selectedFilterId && filter == _selectedFilter)
 		return;
 
-	//mds-plan D3.5 owns-the-stamp: the walk needs the filter this host is moving AWAY from -
-	//only terms carrying that id (or -1) follow the new selection, foreign-stamped terms keep.
-	const int oldId = _selectedFilterId;
-
+	//mds-plan post (ORIGIN-AUTHORITATIVE): the host only re-points its provider here - it owns
+	//NO stamps and moves none. The term provenance of everything served by this selection
+	//follows through the ONE signal-driven flow: setProvider() (below) makes the host's
+	//VariableInfo emit dataSetChanged, the pools fed by this host re-diff their universe in
+	//ListModelTermsAvailable::sourceTermsReset and report the participation key (the filterId
+	//the affected terms currently carry) through availableTermsReset, and the assigned models
+	//reconcile their references with it (ListModel::reconcileProviderChange): survivors are
+	//replaced by the delivered universe terms, vanished names die, foreign stamps and -1 terms
+	//are other providers' references and stay.
 	_selectedFilter   = filter;
 	_selectedFilterId = newId;
 
 	if (_ownVarInfo)
 		_ownVarInfo->setProvider(filter ? filter : currentFallbackFilter());
 
-	//The provider is live from here on: move the provenance stamps of the column values served
-	//by this selection onto the new filter BEFORE anybody downstream reads the options again.
-	restampValuesUnderHost(oldId);
-
 	emit selectedFilterIdChanged();
 
 	//mds-plan C10/D2.4: the analysis-wide provider view (AnalysisBase : VariableInfoProvider)
-	//aggregates over exactly this - tell it the namespace moved, AFTER the restamp walk so it
-	//re-reads a settled state. Covers hosts with nothing bound yet too, where the walk emits no
-	//setBoundValue and the (absent) dropdown has no option to write.
+	//aggregates over exactly this - tell it the namespace moved, AFTER the provider re-point so
+	//it re-reads a settled state. Covers hosts with nothing bound yet too, where no dropdown has
+	//an option to write.
 	if (AnalysisForm * form = _host->form())
 		form->notifySelectionHostFilterChanged(_host);
-}
-
-//mds-plan D3.4: THE typed walk - the mirror's `.meta` restamp half retired with the mirror
-//(provenance is generated per send into the `.filterIds` sidecar, so there is nothing stored to
-//move). The typed filterId of every term under this host (ListModel::restampTermsFilterId,
-//mds-plan C9) is what the generated sidecar reads, so moving the term ids IS moving the
-//provenance. A same-dataset switch rewrites no value at all - the encoded column names stay
-//valid - so without this the abandoned filter would keep a term id (and the engine a phantom
-//slice, and referencedDataSets()/dataSpec()/RPC dataSetIds an over-reported dataset, mds-plan
-//C3/M5) while the live one had none. Values are not touched; only the terms' filterId moves.
-//mds-plan D3.5 (owns-the-stamp, the D2.6 NOTE item-1 rule for bindTo-copied terms): the typed
-//half re-stamps only terms the host OWNS - those carrying `oldHostFilterId` (this host's previous
-//filter) or -1 (never qualified). A term with a FOREIGN filterId (a typed copy from another
-//host's selection, mds-plan D6.2) keeps its own provenance: the generator emits its own id per
-//position, the engine resolves that filter's view - silently restamping it onto this host would
-//re-route the term's data.
-void HostFilterSelection::restampValuesUnderHost(int oldHostFilterId)
-{
-	AnalysisForm * form = _host->form();
-	AnalysisBase * analysis = form ? form->analysisObj() : nullptr;
-
-	if(!analysis || !analysis->multiDataSetAware())
-		return;
-
-	//Exactly the LISTS whose variables resolve through THIS host (mds-plan D4.2: local relation
-	//resolution replaced the walk): a nested host serves its own subtree, and the resolution
-	//follows `source` (and the related available list, mds-plan C10) too, so a list fed from
-	//below this host - even one visually parked in another form - is restamped where its names
-	//actually come from. The host itself is included (mds-plan D2.2): a list host's own bound
-	//terms resolve through its own selection - for the hosts that were never bound (VariablesForm)
-	//this made no difference, for TextArea it re-stamps the same filter the value already had.
-	//(Only list controls can resolve to a host at all, and only their models carry term
-	//provenance, so the cast is part of the filter, not a narrowing of the control set.)
-	const QList<JASPControl *> controls = form->findChildren<JASPControl *>();
-
-	for(JASPControl * control : controls)
-	{
-		JASPListControl * list = qobject_cast<JASPListControl *>(control);
-
-		if(!list || list->resolvedSelectionHost() != _host)
-			continue;
-
-		//Typed (mds-plan D2.5): EVERY list below the host carries term provenance, bound
-		//or not - an unbound list's terms are just as much "the host's namespace" as a bound
-		//one's, and ListModel::restampTermsFilterId re-resolves the filter live.
-		if(ListModel * m = list->model())
-			m->restampTermsFilterId(oldHostFilterId);
-	}
 }
 
 Filter * HostFilterSelection::currentFallbackFilter() const

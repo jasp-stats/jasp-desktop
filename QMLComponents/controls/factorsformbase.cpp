@@ -19,6 +19,8 @@
 #include "factorsformbase.h"
 #include "qutils.h"
 #include "variableslistbase.h"
+#include "variableinfo.h"
+#include "filter.h"
 #include "log.h"
 
 using namespace std;
@@ -252,8 +254,6 @@ Json::Value FactorsFormBase::createFilterIds() const
 	if (!encodeValue() || !_factorsModel)
 		return Json::nullValue;
 
-	const int hostId = generatedHostFilterId();
-
 	Json::Value perFactor(Json::arrayValue);
 	bool		any		= false;
 
@@ -262,6 +262,27 @@ Json::Value FactorsFormBase::createFilterIds() const
 		//createEngineValue's own source choice, mirrored exactly: a factor with an instantiated
 		//panel reads the panel's model (the live typed terms), a never-rendered one its initTerms.
 		const Terms& terms = factor.listView ? factor.listView->model()->terms() : factor.initTerms;
+
+		//mds-plan post (origin-authoritative, found by the zoo): a panel term that arrives without
+		//an origin is resolved at use time through THAT PANEL LIST's own C13 chain
+		//(JASPControl::resolvedVarInfo: its selection host, else its source/available chain, else
+		//the analysis-level endpoint) - NOT through this FactorsForm's: the form is a container
+		//whose own chain does not traverse into the per-factor panels, so the form-level fallback
+		//resolves a source-fed panel's bare terms at the analysis level (the zoo's
+		//factors-over-assigned-source form stamped them with the analysis filter and the engine
+		//refused the raw token). Never-rendered factors have no list, so they keep the form-level
+		//fallback exactly as before.
+		const int hostId = [&]()
+		{
+			if (factor.listView)
+			{
+				VariableInfo * varInfo = factor.listView->resolvedVarInfo();
+				Filter * stampFilter = varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
+				if (stampFilter && stampFilter->data())
+					return stampFilter->id();
+			}
+			return generatedHostFilterId();
+		}();
 
 		Json::Value ids(Json::arrayValue);
 

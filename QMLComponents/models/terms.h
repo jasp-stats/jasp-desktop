@@ -107,6 +107,12 @@ public:
 	bool discardWhatDoesContainTheseComponents(		const Terms &terms);
 	bool discardWhatDoesNotContainTheseComponents(	const Terms &terms);
 	bool discardWhatDoesContainTheseTerms(			const Terms &terms);
+	///< The NAME-based set partition ("keep only the entries whose value is in `terms`"), used by
+	///  the row-level sync flows (ListModelMultiTermsAssigned::initTerms,
+	///  ListModelInteractionAssigned::availableTermsResetHandler) where the question is pure set
+	///  membership: stamps take no part here, and so does provider provenance - the ORIGIN-
+	///  AUTHORITATIVE staleness/prune logic lives in the pool and the diff
+	///  (ListModelTermsAvailable), not in Terms.
 	bool discardWhatIsntTheseTerms(					const Terms &terms, Terms *discarded = nullptr);
 
 	QSet<int> replaceVariableName(const std::string & oldName, const std::string & newName);

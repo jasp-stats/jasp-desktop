@@ -36,10 +36,22 @@ public:
 	void			removeTerms(const QList<int> &indices)											override;
 		
 public slots:
-	void			availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)				override;
+	void			availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove, int filterIdToUpdate)			override;
 	
 protected:
 	void			_removeTerms(const Terms & termsToRemove);
+	///< mds-plan post (ORIGIN-AUTHORITATIVE): the component version of the reconcile -
+	///  interaction terms are multi-component references (their stamp was settled from the
+	///  components' stamps, Terms::crossCombinations/ffCombinations), so "the provider still
+	///  serves this reference" means EVERY component is still in the delivered universe (the
+	///  same staleness rule _removeTerms applies through
+	///  discardWhatDoesNotContainTheseComponents). A survivor's stamp is re-settled from the
+	///  delivered universe terms of its components (the same carry/settle rule that created
+	///  the interaction - there is no universe term of the interaction itself to be replaced
+	///  by); value, components and per-component types are unchanged (column type changes flow
+	///  through their own signal path). Vanished interactions are returned for the row
+	///  machinery.
+	Terms			reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)			override;
 
 	VariablesListBase* _variablesList = nullptr;
 

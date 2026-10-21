@@ -36,7 +36,7 @@
 #include "databridge.h"
 #include "rbridge.h"
 #include "analysisbase.h"
-#include "models/listmodel.h"	//mds-plan D3.5: ListModel::termFollowsHostRestamp (owns-the-stamp rule)
+#include "models/listmodel.h"	//mds-plan post: the provider-update participation rule + reconcile
 #include "analysisform.h"
 #include "controls/jaspcontrol.h"
 #include "rsyntax/formulaparser.h"	//mds-plan D8.2: emission + re-parse roundtrip
@@ -3549,34 +3549,91 @@ void TestAll::testPreAttachOptionsParkAndAreNeverReadForBehaviour()
 	QCOMPARE(analysis.referencedDataSets().size(), size_t{0});
 }
 
-void TestAll::testRestampOwnershipRuleKeepsForeignStamps()
+//mds-plan post (ORIGIN-AUTHORITATIVE): the participation rule of the signal-driven provider
+//update (ListModel::reconcileProviderChange, the successor of the deleted restamp walk): a
+//term follows iff its stamp equals the pool's reported participation key - the filterId the
+//affected terms currently carry (the old selection id on a host switch, the unchanged
+//selection id on a data change, -1 for a hostless pool). -1 terms are governed by the
+//provider WITHOUT host selection: they participate exactly when the key is -1 (a hostless
+//pool's update, whose delivered universe is -1-stamped too, so their identity never changes
+//through this) and never on a qualified update. Foreign-stamped terms (a typed copy from
+//another pool's selection, mds-plan D6.2) keep their provenance.
+//The behaviour half runs ONE reconcile on a bare model: the pool's rebuilt universe is
+//delivered birth-stamped, survivors are REPLACED BY the delivered term (stamp rides the
+//replacement, never an in-place re-point), vanished names die, everything else stays.
+void TestAll::testProviderUpdateParticipationKeepsForeignStamps()
 {
-	//mds-plan D3.5 owns-the-stamp (the D2.6 NOTE item-1 rule for bindTo-copied terms): a host
-	//switch moves only the terms it OWNS - never-qualified (-1) or carrying ITS OLD filter id.
-	//Foreign-stamped terms (a typed copy from another host's selection, mds-plan D6.2) keep their
-	//provenance. Pre-flip the walk restamped everything, harmless while no behaviour read the
-	//typed id; since D3.3 the generated sidecar feeds the engine per term, so a clobbering
-	//restamp would silently re-route a copied term's data. (The walk plumbing - applyFilter
-	//passes the old id - is pinned by the existing mid-session switch tests; the E2E copy case
-	//arrives with D6.2.)
-	QVERIFY(ListModel::termFollowsHostRestamp(-1, 11));		//never qualified: joins the host
-	QVERIFY(ListModel::termFollowsHostRestamp(11, 11));		//owned (the host's previous filter): follows
-	QVERIFY(!ListModel::termFollowsHostRestamp(12, 11));		//foreign stamp: keeps its own
-	QVERIFY(!ListModel::termFollowsHostRestamp(12, -1));	//first selection onto an empty host: foreign stays foreign
-	QVERIFY(ListModel::termFollowsHostRestamp(-1, -1));		//hostless collapse stays consistent
+	QVERIFY(ListModel::termFollowsProviderChange(11, 11));	//owned (the key names this provider): follows
+	QVERIFY(!ListModel::termFollowsProviderChange(12, 11));	//foreign stamp: keeps its own
+	QVERIFY(!ListModel::termFollowsProviderChange(-1, 11));	//unqualified: governed by the C13 chain, never by a host switch
+	QVERIFY(!ListModel::termFollowsProviderChange(12, -1));	//qualified term under a hostless pool's update: foreign stays foreign
+	QVERIFY(ListModel::termFollowsProviderChange(-1, -1));	//hostless pool's update: the default provider's own references
 
-	//Behaviour through Terms, the way ListModel::restampTermsFilterId applies the rule:
-	Term owned(tq("x"), columnType::scale);		owned.setFilterId(11);
-	Term foreign(tq("y"), columnType::scale);	foreign.setFilterId(12);
-	Term fresh(tq("z"), columnType::scale);
+	//Minimal harness: no listView (the reconcile and this seed path touch none of the
+	//listView-dependent machinery; unknown-typed terms keep _setAllowedType from
+	//dereferencing it) and no sources (_initTerms's initRowControls=false skips the connect).
+	class ReconcileTestModel : public ListModel
+	{
+	public:
+		ReconcileTestModel() : ListModel(nullptr) {}
+		void seedTerms(const Terms& terms) { _initTerms(terms, Terms::RelatedValuesPerTerm(), false); }
+	};
 
-	for (Term * term : { &owned, &foreign, &fresh })
-		if (ListModel::termFollowsHostRestamp(term->filterId(), 11))
-			term->setFilterId(13);				//the host moved 11 -> 13
+	Terms universe;	//the pool's rebuilt universe, delivered birth-stamped: x is served through 13 now
+	Term delivered(tq("x"));
+	delivered.setFilterId(13);
+	universe.add(delivered);
 
-	QCOMPARE(owned.filterId(),  13);			//followed its host
-	QCOMPARE(foreign.filterId(), 12);			//kept its own provenance (would encode via filter 12's view)
-	QCOMPARE(fresh.filterId(),  13);			//unqualified intake joins the host
+	ReconcileTestModel model;
+	Terms seeded;
+	Term owned(tq("x"));		owned.setFilterId(11);
+	Term foreign(tq("y"));		foreign.setFilterId(12);
+	Term fresh(tq("z"));						//unqualified intake
+	seeded.add(owned);
+	seeded.add(foreign);
+	seeded.add(fresh);
+	model.seedTerms(seeded);
+
+	Terms vanished = model.reconcileProviderChange(11, universe);	//the provider moved 11 -> 13 and still serves x
+
+	QCOMPARE(vanished.size(), size_t{0});
+	const Terms &after = model.terms();
+	QCOMPARE(after.size(), size_t{3});
+	QCOMPARE(after.at(0).value(),		tq("x"));
+	QCOMPARE(after.at(0).filterId(),	13);	//followed its provider - by REPLACEMENT (the delivered term's stamp)
+	QCOMPARE(after.at(1).value(),		tq("y"));
+	QCOMPARE(after.at(1).filterId(),	12);	//kept its own provenance (would encode via filter 12's view)
+	QCOMPARE(after.at(2).value(),		tq("z"));
+	QCOMPARE(after.at(2).filterId(),	-1);	//unqualified intake stays -1 (governed by the C13 chain, never re-pointed)
+
+	//And a name the provider dropped dies: x is gone from the delivered universe, so the
+	//owned reference x@11 is returned as vanished (the caller removes it with its family
+	//machinery - the reconcile itself only reports). The foreign y@12 keeps its provenance
+	//even though THIS universe has no y either: its own provider may still serve it.
+	Terms universeWithoutThem;
+	Term unrelated(tq("w"));
+	unrelated.setFilterId(13);
+	universeWithoutThem.add(unrelated);
+
+	ReconcileTestModel model2;
+	Terms seeded2;
+	Term ownedX(tq("x"));		ownedX.setFilterId(11);
+	Term foreignY(tq("y"));		foreignY.setFilterId(12);
+	seeded2.add(ownedX);
+	seeded2.add(foreignY);
+	model2.seedTerms(seeded2);
+
+	Terms vanished2 = model2.reconcileProviderChange(11, universeWithoutThem);	//the provider dropped x
+
+	QCOMPARE(vanished2.size(), size_t{1});		//x@11 died with its provider
+	QCOMPARE(vanished2.at(0).value(),	tq("x"));
+	QCOMPARE(vanished2.at(0).filterId(), 11);
+	const Terms &after2 = model2.terms();
+	QCOMPARE(after2.size(), size_t{2});			//the removal is the caller's job; the model still holds both until then
+	QCOMPARE(after2.at(0).value(),		tq("x"));
+	QCOMPARE(after2.at(0).filterId(),	11);	//vanished: reported, not silently rewritten
+	QCOMPARE(after2.at(1).value(),		tq("y"));
+	QCOMPARE(after2.at(1).filterId(),	12);	//foreign stamp survives a vanished name - its provider may still serve it
 }
 
 //mds-plan D5.1: THE Storage file format. Every term family serializes its terms as clean typed

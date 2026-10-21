@@ -480,7 +480,7 @@ Item
 
 		function test_storage_shape_is_clean_typed_state()
 		{
-			_bindAwareForm()
+			const sel = _bindAwareForm()
 			wait(100)
 
 			const engine	= generatedOf(false)
@@ -491,16 +491,20 @@ Item
 			verify(storage.depA.types === undefined, "no outer positional types in Storage (per-term since D5.1)")
 			verify(storage.depA.filterIds === undefined, "the D5.1-preview positional filterIds member is gone")
 
-			// D5.1 final: per-term {name, filterId?, types} - the same provenance the Engine
-			// sidecar carries positionally, now inline in the term (against the LIVE host, like
-			// every provenance assertion in this file):
+			// D5.1 final: per-term {name, filterId?, types}. mds-plan post (ORIGIN-AUTHORITATIVE):
+			// a bare bind is UNQUALIFIED - a bind is not an origin - so Storage honestly omits the
+			// member, and the Engine sidecar serves the provenance PER SEND off the C13 chain
+			// (against the LIVE host, like every provenance assertion in this file):
 			compare(storage.depA.value.length, 1)
 			verify(storage.depA.value[0].name === "TestInts", "term value lives inside the per-term object")
-			compare(storage.depA.value[0].filterId, sidecarAt(engine[".filterIds"], "depA")[0],
-				"Storage terms keep the same provenance the Engine sidecar carries")
+			verify(storage.depA.value[0].filterId === undefined,
+				"a bare bind stays unqualified in Storage (stamps are born at origins only, never at intake)")
+			compare(sidecarAt(engine[".filterIds"], "depA")[0], sel.fA,
+				"the Engine sidecar backfills the resolved host per send (C13 chain)")
 			verify(Array.isArray(storage.depA.value[0].types), "types ride per term")
-			compare(storage.fixedB.value[0].filterId, sidecarAt(engine[".filterIds"], "fixedB")[0],
-				"the second host's list carries ITS host id inline too")
+			verify(storage.fixedB.value[0].filterId === undefined, "the second host's bare bind likewise stays unqualified in Storage")
+			compare(sidecarAt(engine[".filterIds"], "fixedB")[0], sel.fB,
+				"and ITS sidecar backfills its own host id per send")
 
 			// unqualified ⟹ member omitted, never null:
 			verify(storage.aloneA.value.length === 1 && storage.aloneA.value[0].filterId === undefined,
@@ -562,6 +566,7 @@ Item
 			compare(JSON.stringify(engine.depA.value), JSON.stringify(["TestInts", "TestInts"]), "Engine values stay bare and aligned")
 			const ids		= engine[".filterIds"].depA
 			compare(ids.length, 2, "the sidecar is positional over the twins")
+			compare(ids[0], sel.fA, "a STAMPED term's sidecar entry is its own id (Storage == sidecar for stamped terms)")
 			verify(ids[0] !== ids[1], "the twin distinction survives on the frozen wire")
 		}
 		function test_wrapper_generation_uses_the_selection_title_surface()

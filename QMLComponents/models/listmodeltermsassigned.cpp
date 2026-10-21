@@ -39,8 +39,25 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const Terms::RelatedV
 		availableModel()->removeTermsInAssignedList();
 }
 
-void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
+void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved, int filterIdToUpdate)
 {
+	//mds-plan post (ORIGIN-AUTHORITATIVE): the pool's provider moved on. References into that
+	//provider (stamp == filterIdToUpdate) reconcile here - survivors are REPLACED BY the
+	//delivered universe terms (the row maps re-key rename-flow style inside
+	//reconcileProviderChange), vanished names die - while foreign stamps and -1 terms are
+	//other providers' references and never move. The vanished ones are removed with the same
+	//machinery the pool's own removals use.
+	Terms vanished;
+	if (availableModel())
+		vanished = reconcileProviderChange(filterIdToUpdate, availableModel()->allTerms());
+
+	if (vanished.size() > 0)
+	{
+		beginResetModel();
+		_removeTerms(vanished);
+		endResetModel();
+	}
+
 	if (termsAdded.size() > 0 && listView()->addAvailableVariablesToAssigned())
 	{
 		beginResetModel();

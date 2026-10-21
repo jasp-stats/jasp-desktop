@@ -98,10 +98,99 @@ void ListModelInteractionAssigned::_removeTerms(const Terms & termsToRemove)
 }
 
 
-void ListModelInteractionAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
+Terms ListModelInteractionAssigned::reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)
+{
+	//mds-plan post (ORIGIN-AUTHORITATIVE): the component version of the reconcile - see the
+	//header comment. Participation is exactly the base rule (termFollowsProviderChange); the
+	//survivor test is ALL-components-in-the-universe (name-only lookups - the provenance
+	//pre-selection already happened via the key), the same staleness rule _removeTerms applies.
+	//The reconciled list is written back through the family's own _setTerms path (_terms is
+	//the base' private member); the re-keyed row identities make setUpRowControls keep the
+	//touched rows' controls and values.
+	Terms	vanished,
+			reconciled	= terms();
+	QList<int> replacedRows;
+	bool changed = false;
+
+	int row = 0;
+	for (Term & term : reconciled)
+	{
+		if (termFollowsProviderChange(term.filterId(), filterIdToUpdate))
+		{
+			bool allComponentsSurvive = !term.value().isEmpty();
+			for (const QString& component : term.components())
+				if (!component.isEmpty() && !newUniverse.containsValue(component))
+					allComponentsSurvive = false;
+
+			if (allComponentsSurvive)
+			{
+				//Survivor: the stamp is re-settled from the delivered universe terms of the
+				//components - the same carry/settle rule that created the interaction
+				//(Terms::crossCombinations/ffCombinations); no "new id" scalar is used, the
+				//replacement provenance rides the delivered terms.
+				int settledFilterId = -2;	//-2 = no component seen yet, -1 = mixed stamps
+				for (const QString& component : term.components())
+				{
+					if (component.isEmpty())
+						continue;
+
+					const int componentStamp = newUniverse.at(size_t(newUniverse.indexOfValue(component))).filterId();
+					if (settledFilterId == -2)					settledFilterId = componentStamp;
+					else if (settledFilterId != componentStamp)	settledFilterId = -1;
+				}
+
+				const TermRowKey oldKey = TermRowKey::ofTerm(term);
+				term.setFilterId(settledFilterId == -2 ? -1 : settledFilterId);
+
+				const TermRowKey newKey = TermRowKey::ofTerm(term);
+				if (newKey != oldKey)
+				{
+					if (_rowControlsMap.contains(oldKey))
+						_rowControlsMap.insert(newKey, _rowControlsMap.take(oldKey));
+					if (_rowControlsValues.contains(oldKey))
+						_rowControlsValues.insert(newKey, _rowControlsValues.take(oldKey));
+				}
+
+				replacedRows.append(row);
+			}
+			else
+				vanished.add(term);		//a component died: the interaction reference dies
+
+			changed = true;
+		}
+		row++;
+	}
+
+	if (changed)
+		_setTerms(reconciled);
+
+	//Not silent: dataChanged folds into termsChanged (ListModel ctor), so the bound control's
+	//consumers re-read the live state (the generated sidecar is built from the model per send).
+	for (int replacedRow : replacedRows)
+	{
+		QModelIndex modelIndex = index(replacedRow, 0);
+		emit dataChanged(modelIndex, modelIndex);
+	}
+
+	return vanished;
+}
+
+void ListModelInteractionAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved, int filterIdToUpdate)
 {
 	if (listView()->form() && !listView()->form()->initialized())
 		return;
+
+	//mds-plan post (ORIGIN-AUTHORITATIVE): the pool's provider moved on: interaction references
+	//stamped `filterIdToUpdate` reconcile at COMPONENT level (survivors re-settle their stamp
+	//from the delivered universe terms, partial or full vanishings die); foreign stamps and -1
+	//terms under a qualified provider never move. The vanished ones die through the same
+	//machinery as the pool's own removals below.
+	Terms vanished;
+	if (availableModel())
+		vanished = reconcileProviderChange(filterIdToUpdate, availableModel()->allTerms());
+
+	if (vanished.size() > 0)
+		_removeTerms(vanished);
 
 	auto getControls = [this](QVariant source) -> JASPListControls
 	{

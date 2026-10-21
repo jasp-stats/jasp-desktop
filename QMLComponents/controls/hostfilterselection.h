@@ -86,8 +86,7 @@ private slots:
 	void validateSelection();							///< C10: vanished filter -> fall back, never dangle
 
 private:
-	void   applyFilter(Filter * filter);				///< store + restamp provider + notify values below the host
-	void   restampValuesUnderHost(int oldHostFilterId);	///< move the typed term filterIds of this host's column values onto the new filter (mds-plan C3/M5, D2.5; the .meta mirror half retired with D3.4 - the generated sidecar reads the typed ids); mds-plan D3.5: only terms the host OWNS follow (filterId == oldHostFilterId or -1), foreign-stamped copies keep theirs
+	void   applyFilter(Filter * filter);				///< store + re-point provider; the term provenance below the host follows through the pool signals (mds-plan post, ORIGIN-AUTHORITATIVE)
 	Filter * currentFallbackFilter() const;				///< analysis filter, else workspace shown filter
 
 	JASPControl *				_host;

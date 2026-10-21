@@ -1068,10 +1068,10 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 			_terms.end(),
 			[&](Term& term)
 			{
-				//Name-based on purpose (mds-plan C9): this is the namespace-universe check used by
-				//ListModelTermsAvailable::removeTermsInAssignedList ("does that column still exist
-				//at all"), not an identity match - a differently stamped twin (assigned list with a
-				//selection of its own) must not be wiped from the assigned list over a stamp.
+				//Name-based on purpose (mds-plan C9): the set partition of the row-level sync
+				//flows ("is that entry still part of this other list"), where stamps take no
+				//part - the origin-authoritative staleness logic lives pool-side (see
+				//ListModelTermsAvailable::removeTermsInAssignedList), not here.
 				if (!term.value().isEmpty() && !terms.containsValue(term.value()))
 				{
 					if (discarded != nullptr)
@@ -1084,7 +1084,7 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 				return false;
 			}),
 		_terms.end()
-	);
+		);
 
 	if (changed)
 		resetValueMap();

@@ -122,22 +122,16 @@ void ListModel::_setAllowedType(Term& term) const
 		}
 	}
 
-	//mds-plan D2.1 (C9): this is the chokepoint every term passes through on its way into a list
-	//model (init/reset, drag-drop adds, type checks, formula terms) — the same place that already
-	//normalizes types. A term must know the source filter it belongs to: stamp the selection this
-	//list resolves through onto the term itself, so "the terms of a list carry the list's
-	//namespace" holds from the moment a term enters it. -1 when there is no explicit selection
-	//host (non-aware world, and freshly parsed unqualified values keep meaning exactly that).
-	//Restamping on a host SWITCH is D2.5's typed restamp; this covers construction and moves.
-	//mds-plan D5.1/D5.2 (owns-the-stamp, same rule as restampTermsFilterId from D3.5): stamp only
-	//terms that come in UNQUALIFIED. Since the Storage format carries per-term filterIds, a term
-	//loaded from a file (or typed-copied across hosts, D6.2) already knows its provenance - it
-	//must survive the bind: a stale or foreign id degrades on the engine side (the D3.3 walk's
-	//filterById miss ⟹ C7 fallback), a restamp here would silently re-route the term's data to
-	//this host's namespace instead. Legacy parses are all -1, so released files and non-aware
-	//forms keep their exact old behaviour through this same line.
-	if (term.filterId() < 0)
-		term.setFilterId(_currentSelectionFilterId());
+	//mds-plan post (ORIGIN-AUTHORITATIVE): the D2.1 destination stamp is GONE. A term that
+	//enters a list without an origin STAYS -1 forever: -1 is not "origin-less" but a reference
+	//into the provider WITHOUT host selection, resolved at use time through this list's own C13
+	//chain (its selection host, else the analysis' own filter else the shown filter) - so the
+	//engine-side provenance of such a term follows THAT provider's changes automatically
+	//(BoundControlBase::generatedHostFilter re-reads it per send), and no list may re-route it
+	//by stamping its own namespace onto it. Stamps are born only at origins: a pool's available
+	//universe birth-stamps its fresh dataset terms with the pool's own resolution
+	//(ListModel::getSourceTerms), qualified references and Storage term objects carry theirs,
+	//and a pick/drag copies the term - origin riding along - unchanged.
 }
 
 int ListModel::_currentSelectionFilterId() const
@@ -156,28 +150,53 @@ int ListModel::_currentSelectionFilterId() const
 	return filter && filter->id() >= 0 ? filter->id() : -1;
 }
 
-void ListModel::restampTermsFilterId(int oldHostFilterId)
+Terms ListModel::reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)
 {
-	//mds-plan D2.5: the typed companion of HostFilterSelection::restampValuesUnderHost - the same
-	//control set, but writing the typed filterId (C9) instead of the .meta stamp.
-	//The filter is re-resolved live (resolvedSelectionHost() follows the current relations and
-	//the host's current filter - nothing cached, mds-plan D4.2); the terms keep name, type
-	//and components, and a list without a host collapses to -1 (unqualified) exactly like fresh
-	//intake would stamp it (ListModel::_setAllowedType).
-	//mds-plan D3.5 owns-the-stamp: only the host's OWN terms (its old id) and never-qualified
-	//terms (-1) follow the switch; foreign-stamped terms (typed copies, D6.2) keep their
-	//provenance - from the D3.3 flip the sidecar hands them to the engine per term, so a
-	//clobbering restamp would silently re-route their data.
-	const int filterId = _currentSelectionFilterId();
+	//mds-plan post: the signal-driven provider update (replaces the deleted restamp walk).
+	//Called from the assigned models' availableTermsResetHandler with the participation key
+	//their pool reported and the pool's rebuilt (birth-stamped) universe. See
+	//termFollowsProviderChange for the participation rule.
+	Terms vanished;
 
-	for(Term & term : _terms)
-		if(termFollowsHostRestamp(term.filterId(), oldHostFilterId))
-			term.setFilterId(filterId);
+	int row = 0;
+	for (Term & term : _terms)
+	{
+		if (termFollowsProviderChange(term.filterId(), filterIdToUpdate))
+		{
+			if (newUniverse.containsValue(term.value()))	//NAME-ONLY on purpose (mds-plan post): the key already pre-selected the provenance
+			{
+				//Survivor: REPLACED BY the delivered universe term - the replacement carries
+				//the provider's current stamp and fresh type, so no in-place re-point happens
+				//(and a same-name column of the new universe can never inherit a stale id).
+				//The filter part is the same identity class as the name in a rename, so the
+				//row-scoped maps re-key exactly like the rename flow does
+				//(ListModelTermsAssigned::changeTerm).
+				const TermRowKey oldKey = TermRowKey::ofTerm(term);
 
-	//Deliberately no termsChanged() (see the header): the visible columns (name, type, label)
-	//did not move, and the VariableInfo provider signals of the re-pointed host namespace already
-	//refresh the data side. The option JSON carries no filterId (D2.1), so no re-encode is due
-	//either - the .meta restamp in the same walk covers what the engine consumes.
+				term = newUniverse.at(size_t(newUniverse.indexOfValue(term.value())));
+
+				const TermRowKey newKey = TermRowKey::ofTerm(term);
+				if (newKey != oldKey)
+				{
+					if (_rowControlsMap.contains(oldKey))
+						_rowControlsMap.insert(newKey, _rowControlsMap.take(oldKey));
+					if (_rowControlsValues.contains(oldKey))
+						_rowControlsValues.insert(newKey, _rowControlsValues.take(oldKey));
+				}
+
+				//Not silent: dataChanged folds into termsChanged (ListModel ctor), so the
+				//bound control's consumers re-read the live state (the generated sidecar is
+				//built from the model per send).
+				QModelIndex modelIndex = index(row, 0);
+				emit dataChanged(modelIndex, modelIndex);
+			}
+			else
+				vanished.add(term);		//the provider dropped the column: the reference dies
+		}
+		row++;
+	}
+
+	return vanished;
 }
 
 QStringList ListModel::termProvenanceForTest() const
@@ -259,7 +278,30 @@ Terms ListModel::getSourceTerms()
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
 		_connectSourceControls(sourceItem);
-		termsAvailable.add(terms);
+
+		//mds-plan post (ORIGIN-AUTHORITATIVE, FIX 1): a pool's dataset universe is born HERE.
+		//Fresh dataset columns carry no origin yet, so they take the stamp of the resolution
+		//THIS pool serves them through (_currentSelectionFilterId: the pool's own selection
+		//host, else its source chain, else -1 = the default provider) - that stamp IS origin
+		//(a) of the corrected model: picking/dragging the term out of the pool copies it, so
+		//the pick carries the pool's origin with it. Terms arriving from a source LIST are
+		//mirrored references that already carry their own origin and are never touched; a
+		//hostless pool's resolution is -1, so the non-aware world stays all-(-1) byte-identical.
+		if (sourceItem->isAnalysisDataSet())
+		{
+			const int birthStamp = _currentSelectionFilterId();
+			Terms stamped;
+			for (const Term & term : terms)
+			{
+				Term birth(term);
+				if (birth.filterId() < 0)
+					birth.setFilterId(birthStamp);
+				stamped.add(birth);
+			}
+			termsAvailable.add(stamped);
+		}
+		else
+			termsAvailable.add(terms);
 	});
 	
 	return termsAvailable;

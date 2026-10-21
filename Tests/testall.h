@@ -159,7 +159,7 @@ private slots:
 	void	testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder();
 	void	testPlaceOptionFilterIdsCollisionDemotion();
 	void	testPreAttachOptionsParkAndAreNeverReadForBehaviour();
-	void	testRestampOwnershipRuleKeepsForeignStamps();
+	void	testProviderUpdateParticipationKeepsForeignStamps();
 
 	// mds-plan post (the FactorsForm deferral closed): per-factor provenance transport. The
 	// factors option's sidecar is an array-of-arrays (element i = factor i's per-term array,

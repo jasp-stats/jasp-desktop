@@ -34,7 +34,13 @@ public:
 	ListModelTermsAvailable*		availableModel() const													{ return _availableModel; }
 
 public slots:
-	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)				{}
+	///< mds-plan post (ORIGIN-AUTHORITATIVE): the pool's update (added/removed diff plus the
+	///  participation key `filterIdToUpdate` - the filterId the affected terms currently
+	///  carry). Every family reconciles its references into the changed provider here: terms
+	///  stamped `filterIdToUpdate` follow (survivors are REPLACED BY the delivered universe
+	///  term, vanished names die), foreign stamps and -1 terms under a qualified provider are
+	///  other providers' references and never move - see ListModel::termFollowsProviderChange.
+	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved, int filterIdToUpdate)	{}
 			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)		override;
 			bool sourceLabelsReordered(QString columnName)											override;
 

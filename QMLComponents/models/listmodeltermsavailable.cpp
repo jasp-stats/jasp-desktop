@@ -121,14 +121,30 @@ void ListModelTermsAvailable::sourceTermsReset()
 	if (listView()->addEmptyValue())
 		newTerms.add(Term("", listView()->placeholderText(), ""));
 
+	//getSourceTerms birth-stamps fresh dataset terms with this pool's CURRENT resolution
+	//(mds-plan post FIX 1); mirrored list-sources keep their own origins.
 	newTerms.add(getSourceTerms());
 
+	//mds-plan post (ORIGIN-AUTHORITATIVE): the PARTICIPATION KEY this rebuild reports - the
+	//filterId the affected terms currently carry: the previous universe's birth stamp (the old
+	//selection id on a host switch, the unchanged selection id on a data change, -1 for a
+	//hostless pool). No "new id" is reported: the rebuilt universe terms carry their own fresh
+	//stamps and the replacements ride THEM (a derived pool with mixed sources has no single one).
+	const int filterIdToUpdate = _universeFilterId;
+
+	//The diff is NAME-based on purpose: a column that survives a provider re-point (the owner's
+	//ColA case - pool A moves to a filter that still serves ColA) is a SURVIVOR whose reference
+	//gets replaced by the delivered universe term; only vanished names are removals. A strict
+	//identity diff here would turn every survivor into a remove+re-add and tear the assigned
+	//row (position + row children) apart. Removed entries keep the stamp they were selected
+	//through, so the identity removal downstream hits exactly the references into the old
+	//provider.
 	for (const Term& term : _allTerms)
-		if (!newTerms.containsValue(term))
+		if (!term.value().isEmpty() && !newTerms.containsValue(term.value()))
 			removedTerms.add(term);
 
 	for (const Term& term : newTerms)
-		if (!_allTerms.containsValue(term))
+		if (!term.value().isEmpty() && !_allTerms.containsValue(term.value()))
 			addedTerms.add(term);
 
 	if (oldTerms != newTerms)
@@ -137,9 +153,17 @@ void ListModelTermsAvailable::sourceTermsReset()
 		_connectAllSourcesControls();
 	}
 
+	//Only NOW does the pool's tracked key move to the new resolution: the prune inside
+	//initTerms (and any nested flow) had to see the provider the affected references point
+	//INTO, i.e. the old id - answering the new id there would be exactly backwards.
+	_universeFilterId = _currentSelectionFilterId();
 
-	if (addedTerms.size() > 0 || removedTerms.size() > 0)
-		emit availableTermsReset(addedTerms, removedTerms);
+	//The assigned models reconcile on the update (availableTermsReset): survivors are replaced
+	//by the delivered universe terms, vanished names die, foreign stamps and -1 terms under a
+	//qualified provider are untouched. Emitted even when the column set did not change - a pure
+	//selection move moves only the stamps.
+	if (addedTerms.size() > 0 || removedTerms.size() > 0 || filterIdToUpdate != _universeFilterId)
+		emit availableTermsReset(addedTerms, removedTerms, filterIdToUpdate);
 }
 
 void ListModelTermsAvailable::sourceVariableNamesChanged(QMap<QString, QString> map)
@@ -223,11 +247,33 @@ void ListModelTermsAvailable::removeTermsInAssignedList()
 	Terms	oldTerms = terms(),
 			newTerms = _allSortedTerms;
 
+	//mds-plan post (ORIGIN-AUTHORITATIVE prune, participation first-class - no provider id is
+	//passed around, and this is NOT the pool's NEW resolution, which would answer backwards):
+	//the participation key is this pool's own tracked `_universeFilterId`, the filterId the
+	//terms of the current universe carry (the pool's selection at its last rebuild, -1 for a
+	//hostless pool). Only references INTO that provider can be stale here - a name the universe
+	//no longer serves. Foreign-stamped terms point into other providers (they resolve through
+	//their own filter's view) and -1 terms under a qualified provider resolve at use time
+	//through the C13 chain: neither is ever touched by this prune - a stale one of those
+	//degrades on the engine side instead (Common/columnencoder.cpp refuses to queue a column
+	//the resolved namespace lacks). The exclusion below stays strict IDENTITY (Term equality
+	//includes the stamp): only the very same reference is hidden from the pool, so a same-name
+	//term of another origin stays visible - the upstream "assigned names hidden from the pool"
+	//semantics is the all-(-1)-hostless special case of this rule.
 	for (ListModelAssignedInterface* modelAssign : assignedModels())
 	{
 		Terms assignedTerms = modelAssign->terms();
-		if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
-            modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
+		Terms stale;
+
+		for (const Term& term : assignedTerms)
+			if (ListModel::termFollowsProviderChange(term.filterId(), _universeFilterId) && !term.value().isEmpty() && !_allSortedTerms.containsValue(term.value()))
+				stale.add(term);
+
+		if (stale.size() > 0)
+		{
+			assignedTerms.remove(stale);
+			modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
+		}
 		newTerms.remove(assignedTerms);
 	}
 
