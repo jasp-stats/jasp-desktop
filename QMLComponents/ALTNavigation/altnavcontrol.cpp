@@ -164,7 +164,8 @@ void ALTNavControl::setCurrentNode(ALTNavScope *scope)
 {
 	_currentNode->setChildrenActive(false);
 	scope->setChildrenActive(_altNavActive);
-	scope->setChildrenPrefix();
+	if (_altNavActive)
+		scope->setChildrenPrefix();
 	_currentNode = scope;
 }
 
