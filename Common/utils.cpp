@@ -43,26 +43,28 @@ using namespace std;
 
 Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 {
-
-	size_t lastPoint = path.find_last_of('.');
-	FileType filetype =  lastPoint == string::npos ?  FileType::empty : FileType::unknown;
-
-	if (lastPoint != string::npos && (lastPoint + 1) < path.length())
+	// If a directory name contains a dot (e.g., `/home/my.data/file`), then `data/file` will be treated as the suffix.
+	const size_t sep		= path.find_last_of("/\\");
+	const size_t nameStart	= sep == std::string::npos ? 0 : sep + 1;
+	const size_t lastPoint	= path.find_last_of('.');
+	
+	// if a extension：has no '.'、'.' or a hide file（such ".bashrc"
+	if (lastPoint == std::string::npos || lastPoint < nameStart || lastPoint == nameStart)
+	return FileType::empty;
+	
+	// extension all to lower case ASCII
+	std::string suffix = path.substr(lastPoint + 1);
+	std::transform(suffix.begin(), suffix.end(), suffix.begin(), 
+										[](unsigned char c){ return std::tolower(c); });
+  
+  for (int i = 0; i < int(FileType::empty); i++)
 	{
-		std::string suffix = path.substr(lastPoint + 1);
-		for (int i = 0; i < int(FileType::empty); i++)
-		{
-			FileType it = static_cast<FileType>(i);
-			if (suffix == FileTypeBaseToString(it))
-			{
-				filetype = it;
-				break;
-			}
-		}
+		FileType it = static_cast<FileType>(i);
+		if (suffix == FileTypeBaseToString(it))
+		return it;
 	}
-
-
-	return filetype;
+	
+	return FileType::unknown;
 }
 
 const string &Utils::currentDateTime()
