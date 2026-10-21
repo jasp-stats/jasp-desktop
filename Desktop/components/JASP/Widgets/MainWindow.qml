@@ -364,13 +364,16 @@ Window
 		z:					99
 		visible:			preferencesModel.aiEnabled
 		// How many welcome-page footer rows stack below this corner:
-		// "Visit the website" and "Ask a question" (both need external
-		// links allowed — or a PRO build — and the question link also a
-		// non-empty questionsUrl), plus "Enterprise Support" in community
-		// builds. Drives the bottom clearance below.
-		property int footerRows:	((mainWindow.externalLinksEnabled || PRO) ? 1 : 0)
-							+	(((mainWindow.externalLinksEnabled || PRO) && mainWindow.questionsUrl !== "") ? 1 : 0)
-							+	(!PRO ? 1 : 0)
+		// "Visit the website" needs a PRO build with external links allowed,
+		// "Ask a question" needs external links (or a PRO build) and also a
+		// non-empty questionsUrl), plus "Enterprise Support" — which follows
+		// the switch above and hides when its URL is blank — and the optional
+		// "How to Use" row, exempt from the switch and shown only while its
+		// URL setting is non-empty. Drives the bottom clearance below.
+		property int footerRows:	((PRO && mainWindow.externalLinksEnabled) ? 1 : 0)
+						+	(((mainWindow.externalLinksEnabled || PRO) && mainWindow.questionsUrl !== "") ? 1 : 0)
+						+	(!PRO && mainWindow.externalLinksEnabled && mainWindow.enterpriseSupportUrl !== "" ? 1 : 0)
+						+	(mainWindow.howToUseUrl !== "" ? 1 : 0)
 
 		width:				45 * preferencesModel.uiScale
 		height:				45 * preferencesModel.uiScale
@@ -389,11 +392,10 @@ Window
 			right:			parent.right
 			bottom:			parent.bottom
 			rightMargin:	jaspTheme.scrollbarBoxWidthBig + 3 * preferencesModel.uiScale
-			// 85 clears the multi-row footer of stock builds; when only one
-			// row remains (locked-down clients with empty question/contact
-			// URLs) 45 sits right above it.
+			// clears the enabled footer rows: 24 base headroom + ~21 per row
+			// (17px text + 4px gap; one row = 45, two = 66, three = 87)
 			bottomMargin:	mainWindow.welcomePageVisible
-						? (footerRows > 1 ? 85 : 45) * preferencesModel.uiScale
+						? (24 + 21 * footerRows) * preferencesModel.uiScale
 						: jaspTheme.scrollbarBoxWidthBig + 3 * preferencesModel.uiScale
 		}
 

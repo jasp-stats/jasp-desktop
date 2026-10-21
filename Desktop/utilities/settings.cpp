@@ -180,12 +180,13 @@ const Settings::Setting Settings::Values[] = {
 	// Outward-facing links and windows in community builds: the About-window
 	// links (sources, download, BibTeX, open-source components), the
 	// welcome-page community links (logo, version, request-feature,
-	// ask-a-question, website), the File-menu Contact/Community entries, the
+	// ask-a-question, website, enterprise support), the File-menu Contact/Community entries, the
 	// help-window external navigation and the translation link. Enterprise
 	// admins deactivate them (externalLinksEnabled) to keep users inside the
-	// managed deployment. JASP Services links (Enterprise Support; the PRO
-	// website/contact/question links and the PRO Contact window) are
-	// intentionally exempt so the enterprise-support channel stays reachable.
+	// managed deployment. The PRO website/contact/question links, the PRO
+	// Contact window and the optional How to Use link are intentionally
+	// exempt; How to Use hides by forcing its own URL setting (below) to ""
+	// instead of following this switch.
 	// Bound by MainWindow and the QML files above; a change needs a restart.
 	{"externalLinksEnabled",		true},
 	// Support-channel URLs — one binary, per-client configuration: community
@@ -200,6 +201,13 @@ const Settings::Setting Settings::Values[] = {
 	{"contactUrlBugs",			"https://jasp-stats.org/report-bug"},
 	{"contactUrlCrashReport",	"https://jasp-stats.org/report-bug"},
 	{"questionsUrl",				"https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"},
+	// Welcome-page footer rows: Enterprise Support follows externalLinksEnabled
+	// and additionally hides when its URL is blank; the optional How to Use link
+	// is exempt from the switch and shows only when its URL is set. howToUseUrl
+	// ships empty (hidden) so deployments opt in,
+	// e.g. "https://jasp-stats.org/how-to-use-jasp/".
+	{"enterpriseSupportUrl",		"https://www.jasp-services.com"},
+	{"howToUseUrl",					""},
 	// Company logo on the welcome page (bottom centre). Empty — the default —
 	// shows nothing. A relative path is resolved beside the executable and in
 	// its Resources/ subfolder (the MSI layer stages client logos in

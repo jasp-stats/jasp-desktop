@@ -427,6 +427,20 @@ const QString MainWindow::questionsUrl() const
 	return Settings::value(Settings::QUESTIONS_URL).toString();
 }
 
+const QString MainWindow::enterpriseSupportUrl() const
+{
+	// Settings name `enterpriseSupportUrl` — see contactUrlFeatures(). Follows
+	// externalLinksEnabled; an empty string hides the welcome-page link too.
+	return Settings::value(Settings::ENTERPRISE_SUPPORT_URL).toString();
+}
+
+const QString MainWindow::howToUseUrl() const
+{
+	// Settings name `howToUseUrl` — see contactUrlFeatures(). Exempt from
+	// externalLinksEnabled; ships empty (hidden) and deployments opt in.
+	return Settings::value(Settings::HOW_TO_USE_URL).toString();
+}
+
 QString MainWindow::companyLogoUrl() const
 {
 	// Settings name `companyLogoPath` — see contactUrlFeatures() for the tier
