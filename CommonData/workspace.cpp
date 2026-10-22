@@ -236,7 +236,7 @@ void Workspace::setShownDataSet(DataSet *dataSet)
 	//Column-name encoding/decoding (and computed-column dependency resolution) on the desktop must
 	//reflect the shown dataset. Consumers obtain a filter's namespace view via the provider
 	//(provider->columnEncoder()); we only (re)mint the shown dataset's canonical here - the blocks of
-	//all its live filter views follow automatically (mds-plan D1.4) - and never touch the
+	//all its live filter views follow automatically - and never touch the
 	//process-global current encoder (that global is only meaningful inside the engine's request context).
 	_shownDataSet->encoder().setCurrentNames(_shownDataSet->getColumnTypesMap());
 	
@@ -546,7 +546,7 @@ QVariantList Workspace::_filterDropDownList(int excludeDataSetId) const
 	return out;
 }
 
-// --- mds-plan C4/RESOLVER: the dataset-selection syntax surface, see workspace.h -------------
+// --- the dataset-selection syntax surface, see workspace.h -------------
 // Ids stay the internal wire format; these maps are how the human strings of syntax text get
 // onto the wire and back. Exact lookup only, never parsing: dataset titles may themselves
 // contain " - " (or ":"), so splitting would silently mis-resolve.
@@ -657,8 +657,8 @@ bool Workspace::resolveDataSetSelectionValue(const QString &optionName, const Js
 	return false;
 }
 
-// --- mds-plan D7.0a: the user-qualified column-reference grammar, see workspace.h ------------
-// (plan §5; the parse/render surface mirrors the selection surface above: human strings,
+// --- the user-qualified column-reference grammar, see workspace.h ------------
+// (the parse/render surface mirrors the selection surface above: human strings,
 // exact resolution against the live workspace, typed rejections with ready-to-show messages.)
 
 //The accepted type-segment spellings are THE columnType names (case-insensitive, canonical on
@@ -958,7 +958,7 @@ QualifiedRefError Workspace::resolveQualifiedColumnRef(const QualifiedColumnRef 
 	{
 		//Two-segment form "X"."Column": X is a dataset title first (its default filter), and
 		//only when no dataset is titled X is it a filter name - and then only when UNIQUE
-		//across all loaded datasets (plan §5). No clever fall-through when the title matches:
+		//across all loaded datasets. No clever fall-through when the title matches:
 		//dataset-title precedence is exact, like the selection surface above.
 		dataSet = dataSetByTitle(ref.dataSetName);
 
@@ -1030,7 +1030,7 @@ QualifiedRefError Workspace::resolveQualifiedColumnRef(const QualifiedColumnRef 
 			return QualifiedRefError::unknownTypeName;
 		}
 
-		out.type = stamped; //the type segment wins over the lookup (plan §5)
+		out.type = stamped; //the type segment wins over the lookup
 	}
 
 	return QualifiedRefError::none;
@@ -1097,9 +1097,9 @@ QString Workspace::renderQualifiedColumnRef(int contextFilterId, int filterId, c
 
 QString Workspace::fullQualifiedColumnRef(const QString & dataSetTitle, const QString & filterName, const std::string & columnName, columnType type) const
 {
-	//mds-plan D7.4: the constructors' outward emission composes the FULL surface form from
+	// the constructors' outward emission composes the FULL surface form from
 	//the resolved pieces (see the header). The type segment is the caller's effective type;
-	//it is omitted when unknown (plan §5: the type segment is optional, and stamping
+	//it is omitted when unknown (the type segment is optional, and stamping
 	//"unknown" would poison the type-wins rule at run).
 	QualifiedColumnRef ref;
 
@@ -1139,7 +1139,7 @@ QString Workspace::fullQualifiedColumnRef(const QString & dataSetTitle, const QS
 
 std::vector<QualifiedRefOccurrence> QualifiedColumnRef::scanText(const std::string & code)
 {
-	//mds-plan D7.3: the in-code scanner of the plan §5 surface forms. The grammar is
+	// the in-code scanner of the surface forms. The grammar is
 	//ASCII-structural (quotes, '.', '(' ')'), so the scan runs on bytes; segment CONTENT may
 	//be any UTF-8 - each candidate's exact byte range is re-parsed by the strict parse()
 	//before it counts, so the scanner and the parser can never disagree about what a
@@ -1317,7 +1317,7 @@ std::set<int> Workspace::referencedFilterIdsInCode(const std::string & code, QSt
 	return filterIds;
 }
 
-// --- mds-plan D7.1/D7.2: the editor-side surface, see workspace.h ---------------------------
+// --- the editor-side surface, see workspace.h ---------------------------
 
 QVariantList Workspace::qualifiedColumnCandidates(int contextFilterId)
 {
@@ -1352,7 +1352,7 @@ QVariantList Workspace::qualifiedColumnCandidates(int contextFilterId)
 			for(const auto & [columnName, type] : columns)
 			{
 				//The type segment is deliberately not emitted here: insertion emits the
-				//minimal valid form (plan §5 render rule) so stored code stays readable;
+				//minimal valid form (render rule) so stored code stays readable;
 				//a type-tail is something the user adds by hand when disambiguation needs it.
 				const QString code = renderQualifiedColumnRef(contextFilterId, filter->id(), columnName, columnType::unknown);
 
@@ -1367,7 +1367,7 @@ QVariantList Workspace::qualifiedColumnCandidates(int contextFilterId)
 				entry["filterTitle"]	= filter->title();
 				entry["columnName"]		= tq(columnName);
 				entry["filterId"]		= filter->id();
-				//mds-plan D7.4: the source column's type, so the constructors' outward
+				// the source column's type, so the constructors' outward
 				//palette can stamp it on the dragged node (the type segment of its toR
 				//emission - the own-dataset type provider cannot answer for other datasets).
 				entry["columnType"]		= static_cast<int>(type);
@@ -1606,7 +1606,7 @@ void Workspace::computedColumnSucceeded(int dataSetId, QString columnNameQ, QStr
 
 	std::string	columnName	= fq(columnNameQ);
 	//The engine may report the encoded name; translate it defensively so the lookup works either
-	//way. Decoding is context-free (mds-plan C4): the global table answers, unknown stays raw.
+	//way. Decoding is context-free: the global table answers, unknown stays raw.
 	columnName = ColumnEncoder::decode(columnName);
 	Column	*	column		= dataSet->column(columnName);
 

@@ -105,24 +105,24 @@ private slots:
 	// (which restore via dropLevelsTypeFromQString) do not throw missingEnumVal.
 	void	testUndoColumnDropLevels();
 
-	// Encoder regression (mds-plan Phase 1): each dataset owns a canonical mint (no full-string
+	// Encoder regression: each dataset owns a canonical mint (no full-string
 	// encode/decode) and each Filter a view prefix "JASPColumn_D<dsId>_F<filterId>_", so colliding
 	// column names cannot encode to the same token; decoding is context-free via the global table.
 	void	testEncoderPrefixPerDataset();
 
-	// Mutation funnel (mds-plan D1.4): after every mutation class {rename, add, remove, type-only,
+	// Mutation funnel: after every mutation class {rename, add, remove, type-only,
 	// filter create, filter destroy, dataset unload} the ONE decode table maps exactly the current
 	// names of the live namespaces; stale/foreign tokens decode raw.
 	void	testEncoderMutationFunnel();
 
-	// Decode-superset semantics (mds-plan D1.5, C4/C16): every results-decode site is the static
+	// Decode-superset semantics (C4/C16): every results-decode site is the static
 	// entry now, so ONE sweep resolves tokens from ANY live namespace - other datasets, other
 	// filters, the extras block - while unknown, foreign-never-live and deleted-filter tokens
 	// stay raw everywhere.
 	void	testDecodeSupersetSemanticsAcrossLiveNamespaces();
 
 	// The computed-column results site in EngineRepresentation (enginerepresentation.cpp) must
-	// decode with the one global table too - extras tokens included (mds-plan C6's known gap,
+	// decode with the one global table too - extras tokens included (known gap,
 	// closed and pinned at D1.5).
 	void	testComputedColumnSiteDecodesExtrasTokens();
 
@@ -148,7 +148,7 @@ private slots:
 	// aware queue can never leak into a later (non-aware) read.
 	void	testMultiDataSetQueueClearedAtRequestBoundary();
 
-	// Encode-boundary per stamp (mds-plan D1.6): prepareMultiDataSetRun encodes each option against
+	// Encode-boundary per stamp: prepareMultiDataSetRun encodes each option against
 	// the VIEW of the filter its .meta filterId stamp names, not the shown encoder; un-stamped
 	// options dual-read back to the shown-filter fallback. The landmine case - a form whose HOST
 	// filter is neither the shown dataset nor its shown filter - must still encode in the host's
@@ -161,7 +161,7 @@ private slots:
 	void	testPreAttachOptionsParkAndAreNeverReadForBehaviour();
 	void	testProviderUpdateParticipationKeepsForeignStamps();
 
-	// mds-plan post (the FactorsForm deferral closed): per-factor provenance transport. The
+	// (the FactorsForm deferral closed): per-factor provenance transport. The
 	// factors option's sidecar is an array-of-arrays (element i = factor i's per-term array,
 	// FactorsFormBase::createFilterIds); the engine walk resolves it factor-positionally then
 	// term-positionally via the documented array-of-objects discriminator, the collector walks
@@ -169,7 +169,7 @@ private slots:
 	void	testPerFactorProvenanceEncodesViaOwnViews();
 	void	testPerFactorSidecarCollectorAndDiscriminatorNoMisfire();
 
-	// mds-plan D5.1: the final Storage format - per-term {name, filterId?, types} objects for the
+	// the final Storage format - per-term {name, filterId?, types} objects for the
 	// term families (simple, interaction, row-bearing; optionKey kept, row children kept), the
 	// single JSON->Terms applier accepting BOTH the new Storage shape and the legacy Engine-shape
 	// input with byte-identical semantics there, and lossless Storage-json -> parse -> regenerate
@@ -179,7 +179,7 @@ private slots:
 	void	testApplierAcceptsEngineAndStorageShapes();
 	void	testRelatedValuesPerTermRowKeying();
 
-	// mds-plan D5.2: NO stamp migration - old released options (plain names, no filterIds
+	// NO stamp migration - old released options (plain names, no filterIds
 	// anywhere) must parse to all-`-1` terms and encode end-to-end through the C13 fallbacks
 	// exactly like a non-aware run today (engine walk hits the shown-filter view / current
 	// encoder, queue holds only the analysis' own slice), and a sidecar id that no longer
@@ -188,14 +188,14 @@ private slots:
 	// crash and never queue a phantom slice.
 	void	testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade();
 
-	// mds-plan D5.3: the legacy bare-prefix result decoder - best-effort read-side shim for
+	// the legacy bare-prefix result decoder - best-effort read-side shim for
 	// PRE-EXISTING persisted results (released .jasp files can hold JaspColumn_<i>_Encoded
 	// tokens). Unchanged columns decode, churned/removed ones stay raw, current D-tokens are
 	// invisible to it, and NOTHING it materializes registers into the global decode table
 	// (single-writer rule, live decode stays strict-table).
 	void	testLegacyResultTokenDecoder();
 
-	// mds-plan D5.4: released-format .jasp fixture end to end - loads (legacy result tokens
+	// released-format .jasp fixture end to end - loads (legacy result tokens
 	// decode on the unchanged columns, the dead one stays raw, missing module cleanly skipped,
 	// no crash), re-save writes our own envelope, reload is lossless and the 7.x gate skips
 	// the legacy sweep. testJaspArchiveVersionBlocksOlderBuilds stays green next to it.
@@ -230,21 +230,21 @@ private slots:
 	// Analyses::remapSavedProvenance and its side table were removed.)
 	void	testDataSetFilterIdsSurviveStorageReload();
 
-	// mds-plan C4/RESOLVER: the syntax surface of the dataset selection options is human strings
+	// the syntax surface of the dataset selection options is human strings
 	// only - bare dataset title for the default filter, dropdown label "title - filterName" for a
 	// named one, exact-match lookup against the live workspace (never parsed, ids not enterable) -
 	// including the reverse direction used by the wrapper render and the label-collision
 	// precedence (bare titles win).
 	void	testDataSetSelectionSurfaceMap();
 
-	// mds-plan D7.0a: the user-qualified column-reference grammar (plan §5) - pure
+	// the user-qualified column-reference grammar - pure
 	// parse/render: the three grammar levels + the bare production, roundtrip
 	// parse(render(x)) == x for names with dots/quotes/backslashes/unicode, exactly two
 	// escapes (\" and \\, anything else rejected), case-insensitive type segment normalized
 	// to the canonical columnType spelling, and every malformed shape rejected with a message.
 	void	testQualifiedColumnRefParseRenderRoundTrip();
 
-	// mds-plan D7.0a: resolution against the live Workspace - full form, "DS"."Col" (default
+	// resolution against the live Workspace - full form, "DS"."Col" (default
 	// filter), unique-filter "F"."Col", the flagship same-name column addressed through two
 	// filters of one dataset (distinct filterIds), duplicate columns across datasets, the
 	// type segment winning over lookup, dataset-title precedence over filter names, and every
@@ -252,27 +252,27 @@ private slots:
 	// column, bare refusal) distinguishable.
 	void	testQualifiedColumnRefResolveAgainstWorkspace();
 
-	// mds-plan D7.0a: the context-aware minimal render - plain-name passthrough inside the
+	// the context-aware minimal render - plain-name passthrough inside the
 	// context's default namespace, shortest still-resolvable form outside it ("DS"."Col" /
 	// unique "F"."Col" / full form), type segment only when asked for, dead/absent filter ids
 	// render empty (loud-failure doctrine), and every emitted qualified form roundtrips
 	// through parse+resolve to the exact (dataSetId, filterId, column) it was built from.
 	void	testQualifiedColumnRefRenderMinimal();
 
-	// mds-plan D7.3: the in-code scanner for qualified references (QualifiedColumnRef::scanText)
+	// the in-code scanner for qualified references (QualifiedColumnRef::scanText)
 	// - finds every >=2-segment surface form in R code text with byte positions, skips R
 	// comments and string literals wholesale (a surface form inside them is user text), never
 	// counts a bare name (quoted or not) as a reference, tolerates whitespace, and only ever
 	// returns candidates the strict parse accepts.
 	void	testQualifiedColumnRefScanInCode();
 
-	// mds-plan D7.3: Workspace::referencedFilterIdsInCode - the desktop-side scan that builds
+	// Workspace::referencedFilterIdsInCode - the desktop-side scan that builds
 	// the transient `referencedFilterIds` request sidecar: distinct resolved filter ids (self-
 	// references included), bare names excluded, unresolvable refs skipped with the typed
 	// first-error reported (the engine's run-time scan is the loud surface, D7.5).
 	void	testWorkspaceReferencedFilterIdsInCode();
 
-	// mds-plan D7.3: rbridge_prepareSliceRunScript - the engine-side consumption of the sidecar:
+	// rbridge_prepareSliceRunScript - the engine-side consumption of the sidecar:
 	// surface forms rewritten into the referenced filter view's tokens, the queue = foreign
 	// slices first (sidecar order, per-filter columns) + the own slice last, non-aware code
 	// byte-identical to the legacy encode, and loud typed errors for stale/unresolvable refs.
@@ -280,7 +280,7 @@ private slots:
 	// TestEngine's slice tests.
 	void	testPrepareSliceRunScript();
 
-	// mds-plan D7.1/D7.2: the editor-side catalog + validation surface of the qualified
+	// the editor-side catalog + validation surface of the qualified
 	// grammar - Workspace::qualifiedColumnCandidates (every column of every filter of every
 	// loaded dataset rendered through renderQualifiedColumnRef against the editor's context
 	// filter: own context columns bare, everything else the minimal qualified form; the
@@ -289,7 +289,7 @@ private slots:
 	// Workspace::filterIdByName (the compute editors' context resolution).
 	void	testQualifiedColumnCandidates();
 
-	// mds-plan D7.4: the visual constructors' outward emission - ScriptNodeColumn::toR emits
+	// the visual constructors' outward emission - ScriptNodeColumn::toR emits
 	// the FULL qualified surface form ("Dataset"."Filter"."Column"("Type")) for outward nodes
 	// (dataSetName set), composed from the resolved slice (Workspace::fullQualifiedColumnRef):
 	// dataset-level and named-filter forms, the source column's type segment (+ wrapping)
@@ -298,7 +298,7 @@ private slots:
 	// Own-dataset nodes stay byte-identical (the known-red golden payloads must not move).
 	void	testScriptConstructorQualifiedOutwardToR();
 
-	// mds-plan D7.5: cross-dataset dependency invalidation - a qualified reference that was
+	// cross-dataset dependency invalidation - a qualified reference that was
 	// valid when typed can be invalidated WITHOUT any edit on the editor side, and every kind
 	// invalidates LOUDLY and TYPED (no tombstoning, C16): a renamed referenced filter (the
 	// Filter::nameChanged -> Workspace::filterNameChanged relay), an unloaded dataset
@@ -308,8 +308,8 @@ private slots:
 	void	testQualifiedRefInvalidatedByDataSetUnload();
 	void	testQualifiedRefInvalidatedByColumnChurn();
 
-	// mds-plan D8.1 (wiring 1 + 3, the D3.4 single JSON->Terms parse chokepoint): a STRING term
-	// component that *is* a qualified surface form (plan §5) resolves into a TYPED term - the
+	// (wiring 1 + 3, the D3.4 single JSON->Terms parse chokepoint): a STRING term
+	// component that *is* a qualified surface form resolves into a TYPED term - the
 	// plain column name plus its filterId (ids only, D1.2) - so same-name terms from different
 	// filters stay distinct through parse/bind; bare components and non-references pass through
 	// untouched (§4), the ("Type") segment wins over the positional type, uniform-qualified
@@ -317,7 +317,7 @@ private slots:
 	// with the typed message. Storage roundtrip keeps the ids.
 	void	testQualifiedTermComponentsParseTyped();
 
-	// mds-plan D8.2: RSyntax term emission - terms stamped outside the emission context (the
+	// RSyntax term emission - terms stamped outside the emission context (the
 	// analysis' own filter) render as the D7.0a qualified MINIMAL forms (backtick-wrapped in
 	// formula text, quote-escaped in the addQuotes list() path, byte-identical bare for -1 and
 	// own-context terms); the formula text parser keeps qualified forms verbatim (quote-aware
@@ -325,39 +325,39 @@ private slots:
 	// again - the full emission->re-parse roundtrip.
 	void	testQualifiedTermEmissionMinimalFormsAndReparse();
 
-	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
+	// the bridge leaves the raw options JSON of its parse on the form; a
 	// selection host registering after that parse (async instantiation, the M9 case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values
 	// immediately - dead hosts are pruned from the registry at read.
 	void	testSelectionRegistryLateHostAppliesPendingValue();
 
-	// mds-plan C5 (chunk-4 finding #1): a control registered on the form and destroyed later
+	// (chunk-4 finding #1): a control registered on the form and destroyed later
 	// must not stay in the form's control caches - the destroyed signal prunes _controls,
 	// _dependsOrderedCtrls and the error-message references synchronously, so the passes that
 	// walk them (clearFormErrors, filterByNameDone, usedVariables, the setAnalysisUp/bind pass)
 	// never dereference freed memory, and the freed option name is reusable.
 	void	testDeadControlsArePrunedFromFormCaches();
 
-	// mds-plan D2.1/C9: a Term carries the filterId it was selected through (-1 = unqualified) and
+	// a Term carries the filterId it was selected through (-1 = unqualified) and
 	// it is part of identity: same-name terms from different filters never compare equal, Terms
 	// lookups distinguish stamped terms but keep the C13 fallback (an unqualified lookup matches
 	// on name), moves/copies carry the id and combination terms inherit it when uniform. No JSON
 	// wire field: options stay byte-identical until Phase 3's generators.
 	void	testTermFilterIdIsPartOfIdentity();
 
-	// mds-plan D2.3: the selection-host registry on AnalysisForm is introspectable (count/list in
+	// the selection-host registry on AnalysisForm is introspectable (count/list in
 	// registration order, per-option names kept) and unregisters eagerly on destruction - the
 	// foundation D2.4 (AnalysisBase as VariableInfoProvider) aggregates over.
 	void	testSelectionHostRegistryIntrospection();
 
-	// mds-plan C10/D2.4: AnalysisBase implements VariableInfoProvider over that registry -
+	// AnalysisBase implements VariableInfoProvider over that registry -
 	// 0 hosts fall back to the analysis' own filter, 1 host (deduped) delegates to that filter's
 	// live namespace (handle resolved per use, never cached), >1 distinct filters give the merged
 	// union view (same-name columns from different filters coexist; columnEncoder/providerModel
 	// return nullptr for the merged case) - and selectionNamespaceChanged() tracks the aggregate.
 	void	testAnalysisProviderAggregatesSelectionHosts();
 
-	// mds-plan C4/VERSION: a saved .jasp carries the 7.0.0 archive version (major bump: older
+	// a saved .jasp carries the 7.0.0 archive version (major bump: older
 	// builds must reject aware files via JASPImporter::isCompatible's major-version gate, not try
 	// to misread them), and a same-build round trip opens.
 	void	testJaspArchiveVersionBlocksOlderBuilds();

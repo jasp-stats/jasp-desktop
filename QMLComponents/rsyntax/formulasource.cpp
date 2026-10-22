@@ -200,7 +200,7 @@ QStringList FormulaSource::modelSources() const
 	return result;
 }
 
-//mds-plan D8.2: the emission context is the namespace BARE names resolve in at run time
+// the emission context is the namespace BARE names resolve in at run time
 //(D7.3 self-reference rule): the ANALYSIS' own filter, else - C13 fallback chain, the same
 //one varInfo's provider follows (analysisform.cpp setAnalysisUp) - the SHOWN filter. A term
 //stamped with exactly that id emits bare (byte-identical); any other live filter id emits the
@@ -240,7 +240,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms, int conte
 {
 	QString result;
 
-	QMap<TermRowKey, RowControls*> allRowControls = _model->getAllRowControls();	//mds-plan D6.1: row-identity keyed
+	QMap<TermRowKey, RowControls*> allRowControls = _model->getAllRowControls();	// row-identity keyed
 	for (const Term& term : terms)
 	{
 		const TermRowKey key = TermRowKey::ofTerm(term);
@@ -276,7 +276,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms, int conte
 
 			result += (hasCorrelation ? " | " : " || ");
 
-			//mds-plan D8.2: the grouping factor is emitted like any other term - a foreign
+			// the grouping factor is emitted like any other term - a foreign
 			//slice's column must address that slice, not silently the context's same-named
 			//column. key carries the row's own filterId (D6.1).
 			QString groupingFactor = key.name();
@@ -320,10 +320,10 @@ QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::
 		{
 			bool allComponentsAreAlsoInTerms = true;
 			Terms allCrossedTerms = Terms(term.components()).crossCombinations();
-			//mds-plan C9: allCrossedTerms is freshly composed (unqualified, -1) while the model
+			// allCrossedTerms is freshly composed (unqualified, -1) while the model
 			//terms carry their selection's filterId - strict Term equality would never match the
 			//two, so these membership probes stay name-based (formula syntax has no provenance
-			//yet; qualification of generated terms is mds-plan D8.2).
+			//yet; qualification of generated terms is the emitter's job).
 			allCrossedTerms.remove(Term(term.components()));
 			for (const Term& oneTerm : allCrossedTerms)
 			{
@@ -397,7 +397,7 @@ std::pair<Terms, Json::Value> FormulaSource::_onlyTrueTerms(const QString& contr
 	for (const Term& term : terms)
 	{
 		const Json::Value& changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
-		JASPControl* control = _model->getRowControl(TermRowKey::ofTerm(term), controlName);	//mds-plan D6.1: exact row identity
+		JASPControl* control = _model->getRowControl(TermRowKey::ofTerm(term), controlName);	// exact row identity
 		BoundControl* boundControl = control ? control->boundControl() : nullptr;
 		if (boundControl && boundControl->boundValue().asBool())	
 		{
@@ -423,7 +423,7 @@ Terms::RelatedValuesPerTerm  FormulaSource::_getTermsFromExtraOptions(const Json
 
 			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error, model()->listView()->resolvedVarInfo()->provider()))
 			{
-				//mds-plan D6.1: RelatedValuesPerTerm keys on row identity now; every term the
+				// RelatedValuesPerTerm keys on row identity now; every term the
 				//formula machinery builds here is freshly parsed (unqualified, filterId -1) and is
 				//read back later by equally unqualified terms, so ofTerm() keeps the exact-hit +
 				//(name,-1)-fallback lookup byte-identical for this flow.
@@ -690,18 +690,18 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 		Terms::RelatedValuesPerTerm controlValues;
 		QMap<QString, Json::Value> interceptCheck;
 		interceptCheck[_randomEffects.checkControl] =  randomTerm.intercept;
-		controlValues[TermRowKey(interceptTerm, -1)] = interceptCheck;	//mds-plan D6.1: row-identity key (unqualified, read back by the unqualified intercept term)
+		controlValues[TermRowKey(interceptTerm, -1)] = interceptCheck;	// row-identity key (unqualified, read back by the unqualified intercept term)
 
 		for (const Term& fixedTerm : fixedEffectTerms)
 		{
 			variables.add(fixedTerm);
 			QMap<QString, Json::Value> checkValue;
 			checkValue[_randomEffects.checkControl] = randomTerm.terms.containsValue(fixedTerm);
-			controlValues[TermRowKey::ofTerm(fixedTerm)] = checkValue;	//mds-plan D6.1
+			controlValues[TermRowKey::ofTerm(fixedTerm)] = checkValue;
 		}
 		componentValues[_randomEffects.correlationControl] = randomTerm.correlated;
 		componentValues[_randomEffects.variablesControl] = variables.getOptions(controlValues, fq(_randomEffects.variablesKeyValue), fq(_randomEffects.variablesKeyLabel), true, true, false);
-		randomTermsMap[TermRowKey::ofTerm(mainTerm)] = componentValues;	//mds-plan D6.1
+		randomTermsMap[TermRowKey::ofTerm(mainTerm)] = componentValues;
 	}
 
 	for (auto sourceMainTermsIt : sourceMainTermsMap)
@@ -743,7 +743,7 @@ QMap<QString, QString> FormulaSource::additionalOptionStrings() const
 		QString optionValue;
 		const Terms& terms = termsWithChangedTypes.first;
 		const Json::Value& changedTypes = termsWithChangedTypes.second;
-		int contextFilterId = contextFilterIdFor(_model);	//mds-plan D8.2: same context as toString
+		int contextFilterId = contextFilterIdFor(_model);	// same context as toString
 
 		if (valueIsBool && extraOption.useFormula)
 			optionValue = "~ " + generateInteractionTerms(terms, changedTypes, contextFilterId);

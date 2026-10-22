@@ -39,13 +39,13 @@ class Filter;
 /// The backend for the `Form{}` used in all JASP's well, qml forms
 /// This is directly a QQuickItem and connects to Analyses to inform it when the options change.
 /// Each element placed inside the Form will be a derivative of JASPControl
-/// A JASPControl can be also a BoundControl: it is bound in the sense that any changes to its values are stored on the control itself and GENERATE the options JSON on demand (mds-plan C11/D3.4: AnalysisForm::createOptionsJson; the old stored-tree `Analysis::setBoundValue` mirror is deleted)
+/// A JASPControl can be also a BoundControl: it is bound in the sense that any changes to its values are stored on the control itself and GENERATE the options JSON on demand (AnalysisForm::createOptionsJson; the old stored-tree `Analysis::setBoundValue` mirror is deleted)
 /// Each time a JASPControl is initialized, it is registered by the form, and when the form is initialized it sets up the JASPControls either by their default values, 
 /// or by the values stored in a JASP file (when a JASP file is loaded).
 /// The interface errors and warnings are managed by this class.
 class AnalysisForm : public QQuickItem
 {
-	friend class TestAll; ///< mds-plan D3.5: flip _initialized to simulate attach completion in the C++ harness (pre-attach deferral pins)
+	friend class TestAll; ///< flip _initialized to simulate attach completion in the C++ harness (pre-attach deferral pins)
 	Q_OBJECT
 	QML_ELEMENT
 
@@ -76,14 +76,14 @@ public:
 
 	void					bindTo(const Json::Value & defaultOptions);
 
-	// ---- mds-plan C11/D3.1: JSON generated on demand from the components ---------------------
+	// ---- JSON generated on demand from the components ---------------------
 	///< Recursively aggregate every registered bound control's generated option value into an
 	/// options tree along the controls' bindTo paths: walks _dependsOrderedCtrls exactly like
 	/// bindTo does (so a row child's parent row has been generated before the child is placed),
 	/// places values through AnalysisBase::resolveOptionParent (the mirror's own path code) and,
 	/// for Engine, attaches the send-time `.meta` tree (BoundControl::createEngineMeta - C8: no
 	/// dataSetId/filterId, every other meta key flows from the family's createMeta) and the
-	/// transient `.filterIds` sidecar tree (BoundControl::createFilterIds, mds-plan D3.2) at the
+	/// transient `.filterIds` sidecar tree (BoundControl::createFilterIds) at the
 	/// same parent paths the mirror uses. Storage omits both trees and carries term filterIds
 	/// inside the term options themselves (D5.1 preview).
 	/// This is the machinery that replaced reading the analysis-wide mirror at the consumer flip
@@ -164,10 +164,10 @@ signals:
 	void					activeJASPControlChanged();
 	void					isAnnotatedChanged();
 	void					relaxInputConstraintsChanged(bool relax);
-	///< mds-plan D2.4: the selection-HOST registry changed (a host registered or dropped out -
+	///< the selection-HOST registry changed (a host registered or dropped out -
 	///  eager unregister on destruction included). AnalysisBase re-reads its provider aggregate.
 	void					selectionHostsChanged();
-	///< mds-plan D2.4/D2.5: a registered host moved to another filter (HostFilterSelection has
+	///< a registered host moved to another filter (HostFilterSelection has
 	///  restamped its controls and notifies through notifySelectionHostFilterChanged).
 	void					selectionHostFilterChanged(JASPControl * host);
 		
@@ -190,7 +190,7 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
 	Q_INVOKABLE QVariant	options()				const;
 	Q_INVOKABLE void		setOptions(const QVariantMap& options);
-	//Q_INVOKABLE for the wrapper-generation qml test (mds-plan D8.3); Form.qml uses the
+	//Q_INVOKABLE for the wrapper-generation qml test; Form.qml uses the
 	//analysis-level Analysis::generateWrapper(), which forwards here with multiDataSetAware().
 	Q_INVOKABLE QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware = false);
 	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
@@ -201,21 +201,21 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	void					cleanUpForm();
 	bool					hasError();
 
-	// --- selection-host registry (mds-plan C4/REGISTRY, M9, D2.3) --------------------------------
+	// --- selection-host registry (M9, D2.3) --------------------------------
 	// The syntax bridge must translate the surface strings of dataset selection options before
 	// anything binds, and it used a findChildren scan for that - blind to hosts instantiated
 	// asynchronously (ComponentsList rows). Selection HOSTS - the lists with a dataSetSelection-
-	// Option (VariablesListBase, mds-plan C10/D2.2) and the TextAreaBase hosts - register here
+	// Option (VariablesListBase) and the TextAreaBase hosts - register here
 	// (HostFilterSelection::setOption, or the first analysisBecameKnown() when the form was not
 	// yet known at property time); destruction unregisters eagerly (and dead entries are pruned
 	// at every read). A host registering LATE while the raw options of the current parse are
 	// still pending resolves and applies its own option immediately - no scheduled "wait for
 	// instantiation" passes anywhere.
-	// Ordering guarantee (mds-plan D2.3): every control that resolves through a host carries a
+	// Ordering guarantee: every control that resolves through a host carries a
 	// bindTo dependency on that host's FilterSelect (derived from the varInfo resolution in
 	// AnalysisForm::sortControls via JASPControl::selectionDependency), so each host's selection
 	// is bound BEFORE the controls it serves - per host, independent of the other hosts.
-	// This registry is the foundation of mds-plan D2.4 (AnalysisBase as VariableInfoProvider):
+	// This registry is the foundation of (AnalysisBase as VariableInfoProvider):
 	// the provider aggregates over selectionHostControls(), reading each host's filter through
 	// JASPControl::selectedSelectionFilter() - ids/filters re-resolved at use, never cached
 	// encoder pointers (see the virtual's doc).
@@ -224,12 +224,12 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	Q_INVOKABLE QStringList	dataSetSelectionOptionNames() const;
 	///< Live selection hosts (dead pruned, deduplicated) in registration order - D2.4's input.
 	QList<JASPControl *>	selectionHostControls() const;
-	///< Introspection (QML/tests, mds-plan D2.3): how many live hosts own a selection right now.
+	///< Introspection (QML/tests): how many live hosts own a selection right now.
 	Q_INVOKABLE int			selectionHostCount() const;
 	///< Introspection: the live host controls themselves (JASPControl* items; selecting ones
 	///  answer ownedSelectionVarInfo()/selectedSelectionFilter()).
 	Q_INVOKABLE QVariantList selectionHosts() const;
-	///< mds-plan D3.6: every filterId the bound controls carry in their typed state, generated
+	///< every filterId the bound controls carry in their typed state, generated
 	///  ON DEMAND through the same per-control createFilterIds() that feeds the `.filterIds`
 	///  sidecar (positional per-term entries included) - no stored tree. This is the component
 	///  input of AnalysisBase::referencedDataSets(); selection HOSTS and the analysis' own
@@ -237,7 +237,7 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	void					collectFilterIds(std::set<int> & filterIds) const;
 	void					registerDataSetSelectionOption(const QString &option, JASPControl *host);
 	void					unregisterDataSetSelectionOption(const QString &option, JASPControl *host);
-	///< mds-plan C10/D2.4+D2.5: HostFilterSelection calls this when its selected filter moved
+	///< HostFilterSelection calls this when its selected filter moved
 	///  (after the restamp walk, so consumers re-read a settled namespace). Re-emits
 	///  selectionHostFilterChanged, which AnalysisBase uses to refresh its provider view.
 	void					notifySelectionHostFilterChanged(JASPControl * host)	{ emit selectionHostFilterChanged(host); }
@@ -247,7 +247,7 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	///  this and writes the resulting filter id into the analysis values before its DropDown
 	///  binds - so late hosts see exactly what early hosts got.
 	void					setPendingDataSetSelectionRawValues(const Json::Value &rawOptions);
-	///< mds-plan D3.4: where a resolved late-host selection value waits until the option's own
+	///< where a resolved late-host selection value waits until the option's own
 	///  control exists: _applyPendingDataSetSelectionValue stashes the filter-id string (the
 	///  successor of writing it into the - now deleted - options mirror), and the FIRST bind of
 	///  a control named after the option (RowControls::_setValues fallback) consumes it, so a
@@ -283,7 +283,7 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	stringvecvec			getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void					addColumnControl(JASPControl* control, bool isComputed);
 
-	//mds-plan D3.4: the mirror plumbing (reader/writer API and the nested-placement lookup) is
+	// the mirror plumbing (reader/writer API and the nested-placement lookup) is
 	//DELETED with the tree - options are generated (createOptionsJson)
 	//and each control owns its value (BoundControlBase::boundValue).
 	stringset				usedVariables();
@@ -312,7 +312,7 @@ private:
 	void			setControlIsDependency(	std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
 	void			setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
 	void			setAnalysisUp();
-	///< mds-plan C10/D2.4: pair the registry/provider signals onto an analysis (both pairing
+	///< pair the registry/provider signals onto an analysis (both pairing
 	///  points - setAnalysis and the syntax/unit-test dummy made in setAnalysisUp - run this,
 	///  unique-connected so it is idempotent).
 	void			connectSelectionNamespaceSignals(AnalysisBase * analysis);
@@ -325,7 +325,7 @@ private:
 private slots:
 	   void			formCompletedHandler();
 	   void			knownIssuesUpdated();
-	   ///< mds-plan D2.3: unregistering a selection host is eager, not only read-time pruning
+	   ///< unregistering a selection host is eager, not only read-time pruning
 	   ///  (wired at registration; entries whose host is dying or dead drop out).
 	   void			handleSelectionHostDestroyed(QObject * host);
 
@@ -359,9 +359,9 @@ private:
 		QPointer<JASPControl>	host;
 		QString					option;
 	};
-	mutable QVector<DataSetSelectionRegistration>			_dataSetSelectionHosts;			///< mds-plan C4/REGISTRY (dead entries pruned at read time by the const accessor)
+	mutable QVector<DataSetSelectionRegistration>			_dataSetSelectionHosts;			///< (dead entries pruned at read time by the const accessor)
 	Json::Value										_pendingSelectionRawOptions;		///< raw JSON of the current bridge parse (see setPendingDataSetSelectionRawValues)
-	Json::Value										_resolvedSelectionOptionValues;		///< mds-plan D3.4: filter-id strings resolved for late-host selection options, consumed at the option control's first bind (see takeResolvedSelectionOptionValue)
+	Json::Value										_resolvedSelectionOptionValues;		///< filter-id strings resolved for late-host selection options, consumed at the option control's first bind (see takeResolvedSelectionOptionValue)
 	void											_applyPendingDataSetSelectionValue(const QString &option);
 	int												_valueChangedSignalsBlocked		= 0;
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?

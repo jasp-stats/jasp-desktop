@@ -202,7 +202,7 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 		if(json.isMember("dataSetName"))
 			static_cast<ScriptNodeColumn*>(result)->setDataSetName(jsonStr(json, "dataSetName"));
 
-		//mds-plan D7.4: the outward reference's filter name (absent = the dataset's default filter).
+		// the outward reference's filter name (absent = the dataset's default filter).
 		if(json.isMember("filterName"))
 			static_cast<ScriptNodeColumn*>(result)->setFilterName(jsonStr(json, "filterName"));
 		break;
@@ -552,7 +552,7 @@ Json::Value ScriptNodeColumn::toJson() const
 	if(!_dataSetName.empty())
 		json["dataSetName"] = _dataSetName;
 
-	//mds-plan D7.4: the source slice's filter name rides along when the outward reference
+	// the source slice's filter name rides along when the outward reference
 	//names a filter ("" = the dataset's default filter, the v1 dataset-level reference).
 	if(!_filterName.empty())
 		json["filterName"] = _filterName;
@@ -570,7 +570,7 @@ std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider)
 
 	if(!_dataSetName.empty())
 	{
-		//mds-plan D7.4: an OUTWARD reference - the node carries the source slice's dataset
+		// an OUTWARD reference - the node carries the source slice's dataset
 		//(and optionally its filter) - is emitted as the FULL qualified surface form
 		//("Dataset"."Filter"."Column"("Type")). Owner refinement on D7.0-Q3: the
 		//constructor's output is visible R code, so every outward reference uses the full
@@ -592,7 +592,7 @@ std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider)
 
 		//The type segment reflects the SOURCE type (what the reference points at); when even
 		//that cannot be resolved (stale slice, no user override) the segment is omitted
-		//(plan §5: optional) and the reference still fails the run loudly (D7.5). The
+		//(optional) and the reference still fails the run loudly (D7.5). The
 		//unknown type must not pick up the as.character default wrap: an unresolvable
 		//reference wraps as nothing meaningful, so it emits unwrapped.
 		const int segmentType = effective;

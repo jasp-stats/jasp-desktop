@@ -58,7 +58,7 @@ void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const Terms::Rel
 			for (int i = 0; i < _tuples.size(); i++)
 			{
 				Terms row = _tuples[i];
-				row.discardWhatIsntTheseTerms(terms);	//name-based set partition (mds-plan post): the option value is authoritative for what is bound, stamps take no part here
+				row.discardWhatIsntTheseTerms(terms);	//name-based set partition: the option value is authoritative for what is bound, stamps take no part here
 				if (row.size() > 0)
 				{
 					for (int j = int(row.size()); j < _columns; j++)
@@ -137,7 +137,7 @@ void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 
 Terms ListModelMultiTermsAssigned::reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)
 {
-	//mds-plan post (ORIGIN-AUTHORITATIVE): the tuple version of the reconcile - the tuples are
+	// (ORIGIN-AUTHORITATIVE): the tuple version of the reconcile - the tuples are
 	//the source of truth, the flattened _terms is rebuilt from them afterwards. Participation is
 	//exactly the base rule (termFollowsProviderChange): a cell stamped `filterIdToUpdate`
 	//follows, -1 and foreign stamps never move. Survivors are REPLACED BY the delivered
@@ -155,7 +155,7 @@ Terms ListModelMultiTermsAssigned::reconcileProviderChange(int filterIdToUpdate,
 
 			const TermRowKey oldKey = TermRowKey::ofTerm(term);
 
-			if (newUniverse.containsValue(term.value()))	//NAME-ONLY on purpose (mds-plan post)
+			if (newUniverse.containsValue(term.value()))	//NAME-ONLY on purpose
 			{
 				term = newUniverse.at(size_t(newUniverse.indexOfValue(term.value())));
 
@@ -183,7 +183,7 @@ Terms ListModelMultiTermsAssigned::reconcileProviderChange(int filterIdToUpdate,
 
 void ListModelMultiTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved, int filterIdToUpdate)
 {
-	//mds-plan post (ORIGIN-AUTHORITATIVE): the pool's provider moved on: tuple cells stamped
+	// (ORIGIN-AUTHORITATIVE): the pool's provider moved on: tuple cells stamped
 	//`filterIdToUpdate` are replaced by the delivered universe terms when the column survives
 	//and die when it vanished; -1 and foreign stamps never move. The vanished cells (plus the
 	//pool's own removals) are cleared through the usual cell machinery, exactly like a plain

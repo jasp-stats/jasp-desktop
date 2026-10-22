@@ -43,7 +43,7 @@ protected:
 	RLangType								_langType				= RLangType::Lavaan;
 	const char *							_checkSyntaxRFunctionName();
 	void									_setBoundValues(bool setModel = true);
-	///< mds-plan D3.1: single live-state builder behind _setBoundValues (termsOut: the terms
+	///< single live-state builder behind _setBoundValues (termsOut: the terms
 	/// derived from the used columns, for the model update). The GENERATORS do not call this:
 	/// the TextArea family commits on apply, so BoundControlTextArea::_appliedValue (tracked in
 	/// setBoundValue, which _setBoundValues funnels through) is the option state they emit.

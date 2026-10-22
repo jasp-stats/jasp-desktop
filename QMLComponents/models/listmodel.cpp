@@ -122,7 +122,7 @@ void ListModel::_setAllowedType(Term& term) const
 		}
 	}
 
-	//mds-plan post (ORIGIN-AUTHORITATIVE): the D2.1 destination stamp is GONE. A term that
+	// (ORIGIN-AUTHORITATIVE): the D2.1 destination stamp is GONE. A term that
 	//enters a list without an origin STAYS -1 forever: -1 is not "origin-less" but a reference
 	//into the provider WITHOUT host selection, resolved at use time through this list's own C13
 	//chain (its selection host, else the analysis' own filter else the shown filter) - so the
@@ -139,9 +139,9 @@ int ListModel::_currentSelectionFilterId() const
 	if (!_listView)
 		return -1;
 
-	//Only an EXPLICIT selection host qualifies a term (mds-plan C13: the fallback for a control
+	//Only an EXPLICIT selection host qualifies a term (the fallback for a control
 	//with no host is the analysis-wide VariableInfo — legacy behaviour, and legacy terms stay
-	//-1). resolvedSelectionHost() (mds-plan D4.2: local relation resolution, the walk is deleted)
+	//-1). resolvedSelectionHost() (local relation resolution, the walk is deleted)
 	//reports nullptr exactly in that fallthrough case. The filter is read through the host's own
 	//selection VariableInfo provider at use time - never cached (D1.2/D2.3 landmine).
 	JASPControl *	host	= _listView->resolvedSelectionHost();
@@ -152,7 +152,7 @@ int ListModel::_currentSelectionFilterId() const
 
 Terms ListModel::reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)
 {
-	//mds-plan post: the signal-driven provider update (replaces the deleted restamp walk).
+	// the signal-driven provider update (replaces the deleted restamp walk).
 	//Called from the assigned models' availableTermsResetHandler with the participation key
 	//their pool reported and the pool's rebuilt (birth-stamped) universe. See
 	//termFollowsProviderChange for the participation rule.
@@ -163,7 +163,7 @@ Terms ListModel::reconcileProviderChange(int filterIdToUpdate, const Terms &newU
 	{
 		if (termFollowsProviderChange(term.filterId(), filterIdToUpdate))
 		{
-			if (newUniverse.containsValue(term.value()))	//NAME-ONLY on purpose (mds-plan post): the key already pre-selected the provenance
+			if (newUniverse.containsValue(term.value()))	//NAME-ONLY on purpose: the key already pre-selected the provenance
 			{
 				//Survivor: REPLACED BY the delivered universe term - the replacement carries
 				//the provider's current stamp and fresh type, so no in-place re-point happens
@@ -255,7 +255,7 @@ void ListModel::_connectSourceControls(SourceItem* sourceItem)
 	for (const QString & controlName : sourceItem->usedControls())
 		for (const Term & term : terms)
 		{
-			JASPControl * control = sourceModel->getRowControl(TermRowKey::ofTerm(term), controlName);	//mds-plan D6.1: exact row identity
+			JASPControl * control = sourceModel->getRowControl(TermRowKey::ofTerm(term), controlName);	// exact row identity
 			if (control)
 			{
 				BoundControl * boundControl = control->boundControl();
@@ -279,7 +279,7 @@ Terms ListModel::getSourceTerms()
 	{
 		_connectSourceControls(sourceItem);
 
-		//mds-plan post (ORIGIN-AUTHORITATIVE, FIX 1): a pool's dataset universe is born HERE.
+		// (ORIGIN-AUTHORITATIVE, FIX 1): a pool's dataset universe is born HERE.
 		//Fresh dataset columns carry no origin yet, so they take the stamp of the resolution
 		//THIS pool serves them through (_currentSelectionFilterId: the pool's own selection
 		//host, else its source chain, else -1 = the default provider) - that stamp IS origin
@@ -324,7 +324,7 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 		{
 			if (startRow <= row)
 			{
-				//mds-plan D6.1: the map key is the row's IDENTITY (value + filterId): same-name
+				// the map key is the row's IDENTITY (value + filterId): same-name
 				//twins behind different filters get their own RowControls, and each row loads its
 				//own children through Terms::relatedValuesForTerm() (exact key, (name,-1) fallback
 				//for values loaded unqualified before the list stamped its host).
@@ -346,7 +346,7 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 	// Disconnect and delete all controls that are not used anymore
 	QList<TermRowKey> removedKeys;
 	for (const TermRowKey& key : _rowControlsMap.keys())
-		//mds-plan D6.1: term-aware presence check - a twin key only survives while a term with
+		// term-aware presence check - a twin key only survives while a term with
 		//that SAME (name, filterId) is still in the list (unqualified keys keep the name-only
 		//wildcard lookup of D2.1).
 		if (!terms().containsValue(key.asTerm()))
@@ -366,7 +366,7 @@ Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
 	for (const Term& term : _terms)
 	{
 		QMap<QString, Json::Value> componentValues;
-		RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));	//mds-plan D6.1: exact row identity
+		RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));	// exact row identity
 		if (rowControls)
 		{
 			const QMap<QString, JASPControl*>& controlsMap = rowControls->getJASPControlsMap();
@@ -389,7 +389,7 @@ Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
 
 RowControls *ListModel::getRowControls(const QString &key) const
 {
-	//mds-plan D6.1: name-only access resolves through the model, first row term carrying that
+	// name-only access resolves through the model, first row term carrying that
 	//name wins (the legacy single-entry-per-name behavior); twins are reached exactly via the
 	//TermRowKey overload.
 	for (const Term& term : _terms)
@@ -401,7 +401,7 @@ RowControls *ListModel::getRowControls(const QString &key) const
 
 JASPControl *ListModel::getRowControl(const QString &key, const QString &name) const
 {
-	//mds-plan D6.1: see getRowControls(const QString&) - name lookup lands on the first row of
+	// see getRowControls(const QString&) - name lookup lands on the first row of
 	//that name, the TermRowKey overload is the exact one.
 	for (const Term& term : _terms)
 		if (term.value() == key)
@@ -689,7 +689,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 
 	case ListModel::RowComponentRole:
 	{
-		//mds-plan D6.1: exact row identity, so twin rows each hand out their own row object
+		// exact row identity, so twin rows each hand out their own row object
 		RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));
 		return rowControls ? QVariant::fromValue(rowControls->getRowObject()) : QVariant();
 	}
@@ -751,7 +751,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 		Terms controlTerms;
 		for (const Term& term : result)
 		{
-			RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));	//mds-plan D6.1: exact row identity
+			RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));	// exact row identity
 			if (rowControls)
 			{
 				JASPControl* control = rowControls->getJASPControl(useThisControl);

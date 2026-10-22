@@ -29,7 +29,7 @@ VariablesFormBase::VariablesFormBase(QQuickItem* parent) : JASPControl(parent)
 	_controlType			= ControlType::VariablesForm;
 	_useControlMouseArea	= false;
 
-	//Dataset/filter selection is NOT a form concern (mds-plan C10): each list that wants its own
+	//Dataset/filter selection is NOT a form concern: each list that wants its own
 	//namespace declares dataSetSelectionOption on itself (VariablesListBase / FilterSelect.qml).
 	//The form is layout and available/assigned relations only.
 }

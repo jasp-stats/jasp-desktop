@@ -31,7 +31,7 @@ public:
 	bool		isJsonValid(const Json::Value& value)										const	override;
 	Json::Value	createJson()																const	override;
 	Json::Value	createFilterIds()															const	override;
-	JsonFormat	selfRebindFormat()															const	override	{ return Storage;	}	///< mds-plan D6 (zoo run 8): the Engine builder carries no per-term filterIds (D2.1) - the null-path self-rebind must round-trip the Storage shape, see BoundControl::selfRebindFormat
+	JsonFormat	selfRebindFormat()															const	override	{ return Storage;	}	///< (zoo run 8): the Engine builder carries no per-term filterIds (D2.1) - the null-path self-rebind must round-trip the Storage shape, see BoundControl::selfRebindFormat
 	void		bindTo(const Json::Value &value)													override;
 	void		resetBoundValue()																	override;
 	void		setBoundValue(const Json::Value &value, bool emitChanges = true)					override;

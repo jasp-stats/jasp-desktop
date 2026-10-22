@@ -38,7 +38,7 @@ public:
 //	static ParsedTerm	parseTerm(const QString& term, const ParsedTerms& conditionalParsedTerms, bool isCorrelated);
 //	static ParsedTerm	parseTerm(const ParsedTerm& term, const ParsedTerms& conditionalParsedTerms, bool isCorrelated);
 
-	// mds-plan D8.2: `contextFilterId` is the default namespace bare names resolve in at run
+	// `contextFilterId` is the default namespace bare names resolve in at run
 	// time (the analysis' own filter). A term stamped with a DIFFERENT live filter id renders
 	// as the D7.0a qualified MINIMAL form (renderQualifiedColumnRef: bare inside the context,
 	// "DS"."Col" / "F"."Col" / full form outside it) - qualification never happens for -1

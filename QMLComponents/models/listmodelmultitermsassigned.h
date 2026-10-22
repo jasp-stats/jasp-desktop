@@ -42,7 +42,7 @@ public slots:
 
 private:
 	void			_setTerms();
-	///< mds-plan post (ORIGIN-AUTHORITATIVE): the tuples are the family's source of truth, so the
+	///< (ORIGIN-AUTHORITATIVE): the tuples are the family's source of truth, so the
 	///  reconcile runs over them (the base class version would edit the flattened _terms only,
 	///  which the next _setTerms() would revert) - survivors are REPLACED BY the delivered
 	///  universe term, vanished cells are collected for the cell-clearing machinery; the row

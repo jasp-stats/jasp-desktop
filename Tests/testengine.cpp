@@ -456,7 +456,7 @@ void TestEngine::testVariableInfoPerFilter()
 
 void TestEngine::testEngineRegistryPropagatesColumnMutations()
 {
-	// mds-plan D1.4/D1.9: the engine-registry propagation check. JASPTestEngine drives a real
+	// the engine-registry propagation check. JASPTestEngine drives a real
 	// OUT-OF-PROCESS JASPEngine (EngineSync::startSlaveProcess) which keeps its own DataBridge
 	// on the same sqlite db and its own process-local copy of the global decode table. It
 	// re-materialises that table per request: provideAndUpdateDataSet() -> Workspace/DataSet/
@@ -712,7 +712,7 @@ void TestEngine::testScriptConstructorFuzz()
 
 void TestEngine::testQualifiedSliceReferencesEndToEnd()
 {
-	//mds-plan D7.3 (design doc §3.2): end-to-end through the real out-of-process engine. A
+	// (design doc §3.2): end-to-end through the real out-of-process engine. A
 	//computed column and a filter whose code carries a qualified outward reference must run
 	//against the REFERENCED filter's materialized slice (its filtered rows, its view's tokens),
 	//and an unresolvable reference must fail the run loudly with the typed message - no silent
@@ -873,7 +873,7 @@ void TestEngine::testQualifiedSliceReferencesEndToEnd()
 
 void TestEngine::testQualifiedConstructorReferencesEndToEnd()
 {
-	//mds-plan D7.4: the easy constructor's generated code (Filter::constructorR ->
+	// the easy constructor's generated code (Filter::constructorR ->
 	//generatedFilter) carrying an outward qualified reference must run end-to-end through
 	//the by-name request path - which is how EVERY filter run is queued in production
 	//(Filter::setInvalidated -> sendFilterByName). EngineSync::sendFilterByName stamps the

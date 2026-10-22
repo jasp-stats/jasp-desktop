@@ -39,7 +39,7 @@ using namespace boost::interprocess;
 
 EngineSync * EngineSync::_singleton = nullptr;
 
-//mds-plan D7.4: a filter's run code is BOTH halves - the hand-written rFilter AND the
+// a filter's run code is BOTH halves - the hand-written rFilter AND the
 //constructor-generated code (generatedFilter; Engine::runFilterByName/runDefaultFilter pass
 //both into rbridge_applyFilter, which prepares them as ONE script). The referencedFilterIds
 //sidecar must therefore list the references of both, exactly like sendFilter's union scan
@@ -585,7 +585,7 @@ int EngineSync::sendFilter(int dataSetId, const QString & generatedFilter, const
 	int requestId = ++_waitingFilterRequestIDCounter;
 	_waitingFilters.emplace_back(new RFilterStore(dataSetId, generatedFilter, filter, requestId));
 
-	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar onto the request (D3.3
+	// stamp the transient referencedFilterIds sidecar onto the request (D3.3
 	//doctrine: desktop owns provenance, engine consumes and strips). Both halves of the run's
 	//code are scanned - the hand-written filter and the machine-generated constructor code -
 	//because the D8.1 editors can emit qualified surface forms in either. Unresolvable
@@ -620,7 +620,7 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 
 			if(waiting->name == name && waiting->module == module && waiting->dataSetId == dataSetId)
 			{
-				//mds-plan D7.1/D7.5 stale-sidecar guard: an identical request is already waiting,
+				// stale-sidecar guard: an identical request is already waiting,
 				//but its `referencedFilterIds` sidecar was stamped when it was queued - and the
 				//filter's code can have gained a NEW outward reference since (the
 				//SetRFilterCommand -> setInvalidated -> sendFilterByName re-queue lands exactly
@@ -634,7 +634,7 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 					if(DataSet * dataSet = Workspace::singleton()->dataSetById(dataSetId))
 						if(Filter * namedFilter = dataSet->filter(fq(name)))
 						{
-							//mds-plan D7.4: the fresh scan covers both halves of the run code
+							// the fresh scan covers both halves of the run code
 							//(see referencedFilterIdsOf) - the constructor-generated half too.
 							const std::set<int> fresh = referencedFilterIdsOf(namedFilter);
 							if(fresh != waiting->referencedFilterIds)
@@ -656,7 +656,7 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 	//and must never clear the filter's stale flag.
 	RFilterByNameStore * store = new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module);
 
-	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar (D3.3 doctrine: desktop
+	// stamp the transient referencedFilterIds sidecar (D3.3 doctrine: desktop
 	//owns provenance, engine consumes and strips). For a by-name run the code lives inside
 	//the named filter object, so the scan runs over BOTH halves of its run code here - the
 	//hand-written rFilter and the constructor-generated code (generatedFilter), which D7.4's
@@ -695,7 +695,7 @@ void EngineSync::computeColumn(int dataSetId, const QString & columnName, const 
 
 	_waitingCompCols.push(new RComputeColumnStore(dataSetId, columnName, computeCode, colType));
 
-	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar onto the request (D3.3
+	// stamp the transient referencedFilterIds sidecar onto the request (D3.3
 	//doctrine: desktop owns provenance, engine consumes and strips). Unresolvable references
 	//are logged inside the scan; the engine fails the run loudly at run time if it cannot
 	//resolve them either.
@@ -722,7 +722,7 @@ void EngineSync::computeDataSet(int dataSetId, const QString & computeCode, int 
 
 	_waitingCompDataSets.push(new RComputeDataSetStore(dataSetId, computeCode, defaultInputFilterId));
 
-	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar onto the request (D3.3
+	// stamp the transient referencedFilterIds sidecar onto the request (D3.3
 	//doctrine: desktop owns provenance, engine consumes and strips). Unresolvable references
 	//are logged inside the scan; the engine fails the run loudly at run time if it cannot
 	//resolve them either.

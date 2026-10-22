@@ -85,7 +85,7 @@ bool TextAreaBase::containsVariables() const
 	if (_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeMetaSem)
 		return true;
 
-	//mds-plan D6.1 (the zoo's Rcode textarea with its own host): R-code text references columns -
+	// (the zoo's Rcode textarea with its own host): R-code text references columns -
 	//the control encodes it through the host view at bind time - so declaring a selection on it
 	//must also make the option ENCODE-side visible: encodeValue() gates the transient `.filterIds`
 	//node (BoundControlBase::createFilterIds), and without that node the host's slice is never

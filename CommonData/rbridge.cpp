@@ -190,7 +190,7 @@ extern "C" const char * STDCALL rbridge_encodeColumnName(const char * in)
 
 extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 {
-	//The hand-rolled "extras first, then current encoder" chain is gone (mds-plan D1.5): the ONE
+	//The hand-rolled "extras first, then current encoder" chain is gone: the ONE
 	//global strict decode table (C4) holds the extras block as a first-class citizen (C6), so a
 	//single context-free lookup covers extras, every live filter of every loaded dataset and the
 	//fallback encoder. Unknown tokens stay raw (C16) - R guards with shouldDecode where it needs
@@ -451,7 +451,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	{
 		RBridgeColumnType	&	columnInfo		= colHeaders[colNo];
 		RBridgeColumn		&	resultCol		= datasetStatic[colNo];
-		std::string				columnName		= ColumnEncoder::decode(columnInfo.name);	//context-free table (mds-plan C4/D1.5)
+		std::string				columnName		= ColumnEncoder::decode(columnInfo.name);	//context-free table
 								resultCol.name	= strdup(columnInfo.name);
 		Column				*	column			= rbridge_dataSet->column(columnName);
 
@@ -524,7 +524,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
 	//dataset, its selected filter and its wanted columns before reading.
 	const DataBridge::MultiDataSetSlice * slice = data_bridge ? data_bridge->takeMultiDataSetSlice() : nullptr;
 
-	//mds-plan D1.6: on a queued slice read, the wanted columns are encoded through the SLICE
+	// on a queued slice read, the wanted columns are encoded through the SLICE
 	//FILTER's explicit view handle - not through whatever the process-global current encoder
 	//happens to point at. The re-anchoring of currentEncoder below stays for the legacy encode
 	//callbacks R fires during the read (C7 fallback indirection), but the slice encode here no
@@ -640,7 +640,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	{
 		RBridgeColumnType			&	columnInfo		= columnsType[colNo];
 		RBridgeColumnDescription	&	resultCol		= resultCols[colNo];
-		//Context-free table decode (mds-plan C4/D1.5). The old instance-rooted decode threw on a
+		//Context-free table decode. The old instance-rooted decode threw on a
 		//miss; the table keeps unknown tokens raw, so translate that failure mode into the same
 		//explicit error instead of dereferencing a null column below.
 		std::string					columnName		= ColumnEncoder::decode(columnInfo.name);
@@ -665,7 +665,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	return resultCols;
 }
 
-///Sneaky variable declaration of colName! Decoding is the context-free global table (mds-plan C4/D1.5).
+///Sneaky variable declaration of colName! Decoding is the context-free global table.
 #define JASP_COLUMN_DECODE_HERE_STORED_colName std::string colName(ColumnEncoder::decode(columnName))
 
 extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
@@ -852,7 +852,7 @@ char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevel
 
 std::string	rbridge_encodeColumnNamesInScript(const std::string & filterCode, ColumnEncoder * sliceEncoder)
 {
-	//mds-plan D7.3: slice-aware callers pass the run's OWN filter view (the C13 fallback
+	// slice-aware callers pass the run's OWN filter view (the C13 fallback
 	//namespace of the run - what its bare names mean); nullptr keeps the C7 legacy fallback,
 	//the process-global current encoder, for callers that are not aware (byte-identical to
 	//pre-Phase-7). The found columns land in filterColumnsUsed either way - that set is what
@@ -901,7 +901,7 @@ void rbridge_detachRCodeEnv(const std::string & dataname)
 
 bool rbridge_prepareSliceRunScript(const std::string & code, Filter * ownFilter, Workspace * workspace, const std::vector<int> & referencedFilterIds, std::string & encodedScript, std::vector<DataBridge::MultiDataSetSlice> & slices, std::string & error)
 {
-	//mds-plan D7.3 (design doc §3.2): the engine-side consumption of a filter/compute run's
+	// (design doc §3.2): the engine-side consumption of a filter/compute run's
 	//code. The desktop scanned this very text at request build (Workspace::
 	//referencedFilterIdsInCode) and stamped the transient `referencedFilterIds` sidecar onto
 	//the request; this function re-scans the code (one shared scanner, so the two sides cannot
@@ -975,7 +975,7 @@ bool rbridge_prepareSliceRunScript(const std::string & code, Filter * ownFilter,
 
 		if(!selfReference && std::find(referencedFilterIds.begin(), referencedFilterIds.end(), resolved.filterId) == referencedFilterIds.end())
 		{
-			//mds-plan C11: the desktop owns provenance - it scanned this code at request build
+			// the desktop owns provenance - it scanned this code at request build
 			//and stamped the sidecar. A reference outside it means the request is stale (the
 			//code or the workspace changed since the request was queued). Refusing to guess
 			//beats silently evaluating against a slice that was never materialized.
@@ -1068,7 +1068,7 @@ bool rbridge_prepareSliceRunScript(const std::string & code, Filter * ownFilter,
 
 void rbridge_attachReferencedSlices(const std::vector<DataBridge::MultiDataSetSlice> & slices)
 {
-	//mds-plan D7.3 (design doc §3.3): the new producer of slice queues for filter/compute
+	// (design doc §3.3): the new producer of slice queues for filter/compute
 	//runs. `slices` (foreign slices first, the run's own last) becomes THE queue that
 	//rbridge_readDataSetRequested's slice handling (unchanged since D1.6) consumes one read
 	//per slice; every FOREIGN slice is attached as its own frame under its slice key so the
@@ -1119,7 +1119,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	static std::string errorMsg;
 
-	//mds-plan D7.3: the run's slice context is the filter BEING RUN - plan §4 fixes the filter
+	// the run's slice context is the filter BEING RUN - fixes the filter
 	//expression's bare-name fallback to its own dataset's filter (C13) - so the code encodes
 	//through THAT filter's view, not the process-global current encoder. `ownFilter` is it;
 	//the legacy fallback (nullptr) is the shown filter, which is the same filter on every
@@ -1182,7 +1182,7 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd, 
 
 	jaspRCPP_resetErrorMsg();
 
-	//mds-plan D7.3 (design decision 6): the encode runs against an EXPLICIT slice context -
+	// (design decision 6): the encode runs against an EXPLICIT slice context -
 	//the caller's filter, else the shown dataset's shown filter (exactly what
 	//provideAndUpdateDataSet anchored the legacy indirection at) - closing the process-global
 	//side door: this path no longer READS the current encoder, whatever it points at.
@@ -1245,7 +1245,7 @@ std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::str
 
 	jaspRCPP_resetErrorMsg();
 
-	//mds-plan D7.3 (C13/design doc §3.1): the run's slice context is the COMPUTE FILTER - the
+	// (design doc §3.1): the run's slice context is the COMPUTE FILTER - the
 	//caller resolved it (`ownFilter`); the fallback is the filter just shown (the same thing).
 	//The data frame R reads and the output-name encode (Engine::runComputeColumn) use this
 	//same view; the process-global current encoder is no longer consulted on this path.
@@ -1296,7 +1296,7 @@ std::string rbridge_evalRComputedDataSet(const std::string & rCode, const std::s
 
 	jaspRCPP_resetErrorMsg();
 
-	//mds-plan D7.3 (C13/design doc §3.1): the run's slice context is the INPUT filter (the
+	// (design doc §3.1): the run's slice context is the INPUT filter (the
 	//existing defaultInputFilterId dropdown is that anchor); the caller resolved it. Same
 	//explicit-handle discipline as the computed-column path above.
 	Filter * contextFilter = ownFilter ? ownFilter : rbridge_dataSet->shownFilter();

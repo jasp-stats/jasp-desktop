@@ -6,7 +6,7 @@
 #include <QSet>
 #include "qutils.h"
 #include "columntype.h"
-#include "models/term.h"	//mds-plan D6.1: TermRowKey for parentRowKey()
+#include "models/term.h"	// TermRowKey for parentRowKey()
 
 class AnalysisForm;
 class JASPListControl;
@@ -147,7 +147,7 @@ public:
 	QQuickItem		*	childControlsArea()			const	{ return _childControlsArea;		}
 	JASPListControl	*	parentListView()			const	{ return _parentListView;			}
 	QString				parentListViewKey()			const	{ return _parentListViewKey;		}
-	///< The FULL identity of the row this control was created under (mds-plan D6.1): rowValue +
+	///< The FULL identity of the row this control was created under: rowValue +
 	///  the row's filter id (the TermRowKey the model keys its RowControls by - twin rows share a
 	///  name, never a key). For tableview-style rows (context carries only rowIndex) this is the
 	///  index string with filterId -1, i.e. unchanged legacy behavior.
@@ -176,14 +176,14 @@ public:
 	virtual void					setUp()										{}
 	/// Dataset/filter selection lives on HOSTS (VariablesListBase, TextAreaBase, ...): a host with
 	/// an active selection hands out its own VariableInfo (provider = the selected Filter) here.
-	/// mds-plan D4.1/D4.2: the old parent-chain resolution walk is DELETED - consumers resolve
+	/// the old parent-chain resolution walk is DELETED - consumers resolve
 	/// LOCALLY: their own selection (ownedSelectionVarInfo below), the analysis-wide
 	/// form()->varInfo() (legitimate C13 fallback: analysis filter, else shown filter), or a
 	/// term's filterId through Workspace::filterById.
 	virtual VariableInfo			* ownedSelectionVarInfo()						{ return nullptr; }
-	///< Hosts only (mds-plan D2.3): the filter currently picked through this host's own selection
+	///< Hosts only: the filter currently picked through this host's own selection
 	/// (HostFilterSelection::selectedFilter), nullptr for non-hosts or while nothing is selected.
-	/// Registry consumers - above all mds-plan D2.4 (AnalysisBase as VariableInfoProvider over the
+	/// Registry consumers - above all (AnalysisBase as VariableInfoProvider over the
 	/// registered selected filters) - enumerate the form's selection hosts and read their filter
 	/// THROUGH THIS. They must never cache a ColumnEncoder*: a Filter's encode handle lazy-attaches
 	/// to the filter's final rowid and is dropped when the filter dies (D1.2), so only the
@@ -195,12 +195,12 @@ public:
 	/// in the form under exactly this name, so getControl(ownedSelectionOptionName()) finds it.
 	/// Note this is a name, not a control; JASPControl::selectionDependency() gives the control.
 	virtual QString					ownedSelectionOptionName() const				{ return QString(); }
-	///< The EXPLICIT selection host this control's variables resolve through (mds-plan D4.2,
+	///< The EXPLICIT selection host this control's variables resolve through (
 	/// the successor of the walk's explicit-host out-param), or nullptr when the analysis-wide
 	/// VariableInfo serves it (no per-component selection - legacy terms stay -1). Base: nullptr
 	/// (non-lists have no local host); JASPListControl follows its relation chain.
 	virtual JASPControl				* resolvedSelectionHost()						{ return nullptr; }
-	///< The VariableInfo serving this control (mds-plan D4.2):
+	///< The VariableInfo serving this control:
 	///  the resolved host's own selection, else form()->varInfo() (the analysis-level namespace).
 	VariableInfo					* resolvedVarInfo();
 	///< The control that must be bound BEFORE this one for that selection to be in effect: the
@@ -346,7 +346,7 @@ protected:
 							_toolTip,
 							_title,
 							_parentListViewKey;
-	int						_parentListViewFilterId	= -1;	///< mds-plan D6.1: filter id of the row this control was created under (rowFilterId context property; -1 for tableview-index rows and non-row controls)
+	int						_parentListViewFilterId	= -1;	///< filter id of the row this control was created under (rowFilterId context property; -1 for tableview-index rows and non-row controls)
 	bool					_isBound					= true,
 							_indent						= false,
 							_initialized				= false,

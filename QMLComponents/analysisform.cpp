@@ -42,7 +42,7 @@
 #include <QTimer>
 #include "preferencesmodelbase.h"
 #include "workspace.h"
-#include "columnencoder.h"	//mds-plan D3.3: FILTERIDS_SELF for the collision-tolerant sidecar placement
+#include "columnencoder.h"	// FILTERIDS_SELF for the collision-tolerant sidecar placement
 
 using namespace std;
 
@@ -69,7 +69,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showAllROptionsChanged,	this,		&AnalysisForm::showAllROptionsChanged,	Qt::QueuedConnection);
 	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::developerModeChanged,	this,		&AnalysisForm::helpMDChanged,			Qt::QueuedConnection);
 	connect(this,									&AnalysisForm::analysisChanged,					this,		&AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);
-	//mds-plan C4/LANG: the wrapper call shown in the form is *rendered* text - dataset/filter
+	// the wrapper call shown in the form is *rendered* text - dataset/filter
 	//strings resolved through the live workspace map. The map itself always self-syncs, but an
 	//already-shown call does not until it is re-rendered, so a language change (which may swap
 	//any translatable fragment that ever entered the render) re-emits it. Analyses::
@@ -131,7 +131,7 @@ QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue, QString m
 
 QVariant AnalysisForm::options() const
 {
-	//mds-plan D3.4: the QML-visible options are the GENERATED Engine tree (component state, C11)
+	// the QML-visible options are the GENERATED Engine tree (component state, C11)
 	//with the transient `.filterIds` sidecar stripped - the same view the RPC hands out, and what
 	//the old mirror returned (modulo the provenance keys that were already documented-dead).
 	if(!_analysis)
@@ -230,11 +230,11 @@ void AnalysisForm::filterByNameDone(int dataSetID, const QString & name, const Q
 
 void AnalysisForm::addControl(JASPControl *control)
 {
-	//mds-plan C5: componentComplete registers every static-branch control here, but nothing used
+	// componentComplete registers every static-branch control here, but nothing used
 	//to unregister - a control created after form setup and destroyed later (the late
 	//ComponentsList/QML createObject case) left raw pointers in _controls and _dependsOrderedCtrls
 	//and the next pass over them (setAnalysisUp/_setUpModels/bindTo/filterByNameDone/
-	//clearFormErrors/...) dereferenced freed memory: SEGV (chunk-4 finding #1). Prune at the same
+	//clearFormErrors/...) dereferenced freed memory: SEGV. Prune at the same
 	//chokepoint registration happens: the destroyed signal fires from ~QObject, so the dying
 	//control is only ever used as a pointer VALUE below - it must never be dereferenced here.
 	//(QObject's own rule covers the teardown race: when the form dies first its signal machinery
@@ -326,8 +326,8 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		control->addExplicitDependency();
 
 		//The dataset/filter selection a control's variables resolve through is a dependency too,
-		//and it is not declared anywhere: it falls out of the LOCAL namespace resolution (mds-plan
-		//D4.1/D4.2: JASPControl::selectionDependency over JASPListControl::resolvedSelectionHost,
+		//and it is not declared anywhere: it falls out of the LOCAL namespace resolution (
+		//JASPControl::selectionDependency over JASPListControl::resolvedSelectionHost,
 		//the successor of the deleted walk's derivation). Recording it here - before the
 		//transitive closure below snapshots the set - is what makes a host's FilterSelect bind
 		//before every control it serves: binding the dropdown writes the saved filter id into the
@@ -412,7 +412,7 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 		if (_rSyntax->parseRSyntaxOptions(parsedOptions))
 		{
 			bindTo(parsedOptions);
-			//mds-plan C11/D3.3: report the options as GENERATED from the now-bound components
+			// report the options as GENERATED from the now-bound components
 			//(Engine shape: values + send-time .meta minus provenance + the transient
 			//`.filterIds` sidecar), not from a stored mirror. The syntax bridge feeds
 			//this tree through prepareMultiDataSetRun and back to R, so it must carry the
@@ -564,7 +564,7 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 				if (defaultOptions.isObject() && defaultOptions.isMember(name))
 					optionValue = defaultOptions[name];
 
-				//mds-plan D3.4: a late selection host stashed the resolved filter id for this
+				// a late selection host stashed the resolved filter id for this
 				//option at registration (successor of the direct mirror write); if the control
 				//now binds and the tree carries nothing for it, the stash is its value. The
 				//stash is request-scoped (cleared by setPendingDataSetSelectionRawValues), so a
@@ -621,7 +621,7 @@ void AnalysisForm::addFormError(const QString & error)
 	emit errorsChanged();
 }
 
-//mds-plan C11/D3.4 - see the header for the contract. This IS the options tree now (the
+// see the header for the contract. This IS the options tree now (the
 //the mirror-era equality proof is history (the mirror is deleted; the golden harness
 //tst_generatedOptionsJson*.qml keeps the shape pinned). Two rules define it:
 //  * placement: AnalysisBase::resolveOptionParent / placeOptionMeta / placeOptionFilterIds are
@@ -764,7 +764,7 @@ QStringList AnalysisForm::dataSetSelectionOptionNames() const
 {
 	QStringList names;
 
-	//Registry instead of a findChildren scan (mds-plan C4/REGISTRY, M9): hosts register when
+	//Registry instead of a findChildren scan (M9): hosts register when
 	//their dataSetSelectionOption is set (or when the form becomes known to them after that),
 	//so dynamically instantiated hosts are in here too. Dead hosts drop out at read time.
 	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
@@ -795,12 +795,12 @@ void AnalysisForm::registerDataSetSelectionOption(const QString &option, JASPCon
 
 	_dataSetSelectionHosts.append({QPointer<JASPControl>(host), option});
 
-	//mds-plan D2.3: unregistering is eager - the registry is the introspection surface D2.4
+	// unregistering is eager - the registry is the introspection surface D2.4
 	//aggregates over, so a dying host drops out on destruction, not only at the next read
 	//(read-time pruning of null QPointers stays as the belt).
 	connect(host, &QObject::destroyed, this, &AnalysisForm::handleSelectionHostDestroyed, Qt::UniqueConnection);
 
-	//mds-plan D2.4: the provider aggregate (AnalysisBase over the registry) just grew a host.
+	// the provider aggregate (AnalysisBase over the registry) just grew a host.
 	emit selectionHostsChanged();
 
 	//Late host (ComponentsList async instantiation while a bridge parse left raw options
@@ -825,7 +825,7 @@ void AnalysisForm::handleSelectionHostDestroyed(QObject * host)
 			++it;
 	}
 
-	if(removed)							//mds-plan D2.4: the provider aggregate just shrank
+	if(removed)							// the provider aggregate just shrank
 		emit selectionHostsChanged();
 }
 
@@ -851,11 +851,11 @@ QList<JASPControl *> AnalysisForm::selectionHostControls() const
 	return hosts;
 }
 
-//mds-plan D3.6: the controls' typed filterIds collected on demand - every bound control answers
-//through the same createFilterIds() (mds-plan D3.1/D3.2) that places its `.filterIds` sidecar
+// the controls' typed filterIds collected on demand - every bound control answers
+//through the same createFilterIds() that places its `.filterIds` sidecar
 //node, and the sidecar's leaf grammar (int | positional array) is exactly what
 //ColumnEncoder::collectFilterIdsFromSidecar sweeps. Nothing is stored or cached: this is a
-//generation, not a read (C11), and it sees bindTo-copied foreign term provenance (mds-plan C9)
+//generation, not a read (C11), and it sees bindTo-copied foreign term provenance
 //that no host selection would imply.
 void AnalysisForm::collectFilterIds(std::set<int> & filterIds) const
 {
@@ -902,14 +902,14 @@ void AnalysisForm::unregisterDataSetSelectionOption(const QString &option, JASPC
 			++it;
 	}
 
-	if(removed)							//mds-plan D2.4: provider aggregate shrank (option rename path)
+	if(removed)							// provider aggregate shrank (option rename path)
 		emit selectionHostsChanged();
 }
 
 void AnalysisForm::setPendingDataSetSelectionRawValues(const Json::Value &rawOptions)
 {
 	_pendingSelectionRawOptions = rawOptions.isObject() ? rawOptions : Json::Value(Json::objectValue);
-	_resolvedSelectionOptionValues = Json::Value(Json::objectValue);	//mds-plan D3.4: same request boundary for the resolved stash
+	_resolvedSelectionOptionValues = Json::Value(Json::objectValue);	// same request boundary for the resolved stash
 }
 
 Json::Value AnalysisForm::takeResolvedSelectionOptionValue(const QString & option)
@@ -947,11 +947,11 @@ void AnalysisForm::_applyPendingDataSetSelectionValue(const QString &option)
 		return;
 	}
 
-	//The resolved filter id waits in the form's stash (mds-plan D3.4: the successor of the direct
+	//The resolved filter id waits in the form's stash (the successor of the direct
 	//mirror write - the mirror is gone, and pending handoffs live on the form). The option's own
 	//DropDown consumes it at its first bind (RowControls::_setValues falls back to the stash), so
 	//a late control binds to the id, not the surface text; the dropdown then drives the host and
-	//owns the value like every normal write. Selection options carry no .meta (mds-plan C3/M5),
+	//owns the value like every normal write. Selection options carry no .meta,
 	//which the dropdown's own writes already honour.
 	_resolvedSelectionOptionValues[option.toStdString()] = Json::Value(std::to_string(filterId));
 
@@ -1050,7 +1050,7 @@ void AnalysisForm::setAnalysis(AnalysisBase * analysis)
 
 	Log::log() << "AnalysisForm " << this << " sets Analysis " << _analysis << " on itself" << std::endl;
 
-	connectSelectionNamespaceSignals(_analysis);	//mds-plan C10/D2.4
+	connectSelectionNamespaceSignals(_analysis);
 
 	setAnalysisUp();
 }
@@ -1060,7 +1060,7 @@ void AnalysisForm::connectSelectionNamespaceSignals(AnalysisBase * analysis)
 	if(!analysis)
 		return;
 
-	//mds-plan C10/D2.4: the analysis' VariableInfoProvider aggregates over THIS registry, so it
+	// the analysis' VariableInfoProvider aggregates over THIS registry, so it
 	//has to hear about registry changes (host joins/leaves) and host filter switches (after the
 	//HostFilterSelection restamp walk has settled the namespace, see notifySelectionHostFilterChanged).
 	//Unique: both pairing points (here and the dummy in setAnalysisUp) may run on the same pair.
@@ -1106,7 +1106,7 @@ void AnalysisForm::setAnalysisUp()
 		if (qmlEngine(this)->rootContext()->contextProperty("NO_DESKTOP_MODE").toBool())
 		{
 			_analysis = new AnalysisBase(this); // Make dummy analysis: needed for Unit TestCases or R Syntax mode
-			connectSelectionNamespaceSignals(_analysis);	//mds-plan C10/D2.4: this path bypasses setAnalysis
+			connectSelectionNamespaceSignals(_analysis);	// this path bypasses setAnalysis
 		}
 		else
 			return;
@@ -1125,14 +1125,14 @@ void AnalysisForm::setAnalysisUp()
 	blockValueChangeSignal(true);
 
 	// When reading from a JASP file or reloading the QML file, the options have been PARKED as
-	// pending JSON (mds-plan C12/D3.4): take them once here - the parking is now empty and no
+	// pending JSON: take them once here - the parking is now empty and no
 	// later path can read it - and bind each control to its initial value. The controls own the
 	// state from here; the run/save/dataSpec paths generate from them, never from this tree.
 	Json::Value initialOptions	= _analysis->takePendingOptions();
 
 	_setUpControls();
 
-	// The controls own their values (mds-plan D3.4): bindTo(initialOptions) resets each one to its
+	// The controls own their values: bindTo(initialOptions) resets each one to its
 	// initial value (createJson() when the option is absent), so there is no stored tree left over
 	// to clear - nothing is parked here once the form attached.
 	bindTo(initialOptions);
@@ -1149,7 +1149,7 @@ void AnalysisForm::setAnalysisUp()
 
 	emit analysisChanged();
 
-	//mds-plan D3.5/C12: AnalysisBase::referencedDataSets() defers (answers {}) until an
+	// AnalysisBase::referencedDataSets() defers (answers {}) until an
 	//initialized form exists - the pending JSON is applied here and never read for behaviour
 	//before that. Tell the consumers (results header, RPC dataSetIds, file-modified bookkeeping)
 	//to re-read now that the component state - and with it the real references - exists.

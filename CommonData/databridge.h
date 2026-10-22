@@ -99,7 +99,7 @@ public:
 	};
 
 	/// Prepare a multi-dataset aware analysis run: the generated Engine json names the filter every
-	/// option/term was selected through in the transient `.filterIds` sidecar (mds-plan D3.2/D3.3;
+	/// option/term was selected through in the transient `.filterIds` sidecar (
 	/// the .meta provenance stamps retired with C8), so the options are encoded per dataset (each
 	/// filter VIEW mints tokens embedding its ids) and one read slice per involved filter is
 	/// queued for rbridge_readDataSetRequested. Used by both Engine::runAnalysis and the syntax
@@ -108,7 +108,7 @@ public:
 	/// analysis without filter); the shown dataset is the primary then.
 	MultiDataSetRunPlan		prepareMultiDataSetRun(Json::Value & options, int analysisDataSetId, const std::string & analysisFilter, const std::string & logName);
 
-	/// mds-plan C11/D3.3: the transient `.filterIds` provenance tree is an engine-side input
+	/// the transient `.filterIds` provenance tree is an engine-side input
 	/// contract only - it must never reach R. Call this at the engine boundary, just before the
 	/// options string is handed to rbridge_runModuleCall (Engine::runAnalysis) or back into the
 	/// syntax-bridge's R caller, after prepareMultiDataSetRun has consumed it.

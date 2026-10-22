@@ -41,7 +41,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( bool				addInteractionsByDefault			READ addInteractionsByDefault			WRITE setAddInteractionsByDefault			NOTIFY addInteractionsByDefaultChanged			)
 	Q_PROPERTY( bool				interactionContainLowerTerms		READ addInteractionsByDefault			WRITE setInteractionContainLowerTerms		NOTIFY interactionContainLowerTermsChanged		)
 	Q_PROPERTY( QVariant			sourceWithoutDefaultInteraction		READ sourceWithoutDefaultInteraction	WRITE setSourceWithoutDefaultInteraction	NOTIFY sourceWithoutDefaultInteractionChanged	)
-	///< mds-plan C10: dataset/filter selection lives on the LIST (exactly like TextAreaBase's of
+	///< dataset/filter selection lives on the LIST (exactly like TextAreaBase's of
 	///  the same names): declaring an option name gives this list its own selection, whose value
 	///  is a FILTER ID carried by that option (a FilterSelect in the list's chrome reads/writes
 	///  it, desktop and syntax alike). Two lists of one form can then look at two datasets at the
@@ -82,7 +82,7 @@ public:
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1);
 	bool						keepVariablesWhenMoved()																const				{ return _keepVariablesWhenMoved;					}
 	bool						containsInteractions()																	const	override;
-	///< mds-plan D6.1: a list that declares its own dataset/filter selection IS declaring that its
+	///< a list that declares its own dataset/filter selection IS declaring that its
 	///  values are columns of that namespace (C10 list-as-host, C13 host-bound) - no available-list
 	///  or dataset-source relation required. Without this the second-source pattern (a standalone
 	///  AssignedVariablesList with its own dataSetSelectionOption) never encodes: encodeValue()
@@ -93,14 +93,14 @@ public:
 	bool						interactionContainLowerTerms()															const				{ return _interactionContainLowerTerms;				}
 	QVariant					sourceWithoutDefaultInteraction()														const				{ return _sourceWithoutDefaultInteraction;			}
 
-	// ---- per-list dataset/filter selection (HostFilterSelection; mds-plan C10) ----
+	// ---- per-list dataset/filter selection (HostFilterSelection) ----
 	QString					dataSetSelectionOption()			const	{ return _hostSelection.option();			}
 	bool					selectionAvailable()				const	{ return _hostSelection.selectionAvailable(); }
 	QVariantList			filterSelectionValues()				const	{ return _hostSelection.filterSelectionValues(); }
 	int						selectedFilterId()					const	{ return _hostSelection.selectedFilterId(); }
 	VariableInfo		  * ownVarInfo()							{ return _hostSelection.ownVarInfo(); }
 	VariableInfo		  * ownedSelectionVarInfo() override			{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
-	///< Registry-facing selected filter of this host (mds-plan D2.3).
+	///< Registry-facing selected filter of this host.
 	Filter				  * selectedSelectionFilter() const override		{ return _hostSelection.selectedFilter(); }
 	///< The option the list's FilterSelect dropdown is bound to; its registered control is what
 	///< consumers of this host wait for in bindTo order (JASPControl::selectionDependency).
@@ -110,7 +110,7 @@ public:
 	///< (JASPListControl) first, else - when this list has no selection of its own - the related
 	///< available list (dropKeys[0], set in _setRelations). A list that declares its own
 	///< dataSetSelectionOption serves itself and skips the inherited edge (C13 host-bound).
-	///< mds-plan D4.1/D4.2: the direct relation reads behind JASPListControl::resolvedSelectionHost's
+	///< the direct relation reads behind JASPListControl::resolvedSelectionHost's
 	///< chain (the deleted walk's namespace override lived here).
 	JASPListControl		  * relatedNamespaceList() override;
 

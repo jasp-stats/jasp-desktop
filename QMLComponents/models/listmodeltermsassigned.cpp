@@ -41,7 +41,7 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const Terms::RelatedV
 
 void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved, int filterIdToUpdate)
 {
-	//mds-plan post (ORIGIN-AUTHORITATIVE): the pool's provider moved on. References into that
+	// (ORIGIN-AUTHORITATIVE): the pool's provider moved on. References into that
 	//provider (stamp == filterIdToUpdate) reconcile here - survivors are REPLACED BY the
 	//delivered universe terms (the row maps re-key rename-flow style inside
 	//reconcileProviderChange), vanished names die - while foreign stamps and -1 terms are
@@ -171,7 +171,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 	const Term& term = terms().at(size_t(index));
 	AnalysisForm* form = listView()->form();
 
-	RowControls* controls = _rowControlsMap.value(TermRowKey::ofTerm(term));	//mds-plan D6.1: exact row identity
+	RowControls* controls = _rowControlsMap.value(TermRowKey::ofTerm(term));	// exact row identity
 	if (controls)
 	{
 		for (JASPControl* control : controls->getJASPControlsMap().values())
@@ -193,7 +193,7 @@ void ListModelTermsAssigned::changeTerm(int index, const Term& term)
 	Term oldTerm = terms().at(index);
 	if (oldTerm.value() != term.value())
 	{
-		//mds-plan D6.1: the row maps key on IDENTITY (value + filterId), so the rename moves
+		// the row maps key on IDENTITY (value + filterId), so the rename moves
 		//both entries to the NEW key - and the new key must be exactly what _replaceTerm's
 		//intake (_checkTermType -> _setAllowedType) will stamp, or setUpRowControls (run from
 		//_replaceTerm before we could move anything afterwards) would find the moved row

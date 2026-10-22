@@ -3,7 +3,7 @@ import QtQuick
 import JASP
 import JASP.Controls
 
-// mds-plan post - the FactorsForm provenance deferral closed, control-level pins.
+// the FactorsForm provenance deferral closed, control-level pins.
 //
 // The factors option's transient `.filterIds` sidecar is an ARRAY-OF-ARRAYS (element i = factor
 // i's per-term filterId array, FactorsFormBase::createFilterIds) and its Storage shape carries the

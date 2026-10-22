@@ -73,7 +73,7 @@ private:
 	void					runRCode(			int dataSet,	const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
 	void					runRCodeCommander(	int dataSet,	std::string   rCode																						);
 
-	///< mds-plan D7.3/C11: extract the transient `referencedFilterIds` sidecar of a filter/
+	///< extract the transient `referencedFilterIds` sidecar of a filter/
 	///< compute request - the desktop's scan of the run's code (the D7.0a helpers). Consumed
 	///< HERE and only for slice materialization: it is never forwarded into anything R
 	///< evaluates (the R-visible code is built by rbridge_prepareSliceRunScript from the code

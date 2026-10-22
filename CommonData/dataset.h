@@ -138,7 +138,7 @@ public:
 			void			insertColumn(			size_t			index,	bool alterDataSetTable = true);
 			Column		*	createColumn(			const std::string &	name, columnType columnType = columnType::unknown);
 			Column		*	createComputedColumn(	const std::string & name, columnType type		= columnType::unknown, computedColumnType desiredType = computedColumnType::analysis, int analysisId = -1);
-			///< The canonical mint of this dataset (mds-plan C2): bookkeeping only
+			///< The canonical mint of this dataset: bookkeeping only
 			///< (setCurrentNames/updateColumnTypesOnly/currentNames). It answers no full-string
 			///< encode/decode - encode through a filter view (shownEncoder()/Filter::columnEncoder()),
 			///< decode through the context-free global table (ColumnEncoder::decode())..

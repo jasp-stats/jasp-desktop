@@ -46,7 +46,7 @@ public:
 	bool		encodeValue()								const	override;
 
 protected:
-	Json::Value createEngineValue()						const	override;	///< mds-plan D3.1: live _value, no default substitution (see cpp)
+	Json::Value createEngineValue()						const	override;	///< live _value, no default substitution (see cpp)
 
 public:
 	TextInputType	inputType()										{ return _inputType; }

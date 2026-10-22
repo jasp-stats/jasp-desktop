@@ -35,7 +35,7 @@ QString RSyntax::FunctionLineIndent		= "   ";
 // (generated wrapper defaults, the call shown in the form) carries human strings only: the bare
 // dataset title for a default filter, "title - filterName" for a named one, "" for no selection.
 // Reverse lookup through the live workspace; a value that already is a surface string (a combo
-// holding its value pending, mds-plan C2) is kept verbatim - re-parsing resolves it right back.
+// holding its value pending) is kept verbatim - re-parsing resolves it right back.
 // An id that resolves to nothing (dead filter) renders empty: the shown call then fails loudly
 // on re-parse instead of leaking an id into syntax text.
 static QString selectionSurfaceFromBoundValue(const Json::Value &value)
@@ -132,7 +132,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 			formulaSources.append(formula->modelSources());
 	}
 
-	//mds-plan D3.4: script rendering reads the GENERATED Engine tree (component state, C11) with
+	// script rendering reads the GENERATED Engine tree (component state, C11) with
 	//the transient `.filterIds` sidecar stripped - the bytes the deleted mirror held are pinned by
 	//the golden harness (tst_generatedOptionsJson*.qml); the script surface and its C4/RENDER
 	//selection handling are untouched (ScriptConstructorGoldenR known-reds unchanged).
@@ -140,7 +140,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
 	AnalysisBase::stripTransientSidecar(generatedOptions);
 	const Json::Value& optionTree = generatedOptions;
-	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();   //mds-plan C4/RENDER
+	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();
 
 	for (const std::string& member : optionTree.getMemberNames())
 	{
@@ -174,7 +174,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 				else
 				{
 					JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
-					//mds-plan D6.1: model() may be null - a TextArea host (e.g. an Rcode editor
+					// model() may be null - a TextArea host (e.g. an Rcode editor
 					//with its own dataSetSelectionOption) contains variables by declaration now but
 					//only creates a term model for the Source/JAGS/Lavaan-family types.
 					ListModel* listModel = listControl ? listControl->model() : nullptr;
@@ -208,7 +208,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		return result;
 	};
 
-	//mds-plan D3.4: generated Engine tree (sidecar stripped), same as generateSyntax.
+	// generated Engine tree (sidecar stripped), same as generateSyntax.
 	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
 	AnalysisBase::stripTransientSidecar(generatedOptions);
 	const Json::Value& optionTree = generatedOptions;
@@ -250,7 +250,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 
 	if (multiDataSetAware)
 	{
-		//mds-plan D8.3: state the datasets contract on every aware wrapper - the argument is
+		// state the datasets contract on every aware wrapper - the argument is
 		//title-keyed (the same titles the selection options carry), every entry is loaded
 		//standalone, and the analysis receives filter-id-keyed slices (jaspBase contract).
 		result += "#' @param datasets a named list of data.frames keyed by DATASET TITLE - the titles the\n";
@@ -263,7 +263,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 
 	result += analysisName + " <- function(\n";
 	// A multiDataSetAware analysis takes its data as a named list of datasets (names = dataset
-	// TITLES - the title surface the selection options carry, mds-plan D8.3; the slices R
+	// TITLES - the title surface the selection options carry; the slices R
 	// receives at run time are keyed by filter id, the jaspBase contract) instead of a single
 	// data frame.
 	result += FunctionOptionIndent + (multiDataSetAware ? "datasets = NULL,\n" : "data = NULL,\n");
@@ -282,9 +282,9 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	for (FormulaBase* formula : _formulas)
 		optionsWithFormula += formula->extraOptions(true, true);
 
-	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();   //mds-plan C4/RENDER
+	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();
 
-	//mds-plan D8.3: the aware wrapper's body resolves its primary dataset (the frame the formula
+	// the aware wrapper's body resolves its primary dataset (the frame the formula
 	//machinery evaluates against) through the selection options' TITLE surface, so the emitted
 	//argument names of the selection options are collected here while the arguments are emitted.
 	QStringList emittedSelectionArgs;
@@ -315,7 +315,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		}
 		wrapperArgs.insert(optionName);
 
-		//mds-plan C4/RENDER: a selection default enters the wrapper as its surface string (bare
+		// a selection default enters the wrapper as its surface string (bare
 		//title / "title - filterName", "" when nothing was selected) - never as the bound filter
 		//id, which is internal wire format.
 		const Json::Value renderedDefault = selectionOptions.contains(memberQ)
@@ -328,7 +328,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 			optionsWithFormula.push_back(optionName);
 	}
 
-	//mds-plan D8.3: reorder to REGISTRATION order (dataSetSelectionOptionNames, the form's own
+	// reorder to REGISTRATION order (dataSetSelectionOptionNames, the form's own
 	//section order - its first selection is the primary slice), not the alphabetically sorted
 	//json member order the emit loop above walks.
 	emittedSelectionArgs.clear();
@@ -357,7 +357,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		//(jaspBase::storeDataSets -> jaspSyntax::loadDataSets: every entry is loaded standalone,
 		//under its own name as the dataset title).
 		//
-		//mds-plan D8.3: `datasets` must arrive as a named list keyed by DATASET TITLE - the same
+		// `datasets` must arrive as a named list keyed by DATASET TITLE - the same
 		//title surface the dataset selection options carry (their argument defaults above are
 		//rendered through selectionSurfaceFromBoundValue, never the bound filter id). The
 		//positional `datasets[[1]]` pin is gone: the dataset that plays `data` (the frame the
@@ -373,7 +373,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		}
 
 		result += "\n"
-		+ FunctionLineIndent + "# mds-plan D8.3: `datasets` must be a named list of data.frames keyed by DATASET TITLE - the\n"
+		+ FunctionLineIndent + "# `datasets` must be a named list of data.frames keyed by DATASET TITLE - the\n"
 		+ FunctionLineIndent + "# titles the dataset selection options of this form carry (e.g. list(Iris = iris, Sleep = sleep)).\n"
 		+ FunctionLineIndent + "# No positional pin: the dataset that plays `data` (the frame the formula machinery evaluates\n"
 		+ FunctionLineIndent + "# against) is the first selection option whose effective value names one of the loaded datasets,\n"
@@ -681,7 +681,7 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 
 	if (terms.size() == 0)	return "NULL";
 
-	//mds-plan D8.2: the emission context - the analysis' own filter (else the shown-filter C13
+	// the emission context - the analysis' own filter (else the shown-filter C13
 	//fallback) is the namespace bare names resolve in at run time (D7.3 self-reference rule);
 	//terms stamped with another live filter id emit the qualified minimal form, -1/own-filter
 	//terms stay byte-identical.
@@ -721,7 +721,7 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 
 QString RSyntax::_rLiteralForTermComponent(const Term& term, const QString& component, int contextFilterId, Workspace* ws) const
 {
-	//mds-plan D8.2: the list() branch has no per-term type info, so the qualified minimal form
+	// the list() branch has no per-term type info, so the qualified minimal form
 	//is rendered with columnType::unknown (no type segment). A dead slice renders to nothing:
 	//the bare name is kept under a loud log (parseable R resolving through the C13 context
 	//fallback, wrong-slice but never a made-up form), exactly like the formula branch.

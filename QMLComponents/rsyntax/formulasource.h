@@ -68,7 +68,7 @@ public:
 
 	static const QString			interceptTerm;
 	static QVector<FormulaSource*>	makeFormulaSources(FormulaBase* formula, const QVariant& var);
-	// mds-plan D8.2: the emission context - the filter id whose namespace BARE names resolve in
+	// the emission context - the filter id whose namespace BARE names resolve in
 	// at run time (D7.3 self-reference rule): the analysis' own filter, else the shown filter
 	// (the C13 fallback chain varInfo's provider follows). -1 (no form/filter) keeps every
 	// emission on the legacy unqualified path.

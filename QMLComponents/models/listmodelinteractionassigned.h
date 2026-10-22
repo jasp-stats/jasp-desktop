@@ -40,7 +40,7 @@ public slots:
 	
 protected:
 	void			_removeTerms(const Terms & termsToRemove);
-	///< mds-plan post (ORIGIN-AUTHORITATIVE): the component version of the reconcile -
+	///< (ORIGIN-AUTHORITATIVE): the component version of the reconcile -
 	///  interaction terms are multi-component references (their stamp was settled from the
 	///  components' stamps, Terms::crossCombinations/ffCombinations), so "the provider still
 	///  serves this reference" means EVERY component is still in the delivered universe (the

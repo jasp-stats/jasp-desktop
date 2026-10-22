@@ -42,12 +42,12 @@ class VariableInfoConsumer;
 class Terms
 {
 public:
-	///< mds-plan D6.1: row-scoped child values keyed by ROW IDENTITY (value + filterId), not by
+	///< row-scoped child values keyed by ROW IDENTITY (value + filterId), not by
 	///  name: same-name rows behind different filters (the C9 twins) keep their own children
 	///  instead of clobbering each other. Read them with relatedValuesForTerm().
 	typedef QMap<TermRowKey, QMap<QString, Json::Value> >	RelatedValuesPerTerm;
 
-	///< The related values of one row (mds-plan D6.1): exact (value, filterId) hit, else the
+	///< The related values of one row: exact (value, filterId) hit, else the
 	///  (value, -1) entry — the unqualified key the JSON applier writes before the list stamps
 	///  its host onto the term (the bind flow) — else empty. An entry belonging to ANOTHER twin
 	///  is never handed out: that sharing is exactly what this keying removes.
@@ -57,16 +57,16 @@ public:
 	Terms(const std::vector<std::vector<std::string> >		& terms,	Terms *parent = nullptr);
 	Terms(const QList<Term>									& terms,	Terms *parent = nullptr);
 	Terms(																Terms *parent = nullptr);
-	///< The ONE options-json -> Terms applier (mds-plan D3.4): takes the option value as stored
+	///< The ONE options-json -> Terms applier: takes the option value as stored
 	///  or generated and absorbs every legacy normalization into this chokepoint - unwrapping
-	///  `{value, types}` objects, a bare `{value, optionKey?}` Storage object (mds-plan D5.1:
+	/// `{value, types}` objects, a bare `{value, optionKey?}` Storage object (
 	///  types live inside the per-term `{name, filterId?, types}` objects now), a single-string
 	///  `types` becoming a one-element array (pre-0.19 files), and the R-syntax-simplified form
 	///  of an interaction list WITHOUT row components (bare strings / arrays of strings) becoming
 	///  `{keyValue: [components]}` rows. The shape normalization that used to be split across
 	///  bind-time helpers + split-parts parsing lives here now: the flags
 	///  come from the list (containsInteractions/hasRowComponent), every other caller parses with
-	///  defaults. Provenance (mds-plan D5.1): the ENGINE shape (RPC/syntax/run requests) carries
+	/// defaults. Provenance: the ENGINE shape (RPC/syntax/run requests) carries
 	///  no filterId anywhere and parses to all-`-1` terms exactly as before (C15: released files
 	///  too, permanently); the STORAGE shape carries it per term (`{name, filterId?, types}`) and
 	///  the parsed terms keep those ids - the list's intake (ListModel::_setAllowedType) stamps
@@ -121,7 +121,7 @@ public:
 
 	const Term &at(size_t index)										const;
 	Term &at(size_t index);
-	///< Term-aware lookups (mds-plan C9/C13): a lookup term with filterId -1 matches on name alone
+	///< Term-aware lookups: a lookup term with filterId -1 matches on name alone
 	///< (unqualified = context fallback), a stamped one must match name AND filterId — so a list
 	///< can hold two same-name terms from different filters and callers still hit the right one.
 	///< The QString overloads stay pure name lookups (first term with that name).
@@ -154,8 +154,8 @@ public:
 	Json::Value types(bool onlyChanged = false, const VariableInfoConsumer* info = nullptr) const;
 
 	Json::Value getValuesOptions() const;
-	///< The canonical `{value, types[, optionKey]}` option serialization of these terms (mds-plan
-	///  D3.1/D3.4): row objects (keyValue + optional keyLabel + the term's related child values)
+	///< The canonical `{value, types[, optionKey]}` option serialization of these terms:
+	///  row objects (keyValue + optional keyLabel + the term's related child values)
 	///  when the list has row components or interactions, a single value for isSingleRow, bare
 	///  values otherwise. The row assembly is inlined HERE (the separate related-values shuffle
 	///  of the mirror era was deleted with it); useValueAndType selects the

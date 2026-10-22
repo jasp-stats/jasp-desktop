@@ -358,7 +358,7 @@ Json::Value qvariantToJson(const QVariant & varValue)
     case QMetaType::ULongLong:	return static_cast<Json::UInt64>(varValue.toULongLong());
 	case QMetaType::Bool:		return varValue.toBool();
 	case QMetaType::QString:	return fq(varValue.toString());
-	//mds-plan D5.1: QML hands C++ every JS number as a double, and this bridge used to fall
+	// QML hands C++ every JS number as a double, and this bridge used to fall
 	//through to nullValue for them - a setOptions({someOption: 2}) from QML silently bound null.
 	//Integral doubles round-trip as ints (Json::Value(2.0).isIntegral() is true, but keeping the
 	//jsoncpp int where the number IS integral matches what a file's json reader produces).

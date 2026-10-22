@@ -35,7 +35,7 @@ void BoundControlTextArea::bindTo(const Json::Value &value)
 	_textArea->setText(tq(value.asString()));
 }
 
-//mds-plan D3.1: the applied/bound value is the TextArea family's component-owned option state -
+// the applied/bound value is the TextArea family's component-owned option state -
 //the widget text is a draft (commit-on-apply UX, and re-init restores the draft on purpose).
 //BoundControlBase::bindTo funnels through this very virtual, so binds and applies land here alike;
 //rlang/JAGS companions' _setBoundValues/checkSyntax writes dispatch here too (non-virtual calls
@@ -106,7 +106,7 @@ void BoundControlTextArea::checkSyntax()
 	setBoundValue(fq(text));
 }
 
-//mds-plan D8.1 wiring 2 (see the header block): the D7.0a grammar helpers do the parsing and
+// (see the header block): the D7.0a grammar helpers do the parsing and
 //resolution; the rewrite composes each occurrence's replacement from the referenced filter's
 //LIVE view (Workspace::filterById -> columnEncoder()->encode), exactly the primitive the D7.3
 //slice-run script rewriter uses - the desktop and the engine cannot disagree about what a

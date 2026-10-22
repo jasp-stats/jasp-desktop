@@ -41,7 +41,7 @@ VariablesListBase::VariablesListBase(QQuickItem* parent)
 	_controlType			= ControlType::VariablesListView;
 	_useControlMouseArea	= false;
 
-	//Per-list dataset/filter selection (mds-plan C10): the analysis (and with it the selection)
+	//Per-list dataset/filter selection: the analysis (and with it the selection)
 	//can only become known after construction; formIsKnown tells us when that happened (dynamic
 	//controls), setUp is the hook the static ones get - see handleFormIsKnown.
 	connect(this, &JASPControl::formIsKnown, this, &VariablesListBase::handleFormIsKnown);
@@ -288,7 +288,7 @@ bool VariablesListBase::containsInteractions() const
 	return JASPListControl::containsInteractions();
 }
 
-//mds-plan D6.1 (found by the component zoo): declaring dataSetSelectionOption on a list IS the
+// (found by the component zoo): declaring dataSetSelectionOption on a list IS the
 //declaration that its values are columns of that namespace (C10 list-as-host) - no available-list
 //or dataset-source relation required for that. JASPListControl::containsVariables() only knows the
 //RELATION routes, so a standalone host-assigned list (the second-source pattern) came out false,
@@ -326,7 +326,7 @@ ListModel *VariablesListBase::getRelatedModel()
 		QString relatedName = dropKeys()[0]; // The first key gives the default drop item.
 		if (_parentListView)
 		{
-			//mds-plan D6.1: this list's own row identity selects the RowControls - a bare name
+			// this list's own row identity selects the RowControls - a bare name
 			//would land on the first twin's row, not necessarily this one's.
 			JASPListControl* relatedControl = qobject_cast<JASPListControl*>(_parentListView->model()->getRowControl(parentRowKey(), relatedName));
 			if (relatedControl)
@@ -397,7 +397,7 @@ JASPListControl * VariablesListBase::relatedNamespaceList()
 	if (JASPListControl * explicitSource = JASPListControl::relatedNamespaceList())
 		return explicitSource;
 
-	//mds-plan C10: with selection on the LIST, the available list a VariablesForm hands to its
+	// with selection on the LIST, the available list a VariablesForm hands to its
 	//assigned lists (dropKeys[0], wired into availableModel() by _setRelations) is where those
 	//lists' items come from - so their namespace follows it, exactly like an explicit source.
 	//A list that declares its own dataSetSelectionOption serves itself instead: own the edge,
@@ -463,14 +463,14 @@ void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl
 	Term keyTerm = Term::readTerm(checkBoxControl->parentListViewKey());
 	for (const Term& otherTerm : _draggableModel->terms())
 	{
-		//the self-skip compares row VALUES on purpose (mds-plan D2.1): keyTerm is parsed from
+		//the self-skip compares row VALUES on purpose: keyTerm is parsed from
 		//the checkbox's rowValue string and is unqualified, so comparing Term objects would use
 		//the strict identity incl. filterId (C9) and the skip would silently stop firing. (The
-		//row CONTROLS lookup below is exact-row-keyed since mds-plan D6.1.)
+		//row CONTROLS lookup below is exact-row-keyed since .)
 		if (otherTerm.value() == keyTerm.value())
 			continue;
 
-		//mds-plan D6.1: the row controls map keys on row identity, so the lookup uses the model
+		// the row controls map keys on row identity, so the lookup uses the model
 		//term's own TermRowKey.
 		RowControls* rowControls = _draggableModel->getRowControls(TermRowKey::ofTerm(otherTerm));
 		if (!rowControls) continue; // Apparently the controls are not created yet for this row. Does not matter: this function will be called when they are created

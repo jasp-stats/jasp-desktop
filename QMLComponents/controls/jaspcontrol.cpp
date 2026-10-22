@@ -241,7 +241,7 @@ void JASPControl::componentComplete()
 			if (!listViewVar.isNull())
 			{
 				_parentListViewKey = context->contextProperty("rowValue").toString();
-				_parentListViewFilterId = context->contextProperty("rowFilterId").toInt();	//mds-plan D6.1: the row's filter identity (twins share a name, never this)
+				_parentListViewFilterId = context->contextProperty("rowFilterId").toInt();	// the row's filter identity (twins share a name, never this)
 				connect(parentlistView->model(), &ListModel::keyTermChanged, this, &JASPControl::parentListViewKeyChanged);
 			}
 			else
@@ -254,7 +254,7 @@ void JASPControl::componentComplete()
 
 		// For controls made via row components, wait for all controls to be created before calling the setUp: setUp links the controls together via their sources. So in this case, the rowControls calls the setUp once all the controls are made.
 		if (parentlistView)
-			parentlistView->addRowControl(parentRowKey(), this);	//mds-plan D6.1: register under the row's FULL identity
+			parentlistView->addRowControl(parentRowKey(), this);	// register under the row's FULL identity
 		else
 		{
 			setUp(); // For controls not made via a row components (as in FactorsForm), setUp must be called
@@ -940,7 +940,7 @@ void JASPControl::_setInitialized(const Json::Value &value)
 	{
 		if (!_initialized) // If it was already initialized, don't reset its default value: this can be the case when R syntax is re-run
 			bControl->setDefaultBoundValue(bControl->createJson());
-		//mds-plan D6 (zoo run 8, boundG): the null-path self-rebind of an already-initialized
+		// (zoo run 8, boundG): the null-path self-rebind of an already-initialized
 		//control absent from this parse goes through the family's selfRebindFormat (default
 		//Engine = today's builder; the assigned-terms family answers Storage, whose per-term
 		//{name, filterId?, types} objects the applier parses back WITH their provenance - the
@@ -960,7 +960,7 @@ void JASPControl::_setInitialized(const Json::Value &value)
 
 VariableInfo * JASPControl::resolvedVarInfo()
 {
-	//mds-plan D4.2 (C13, host-bound): the explicit host of this control serves its namespace
+	// (C13, host-bound): the explicit host of this control serves its namespace
 	//while it holds one; otherwise the analysis-wide VariableInfo does (the analysis filter,
 	//else the shown filter - how every non-aware analysis has always worked). No component-chain
 	//walk any more: resolvedSelectionHost() is a LOCAL resolution (see JASPListControl), and the

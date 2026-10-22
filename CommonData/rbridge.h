@@ -104,7 +104,7 @@ extern "C" {
 	void				freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
 	void				freeLabels(char** labels, size_t nbLabels);
 
-	//mds-plan D7.3: the filter/compute entry points take the run's EXPLICIT slice context - the
+	// the filter/compute entry points take the run's EXPLICIT slice context - the
 	//own filter (whose VIEW encodes the code's bare names, the C13 fallback namespace, and
 	//whose namespace the output name of a computed column encodes in) - and the transient
 	//`referencedFilterIds` sidecar of the request (the desktop's scan of the code, consumed
@@ -116,8 +116,8 @@ extern "C" {
 	std::string			rbridge_evalRComputedColumn(			const std::string & rCode, const std::string & setColumnCode, const std::string & filterName, Filter * ownFilter = nullptr, const std::vector<int> & referencedFilterIds = {});
 	std::string			rbridge_evalRComputedDataSet(			const std::string & rCode, const std::string & outputDataSetName, const std::string & filterToUse, Filter * ownFilter = nullptr, const std::vector<int> & referencedFilterIds = {});
 
-	/// mds-plan D7.3 (design doc §3.2): prepare the user R code of a filter/compute run that may
-	/// carry qualified column references (the plan §5 surface forms, scanned by the D7.0a
+	/// (design doc §3.2): prepare the user R code of a filter/compute run that may
+	/// carry qualified column references (the surface forms, scanned by the D7.0a
 	/// helpers). Resolves every reference against `workspace`, rewrites it into the referenced
 	/// filter view's unique token, and collects one read-slice per referenced FOREIGN filter
 	/// (the columns the code references in each) plus the run's OWN slice LAST - the setup read
@@ -130,7 +130,7 @@ extern "C" {
 	/// filter being run / the input filter of a computed dataset).
 	bool				rbridge_prepareSliceRunScript(const std::string & code, Filter * ownFilter, Workspace * workspace, const std::vector<int> & referencedFilterIds, std::string & encodedScript, std::vector<DataBridge::MultiDataSetSlice> & slices, std::string & error);
 
-	/// mds-plan D7.3 (design doc §3.3): the new producer of slice queues for filter/compute
+	/// (design doc §3.3): the new producer of slice queues for filter/compute
 	/// runs - sets `slices` (foreign slices first, the run's own last) as the queue that
 	/// rbridge_readDataSetRequested consumes (its D1.6 slice handling unchanged), and attaches
 	/// every FOREIGN slice as its own frame (`slice_<filterId>`) so the foreign tokens resolve

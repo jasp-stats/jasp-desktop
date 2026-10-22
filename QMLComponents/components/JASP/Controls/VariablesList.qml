@@ -51,7 +51,7 @@ import JASP
     \li \b source (var) - Source for populating the VariablesList. Per default it will be all variables. Can be set to an id or a name (or a combination) of other controls having variables.
     \li \b rowComponent (Component) - QML component for custom row controls. Can be used to add e.g. a CheckBox for each variable in the VariablesList.
     \li \b dataSetSelectionOption (string) - Name of the option carrying this list's dataset/filter selection (a filter id). The list then gets its own FilterSelect dropdown and its own variable-info
-        provider (mds-plan C10): several lists of one form can select different datasets at the same time. Declaring it marks the analysis multiDataSetAware. Default: "" (no selection; the list
+        provider: several lists of one form can select different datasets at the same time. Declaring it marks the analysis multiDataSetAware. Default: "" (no selection; the list
         inherits the namespace of the available list its items come from, else the analysis-wide one).
     \endlist
 
@@ -225,11 +225,11 @@ VariablesListBase
 		textFormat		: variablesList.textFormat
 	}
 
-	// Per-list dataset/filter selection (mds-plan C10): one reusable FilterSelect, created exactly
+	// Per-list dataset/filter selection: one reusable FilterSelect, created exactly
 	// when this list declares a dataSetSelectionOption (so an unnamed bound control can never
 	// exist) - the same Loader discipline as TextArea's. The list then owns its namespace:
 	// two lists of one form can select two datasets, and every term entering the list is stamped
-	// with its selection (ListModel::_setAllowedType, mds-plan D2.1).
+	// with its selection (ListModel::_setAllowedType).
 	Loader
 	{
 		id					: filterSelectLoader

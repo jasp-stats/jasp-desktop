@@ -3,7 +3,7 @@ import QtQuick
 import JASP
 import JASP.Controls
 
-// mds-plan D3.1/D3.4 - the Engine-json GOLDEN HARNESS, part 1: the NON-aware form.
+// the Engine-json GOLDEN HARNESS, part 1: the NON-aware form.
 //
 // Phase 3 inverted the options pipeline: the controls' typed state is the source of truth and the
 // two JSON shapes (Engine request / Storage file) are GENERATED on demand
@@ -22,7 +22,7 @@ import JASP.Controls
 //
 // This file covers the FilterMenuButton world: NO dataSetSelectionOption anywhere ⟹ nothing is
 // ever stamped ⟹ the generated Engine json must be byte-identical to the mirror INCLUDING the
-// meta (unstamped values generate filterId-less, exactly as today - mds-plan D3.2) and must carry
+// meta (unstamped values generate filterId-less, exactly as today) and must carry
 // no `.filterIds` tree at all.
 //
 // Fixture (Tests/testqml.cpp): dataset 1 with TestInts/TestLetters/TestDoubles/TestNominal, plus
@@ -58,7 +58,7 @@ Item
 		// interaction terms: value rows are component arrays under the optionKey discipline
 		AssignedVariablesList	{ id: interP;	name: "interP";	source: allVarsP;	listViewType: JASP.Interaction }
 
-		// factor levels: the encodeThis meta family (extras feed, mds-plan C6)
+		// factor levels: the encodeThis meta family (extras feed)
 		FactorLevelList			{ id: facP;		name: "factorLevelsP";	factorName: "FacP";	levelName: "LevP" }
 
 		// variable combobox: the {value, types} single-term contract
@@ -99,7 +99,7 @@ Item
 			}
 		}
 
-		// scalars: the never-encoded, never-stamped families (mds-plan C3/M5)
+		// scalars: the never-encoded, never-stamped families
 		Switch				{ id: swP;		name: "swP" }
 		CheckBox			{ id: cbP;		name: "cbP" }
 		IntegerField		{ id: intP;		name: "intP" }
@@ -217,7 +217,7 @@ Item
 		// are the authoritative old behaviour, not the generator's opinion). Non-aware: no stamp
 		// keys existed to remove, so the goldens are complete Engine trees minus `.filterIds`
 		// (which a non-aware form must not generate at all, D3.2).
-		// mds-plan D5.1 DELTA: "dblP" is 2.5, not the old 0 - the mirror-era bytes had frozen the
+		// "dblP" is 2.5, not the old 0 - the mirror-era bytes had frozen the
 		// qvariantToJson bug that turned every QML number into null (the bound value was dropped
 		// and the default kept). D5.1 fixed the bridge (numbers round-trip; Storage term filterIds
 		// ride it), so the value now arrives as bound. Everything else is the frozen mirror bytes.
@@ -360,7 +360,7 @@ Item
 			verify(storage[".meta"] === undefined, "Storage carries no .meta tree (send-time artifact, C8/C11)")
 			verify(storage[".filterIds"] === undefined, "Storage carries no sidecar tree")
 
-			// mds-plan D5.1 FINAL shape: terms are per-term {name, types} objects (filterId only
+			// The final shape: terms are per-term {name, types} objects (filterId only
 			// when qualified - nothing is qualified here), the outer positional types came out,
 			// and the D5.1-preview `filterIds` member is gone. (TestInts' bound type is corrected
 			// to its real ordinal type by bindTo, same as the Engine goldens show. The whole-tree

@@ -341,7 +341,7 @@ void Engine::runFilterByName(const std::string & name, int dataSetId, int reques
 	std::string RPossibleWarning;
 	try
 	{
-		//mds-plan D7.3: the run's slice context is the filter being run - its own view encodes
+		// the run's slice context is the filter being run - its own view encodes
 		//the code (C13, fixed for filter expressions), and the request's referencedFilterIds
 		//sidecar drives the materialization of any referenced foreign slices.
 		filterResult		= rbridge_applyFilter(strippedFilter, localFilter->generatedFilter(), localFilter, referencedFilterIds);
@@ -384,7 +384,7 @@ void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const s
 	try
 	{		
 		std::string		strippedFilter		= stringUtils::stripRComments(filter);
-		//mds-plan D7.3: the run's slice context is the DEFAULT filter being run (its own view
+		// the run's slice context is the DEFAULT filter being run (its own view
 		//encodes the code, C13) plus the request's referencedFilterIds sidecar.
 		boolvec			filterResult		= rbridge_applyFilter(strippedFilter, generatedFilter, dataSet->defaultFilter(), referencedFilterIds);
 		std::string		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
@@ -456,7 +456,7 @@ void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const
 
 std::vector<int> Engine::referencedFilterIdsFromRequest(const Json::Value & jsonRequest)
 {
-	//mds-plan D7.3/C11: the transient `referencedFilterIds` sidecar of a filter/compute
+	// the transient `referencedFilterIds` sidecar of a filter/compute
 	//request - the desktop's scan of the run's code (the D7.0a helpers, design doc §3.2).
 	//This extraction IS the strip point for these requests (mirroring D3.3's last-moment
 	//doctrine): the ids are consumed for slice materialization only and are never forwarded
@@ -620,7 +620,7 @@ void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnNa
 			
 			const std::string useThisFilter = compCol ? compCol->computeFilter() : "";
 			
-			//mds-plan D7.3 (C13/design doc §3.1): the run's slice context is the COMPUTE
+			// (design doc §3.1): the run's slice context is the COMPUTE
 			//FILTER's view - the same view the data frame R reads inside
 			//rbridge_evalRComputedColumn, and the namespace bare names in the code fall back
 			//to. The output-name encode uses that same explicit handle; the process-global
@@ -853,7 +853,7 @@ void Engine::sendString(Json::Value message)
 	
 	if(message.isObject()) //If everything is converted to jaspResults maybe we can do this there?
 	{
-		//Every results payload goes through the one global strict decode table (mds-plan C4/D1.5):
+		//Every results payload goes through the one global strict decode table:
 		//a block per live filter of every loaded dataset plus the extras block, membership-only,
 		//unknown tokens staying raw. Aware and non-aware runs are not different here - a non-aware
 		//analysis may still live in a workspace with other datasets, and over-sweeping is harmless.
@@ -929,7 +929,7 @@ void Engine::runAnalysis()
 		                                        //creates a new filter for an unknown name, which would
 		                                        //silently fabricate one from a stale analysis request.
 
-	//mds-plan C11/D3.3: strip the transient `.filterIds` provenance from the ENCODED copy at the
+	// strip the transient `.filterIds` provenance from the ENCODED copy at the
 	//very last moment before R sees it (prepareMultiDataSetRun consumed it above; the unencoded
 	//_analysisOptions keeps the sidecar so a Status::changed re-run can consume it again).
 	stripTransientProvenanceForR(encodedAnalysisOptions);

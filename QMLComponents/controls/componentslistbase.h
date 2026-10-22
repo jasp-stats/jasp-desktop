@@ -101,7 +101,7 @@ protected:
 	QString				_makeUnique(const QString& val, const QList<QString>& values, int index = -1)	const;
 	QString				_changeLastNumber(const QString& val) const;
 
-	//mds-plan D3.1: the ComponentsList mirror value is written from the live terms + row-control
+	// the ComponentsList mirror value is written from the live terms + row-control
 	//values (termsChangedHandler), not from createJson's source-defaults builder - the engine
 	//generation reuses the very same builder (getJsonFromComponentValues), optionKey discipline
 	//included. Its per-row provenance sidecar is positional over the rows (= the terms): the row
@@ -111,7 +111,7 @@ protected:
 	//(`{optionKey: {name, filterId?, types}}`, children stay siblings), so no unknown row member
 	//is ever introduced and the engine sidecar stays positional as always.
 	Json::Value			createEngineValue()												const	override;
-	Json::Value			createStorageValue()												const	override;	///< mds-plan D5.1 (see getJsonFromComponentValues)
+	Json::Value			createStorageValue()												const	override;	///< (see getJsonFromComponentValues)
 	Json::Value			createFilterIds()													const	override;
 
 private:

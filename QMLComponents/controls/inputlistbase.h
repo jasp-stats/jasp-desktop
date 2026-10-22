@@ -45,11 +45,11 @@ protected slots:
 	void			termsChangedHandler()								override;
 
 protected:
-	//mds-plan D3.1: live input-model terms are the written value (termsChangedHandler writes
+	// live input-model terms are the written value (termsChangedHandler writes
 	//exactly this); createJson stays the defaultValues builder for the initial binding.
 	//The sidecar is the positional per-term array (same schema as BoundControlTerms).
 	Json::Value		createEngineValue()												const	override;
-	//mds-plan D5.1: row-bearing input lists store the per-term objects under the optionKey
+	// row-bearing input lists store the per-term objects under the optionKey
 	//({name, filterId?, types}, row children kept); non-row input lists keep the plain string
 	//array in the file too (their values are free text, and the card's three reshaped families
 	//are exactly the Terms::getOptions serializations - a non-row input list never builds one).

@@ -31,7 +31,7 @@ public:
 	BoundControlTextArea(TextAreaBase* textArea);
 
 	//keep the JsonFormat overload visible through this class's concrete pointers (the createJson()
-	//override below would otherwise hide it, mds-plan D3.1):
+	//override below would otherwise hide it):
 	using BoundControlBase::createJson;
 
 	bool					isJsonValid(const Json::Value& optionValue) const	override;
@@ -49,8 +49,8 @@ protected:
 	///< provider of the resolved VariableInfo (see JASPControl::resolvedVarInfo).
 	ColumnEncoder			*	_encoder()							const;
 
-	///< mds-plan D8.1 wiring 2 (textarea code encode): resolve every qualified column reference
-	///  (plan §5 surface form) in `code` and rewrite it into the REFERENCED filter's view token,
+	///< (textarea code encode): resolve every qualified column reference
+	/// (surface form) in `code` and rewrite it into the REFERENCED filter's view token,
 	///  so the encoded tokens that form encode under the right namespaces - the surface form
 	///  must never reach R's parser, and the bare-name encode pass that runs afterwards must
 	///  never mangle a reference's components into the CONTEXT namespace. Bare names are not
@@ -63,7 +63,7 @@ protected:
 	///  appearance, for the callers' used-column bookkeeping.
 	static QString				encodeQualifiedColumnRefs(const QString & code, QStringList * tokensFormed = nullptr);
 
-	///< mds-plan D3.1: a TextArea commits its option on APPLY (typing alone never writes) and a
+	///< a TextArea commits its option on APPLY (typing alone never writes) and a
 	/// re-initialisation deliberately restores the editor's draft text (TextAreaBase::
 	/// _setInitialized) - so the widget text is NOT the option value and cannot be generated
 	/// from. The last applied/bound value is this component's own typed state instead (every

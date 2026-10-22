@@ -33,9 +33,9 @@
 #include <json/value.h>
 #include "log.h"
 #include "rpc/jasprpcdispatcher.h"
-#include "data/exporters/jaspexporter.h"	//mds-plan D5.3: jaspArchiveVersion gates the legacy result decode
-#include "columnencoder.h"				//mds-plan D5.3: decodeJsonLegacyTokens
-#include "dataset.h"					//mds-plan D5.3: getColumnTypesMap
+#include "data/exporters/jaspexporter.h"	// jaspArchiveVersion gates the legacy result decode
+#include "columnencoder.h"				// decodeJsonLegacyTokens
+#include "dataset.h"					// getColumnTypesMap
 #include "ai/agentstatetracker.h"
 #include <vector>
 
@@ -87,7 +87,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		Log::log() << "Analyses::createFromJaspFileEntry: no Upgrader in this process - option upgrades skipped." << std::endl;
 	Json::Value				&	optionsJson		= analysisData["options"];
 
-	//mds-plan D5.3: released files' stored results can still carry old bare-prefix
+	// released files' stored results can still carry old bare-prefix
 	//`JaspColumn_<i>_Encoded` tokens (C15) - best-effort decode them from the current column
 	//order before the results tree is loaded (and only there: live decoding stays strict-table
 	//and the legacy map registers nowhere, C4; churned/removed columns leave tokens raw, C16).
@@ -328,7 +328,7 @@ void Analyses::reloadSavedAnalysesJson()
 
 	bool errorFound;
 	std::stringstream errors;
-	//mds-plan D5.3: _tempSave is OUR OWN generated tree (asJson of the live analyses) - it can
+	// _tempSave is OUR OWN generated tree (asJson of the live analyses) - it can
 	//never hold legacy bare-prefix tokens, so hand the loader our current archive version and the
 	//legacy decode gate skips it.
 	loadAnalysesFromJaspFileJson(_tempSave["analyses"], _tempSave["meta"], errorFound, errors, RibbonModel::singleton(), JASPExporter::jaspArchiveVersion);
@@ -433,7 +433,7 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 
 				//This function is called once after 300 ms upon translation due to delayedUpdate in description
 				//and causes the set analysis options to be cleared without this additional flag check set at the start of translations
-				//mds-plan D9.1: only (re)create forms that are actually missing or broken. A description
+				// only (re)create forms that are actually missing or broken. A description
 				//rescan (any Description.qml property change - e.g. the dev module's own live-JS title
 				//updates) used to destroyAndRecreate EVERY form of the module here; the fresh
 				//setAnalysisUp then consumed only the last-sent options delta as pending (C12) and every
@@ -498,7 +498,7 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 	}
 }
 
-//mds-plan D5.3: the load-time gate for the legacy-prefix result decode (do019Fix-style, see the
+// the load-time gate for the legacy-prefix result decode (do019Fix-style, see the
 //header). The archive version is what distinguishes released files (bare-prefix tokens possible)
 //from this branch's own output (D-namespaces only): < 7.0.0 (or absent -> major()==0) decodes,
 //7.x skips. The sweep takes the SHOWN dataset's current columns - released files are
@@ -1050,7 +1050,7 @@ void Analyses::_rpcWriteStatus(Json::Value& response, Analysis* a)
 
 void Analyses::_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc)
 {
-	//mds-plan D3.4: the RPC options report the GENERATED Engine tree (component state, C11) with
+	// the RPC options report the GENERATED Engine tree (component state, C11) with
 	//the transient `.filterIds` sidecar stripped - verifier-compatible with the old mirror output
 	//minus the documented-dead provenance keys (C8 keeps them out of `.meta` anyway).
 	Json::Value options = a->createOptionsJson(BoundControl::Engine);
@@ -1131,7 +1131,7 @@ static Json::Value _diffOptionMeta(const Json::Value& oldMeta, const Json::Value
 
 void Analyses::_rpcWriteOptionsDelta(Json::Value& response, Analysis* a, bool includeDesc, bool forceFull)
 {
-	//mds-plan D3.4: generated Engine tree, sidecar stripped (see _rpcWriteOptions).
+	// generated Engine tree, sidecar stripped (see _rpcWriteOptions).
 	Json::Value options = a->createOptionsJson(BoundControl::Engine);
 	AnalysisBase::stripTransientSidecar(options);
 	response["options"] = options;

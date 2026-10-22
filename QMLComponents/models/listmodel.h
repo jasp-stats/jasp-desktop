@@ -56,7 +56,7 @@ public:
 		VirtualRole,
 		DeletableRole
     };
-	///< mds-plan D6.1: row controls keyed by ROW IDENTITY (value + filterId), not by name, so
+	///< row controls keyed by ROW IDENTITY (value + filterId), not by name, so
 	///  same-name twin rows behind different filters each get and keep their own controls.
 	typedef QMap<TermRowKey, RowControls*>						RowControlMap;
 
@@ -83,17 +83,17 @@ public:
 	virtual void					setUpRowControls(int startRow = 0, bool onlyRemove = false);
 	const RowControlMap	&			getAllRowControls()												const		{ return _rowControlsMap;				}
 	Terms::RelatedValuesPerTerm		getTermsWithComponentValues()									const;
-	///< Exact row-controls access by row identity (mds-plan D6.1). The QString overload resolves
+	///< Exact row-controls access by row identity. The QString overload resolves
 	///< the name through the model (first row term with that name) - the legacy name-only API,
 	///< deterministic for twins now.
 	RowControls*					getRowControls(const TermRowKey& key)							const		{ return _rowControlsMap.value(key);	}
 	RowControls*					getRowControls(const QString& key)							const;
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)			const;
-	///< Exact (name, filterId) row-control lookup (mds-plan D6.1): every C++ caller that holds the
+	///< Exact (name, filterId) row-control lookup: every C++ caller that holds the
 	///< row's term uses this, so a twin never resolves to the other row's control.
 	virtual JASPControl	*			getRowControl(const TermRowKey& key, const QString& name)			const;
-	///< Registration of a row control into the RowControls that is being (re)built (mds-plan
-	///< D6.1): the key is the creating row's identity (value + filterId, or the tableview's
+	///< Registration of a row control into the RowControls that is being (re)built:
+	///< the key is the creating row's identity (value + filterId, or the tableview's
 	///< per-row index string with filterId -1), never a bare name - name-based registration
 	///< would put a twin row's controls into the first row's set.
 	virtual bool					addRowControl(const TermRowKey& key, JASPControl* control);
@@ -110,7 +110,7 @@ public:
 			Terms					checkTermsTypes(const Terms& terms)								const;
 			Terms					checkTermsTypes(const std::vector<Term>& terms)					const;
 			void					checkTermsTypes();
-			///< mds-plan post (ORIGIN-AUTHORITATIVE participation rule): a term follows a provider
+			///< (ORIGIN-AUTHORITATIVE participation rule): a term follows a provider
 			///  update iff it is a reference into the provider that changed - its stamp equals
 			///  `filterIdToUpdate`, the filterId the affected terms CURRENTLY carry (the old
 			///  selection id on a host switch, the unchanged selection id on a data change, -1
@@ -121,13 +121,13 @@ public:
 			///  update a -1 term is a reference into the provider WITHOUT host selection, which
 			///  resolves at use time through the C13 chain and is governed by THAT provider, so
 			///  it is never touched here. A foreign stamp (a typed copy picked/bound through
-			///  another pool, mds-plan D6.2) belongs to that other provider and keeps its
+			/// another pool) belongs to that other provider and keeps its
 			///  provenance.
 			static bool			termFollowsProviderChange(int termFilterId, int filterIdToUpdate)
 			{
 				return termFilterId == filterIdToUpdate;
 			}
-			///< mds-plan post: ONE reconcile routine for a provider update (the signal-driven
+			///< ONE reconcile routine for a provider update (the signal-driven
 			///  successor of the deleted restamp walk, HostFilterSelection::restampValuesUnderHost
 			///  / restampTermsFilterId). `filterIdToUpdate` is the participation key (see
 			///  termFollowsProviderChange); `newUniverse` is the pool's rebuilt universe, whose
@@ -144,7 +144,7 @@ public:
 			///  Virtual: the multi-column and interaction families reconcile their own shapes (the
 			///  tuples / the components), the base version is the single-column rule.
 			virtual Terms		reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse);
-			///< Introspection (QML tests, mds-plan D2.5): "name@filterId" per model term - the
+			///< Introspection (QML tests): "name@filterId" per model term - the
 			///< typed proof that a host switch restamped exactly the controls of the host that
 			///< moved. Empty filterId part (-1) means unqualified (no explicit host).
 			Q_INVOKABLE QStringList	termProvenanceForTest() const;
@@ -198,12 +198,12 @@ protected:
 			void	_connectAllSourcesControls();
 			Term	_checkTermType(const Term& terms)					const;
 			void	_setAllowedType(Term& term)							const;
-			///< The filter id of the selection this list's variables resolve through (mds-plan C9),
+			///< The filter id of the selection this list's variables resolve through,
 			///< -1 when there is no explicit selection host — see _setAllowedType.
 			int		_currentSelectionFilterId()							const;
 
 			bool							_needsSource			= true;
-			RowControlMap						_rowControlsMap;			//mds-plan D6.1: keyed by row identity (TermRowKey), see getAllRowControls
+			RowControlMap						_rowControlsMap;			// keyed by row identity (TermRowKey), see getAllRowControls
 			QQmlComponent *					_rowComponent			= nullptr;
 			Terms::RelatedValuesPerTerm		_rowControlsValues;
 			QList<BoundControl *>			_rowControlsConnected;

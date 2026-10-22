@@ -115,7 +115,7 @@ public slots:
 	int						selectedFilterId()					const	{ return _hostSelection.selectedFilterId(); }
 	VariableInfo		  * ownVarInfo()							{ return _hostSelection.ownVarInfo(); }
 	VariableInfo		  * ownedSelectionVarInfo() override			{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
-	///< Registry-facing selected filter of this host (mds-plan D2.3).
+	///< Registry-facing selected filter of this host.
 	Filter				  * selectedSelectionFilter() const override		{ return _hostSelection.selectedFilter(); }
 	///< The option the text area's FilterSelect dropdown is bound to; its registered control is
 	///  what consumers of this host depend on for bindTo order (JASPControl::selectionDependency).

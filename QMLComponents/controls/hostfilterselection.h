@@ -31,7 +31,7 @@ class VariableInfo;
 /// Dataset/filter selection that lives on a HOST control (a VariablesListBase, a TextAreaBase,
 /// ...) instead of on the analysis or its form: two hosts of one analysis can therefore hold two
 /// different filters at the same time - which is the whole point of the multi-dataset aware
-/// analyses (mds-plan C10: selection lives on the list, not on the VariablesForm).
+/// analyses (selection lives on the list, not on the VariablesForm).
 ///
 /// The selection is a filter id, carried by the option named by dataSetSelectionOption: a
 /// FilterSelect DropDown embedded by the host mirrors (and writes) that option, so the selection
@@ -40,7 +40,7 @@ class VariableInfo;
 /// VariableInfo whose provider is the selected Filter (Filter *is* a VariableInfoProvider,
 /// scoped to its own dataset, rows filtered, names encoded by that dataset's own encoder), and
 /// every variable-info consumer below the host resolves to that VariableInfo (see
-/// JASPControl::resolvedVarInfo / JASPListControl::resolvedSelectionHost, mds-plan D4.2).
+/// JASPControl::resolvedVarInfo / JASPListControl::resolvedSelectionHost).
 ///
 /// The analysis' own filter (FilterMenuButton) is a separate, analysis-global thing: selection
 /// code never touches it.
@@ -86,7 +86,7 @@ private slots:
 	void validateSelection();							///< C10: vanished filter -> fall back, never dangle
 
 private:
-	void   applyFilter(Filter * filter);				///< store + re-point provider; the term provenance below the host follows through the pool signals (mds-plan post, ORIGIN-AUTHORITATIVE)
+	void applyFilter(Filter * filter);				///< store + re-point provider; the term provenance below the host follows through the pool signals (ORIGIN-AUTHORITATIVE)
 	Filter * currentFallbackFilter() const;				///< analysis filter, else workspace shown filter
 
 	JASPControl *				_host;

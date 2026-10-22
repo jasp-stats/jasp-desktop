@@ -18,7 +18,7 @@ Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 		return output;
 	};
 
-	//mds-plan D8.2: split on `separator` OUTSIDE double-quoted segments. A qualified column
+	// split on `separator` OUTSIDE double-quoted segments. A qualified column
 	//reference ("DS"."Filter"."Col"("Type"), D7.0a grammar) may contain any character inside
 	//its quotes - including the interaction separators themselves - and must never be split.
 	auto splitRespectingQuotes = [] (const QString& input, char separator) -> QStringList
@@ -58,7 +58,7 @@ Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 
 	auto readTermWithType = [provider] (const QString& input) -> std::pair<QString, columnType>
 	{
-		//mds-plan D8.2: a qualified surface form is kept VERBATIM as the component - it owns
+		// a qualified surface form is kept VERBATIM as the component - it owns
 		//its ("Type") segment, and resolution into typed ids happens once, in the D8.1
 		//applier (Term(json) -> resolveQualifiedTermComponent). The bare-name dot-suffix
 		//logic and the provider lookup must not touch the quotes. The R-name guard wraps
@@ -216,7 +216,7 @@ QString FormulaParser::transformToFormulaTerm(const Term &term, const Json::Valu
 		std::string compType = (changedType.isArray() && changedType.size() > i ? changedType[i] : changedType).asString();
 		columnType type = columnTypeFromString(compType, columnType::unknown);
 
-		//mds-plan D8.2: a term stamped with a foreign live filter id renders as the qualified
+		// a term stamped with a foreign live filter id renders as the qualified
 		//MINIMAL form (D7.0a renderer: bare inside the context, "DS"."Col"/"F"."Col"/full
 		//outside; type segment on demand). The component string itself stays bare (C9: typed
 		//terms carry names + one filterId; qualification is an emission-time act) and the

@@ -31,7 +31,7 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 }
 
 
-//mds-plan C8/D3.4: the send-time `.meta` of this option - THE single source since the mirror and
+// the send-time `.meta` of this option - THE single source since the mirror and
 //its createMeta provenance-stamping era were deleted. It holds everything the engine consumes
 //(shouldEncode gates the encode; isRCode/filterForValues drive the R-code and filter-by-name
 //paths; families add encodeThis/loadFilteredData on top of this via the same virtual) and NEVER a
@@ -68,7 +68,7 @@ Filter *BoundControlBase::generatedHostFilter() const
 	if (!analysis || !analysis->multiDataSetAware())
 		return nullptr;
 
-	//mds-plan D4.2: LOCAL resolution (JASPControl::resolvedVarInfo - own host via the relation
+	// LOCAL resolution (JASPControl::resolvedVarInfo - own host via the relation
 	//chain, else the analysis-level VariableInfo) replaced the deleted walk; the provider of
 	//whatever VariableInfo serves the control IS the provenance this option belongs to: the
 	//selected Filter of an explicit host, or the analysis'/shown filter at analysis level
@@ -88,7 +88,7 @@ int BoundControlBase::generatedHostFilterId() const
 
 Json::Value BoundControlBase::createFilterIds() const
 {
-	//Default transient provenance node (mds-plan D3.2): the option-level host filter - exactly the
+	//Default transient provenance node: the option-level host filter - exactly the
 	//id createMeta stamps as filterId today, at exactly the same gate (encodeValue + aware analysis
 	//+ resolvable host). Term-bearing families override this with the positional per-term array
 	//(BoundControlTerms::createFilterIds); values that were never stamped (non-aware, released
@@ -134,7 +134,7 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 	writeCurrentValue(value, emitChange);
 }
 
-//mds-plan D3.4 (the deletion): every value the control commits goes through HERE. The value lands
+// Every value the control commits goes through HERE. The value lands
 //in the component-owned `_boundValue` (the generators' home - C11) and the change propagates as
 //pure notification: AnalysisBase::notifyOptionsChanged() re-emits boundValuesChanged + the aware
 //dataSpecChanged (the tail the mirror's setBoundValue used to carry, gated exactly as before),

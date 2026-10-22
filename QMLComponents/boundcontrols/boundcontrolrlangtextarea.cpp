@@ -86,7 +86,7 @@ void BoundControlRlangTextArea::checkSyntax()
 	// get the column names of the data set
 	_prefixedUsedColumnNames.clear();
 
-	//mds-plan D8.1 wiring 2: resolve the qualified column references (plan §5) BEFORE the
+	// resolve the qualified column references BEFORE the
 	//bare-name encode pass - each becomes the referenced slice's token (the D7.3 rewrite
 	//primitive), so the encoded tokens form under the right namespaces and the surface form
 	//is never mangled into the context namespace nor handed to R's parser. Bare names keep
@@ -147,7 +147,7 @@ void BoundControlRlangTextArea::checkSyntax()
 			firstCol = false;
 		}
 
-	//mds-plan D8.1: the qualified references' tokens are already fully encoded (each under its
+	// the qualified references' tokens are already fully encoded (each under its
 	//referenced slice's view) - they join the checker's column list verbatim, never re-encoded
 	//against the context encoder.
 	for (const QString & token : qualifiedTokens)
@@ -214,7 +214,7 @@ void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 	setBoundValue(boundValue, !_control->form()->wasUpgraded());
 }
 
-//mds-plan D3.1: one builder for every _setBoundValues write: the live textarea text plus the
+// one builder for every _setBoundValues write: the live textarea text plus the
 //derived members of THIS control (_textEncoded, the used-column sets from the last syntax check),
 //encoded against the host encoder exactly as the last check produced them. The generators read
 //the committed result through BoundControlTextArea::_appliedValue instead (commit-on-apply).

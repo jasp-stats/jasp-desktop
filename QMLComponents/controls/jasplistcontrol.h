@@ -81,7 +81,7 @@ public:
 	const QVector<SourceItem*>	&	sourceItems()				const			{ return _sourceItems; }
 			void					applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
 
-	///< mds-plan D4.1/D4.2 (successor of the deleted namespace-resolution chain): a list resolves its namespace
+	///< (successor of the deleted namespace-resolution chain): a list resolves its namespace
 	///  through its RELATION edges - the explicit `source:` list first, else the related
 	///  available list (VariablesListBase::relatedNamespaceList) - hop by hop until a list is an
 	///  active selection host (it serves itself and everyone it feeds, C13 host-bound) or the
@@ -97,9 +97,9 @@ public:
 			
 
 	Q_INVOKABLE JASPControl		*	getRowControl(const QString& key, const QString& name)	const;
-	///< Exact row-control lookup by row identity (mds-plan D6.1), forwarded to the model.
+	///< Exact row-control lookup by row identity, forwarded to the model.
 	JASPControl				*	getRowControl(const TermRowKey& key, const QString& name)	const;
-	///< Registration key is the creating row's identity (mds-plan D6.1), see ListModel::addRowControl.
+	///< Registration key is the creating row's identity, see ListModel::addRowControl.
 	virtual	bool					addRowControl(const TermRowKey& key, JASPControl* control);
 			bool					hasRowComponent()			const;
 
@@ -189,7 +189,7 @@ protected:
 	bool							_checkLevelsConstraintsForVariable(const QString& variable);
 	JASPControls					getMDSubItems(const QQuickItem* parentItem = nullptr)			const	override;
 
-	///< The next list in this list's namespace-relation chain (mds-plan D4.1/D4.2): the first
+	///< The next list in this list's namespace-relation chain: the first
 	///  source item that names an actual list control (the `source:` edge); nullptr for
 	///  values-/rSource-/native-model-driven sources and until the source resolves (setup
 	///  timing). VariablesListBase extends this with the related-available-list edge.

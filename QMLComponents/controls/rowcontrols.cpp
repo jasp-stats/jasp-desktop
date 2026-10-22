@@ -54,7 +54,7 @@ void RowControls::initValues(int row, const Term& key, const QMap<QString, Json:
 	context->setContextProperty("rowLabel", key.label());
 	context->setContextProperty("rowValue", key.value());
 	context->setContextProperty("rowType", columnTypeToQString(key.type()));
-	//mds-plan D6.1: the row's filter identity travels with it: JASPControl composes its
+	// the row's filter identity travels with it: JASPControl composes its
 	//registration key (TermRowKey) from rowValue + rowFilterId, so same-name twin rows register
 	//their controls into their OWN RowControls instead of the first row's.
 	context->setContextProperty("rowFilterId", key.filterId());
@@ -88,7 +88,7 @@ void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json
 	_context->setContextProperty("rowLabel", key.label());
 	_context->setContextProperty("rowValue", key.value());
 	_context->setContextProperty("rowType", columnTypeToQString(key.type()));
-	_context->setContextProperty("rowFilterId", key.filterId());		//mds-plan D6.1, see initValues
+	_context->setContextProperty("rowFilterId", key.filterId());		// see initValues
 	_context->setContextProperty("isNew", false);
 
 	_setValues(rowValues);
@@ -123,7 +123,7 @@ void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 			if (boundItem)
 				optionValue = boundItem->boundValue();
 
-			//mds-plan D3.4: a late selection host's freshly created option control binds the
+			// a late selection host's freshly created option control binds the
 			//RESOLVED filter id the form stashed at registration (the successor of the value the
 			//old mirror write placed where this fallback read it - without it the late dropdown
 			//would bind the untranslated surface text).

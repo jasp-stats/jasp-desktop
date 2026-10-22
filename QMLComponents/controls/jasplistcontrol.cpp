@@ -46,7 +46,7 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 JASPListControl * JASPListControl::relatedNamespaceList()
 {
 	//The explicit `source:` edge: the first source item that names an actual list control
-	//(mds-plan D4.2, the direct relation read the deleted walk hopped through). nullptr until a
+	//(the direct relation read the deleted walk hopped through). nullptr until a
 	//source control resolves (setup timing, or values-/rSource-driven lists).
 	for (SourceItem * sourceItem : _sourceItems)
 		if (JASPListControl * sourceControl = sourceItem->sourceListControl())
@@ -57,7 +57,7 @@ JASPListControl * JASPListControl::relatedNamespaceList()
 
 JASPControl * JASPListControl::resolvedSelectionHost()
 {
-	//mds-plan D4.1/D4.2: follow the RELATION chain hop by hop (explicit `source:` first, else the
+	// follow the RELATION chain hop by hop (explicit `source:` first, else the
 	//related available list) until a list is an ACTIVE selection host - it serves its own subtree
 	//and everyone it feeds (C13 host-bound) - or the chain runs out. Keeping the source edge
 	//ahead of the own-host check preserves the old semantic main path: a list that declares

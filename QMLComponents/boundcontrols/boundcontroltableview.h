@@ -32,14 +32,14 @@ public:
 	bool					isJsonValid(const Json::Value& value)	const	override;
 	//the no-arg createJson override here would otherwise HIDE the JsonFormat overload
 	//declared on BoundControl/Base (C++ name lookup), which the composite controls forward
-	//through this concrete pointer (mds-plan D3.1):
+	//through this concrete pointer:
 	using BoundControlBase::createJson;
 	Json::Value				createJson()							const	override;
 	void					bindTo(const Json::Value& value)				override;
 	void					resetBoundValue()								override;
 
 protected:
-	///< mds-plan D3.1: the mirror value of a tableview is built from the live table model through
+	///< the mirror value of a tableview is built from the live table model through
 	/// fillBoundValue (that is what resetBoundValue/the model-change path writes), not from
 	/// createJson's default builder - the generator reads the same live TableTerms through the same
 	/// virtual fill, so both shapes stay one source of truth. (Contrasts/FilteredDataEntry/Grid

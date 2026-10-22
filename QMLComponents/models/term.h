@@ -31,9 +31,9 @@
 /// A term is a basic element of a VariablesList
 /// It is usually just a string, but in case of interactions, it is a vector of strings, a component being one part of an interaction.
 ///
-/// A term also carries its provenance (mds-plan C9): the id of the dataset/filter selection it was
+/// A term also carries its provenance: the id of the dataset/filter selection it was
 /// selected THROUGH (`filterId()`, -1 = unqualified). Like `types` this is internal typed state —
-/// nothing of it reaches the JSON wire in this phase (the generators of mds-plan Phase 3 own the
+/// nothing of it reaches the JSON wire in this phase (the generators own the
 /// serialization) — but it IS part of identity: two same-name terms from different filters never
 /// compare equal, which is what lets one list hold e.g. "TestInts" of two different slices at the
 /// same time. The default copy constructor/assignment carry it (plain member, no custom copies).
@@ -65,7 +65,7 @@ public:
 	void						setTypes(columnTypeVec types)	{ _types = types;	}
 	void						setLabel(const QString& label)	{ _label = label;	}
 
-	///< mds-plan C9: id of the filter this term was selected THROUGH, -1 while unqualified. Part of
+	///< id of the filter this term was selected THROUGH, -1 while unqualified. Part of
 	///  the term's identity (see operator==); stamped by the list the term lives in (ListModel).
 	int							filterId()		const			{ return _filterId;	}
 	void						setFilterId(int filterId)			{ _filterId = filterId;	}
@@ -88,7 +88,7 @@ public:
 	///  from different filters stay distinguishable in ordered containers (std::map<Term, ...>).
 	bool operator<(const Term &other) const;
 
-	///< Hash consistent with operator== (mds-plan C9): == compares the components as a SET and the
+	///< Hash consistent with operator==: == compares the components as a SET and the
 	///  filterId, so this mixes per-component hashes (xor: order-free), the size and the filterId.
 	friend size_t qHash(const Term &term, size_t seed);
 
@@ -102,7 +102,7 @@ public:
 
 	Json::Value toJson(bool useArray = true, bool useValueAndType = true) const;
 
-	///< mds-plan D5.1: THE Storage term object `{name, filterId?, types}` - the clean typed-state
+	///< THE Storage term object `{name, filterId?, types}` - the clean typed-state
 	///  file serialization (the Engine wire shape above stays frozen as today's R contract).
 	///  `name` is the value string for a single-component term and the component array for an
 	///  interaction; `types` is always the per-component type array; `filterId` is emitted only
@@ -139,7 +139,7 @@ private:
 					_info;
 	bool			_draggable = true;
 	columnTypeVec	_types = {columnType::unknown};
-	int				_filterId = -1;			///< mds-plan C9: filter selected through, -1 = unqualified; part of identity
+	int				_filterId = -1;			///< filter selected through, -1 = unqualified; part of identity
 };
 
 inline size_t qHash(const Term &term, size_t seed)
@@ -151,9 +151,9 @@ inline size_t qHash(const Term &term, size_t seed)
 }
 
 ///
-/// mds-plan D8.1: the resolution of ONE string term component that entered through the JSON
+/// the resolution of ONE string term component that entered through the JSON
 /// appliers (Terms(json) / Term(json)) - the D3.4 single JSON->Terms parse chokepoint.
-/// A component that *is* a qualified surface form (plan §5: "DS"."Col", "F"."Col", the full
+/// A component that *is* a qualified surface form ("DS"."Col", "F"."Col", the full
 /// form, each with its optional ("Type") tail) is parsed with QualifiedColumnRef::parse and
 /// resolved against the live Workspace (ids only, D1.2: no Filter*/encoder is cached here);
 /// `bareName` becomes the plain column name and `filterId` rides the typed Term (C9), which
@@ -177,7 +177,7 @@ struct QualifiedTermComponent
 QualifiedTermComponent resolveQualifiedTermComponent(const QString & component);
 
 ///
-/// mds-plan D6.1: the identity of a ROW of a term list for the row-scoped satellite state
+/// the identity of a ROW of a term list for the row-scoped satellite state
 /// (Terms::RelatedValuesPerTerm and ListModel's row-controls map). Those maps used to be keyed
 /// by term.value() — the NAME — so a list holding two rows with the same column behind different
 /// filters (the C9 twins) shared, and silently clobbered, one entry: the second row's children
@@ -195,7 +195,7 @@ public:
 	TermRowKey() = default;
 	explicit TermRowKey(const QString & name, int filterId = -1) : _name(name), _filterId(filterId) {}
 
-	///< The key of a row's own term (mds-plan C9 identity: value + the filter it came through).
+	///< The key of a row's own term (identity: value + the filter it came through).
 	static TermRowKey ofTerm(const Term & term)			{ return TermRowKey(term.value(), term.filterId()); }
 
 	const QString	&	name()		const	{ return _name;		}

@@ -12,7 +12,7 @@
 #include "data/importers/odsimporter.h"
 #include "data/importers/jaspimporter.h"
 #include "data/exporters/jaspexporter.h"
-#include "analysis/analyses.h"	//mds-plan D5.3: Analyses::decodeLegacyResultTokens (static gate+sweep)
+#include "analysis/analyses.h"	// Analyses::decodeLegacyResultTokens (static gate+sweep)
 #include "data/exporters/dataexporter.h"
 #include "data/importers/excelimporter.h"
 #include "data/importers/rdataimporter.h"
@@ -36,10 +36,10 @@
 #include "databridge.h"
 #include "rbridge.h"
 #include "analysisbase.h"
-#include "models/listmodel.h"	//mds-plan post: the provider-update participation rule + reconcile
+#include "models/listmodel.h"	// the provider-update participation rule + reconcile
 #include "analysisform.h"
 #include "controls/jaspcontrol.h"
-#include "rsyntax/formulaparser.h"	//mds-plan D8.2: emission + re-parse roundtrip
+#include "rsyntax/formulaparser.h"	// emission + re-parse roundtrip
 #include "data/asyncloader.h"
 #include "data/importers/csv/csvparser.h"
 #include "data/datasetloader.h"
@@ -2220,7 +2220,7 @@ void TestAll::testEncoderPrefixPerDataset()
 	const std::string prefixA	= "JASPColumn_D" + std::to_string(a->id()) + "_F" + std::to_string(a->defaultFilter()->id()) + "_";
 
 	ColumnEncoder * viewA = a->defaultFilter()->columnEncoder();
-	QVERIFY2(viewA, "a live filter must own its namespace view (mds-plan C3)");
+	QVERIFY2(viewA, "a live filter must own its namespace view");
 	const std::string encodedA = viewA->encode(colName);
 
 	QVERIFY2(encodedA.find(prefixA) == 0,	qPrintable(tq("Filter view prefix must carry the dataset AND filter id, got: " + encodedA)));
@@ -2254,7 +2254,7 @@ void TestAll::testEncoderPrefixPerDataset()
 	QVERIFY2(encodedB.find(prefixB) == 0,	qPrintable("Second dataset must get its own id-based prefix"));
 	QVERIFY(encodedB != encodedA);
 
-	//Decoding is context-free since mds-plan C4: the ONE global table holds a block per live filter
+	//Decoding is context-free since the ONE global table holds a block per live filter
 	//of every loaded dataset, so a single sweep resolves tokens of both datasets (the old
 	//instance-rooted decodeJson only saw its own dataset).
 	Json::Value json;
@@ -2348,7 +2348,7 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	a->encoder().setCurrentNames(a->getColumnTypesMap());
 	b->encoder().setCurrentNames(b->getColumnTypesMap());
 
-	//Encode through the shown filter's VIEW (mds-plan C3): the canonical itself mints no tokens.
+	//Encode through the shown filter's VIEW: the canonical itself mints no tokens.
 	ColumnEncoder * viewA = a->shownEncoder(), * viewB = b->shownEncoder();
 	QVERIFY(viewA && viewB);
 
@@ -2363,7 +2363,7 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 
 	options[".meta"]["dependent"]["shouldEncode"]	= true;
 	options[".meta"]["covariate"]["shouldEncode"]	= true;
-	//mds-plan D3.3 flip: the provenance rides the transient `.filterIds` sidecar (the .meta
+	// The D3.3 flip: the provenance rides the transient `.filterIds` sidecar (the .meta
 	//stamps retired with C8); each option names the filter its terms were selected through and
 	//that filter re-attributes the collected cols+types to its own dataset.
 	options[".filterIds"]["dependent"]				= a->shownFilter()->id();
@@ -2373,8 +2373,8 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 			options, true,
 			[ws](int & dataSetId, int filterId) -> ColumnEncoder *
 			{
-				//mds-plan D3.3/D3.7: the sidecar filterId resolves to that filter's VIEW (mds-plan
-				//C3) and re-attributes dataSetId - filter ids imply their dataset. Exactly the
+				// the sidecar filterId resolves to that filter's VIEW and re-attributes dataSetId -
+				// filter ids imply their dataset. Exactly the
 				//prepareMultiDataSetRun resolver shape, against the real workspace.
 				if(filterId >= 0)
 				{
@@ -2403,7 +2403,7 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()),	QString::fromStdString(encodedInA));
 	QCOMPARE(QString::fromStdString(options["covariate"][0].asString()),	QString::fromStdString(encodedInB));
 
-	//Decoding is context-free since mds-plan C4: ONE sweep of the global table resolves both
+	//Decoding is context-free since ONE sweep of the global table resolves both
 	//datasets' slices - there is no instance-rooted decode left to route around (D1.5):
 	Json::Value fromA(encodedInA), fromB(encodedInB);
 	ColumnEncoder::decodeJson(fromA);
@@ -2438,7 +2438,7 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	QCOMPARE(QString::fromStdString(again), QString::fromStdString(encodedInA));
 	QCOMPARE(QString::fromStdString(ColumnEncoder::decode(again)), QString::fromStdString(colName));
 
-	// And the emitted token format is dataset-AND-filter-namespaced (mds-plan C1), so results
+	// And the emitted token format is dataset-AND-filter-namespaced, so results
 	// decode sweeps need no routing table and deleted namespaces simply stop answering:
 	QVERIFY2(encodedInA.rfind("JASPColumn_D" + std::to_string(a->id()) + "_F" + std::to_string(a->shownFilter()->id()) + "_", 0) == 0,
 	         qPrintable(tq("encoded names must start with JASPColumn_D<dataSetId>_F<filterId>_, got: " + encodedInA)));
@@ -2450,7 +2450,7 @@ void TestAll::testEncoderMutationFunnel()
 {
 	//Every mutation class funnels into the canonical mint (setCurrentNames / updateColumnTypesOnly)
 	//or the view (register/erase), and the ONE global decode table must reflect exactly the current
-	//state after each - no caller has to remember a second step (mds-plan D1.4).
+	//state after each - no caller has to remember a second step.
 	QVERIFY(_newPkgWithDataSet());
 
 	Workspace * ws = _pkg->workspace();
@@ -2566,7 +2566,7 @@ void TestAll::testEncoderMutationFunnel()
 
 void TestAll::testDecodeSupersetSemanticsAcrossLiveNamespaces()
 {
-	//mds-plan D1.5/C4+C16: every decode site is the static entry, so a single sweep must resolve
+	// every decode site is the static entry, so a single sweep must resolve
 	//tokens from ANY live namespace (any filter of any loaded dataset, plus extras) regardless of
 	//which one the payload was minted against - and must leave everything that is NOT a live
 	//namespace's token exactly raw. Superset for live namespaces, strict for dead ones.
@@ -2648,7 +2648,7 @@ void TestAll::testDecodeSupersetSemanticsAcrossLiveNamespaces()
 
 void TestAll::testComputedColumnSiteDecodesExtrasTokens()
 {
-	//mds-plan C6 called out the one site that decoded dataset-only: EngineRepresentation's
+	// The one site that decoded dataset-only was EngineRepresentation's
 	//computed-column reporting (enginerepresentation.cpp). With D1.5 every site is the static
 	//entry, so a columnName that is an EXTRAS token (not a dataset token) resolves too. The
 	//observable: the site only reaches Workspace::computedColumnSucceeded - which clears the
@@ -2762,7 +2762,7 @@ void TestAll::testMultiDataSetQueueClearedAtRequestBoundary()
 
 	DataBridge bridge(ProcessInfo::currentPID());	//borrows the process-wide workspace, just like the syntax bridge does in a host
 
-	//mds-plan D3.3 flip: the slice queue is collected from the `.filterIds` sidecar leaves (the
+	// The D3.3 flip: the slice queue is collected from the `.filterIds` sidecar leaves (the
 	//.meta stamps are gone with C8); two distinct named filters are two slices.
 	Json::Value options(Json::objectValue);
 	options[".filterIds"]["dependent"]	= a->shownFilter()->id();
@@ -2787,7 +2787,7 @@ void TestAll::testMultiDataSetQueueClearedAtRequestBoundary()
 
 void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
 {
-	//mds-plan D1.6/D3.3: prepareMultiDataSetRun resolves each option's encoder from the FILTER
+	// prepareMultiDataSetRun resolves each option's encoder from the FILTER
 	//VIEW its `.filterIds` sidecar names (not the shown encoder), with the C7 fallback to the
 	//shown-filter view for options the sidecar does not name. The landmine: the form's HOST
 	//filter differs from the shown dataset filter - the sidecar'd option must encode in the
@@ -2850,7 +2850,7 @@ void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
 
 	options[".meta"]["dependent"]["shouldEncode"]	= true;
 	options[".meta"]["legacy"]["shouldEncode"]		= true;
-	//mds-plan D3.3 flip: provenance in the sidecar (C8 keeps .meta provenance-free)...
+	// The D3.3 flip: provenance in the sidecar (C8 keeps .meta provenance-free)...
 	options[".filterIds"]["dependent"]				= hostFilterId;		//the host filter, NOT the shown one
 	//..."legacy" carries no sidecar node -> C7 shown-filter fallback
 
@@ -2883,7 +2883,7 @@ void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
 
 void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
 {
-	//mds-plan D3.3 - the FLIP of the D3.2 "sidecar is inert" pin: the generated Engine json
+	// the FLIP of the D3.2 "sidecar is inert" pin: the generated Engine json
 	//carries its transient provenance in the `.filterIds` tree and NO provenance in `.meta` (C8),
 	//and the engine-side walk now RUNS OFF that sidecar. Pinned at DataBridge level:
 	//  (1) the generated shape (C8 meta + sidecar) resolves through the SIDECAR filter's VIEW
@@ -2899,7 +2899,7 @@ void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
 	//  (5) the grammar helpers/collector: collectFilterIdsFromSidecar sees every int leaf
 	//      including the "$" container member the collision placement uses; and the generated
 	//      .meta carries no provenance keys (the deleted meta collectors'negative control,
-	//      re-armed on its premise, mds-plan D3.4).'
+	// re-armed on its premise).'
 	QVERIFY(_newPkgWithDataSet());
 
 	Workspace * ws = _pkg->workspace();
@@ -3003,7 +3003,7 @@ void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
 	QVERIFY2(fromSidecar == std::set<int>({ hostFilterId }), "collectFilterIdsFromSidecar finds the scalar id");
 
 	std::set<int> fromMeta;
-	//mds-plan D3.4: the meta collector is DELETED with the mirror's stamping era - the negative
+	// the meta collector is DELETED with the mirror's stamping era - the negative
 	//control retargets to its premise: the generated `.meta` carries NO provenance keys anywhere
 	//(C8), so a meta-based reader could not find hostFilterId even if one existed; the sidecar
 	//above is the only carrier.
@@ -3053,7 +3053,7 @@ void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
 
 void TestAll::testPerTermMixedProvenanceEncodesViaOwnViews()
 {
-	//mds-plan D3.7: the request-encoding single walk resolves PER NODE from the sidecar - a
+	// the request-encoding single walk resolves PER NODE from the sidecar - a
 	//POSITIONAL array with genuinely mixed filters encodes each term in its own filter's VIEW
 	//(the flagship x@f1/x@f2 within ONE list, C9/C11) and the slice queue carries BOTH filters.
 	//This is the behavior the pre-flip lockstep could not express (one stamp per option).
@@ -3121,7 +3121,7 @@ void TestAll::testPerTermMixedProvenanceEncodesViaOwnViews()
 
 void TestAll::testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder()
 {
-	//mds-plan D3.7 pins for the single walk:
+	// The pins for the single walk:
 	//  (1) the CONTAINER sidecar node (positional "$" + named row-child nodes, the D3.3
 	//      collision shape) encodes a row-object array per POSITION through the "$" entries,
 	//      and the row-object members ride the row's view exactly like the pre-flip option-level
@@ -3219,7 +3219,7 @@ void TestAll::testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder()
 
 void TestAll::testPerFactorProvenanceEncodesViaOwnViews()
 {
-	//mds-plan post (the FactorsForm deferral closed): a factors option's sidecar is an
+	// (the FactorsForm deferral closed): a factors option's sidecar is an
 	//ARRAY-OF-ARRAYS - element i = factor i's per-term positional filterId array (the generator
 	//FactorsFormBase::createFilterIds; here the generated shape is hand-written exactly as the
 	//walk consumes it). The engine walk must resolve it factor-positionally then term-positionally:
@@ -3321,7 +3321,7 @@ void TestAll::testPerFactorProvenanceEncodesViaOwnViews()
 
 void TestAll::testPerFactorSidecarCollectorAndDiscriminatorNoMisfire()
 {
-	//mds-plan post, the two remaining walk-level pins:
+	// the two remaining walk-level pins:
 	//  (1) the queue collector recurses the ARRAY-OF-ARRAYS sidecar (int leaves nested two levels
 	//      deep) - the D3.3 queue build must see every factor's every term filter;
 	//  (2) the discriminator CANNOT misfire on the existing flat shapes - each is pinned by
@@ -3451,7 +3451,7 @@ void TestAll::testPerFactorSidecarCollectorAndDiscriminatorNoMisfire()
 
 void TestAll::testPlaceOptionFilterIdsCollisionDemotion()
 {
-	//mds-plan D3.3/D3.7: the generators' sidecar placement (AnalysisBase::placeOptionFilterIds).
+	// the generators' sidecar placement (AnalysisBase::placeOptionFilterIds).
 	//A stamped list's positional node sharing its slot with stamped row-child nodes is demoted
 	//into the container's reserved "$" member (the grammar the engine walk consumes - pinned by
 	//testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder); trees without a collision
@@ -3499,7 +3499,7 @@ void TestAll::testPlaceOptionFilterIdsCollisionDemotion()
 
 void TestAll::testPreAttachOptionsParkAndAreNeverReadForBehaviour()
 {
-	//mds-plan D3.5/C12: options arriving while no form is attached PARK as pending JSON (this is
+	// options arriving while no form is attached PARK as pending JSON (this is
 	//exactly what Analyses::create does with the optionsJson from a file entry). Nothing that
 	//drives BEHAVIOUR may read them before setAnalysisUp applies them once through the controls:
 	// - createOptionsJson(Engine|Storage) - the generated run/save trees since D3.3 - stay empty
@@ -3549,7 +3549,7 @@ void TestAll::testPreAttachOptionsParkAndAreNeverReadForBehaviour()
 	QCOMPARE(analysis.referencedDataSets().size(), size_t{0});
 }
 
-//mds-plan post (ORIGIN-AUTHORITATIVE): the participation rule of the signal-driven provider
+// (ORIGIN-AUTHORITATIVE): the participation rule of the signal-driven provider
 //update (ListModel::reconcileProviderChange, the successor of the deleted restamp walk): a
 //term follows iff its stamp equals the pool's reported participation key - the filterId the
 //affected terms currently carry (the old selection id on a host switch, the unchanged
@@ -3557,7 +3557,7 @@ void TestAll::testPreAttachOptionsParkAndAreNeverReadForBehaviour()
 //provider WITHOUT host selection: they participate exactly when the key is -1 (a hostless
 //pool's update, whose delivered universe is -1-stamped too, so their identity never changes
 //through this) and never on a qualified update. Foreign-stamped terms (a typed copy from
-//another pool's selection, mds-plan D6.2) keep their provenance.
+//another pool's selection) keep their provenance.
 //The behaviour half runs ONE reconcile on a bare model: the pool's rebuilt universe is
 //delivered birth-stamped, survivors are REPLACED BY the delivered term (stamp rides the
 //replacement, never an in-place re-point), vanished names die, everything else stays.
@@ -3636,7 +3636,7 @@ void TestAll::testProviderUpdateParticipationKeepsForeignStamps()
 	QCOMPARE(after2.at(1).filterId(),	12);	//foreign stamp survives a vanished name - its provider may still serve it
 }
 
-//mds-plan D5.1: THE Storage file format. Every term family serializes its terms as clean typed
+// THE Storage file format. Every term family serializes its terms as clean typed
 //objects {name, filterId?, types} (filterId omitted when -1) under the existing row/optionKey
 //discipline, and the tree round-trips losslessly: Storage-json -> Terms(json) applier ->
 //regenerate -> BYTE-EQUAL. The flagship is the same-name-different-filter twin pair: x@11 and
@@ -3710,7 +3710,7 @@ void TestAll::testStorageTermShapeAndRoundTrip()
 	QMap<QString, Json::Value> kids;
 	kids[tq("keep")]	= Json::Value(true);
 	kids[tq("extra")]	= Json::Value("s");
-	related[TermRowKey(tq("z"), 3)]	= kids;	//mds-plan D6.1: rows key on (value, filterId)
+	related[TermRowKey(tq("z"), 3)]	= kids;	// rows key on (value, filterId)
 	Cycle rc = storageCycle(rows, "variable", "", false, true, false, related);
 	QCOMPARE(rc.again.toStyledString(), rc.storage.toStyledString());
 	QCOMPARE(rc.storage["optionKey"].asString(), "variable");
@@ -3745,7 +3745,7 @@ void TestAll::testStorageTermShapeAndRoundTrip()
 	QCOMPARE(el.reparsed.size(), size_t{0});
 }
 
-//mds-plan D5.1/D5.2: the single JSON->Terms applier accepts BOTH shapes - the new Storage
+// the single JSON->Terms applier accepts BOTH shapes - the new Storage
 //per-term objects AND every engine/legacy input - with byte-identical parse semantics on the
 //legacy side: released files (plain names, `{value,types}`, single-string types, bare arrays,
 //R-syntax-simplified interaction rows, factor-level rows) keep parsing to exactly the terms they
@@ -3862,7 +3862,7 @@ void TestAll::testApplierAcceptsEngineAndStorageShapes()
 	Terms fromStorageRow{ storageRows, "variable", "", relatedOut, false, true };
 	QCOMPARE(fromStorageRow.size(), size_t{1});
 	QCOMPARE(fromStorageRow.terms()[0].filterId(), 3);
-	QVERIFY(relatedOut.contains(TermRowKey(tq("z"), 3)));				//mds-plan D6.1: keyed by the term's row identity (z@3)
+	QVERIFY(relatedOut.contains(TermRowKey(tq("z"), 3)));				// keyed by the term's row identity (z@3)
 	QCOMPARE(relatedOut[TermRowKey(tq("z"), 3)][tq("keep")].asBool(), true);	//row children collected as today
 
 	//a stale/foreign loaded id is KEPT verbatim (the applier never repairs, never drops it - the
@@ -3886,7 +3886,7 @@ void TestAll::testApplierAcceptsEngineAndStorageShapes()
 	QCOMPARE(fromNull.terms()[0].filterId(), -1);
 }
 
-//mds-plan D6.1 (Phase-6 landmine, the row-control zoo case): RelatedValuesPerTerm and the row
+// (the row-control zoo case): RelatedValuesPerTerm and the row
 //assembly keyed row children by term.value() — the NAME — so same-name rows behind different
 //filters (the C9 twins) shared ONE entry: the second row's children clobbered the first's, in
 //the applier, in getOptions/getStorageOptions and across the save round-trip. Keys are now
@@ -3994,7 +3994,7 @@ void TestAll::testRelatedValuesPerTermRowKeying()
 	QVERIFY(model.containsValue(TermRowKey(tq("x"), -1).asTerm()));			//-1 key = name wildcard
 }
 
-//mds-plan D5.2: NO stamp migration (C15) - the fallback rules must carry every released file
+// NO stamp migration (C15) - the fallback rules must carry every released file
 //forever, and the D5.1 Storage format must not create a new failure mode when a loaded filterId
 //is stale: the engine-side walk degrades it to the same C7/C13 fallback, never a crash and never
 //a phantom slice (the ids survive restamp - see testApplierAcceptsEngineAndStorageShapes and the
@@ -4080,14 +4080,14 @@ void TestAll::testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade()
 	QVERIFY(!queued3.contains("999999"));																					//dead scalar stamp queues nothing either
 }
 
-//mds-plan D5.3: the legacy-prefix result decoder. Released .jasp files (archive < 7.0.0) can
+// the legacy-prefix result decoder. Released .jasp files (archive < 7.0.0) can
 //persist `JaspColumn_<i>_Encoded` tokens inside stored results; at load the shim materializes
 //that namespace from the CURRENT dataset columns (same pure mint, released default prefix) and
 //sweeps the results tree only. Honest limitations, pinned here: unchanged columns decode,
 //indices outside the mint (deleted columns) stay raw (C16), and a churned column set can only
 //ever resolve index-by-index (order changed ⟹ different name or raw - best effort by design,
 //never a crash). Read-side only: nothing registers into the global decode table (C4).
-//mds-plan D5.4: repack a zip while replacing (or adding) whole text entries - used to turn a
+// repack a zip while replacing (or adding) whole text entries - used to turn a
 //current-format archive into a released-format fixture (manifest downgrade + crafted
 //analyses.json) without faking the internal.sqlite the importer insists on.
 static bool _rewriteZipReplacingEntries(const QString & src, const QString & dst, const QMap<QString, QByteArray> & replacements)
@@ -4235,7 +4235,7 @@ void TestAll::testLegacyResultTokenDecoder()
 																																	//reaching this line at all is the no-crash contract.
 }
 
-//mds-plan D5.4: the upgrade path end to end over a RELEASED-format .jasp. A real current-build
+// the upgrade path end to end over a RELEASED-format .jasp. A real current-build
 //archive is repacked with a released manifest (archive 6.0.0) and a released-shape analyses.json:
 //plain-name option arrays (no {value,types}), a dynamicModule that is not installed here (must be
 //skipped as today), and a report entry whose persisted results hold genuine bare-prefix tokens
@@ -4519,7 +4519,7 @@ private:
 
 void TestAll::testAnalysisBaseUsesDataSetWhenAware()
 {
-	//mds-plan D3.5/D3.6: attached form required before references steer behaviour, and the
+	// attached form required before references steer behaviour, and the
 	//references are component state - registered selection hosts (the TestSelectionHost seam,
 	//see testAnalysisProviderAggregatesSelectionHosts), not stamped mirror meta.
 	QVERIFY(_newPkgWithDataSet());
@@ -4563,7 +4563,7 @@ void TestAll::testAnalysisBaseUsesDataSetWhenAware()
 void TestAll::testAnalysisBaseDataSpecWhenAware()
 {
 	//C3/M7: dataSpec() for a multi-dataset aware analysis must come from the datasets its
-	//COMPONENTS reference (mds-plan D3.6: registered selection hosts / typed term provenance /
+	//COMPONENTS reference (registered selection hosts / typed term provenance /
 	//own filter), not from dataSet() - which an aware analysis deliberately refuses (and
 	//Desktop::Analysis logs about). Before this the aware branch was dead code: the early return
 	//on !data already yielded "", so the results header showed nothing about the data.
@@ -4581,7 +4581,7 @@ void TestAll::testAnalysisBaseDataSpecWhenAware()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
 	QVERIFY(b->defaultFilter());
 
-	//mds-plan D3.5/D3.6: dataSpec() reads component state - simulate the attach (see
+	// dataSpec() reads component state - simulate the attach (see
 	//testAnalysisBaseReferencedDataSets) and drive the references through a selection host.
 	AnalysisForm form;
 	AnalysisBase analysis(&form);
@@ -4612,7 +4612,7 @@ void TestAll::testAnalysisBaseDataSpecWhenAware()
 	b->removeFilter(named);												//Filter dies -> host and id go null
 	QCOMPARE(analysis.dataSpec(), a->title());
 
-	//mds-plan D3.5: pre-attach the spec defers to "" - pending state never names datasets:
+	// pre-attach the spec defers to "" - pending state never names datasets:
 	AnalysisBase parked;
 	parked.setMultiDataSetAware(true);
 	parked.setPendingOptions(Json::Value(Json::objectValue));
@@ -4630,13 +4630,13 @@ void TestAll::testAnalysisBaseDataSpecWhenAware()
 
 void TestAll::testAnalysisBaseReferencedDataSets()
 {
-	//mds-plan D3.6/C11: references are computed ON DEMAND from component state (typed term
+	// references are computed ON DEMAND from component state (typed term
 	//provenance + registered selection hosts + the analysis' own filter), reported only once the
 	//form has attached (pending JSON before setAnalysisUp is never read for behaviour). Attach is
 	//simulated here by flipping the form's initialized flag (no QML controls in the C++
 	//harness); the real attach/apply-once semantics are pinned by the qml harness
 	//(tst_generatedOptionsJsonAware.qml::test_pending_json_applied_once_and_stamps_never_read).
-	//mds-plan D3.6 re-armed this from the old fabricated-meta version: ids are REAL filters now
+	// This pin was re-armed from the old fabricated-meta version: ids are REAL filters now
 	//(the computation resolves every filterId through the Workspace, so made-up pairs cannot
 	//enter the map - the old "dataSetId without filterId" meta node has no component analogue).
 	QVERIFY(_newPkgWithDataSet());
@@ -4790,7 +4790,7 @@ void TestAll::testDataSetFilterIdsSurviveStorageReload()
 
 void TestAll::testDataSetSelectionSurfaceMap()
 {
-	//mds-plan C4/RESOLVER: option values stay filter ids on the wire, but syntax text carries
+	// option values stay filter ids on the wire, but syntax text carries
 	//human strings only and resolves by EXACT lookup against the live workspace - no parsing,
 	//no numeric-id path. Fixture: "Alpha" (default only), "Second" (+ named "KeepMyId"),
 	//a dataset titled "42" (a number is a title here, nothing more) and one titled exactly
@@ -4893,7 +4893,7 @@ void TestAll::testDataSetSelectionSurfaceMap()
 
 void TestAll::testQualifiedColumnRefParseRenderRoundTrip()
 {
-	//mds-plan D7.0a: the plan §5 surface grammar - pure parse/render, no workspace. Quoting
+	// the surface grammar - pure parse/render, no workspace. Quoting
 	//is honest and roundtrip-safe: dots never need escaping (the separator only acts OUTSIDE
 	//quotes), and inside a segment exactly two escapes exist (\" and \\) - a backslash before
 	//anything else is a parse error, so a name's rendering can never be ambiguous.
@@ -5008,7 +5008,7 @@ void TestAll::testQualifiedColumnRefParseRenderRoundTrip()
 
 void TestAll::testQualifiedColumnRefResolveAgainstWorkspace()
 {
-	//mds-plan D7.0a: resolution against the live Workspace (plan §5 + the design doc's error
+	// resolution against the live Workspace (the design doc's error
 	//formats). Fixture: "Alpha" (default + named "F0" + "Extra"), "Beta" (default + named
 	//"KeepMyId" + "Shared"), "Gamma" (default + a second "Shared" for the ambiguity
 	//rejection) - contNormal exists in every dataset, the same-name-in-two-filters flagship
@@ -5068,7 +5068,7 @@ void TestAll::testQualifiedColumnRefResolveAgainstWorkspace()
 
 	//Full form - and the flagship: the SAME column addressed through two different filters of
 	//ONE dataset resolves to the same (dataset, column) but DISTINCT filterIds (which is what
-	//mints distinct tokens under the per-filter views at run, mds-plan C3):
+	//mints distinct tokens under the per-filter views at run):
 	QCOMPARE(resolve("\"Alpha\".\"F0\".\"contNormal\""),		QualifiedRefError::none);
 	QCOMPARE(resolved.dataSetId,	alpha->id());
 	QCOMPARE(resolved.filterId,		alphaF0->id());
@@ -5147,7 +5147,7 @@ void TestAll::testQualifiedColumnRefResolveAgainstWorkspace()
 
 void TestAll::testQualifiedColumnRefRenderMinimal()
 {
-	//mds-plan D7.0a: the context-aware minimal render - plain-name passthrough inside the
+	// the context-aware minimal render - plain-name passthrough inside the
 	//context's default namespace, the shortest still-resolvable form outside it, and every
 	//emitted form roundtrips through parse+resolve to the exact (dataSetId, filterId, column)
 	//it was built from. Fixture as in ...ResolveAgainstWorkspace.
@@ -5247,7 +5247,7 @@ void TestAll::testQualifiedColumnRefRenderMinimal()
 
 void TestAll::testQualifiedColumnRefScanInCode()
 {
-	//mds-plan D7.3: the in-code scanner. Feeds R code text with tricky names and checks what
+	// the in-code scanner. Feeds R code text with tricky names and checks what
 	//is found (byte ranges + parsed segments) and - just as important - what is NOT: bare
 	//names (quoted or not) are never references, and surface forms inside R comments or R
 	//string literals are user text, not references.
@@ -5342,7 +5342,7 @@ void TestAll::testQualifiedColumnRefScanInCode()
 
 void TestAll::testWorkspaceReferencedFilterIdsInCode()
 {
-	//mds-plan D7.3: the desktop-side scan that stamps the transient `referencedFilterIds`
+	// the desktop-side scan that stamps the transient `referencedFilterIds`
 	//sidecar onto filter/compute requests. Fixture as in ...ResolveAgainstWorkspace.
 	QVERIFY(_newPkgWithDataSet());
 
@@ -5417,7 +5417,7 @@ void TestAll::testWorkspaceReferencedFilterIdsInCode()
 
 void TestAll::testQualifiedColumnCandidates()
 {
-	//mds-plan D7.1/D7.2: the editor-side catalog + validation surface of the qualified grammar.
+	// the editor-side catalog + validation surface of the qualified grammar.
 	//qualifiedColumnCandidates(contextFilterId) is what the pickers/autocomplete in
 	//FilterWindow (context = the edited filter, D7.1) and the compute editors (context = the
 	//selected compute/input filter, D7.2) are fed: every column of every filter of every
@@ -5481,7 +5481,7 @@ void TestAll::testQualifiedColumnCandidates()
 		}
 	}
 
-	//Outward refs are the minimal valid surface form (plan §5 render rule), verbatim what
+	//Outward refs are the minimal valid surface form (render rule), verbatim what
 	//insertion puts into the editor; the ambiguous filter name forces the full 3-segment form:
 	QCOMPARE(candidateFor(candidates, beta->defaultFilter()->id(), "contNormal")["code"].toString(), QString("\"Beta\".\"contNormal\""));
 	QCOMPARE(candidateFor(candidates, betaKeep->id(),				"contNormal")["code"].toString(), QString("\"KeepMyId\".\"contNormal\""));	//unique name across datasets
@@ -5546,7 +5546,7 @@ void TestAll::testQualifiedColumnCandidates()
 
 void TestAll::testPrepareSliceRunScript()
 {
-	//mds-plan D7.3: the engine-side consumption of the transient `referencedFilterIds` sidecar
+	// the engine-side consumption of the transient `referencedFilterIds` sidecar
 	//(design doc §3.2/§3.3). Unit-tested here because rbridge_prepareSliceRunScript is pure C++
 	//(scan, resolve, encode, queue - it calls no R); the out-of-process end-to-end behaviour is
 	//pinned in TestEngine's slice tests. Fixture as in testWorkspaceReferencedFilterIdsInCode.
@@ -5677,10 +5677,10 @@ void TestAll::testPrepareSliceRunScript()
 
 void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
 {
-	//mds-plan C4/REGISTRY (M9): the bridge hands the raw options JSON of the current parse to
+	// the bridge hands the raw options JSON of the current parse to
 	//the form; a selection host that registers after the parse (async ComponentsList
 	//instantiation) resolves its own option out of that pending JSON and stashes the resulting
-	//filter id on the form at registration time, before its DropDown ever binds (mds-plan D3.4:
+	//filter id on the form at registration time, before its DropDown ever binds (
 	//the stash replaces the old direct mirror write; RowControls consumes it at the option
 	//control's first bind, which then drives the host exactly like a desktop dropdown would).
 	//Driven through the C++ API here; the QML lifecycle side (register on late instantiation,
@@ -5724,7 +5724,7 @@ void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
 	QCOMPARE(form.resolvedSelectionOptionValue("dataSetA").asString(), std::to_string(named->id()));   //resolved+stashed at registration
 
 	//A late host only ever touches its own option - the unresolvable dataSetB stays untouched
-	//(its DropDown will hold whatever it gets pending, mds-plan C2) - but registers anyway, so
+	//(its DropDown will hold whatever it gets pending) - but registers anyway, so
 	//the NEXT parse translates it properly:
 	JASPControl * laterHost = new JASPControl();
 	form.registerDataSetSelectionOption("dataSetB", laterHost);
@@ -5753,7 +5753,7 @@ void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
 
 void TestAll::testDeadControlsArePrunedFromFormCaches()
 {
-	//mds-plan C5 (chunk-4 finding #1): JASPControl::componentComplete registers every
+	// (chunk-4 finding #1): JASPControl::componentComplete registers every
 	//static-branch control on the form (AnalysisForm::addControl), but nothing unregistered -
 	//destroying such a control after setup left raw pointers in _controls, and in
 	//_dependsOrderedCtrls once a bind pass had run over them. The next pass (setAnalysisUp,
@@ -5817,8 +5817,8 @@ void TestAll::testDeadControlsArePrunedFromFormCaches()
 
 void TestAll::testSelectionHostRegistryIntrospection()
 {
-	//mds-plan D2.3: the form's selection-host registry is introspectable (count + list in
-	//registration order) and unregisters EAGERLY on destruction - this is the interface mds-plan
+	// the form's selection-host registry is introspectable (count + list in
+	//registration order) and unregisters EAGERLY on destruction - this is the interface
 	//D2.4 (AnalysisBase as VariableInfoProvider over the registered selected filters) aggregates
 	//over, so its shape and lifecycle are pinned here, host-type-agnostic.
 	if(!PreferencesModel::prefs())
@@ -5866,7 +5866,7 @@ void TestAll::testSelectionHostRegistryIntrospection()
 
 void TestAll::testAnalysisProviderAggregatesSelectionHosts()
 {
-	//mds-plan C10/D2.4: the analysis' VariableInfoProvider aggregates over the form's selection-
+	// the analysis' VariableInfoProvider aggregates over the form's selection-
 	//host registry - resolved PER USE (no encoder/filter pointer is ever cached: Filter views
 	//lazy-attach and die with the filter, D1.2). 0 hosts ⟹ the analysis' own filter answers
 	//(C13 host-bound fallback), 1 distinct filter ⟹ that filter IS the namespace, >1 ⟹ merged
@@ -5984,7 +5984,7 @@ void TestAll::testAnalysisProviderAggregatesSelectionHosts()
 
 void TestAll::testTermFilterIdIsPartOfIdentity()
 {
-	//mds-plan D2.1/C9: Term carries the id of the filter it was selected through (-1 =
+	// Term carries the id of the filter it was selected through (-1 =
 	//unqualified) as INTERNAL typed state, and it is part of identity. Flagship case: two terms
 	//named "TestInts" from two different filters must never compare equal and must coexist in
 	//one Terms; lookups distinguish stamped terms but keep the C13 fallback (an unqualified
@@ -6070,7 +6070,7 @@ void TestAll::testTermFilterIdIsPartOfIdentity()
 	QCOMPARE(ordered[inB], 1);
 
 	//combination terms carry the source filter when uniform (interaction components share the
-	//term-level filterId, mds-plan D6.1) and stay unqualified when the sources mix:
+	//term-level filterId) and stay unqualified when the sources mix:
 	Term x(tq("x"), columnType::nominal);		x.setFilterId(11);
 	Term y(tq("y"), columnType::nominal);		y.setFilterId(11);
 	Terms uniform;
@@ -6103,7 +6103,7 @@ void TestAll::testTermFilterIdIsPartOfIdentity()
 	QVERIFY(sawInteraction);
 	QVERIFY(sawQualified);
 
-	//NO wire field yet (mds-plan D2.1, serialization is Phase 3): the json of a stamped term is
+	//NO wire field yet (serialization is Phase 3): the json of a stamped term is
 	//byte-identical to the unqualified one, and parsing options yields unqualified terms.
 	QCOMPARE(tq(inA.toJson().toStyledString()), tq(plain.toJson().toStyledString()));
 	Json::Value stamped = inA.toJson();
@@ -6115,7 +6115,7 @@ void TestAll::testTermFilterIdIsPartOfIdentity()
 
 void TestAll::testJaspArchiveVersionBlocksOlderBuilds()
 {
-	//mds-plan C4/VERSION: the archive version written into every manifest is 7.0.0 (major).
+	// the archive version written into every manifest is 7.0.0 (major).
 	//JASPImporter::isCompatible blocks an older build on `archiveMajor > their own major`, so
 	//aware .jasp files (filter-id selections, eagerly materialised per-file filters) cannot be
 	//half-read by a pre-feature JASP; the same build round trips its own files.
@@ -7006,7 +7006,7 @@ namespace
 		v["columnTypeUser"]		= typeUser;
 		v["columnTypeDrop"]		= typeDrop;
 
-		//mds-plan D7.4: an outward node carries its source slice (dataset title + optional
+		// an outward node carries its source slice (dataset title + optional
 		//filter name) - the serialization contract ScriptNodeColumn::toJson/fromJson implement.
 		if(!dataSetName.empty())
 			v["dataSetName"] = dataSetName;
@@ -7199,7 +7199,7 @@ void TestAll::testScriptConstructorGoldenR()
 
 void TestAll::testScriptConstructorQualifiedOutwardToR()
 {
-	//mds-plan D7.4: ScriptNodeColumn::toR emits the FULL qualified surface form
+	// ScriptNodeColumn::toR emits the FULL qualified surface form
 	//("Dataset"."Filter"."Column"("Type")) for outward nodes (_dataSetName set), composed
 	//from the RESOLVED slice (Workspace::fullQualifiedColumnRef) - the owner refinement on
 	//D7.0-Q3: the constructor's output is visible R code, so every outward reference uses
@@ -7320,7 +7320,7 @@ void TestAll::testScriptConstructorQualifiedOutwardToR()
 
 void TestAll::testQualifiedRefInvalidatedByFilterRename()
 {
-	//mds-plan D7.5, invalidation kind "renamed": a qualified reference is held BY NAME, so
+	// invalidation kind "renamed": a qualified reference is held BY NAME, so
 	//renaming the referenced filter invalidates every editor holding it - WITHOUT any edit
 	//on their side. The relay is Filter::nameChanged -> Workspace::filterNameChanged (the
 	//default filter's name never changes, so it never relays); the scanner reports the
@@ -7388,7 +7388,7 @@ void TestAll::testQualifiedRefInvalidatedByFilterRename()
 
 void TestAll::testQualifiedRefInvalidatedByDataSetUnload()
 {
-	//mds-plan D7.5, invalidation kind "unloaded": deleting a dataset whose slices are
+	// invalidation kind "unloaded": deleting a dataset whose slices are
 	//referenced elsewhere invalidates those references loudly - the scanner reports the
 	//typed unknownDataSet error naming the title (the same message the engine fails the
 	//run with); references to OTHER datasets stay clean (only the missing slice errs).
@@ -7443,7 +7443,7 @@ void TestAll::testQualifiedRefInvalidatedByDataSetUnload()
 
 void TestAll::testQualifiedRefInvalidatedByColumnChurn()
 {
-	//mds-plan D7.5, invalidation kind "churned": a referenced column that is renamed away
+	// invalidation kind "churned": a referenced column that is renamed away
 	//(a sync, an edit - the real churn paths emit Workspace::datasetChanged with
 	//changeNameColumns, which the editors' validator watches) invalidates references to it:
 	//the scanner reports the typed unknownColumn error naming the column (the same message
@@ -7496,9 +7496,9 @@ void TestAll::testQualifiedRefInvalidatedByColumnChurn()
 
 void TestAll::testQualifiedTermComponentsParseTyped()
 {
-	//mds-plan D8.1 (wiring 1 + 3): the D3.4 single JSON->Terms parse chokepoint
+	// The D3.4 single JSON->Terms parse chokepoint
 	//(Terms(json)/Term(json)) resolves STRING term components that ARE qualified surface
-	//forms (plan §5) into typed terms - bare name + filterId (ids only, D1.2). Bare
+	//forms into typed terms - bare name + filterId (ids only, D1.2). Bare
 	//components stay context-fallback byte-identically (§4).
 	QVERIFY(_newPkgWithDataSet());
 
@@ -7558,7 +7558,7 @@ void TestAll::testQualifiedTermComponentsParseTyped()
 		QVERIFY(parsed.at(0) != parsed.at(1));
 	}
 
-	//(b) The ("Type") segment wins over the positional type (plan §5):
+	//(b) The ("Type") segment wins over the positional type
 	{
 		Json::Value option(Json::objectValue);
 		Json::Value values(Json::arrayValue);
@@ -7703,7 +7703,7 @@ void TestAll::testQualifiedTermComponentsParseTyped()
 
 void TestAll::testQualifiedTermEmissionMinimalFormsAndReparse()
 {
-	//mds-plan D8.2: RSyntax term emission renders terms stamped OUTSIDE the emission context
+	// RSyntax term emission renders terms stamped OUTSIDE the emission context
 	//(the analysis' own filter, FormulaSource::contextFilterIdFor / RSyntax's form filter) as
 	//the D7.0a qualified MINIMAL forms; the formula text parser keeps them VERBATIM, and the
 	//re-parse resolves through the D8.1 applier into typed terms with filterIds again.
@@ -7811,7 +7811,7 @@ void TestAll::testQualifiedTermEmissionMinimalFormsAndReparse()
 		QCOMPARE(FormulaParser::parseTerm(QString("contNormal.scale"), nullptr).at(0).type(), columnType::scale);
 	}
 
-	//(g) mds-plan D8.6: the D6.2 cross-host COPY composed end-to-end through the D8.2 emitters
+	//(g) the D6.2 cross-host COPY composed end-to-end through the D8.2 emitters
 	//and the D8.1 applier. A copy arrives as a Storage per-term object carrying the SOURCE
 	//filterId (the bindTo/applier half is pinned by test_crossHostBindTo_typedCopyKeepsSourceStamp
 	//+ testRestampOwnershipRuleKeepsForeignStamps); this pins the emission half: emitting under

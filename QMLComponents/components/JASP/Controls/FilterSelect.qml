@@ -34,7 +34,7 @@ import JASP.Controls
     (host -> dropdown) and reports user picks back (dropdown -> host). Because the dropdown is a
     normal bound control, the selection reaches the analysis' options in desktop and syntax mode
     through exactly the same mechanism as every other option. Selections live on LISTS, not on
-    the VariablesForm (mds-plan C10/D2.2).
+    the VariablesForm.
 */
 DropDown
 {
@@ -64,7 +64,7 @@ DropDown
 
 		//A saved value the model cannot serve yet is waiting on it (ComboBoxBase keeps the option
 		//intact and shows the error): pulling to the host's fallback here would rewrite that
-		//saved selection, exactly what the waiting exists to prevent (mds-plan C2/BIND).
+		//saved selection, exactly what the waiting exists to prevent.
 		if (filterSelect.valueAwaitsModel)
 			return
 

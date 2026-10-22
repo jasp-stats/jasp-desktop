@@ -100,7 +100,7 @@ void ListModelInteractionAssigned::_removeTerms(const Terms & termsToRemove)
 
 Terms ListModelInteractionAssigned::reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)
 {
-	//mds-plan post (ORIGIN-AUTHORITATIVE): the component version of the reconcile - see the
+	// (ORIGIN-AUTHORITATIVE): the component version of the reconcile - see the
 	//header comment. Participation is exactly the base rule (termFollowsProviderChange); the
 	//survivor test is ALL-components-in-the-universe (name-only lookups - the provenance
 	//pre-selection already happened via the key), the same staleness rule _removeTerms applies.
@@ -180,7 +180,7 @@ void ListModelInteractionAssigned::availableTermsResetHandler(Terms termsAdded, 
 	if (listView()->form() && !listView()->form()->initialized())
 		return;
 
-	//mds-plan post (ORIGIN-AUTHORITATIVE): the pool's provider moved on: interaction references
+	// (ORIGIN-AUTHORITATIVE): the pool's provider moved on: interaction references
 	//stamped `filterIdToUpdate` reconcile at COMPONENT level (survivors re-settle their stamp
 	//from the delivered universe terms, partial or full vanishings die); foreign stamps and -1
 	//terms under a qualified provider never move. The vanished ones die through the same

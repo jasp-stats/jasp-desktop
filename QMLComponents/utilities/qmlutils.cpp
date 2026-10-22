@@ -48,7 +48,7 @@ QmlUtils::QmlUtils(QObject *parent) : QObject(parent)
 static ColumnEncoder * currentDatasetEncoder()
 {
 	//The process-global current-encoder indirection is only populated inside the engine, so the
-	//desktop must en/decode against the shown dataset's shown-filter VIEW (mds-plan C3/C7 - the
+	//desktop must en/decode against the shown dataset's shown-filter VIEW (the
 	//canonical itself mints no full strings).
 	Workspace * ws = Workspace::singleton();
 	DataSet * ds = ws ? ws->shownDataSet() : nullptr;
@@ -64,7 +64,7 @@ QString QmlUtils::encodeAllColumnNames(const QString & str)
 
 QString QmlUtils::decodeAllColumnNames(const QString & str)
 {
-	//Decoding is context-free since mds-plan C4/D1.5: the static sweep of the one global table
+	//Decoding is context-free since the static sweep of the one global table
 	//resolves every live filter of every loaded dataset plus extras, unknown stays raw - no
 	//dataset encoder needs to be alive for this to answer.
 	return tq(ColumnEncoder::decodeAll(fq(str)));
@@ -80,7 +80,7 @@ QJSValue	QmlUtils::encodeJson(const QJSValue	& val, QQuickItem * caller)
 
 QJSValue	QmlUtils::decodeJson(const QJSValue	& val, QQuickItem * caller)
 {
-	//Context-free global-table sweep (mds-plan C4/D1.5), see also decodeAllColumnNames above.
+	//Context-free global-table sweep, see also decodeAllColumnNames above.
 	Json::Value v(fqj(val));
 	ColumnEncoder::decodeJson(v);
 	return tqj(v, caller);

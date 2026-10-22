@@ -66,7 +66,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 	// get the column names of the data set
 	_usedColumnNames.clear();
 
-	//mds-plan D8.1 wiring 2: resolve the qualified column references (plan §5) before the
+	// resolve the qualified column references before the
 	//bare-name encode pass, exactly like the rlang companion - each becomes the referenced
 	//slice's token, bare names keep the context encoder as their fallback (§4). Loud and
 	//typed, but non-blocking: an unresolved reference shows in the text area and the text is
@@ -112,7 +112,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 			if (paramName.contains("["))
                 paramName = paramName.left(paramName.indexOf("["));
 
-			//Token membership is the context-free global table's answer (mds-plan C4/D1.5), not
+			//Token membership is the context-free global table's answer, not
 			//the host encoder's own map - the instance decode shims retired with D1.5.
 			if (paramName != "" && !ColumnEncoder::shouldDecode(fq(paramName)))
 				_usedParameters.insert(paramName);
@@ -131,7 +131,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 		model->initTerms(_usedParameters.values());
 }
 
-//mds-plan D3.1: the value a JAGS textarea commits = the raw text plus the derived
+// the value a JAGS textarea commits = the raw text plus the derived
 //model/columns/parameters of the last syntax check (the control's own cached typed state). One
 //builder for checkSyntax's writes; the generators read the committed result through
 //BoundControlTextArea::_appliedValue (commit-on-apply). No side effects in this builder.

@@ -170,7 +170,7 @@ DataSet * DataBridge::provideAndUpdateDataSet(int dataSetId, std::function<void(
 	if(_workspace->shownDataSet())
 	{
 		DataSet * ds = _workspace->shownDataSet();
-		//Remint the dataset's canonical (mds-plan C2) - every filter view's block in the global
+		//Remint the dataset's canonical - every filter view's block in the global
 		//decode table is rewritten as a consequence (D1.4 funnel) - and point the legacy non-aware
 		//request indirection at the shown filter's VIEW (C7). D1.6 keeps this as the DOCUMENTED
 		//LEGACY FALLBACK ONLY: the aware paths resolve their encoder explicitly (the option-stamp
@@ -210,8 +210,8 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	Filter  * primaryFilter		= analysisFilterObj ? analysisFilterObj : (dataset ? dataset->defaultFilter() : nullptr);
 
 	//Every value of an aware analysis was selected through a filter, and the generated Engine
-	//json names that filter per option/term in the transient `.filterIds` sidecar (mds-plan
-	//D3.2/D3.3 - the provenance stamps left .meta with C8). Filter ids are globally unique and
+	//json names that filter per option/term in the transient `.filterIds` sidecar (since
+	// C8 the provenance stamps no longer live in .meta). Filter ids are globally unique and
 	//imply their dataset (Filter::data()), so the queue is just the distinct sidecar ids plus the
 	//analysis' own slice: no dataset/filter pairing, no -1 placeholders, no dedup dance (a
 	//std::set is the dedup). Nulls (unqualified terms) contribute nothing - they encode through
@@ -238,7 +238,7 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 			options, true, //aware always collects the wanted cols, that is how it knows which slices to queue
 			[workspace](int & dataSetId, int filterId) -> ColumnEncoder *
 			{
-				//mds-plan D3.3/D3.7: encode against the SIDECAR filter's VIEW - the exact namespace
+				// encode against the SIDECAR filter's VIEW - the exact namespace
 				//the slice for that filter is handed to R in (rbridge_readDataSetRequested anchors
 				//the slice read on the same view). filter ids are globally unique and imply their
 				//dataset (Filter::data), so the id alone resolves it - and re-attributes the
@@ -315,7 +315,7 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 
 void DataBridge::stripTransientProvenanceForR(Json::Value & options)
 {
-	//mds-plan C11/D3.3: the transient `.filterIds` sidecar is consumed by prepareMultiDataSetRun
+	// the transient `.filterIds` sidecar is consumed by prepareMultiDataSetRun
 	//(slice queue + per-node encoding) and by updateOptionsAccordingToMeta (loadFilteredData
 	//anchor), then removed here at the last moment before R sees the options - R never sees
 	//provenance, and the Engine->R contract stays byte-identical to pre-Phase-3 otherwise.
@@ -414,7 +414,7 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 {
 	JASPTIMER_SCOPE(DataBridge::updateOptionsAccordingToMeta);
 
-	//mds-plan D3.3: the loadFilteredData anchor is the option's scalar `.filterIds` sidecar node
+	// the loadFilteredData anchor is the option's scalar `.filterIds` sidecar node
 	//(grammar: ColumnEncoder::sidecarOwnFilterId; the generator emits it for the filtered
 	//tableview, gated by encodeValue, so no aware run loses the anchor) - the .meta filterId
 	//stamp is gone with C8 and the dataSetId verification and its mismatch warning retire with

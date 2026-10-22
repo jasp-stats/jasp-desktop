@@ -199,7 +199,7 @@ FocusScope
 				showGeneratedRCode:		false
 				KeyNavigation.tab:		applyComputedColumnButton
 
-				//mds-plan D7.4: the constructor palette gains outward column sourcing too (this
+				// the constructor palette gains outward column sourcing too (this
 				//supersedes the D7.2 v1 own-dataset palette cut for the constructor only - the
 				//emitted code is visible R, so the full grammar applies). The context is the
 				//column's COMPUTE FILTER - the same filter the run encodes the output name and
@@ -212,7 +212,7 @@ FocusScope
 
 		}
 
-		// mds-plan D7.2: live validation of the qualified references in the R code as typed
+		// live validation of the qualified references in the R code as typed
 		// (the D7.3 scanner's first typed error). Non-blocking: it warns, the run itself still
 		// fails loudly at the engine when a reference cannot resolve there (D7.5's surface).
 		Text
@@ -321,9 +321,9 @@ FocusScope
 				toolTip:			qsTr("Click to compute column")
 			}
 			
-			// mds-plan D7.2: the computeFilterDropDown is THE fallback encoder selection for
-			// bare names in this editor (C13, "computed column | selected input filter" row of
-			// plan §4): the picker/validator below resolve their context through it, and the
+			// the computeFilterDropDown is THE fallback encoder selection for
+			// bare names in this editor (C13, the "computed column | selected input filter" row):
+			// the picker/validator below resolve their context through it, and the
 			// run resolves the same way (D7.3: EngineSync::computeColumn -> engine ->
 			// compCol->computeFilter()'s view). Switching it applies the CURRENT editor text
 			// first and then re-queues: both sends re-scan their code at queue time (D7.3), so
@@ -358,11 +358,11 @@ FocusScope
 			}
 		}
 
-		// mds-plan D7.2: outward-reference support for the R code editor (the constructor keeps
+		// outward-reference support for the R code editor (the constructor keeps
 		// its v1 own-dataset palette). The insertion context is the column's COMPUTE FILTER's
 		// id - the same filter the run encodes the output name and reads the slice through
 		// (D7.3) - so the picker's bare candidates are exactly the columns the bare names in
-		// this code resolve to at run time (C13, plan §4). The validator is debounced and
+		// this code resolve to at run time (C13). The validator is debounced and
 		// read-only: it warns, it never triggers a run.
 		JaspControls.QualifiedColumnValidator
 		{

@@ -22,7 +22,7 @@ import JASP
 /*!
 	\qmltype QualifiedColumnValidator
 	\inqmlmodule JASP.Controls 1.0
-	\brief Debounced editor-side validation of qualified column references (mds-plan D7.1/D7.2).
+	\brief Debounced editor-side validation of qualified column references.
 
 	Watches an R editor's text and runs the D7.3 scanner on it
 	(\c Workspace::qualifiedRefErrorInCode): "" when every qualified reference in the code
@@ -73,7 +73,7 @@ QtObject
 		}
 	}
 
-	//mds-plan D7.5: cross-dataset dependency invalidation, editor side. A reference that was
+	// cross-dataset dependency invalidation, editor side. A reference that was
 	//valid when typed can be invalidated WITHOUT any edit: the referenced dataset is
 	//unloaded or retitled, a referenced filter is renamed or deleted, or a referenced
 	//column is churned (renamed/removed by a sync). The validator re-scans on each of those

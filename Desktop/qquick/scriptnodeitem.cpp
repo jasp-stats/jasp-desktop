@@ -781,7 +781,7 @@ void ScriptNodeItem::rebuild()
 		int actual = int(columnType::scale);
 		if(!col->dataSetName().empty())
 		{
-			//mds-plan D7.4: an outward node's type lives on the node (the source column's
+			// an outward node's type lives on the node (the source column's
 			//type, stamped at drag time); the type provider only knows the own dataset's
 			//columns and would answer with a wrong (same-named) column's type here.
 			if(col->columnTypeUser() > 0)
@@ -796,7 +796,7 @@ void ScriptNodeItem::rebuild()
 		varIconType iconType = (effective == actual) ? varIconType::DefaultIconType : varIconType::TransformedIconType;
 		makeImage(getIconFilename(static_cast<columnType>(effective), iconType));
 
-		//mds-plan D7.4: an outward node displays the surface form it emits (sans type tail),
+		// an outward node displays the surface form it emits (sans type tail),
 		//"DS"."F"."Col", so the palette item and the dropped node are distinguishable from the
 		//own-dataset columns that carry the same bare name.
 		QString displayText = tq(col->columnName());
@@ -991,7 +991,7 @@ void ScriptNodeItem::refreshToolTip()
 
 		if(!col->dataSetName().empty())
 		{
-			//mds-plan D7.4: an outward node's source slice; the own-dataset column
+			// an outward node's source slice; the own-dataset column
 			//description/preview below would describe the WRONG (same-named) column.
 			parts << tr("From dataset: ") + tq(col->dataSetName())
 					+ (col->filterName().empty() || col->filterName() == DEFAULT_FILTER_NAME

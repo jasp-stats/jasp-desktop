@@ -8,7 +8,7 @@
 
 namespace
 {
-//mds-plan D7.3: stamp the transient `referencedFilterIds` sidecar (the desktop's scan of the
+// stamp the transient `referencedFilterIds` sidecar (the desktop's scan of the
 //run's code) onto a filter/compute request json. The engine consumes it for slice
 //materialization and strips it before anything reaches R (D3.3 doctrine); for legacy requests
 //the set is empty and no member is written at all, keeping the json byte-identical.
@@ -815,7 +815,7 @@ void EngineRepresentation::checkForComputedColumns(DataSet * dataSet, const Json
 			bool			dataChanged	= results["dataChanged"].asBool();
 
 			//The analysis reports the encoded column name; translate it to the real one. Decoding is
-			//context-free (mds-plan C4): the global table answers for every live filter of every
+			//context-free: the global table answers for every live filter of every
 			//loaded dataset (and extras), unknown tokens stay raw.
 			std::string	decoded = ColumnEncoder::decode(columnName);
 

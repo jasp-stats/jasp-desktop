@@ -54,7 +54,7 @@ ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 			_rCodeDisplay->setProperty("text", rCode());
 	});
 
-	//mds-plan D7.4: the outward palette section mirrors the loaded slices, so it must
+	// the outward palette section mirrors the loaded slices, so it must
 	//rebuild whenever the workspace's dataset/filter/column catalog changes - the same
 	//lifecycle the pickers answer by rebuilding their catalog fresh on every open.
 	//schedulePaletteRebuild() is already debounced, and the outward entries are skipped
@@ -1104,7 +1104,7 @@ void ScriptConstructorView::buildColumnPalette()
 		maxW = std::max(maxW, item->preferredWidth());
 	}
 
-	//mds-plan D7.4: outward column sourcing - the picker catalog's non-bare entries (every
+	// outward column sourcing - the picker catalog's non-bare entries (every
 	//column of every OTHER loaded slice, rendered by the D7.0a grammar against
 	//contextFilterId) join the palette as draggable prototypes. Dropping one stamps the
 	//node with its source slice (dataSetName + filterName, plus the source column's type

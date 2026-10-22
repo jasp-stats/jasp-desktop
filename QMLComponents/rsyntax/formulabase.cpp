@@ -157,7 +157,7 @@ bool FormulaBase::parseRSyntaxOptions(Json::Value &options) const
 	FormulaParser::ParsedTerms leftParsedTerms, rightParsedTerms;
 	QString error;
 
-	//Provider chain (mds-plan D4.2): a Formula is not a list and not a selection host, so the
+	//Provider chain: a Formula is not a list and not a selection host, so the
 	//analysis-wide VariableInfo of its form serves it (the deleted walk's parent-chain lookup
 	//of a selecting host ancestor had no live case left: since C10 hosts are lists and text
 	//areas, and formulas sit on the form itself). The provider default mirrors what the form

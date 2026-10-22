@@ -107,7 +107,7 @@ void InputListBase::termsChangedHandler()
 	setBoundValue(createEngineValue());
 }
 
-//mds-plan D3.1: the live input terms exactly as the write path puts them in the control's own
+// the live input terms exactly as the write path puts them in the control's own
 //value (row-component lists keep the optionKey discipline through the single
 //Terms::getOptions row serialization - the D3.4 deletion folded the shuffle into it).
 Json::Value InputListBase::createEngineValue() const
@@ -121,7 +121,7 @@ Json::Value InputListBase::createEngineValue() const
 							 : terms.getValuesOptions();
 }
 
-//mds-plan D5.1: the file shape - rows of the row-bearing variant carry the per-term objects
+// the file shape - rows of the row-bearing variant carry the per-term objects
 //{name, filterId?, types} under the optionKey (see the header note; Terms::getStorageOptions),
 //non-row lists keep today's plain string values.
 Json::Value InputListBase::createStorageValue() const
@@ -135,7 +135,7 @@ Json::Value InputListBase::createStorageValue() const
 							 : terms.getValuesOptions();
 }
 
-//mds-plan D3.2: positional per-term sidecar (schema: BoundControlTerms::createFilterIds).
+// positional per-term sidecar (schema: BoundControlTerms::createFilterIds).
 Json::Value InputListBase::createFilterIds() const
 {	if (!_control->encodeValue() || !_inputModel)
 		return Json::nullValue;

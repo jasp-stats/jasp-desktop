@@ -23,7 +23,7 @@ import JASP
 /*!
 	\qmltype QualifiedColumnPicker
 	\inqmlmodule JASP.Controls 1.0
-	\brief Picker/autocomplete for outward multi-slice column references (mds-plan D7.1/D7.2).
+	\brief Picker/autocomplete for outward multi-slice column references.
 
 	A popup fed by \c Workspace::qualifiedColumnCandidates(contextFilterId): every column of
 	every filter of every loaded dataset, rendered by \c Workspace::renderQualifiedColumnRef.

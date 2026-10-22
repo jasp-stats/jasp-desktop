@@ -4,7 +4,7 @@
 #include "timers.h"
 #include "qutils.h"
 #include "dataset.h"
-#include "workspace.h"	//mds-plan D7.5: the Filter::nameChanged -> Workspace::filterNameChanged relay
+#include "workspace.h"	// the Filter::nameChanged -> Workspace::filterNameChanged relay
 #include "dataenums.h"
 #include "filtereddata.h"
 #include "columnencoder.h"
@@ -62,7 +62,7 @@ void Filter::connectionCreation()
 	connect(_data,	&DataSet::datasetChanged,		this,	&Filter::datasetChanged		);
 	connect(this,	&Filter::nameChanged,			_data,	[&](){_data->incRevision();});
 
-	//mds-plan D7.5: relay named-filter renames to the workspace so editors holding qualified
+	// relay named-filter renames to the workspace so editors holding qualified
 	//references to this filter BY NAME can revalidate (the invalidation is loud, no edit
 	//needed on the editor side). The default filter's name never changes.
 	connect(this,	&Filter::nameChanged,			_data,	[this](){
@@ -98,7 +98,7 @@ void Filter::dbCreate()
 {
 	assert(_id == -1);
 	_id = db().filterInsert(_data->id(), _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
-	ensureColumnView();	//the rowid is final from here on, so the namespace view can be minted (mds-plan D1.2)
+	ensureColumnView();	//the rowid is final from here on, so the namespace view can be minted
 }
 
 void Filter::setId(int id)
@@ -138,7 +138,7 @@ void Filter::dropColumnView()
 Filter::~Filter()
 {
 	//The namespace view is the only thing the global decode table knows about this filter; with the
-	//block erased its tokens go raw (mds-plan C16). The rest of the members keep their pre-Phase-1
+	//block erased its tokens go raw. The rest of the members keep their pre-Phase-1
 	//lifetimes (QObject-parented where applicable).
 	dropColumnView();
 }
@@ -187,7 +187,7 @@ bool Filter::dbLoad()
 	if(_id == -1)
 		return false;
 
-	ensureColumnView();	//rowid is final, mint/keep this filter's namespace view (mds-plan D1.2)
+	ensureColumnView();	//rowid is final, mint/keep this filter's namespace view
 
 	db().transactionReadBegin();
 	
@@ -550,7 +550,7 @@ QAbstractItemModel *Filter::providerModel()
 
 ColumnEncoder *Filter::columnEncoder()
 {
-	//This filter is its own namespace (mds-plan C3): whoever en-/decodes through this provider
+	//This filter is its own namespace: whoever en-/decodes through this provider
 	//(host dataset selection) uses this filter's view - canonical mint indices composed with this
 	//filter's prefix - never the process-global current one (which only means something inside an
 	//engine request). Lazy so a filter whose dbLoad attached no view yet still answers; nullptr

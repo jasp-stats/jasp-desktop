@@ -178,7 +178,7 @@ FocusScope
 				filterErrorMsg:		filterModel.filter.filterErrorMsg
 				clip:				true
 
-				//mds-plan D7.4: the column palette gains outward column sourcing - the picker
+				// the column palette gains outward column sourcing - the picker
 				//catalog (every column of every other loaded slice) joins the own dataset's
 				//columns; dropping one stamps the node with its source slice and the generated
 				//R carries the full qualified surface form. The context is the EDITED filter
@@ -492,7 +492,7 @@ FocusScope
 				}
 			}
 
-			// mds-plan D7.1: the edited filter's own DataSet is the bare-name fallback BY
+			// the edited filter's own DataSet is the bare-name fallback BY
 			// DEFINITION (C13) - there is deliberately no fallback/dataset-selection UI here.
 			// What the R editor gains is the outward surface: insertion of qualified references
 			// from the other loaded slices (the picker; insertion = the verbatim
@@ -685,7 +685,7 @@ FocusScope
 				}
 			}
 
-			// mds-plan D7.1: outward-reference support for the R filter editor. The insertion
+			// outward-reference support for the R filter editor. The insertion
 			// context is the EDITED filter's id (filterModel.currentFilterId): its own dataset's
 			// columns come out of the picker as the bare names (the C13 fallback), everything
 			// else as the minimal qualified surface form. The validator is debounced and

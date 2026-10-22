@@ -67,7 +67,7 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 
 	}
 
-	//mds-plan D5.1: Storage row entry `{keyValue: {name, types, filterId?}}` - the per-term object
+	// Storage row entry `{keyValue: {name, types, filterId?}}` - the per-term object
 	//of the final file format nested under the row's optionKey (optionKey discipline kept, row
 	//children stay siblings and are collected by the Terms(json) applier exactly like today). The
 	//term's OWN types win over the positional fallback; its filterId rides the typed Term (C9).
@@ -81,7 +81,7 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 
 	if (jsonValue.isArray() || jsonValue.isString())
 	{
-		//mds-plan D8.1: resolve qualified surface forms in the STRING components (plan §5) at
+		// resolve qualified surface forms in the STRING components at
 		//the parse chokepoint: each component that *is* a reference ("DS"."Col", "F"."Col",
 		//the full form, optional ("Type") tail) becomes the plain column name plus the typed
 		//filterId (C9) - the flagship same-name-different-filter twins stay distinct terms.
@@ -145,7 +145,7 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 		while (realTypes.size() < components.size())
 			realTypes.push_back(columnType::unknown);
 
-		//The ("Type") segment wins over the lookup/positional type (plan §5); everything else
+		//The ("Type") segment wins over the lookup/positional type; everything else
 		//(the positional types, the real-type checks downstream in BoundControlTerms::bindTo)
 		//keeps today's discipline.
 		for (size_t i = 0; i < components.size(); ++i)
@@ -229,7 +229,7 @@ const QString &Term::at(int index) const
 	return _components.at(index);
 }
 
-//Identity (mds-plan C9): same components (as a set, order-free — always has been) AND the same
+//Identity: same components (as a set, order-free — always has been) AND the same
 //source filter. -1 (unqualified) is a value like any other here: it is NOT a wildcard, a term
 //that knows its filter and one that does not are different facts about the world and must not
 //compare equal (that is what lets Terms keep both apart once the stamp arrives). Wildcard-ish
@@ -318,7 +318,7 @@ Json::Value Term::toJson(bool useArray, bool useValueAndType) const
 	return result;
 }
 
-//mds-plan D5.1: the Storage term object {name, filterId?, types} - see the header for the shape
+// the Storage term object {name, filterId?, types} - see the header for the shape
 //contract and the collision rules. This is the FILE serialization only (analysis.cpp's save and
 //the duplicate-me parking); the Engine generator (toJson above) is today's frozen R contract
 //and stays byte-identical forever.
@@ -445,7 +445,7 @@ Term Term::fromStorageTermObject(const Json::Value & json, const columnTypeVec &
 	return term;
 }
 
-//mds-plan D8.1: see the header block on QualifiedTermComponent. Wiring only: the D7.0a grammar
+// see the header block on QualifiedTermComponent. Wiring only: the D7.0a grammar
 //helpers (QualifiedColumnRef::parse + Workspace::resolveQualifiedColumnRef) do all the work -
 //ids only come back out (D1.2), the resolution runs against the LIVE workspace per call.
 QualifiedTermComponent resolveQualifiedTermComponent(const QString & component)

@@ -1608,7 +1608,7 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 		Json::Value root;
 		Json::Reader().parse(utf8, root);
 
-		//mds-plan D3.4: the image request carries the analysis' CURRENT send-time `.meta`,
+		// the image request carries the analysis' CURRENT send-time `.meta`,
 		//generated from the components (C8: never held provenance keys; the mirror's were
 		//documented-dead input for the engine since the D3.3 flip) instead of the mirror's tree.
 		Json::Value generatedOptions = analysis->createOptionsJson(BoundControl::Engine);
@@ -2248,7 +2248,7 @@ void MainWindow::populateUIfromDataSet(bool loadAnalyses)
 	_resultsJsInterface->setScrollAtAll(false);
 
 	if (loadAnalyses)
-		//mds-plan D5.3: hand the file's archive version to the analysis loader (do019Fix-style
+		// hand the file's archive version to the analysis loader (do019Fix-style
 		//threading) - it gates the one-time best-effort decode of legacy bare-prefix result
 		//tokens in stored results trees.
 		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel, _package->archiveVersion());
@@ -2487,7 +2487,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	Json::Reader parser;
 	parser.parse(utf8, root);
 
-	//mds-plan D3.5: JSON->state goes through the controls, never through a direct mirror write.
+	// JSON->state goes through the controls, never through a direct mirror write.
 	//Since the D3.3 flip the run request is GENERATED from component state, so a bare
 	//setBoundValues here would be written but never read - the downstream change would silently
 	//vanish. parseOptions is the same applier the RPC analysis_run uses (bindTo walks the bound

@@ -20,7 +20,7 @@ struct RScriptStore
 	bool		whiteListedVersion,
 				returnLog;
 
-	//mds-plan D7.3/D3.3 doctrine: the transient `referencedFilterIds` sidecar - the desktop's
+	// doctrine: the transient `referencedFilterIds` sidecar - the desktop's
 	//scan of the run's code (Workspace::referencedFilterIdsInCode) that tells the engine which
 	//foreign slices to materialize. Desktop owns provenance, the engine consumes it for slice
 	//materialization and it is stripped before anything reaches R; empty for legacy/unaware

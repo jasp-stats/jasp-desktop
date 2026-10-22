@@ -2,7 +2,7 @@ import QtTest
 import QtQuick
 import JASP.Controls
 
-// Per-LIST dataset/filter selection (VariablesListBase::dataSetSelectionOption, mds-plan C10/D2.2):
+// Per-LIST dataset/filter selection (VariablesListBase::dataSetSelectionOption):
 // every list that declares an option name owns a selection whose value is a FILTER ID, stored in
 // that option of the analysis (so it reaches the engine identically in desktop and syntax mode)
 // and served to its own controls through the list's own VariableInfo provider. A plain assigned
@@ -14,12 +14,12 @@ import JASP.Controls
 // code NEVER touches the analysis' own filter (that global belongs to the FilterMenuButton).
 // Controls below a selecting host get their bindTo dependency on that host's FilterSelect derived
 // from the varInfo resolution (JASPControl::selectionDependency), so a selection loaded from a
-// file is in effect before anything that uses it takes its provenance (mds-plan D3.4: generated
+// file is in effect before anything that uses it takes its provenance (generated
 // into the transient `.filterIds` sidecar at send time, read off the host) - no repair pass.
 // Fixture (see Tests/testqml.cpp): dataset 1 (shown: TestInts/TestLetters/TestDoubles/TestNominal)
 // plus "Second" (TestInts with different values + SecondOnly), with default filter + extras; the
 // workspace is then REOPENED from the database, so every test runs against a reopened file and
-// the eager filter materialisation of DataSet::dbLoad (mds-plan C2/EAGER) is what puts the stored
+// the eager filter materialisation of DataSet::dbLoad is what puts the stored
 // named filter "ReopenMe" in the dropdown.
 Item
 {
@@ -37,7 +37,7 @@ Item
 		{
 			id:			formA
 
-			// The selection lives on the available list (mds-plan C10): it drives allVarsA itself
+			// The selection lives on the available list: it drives allVarsA itself
 			// and, through the inherited available-list namespace, the assigned lists below it.
 			AvailableVariablesList	{ id: allVarsA;	name: "allVarsA";	dataSetSelectionOption:	"dataSetA" }
 			AssignedVariablesList	{ id: dependentA;	name: "dependentA";	depends: "dataSetA" }
@@ -61,8 +61,8 @@ Item
 			AvailableVariablesList	{ id: allVarsB;	name: "allVarsB";	dataSetSelectionOption:	"dataSetB" }
 			AssignedVariablesList	{ id: dependentB;	name: "dependentB";	depends: "dataSetB" }
 
-			// A scalar under a NON-selecting form, for the provenance-gate tests (mds-plan
-			// C3/M5): it carries no columns, so its .meta must stay free of dataSetId/filterId.
+			// A scalar under a NON-selecting form, for the provenance-gate tests:
+			// It carries no columns, so its .meta must stay free of dataSetId/filterId.
 			Switch					{ id: bSwitch;		name: "bSwitch" }
 		}
 
@@ -77,11 +77,11 @@ Item
 			// Visually parked in the NON-selecting form, but drawing from formA's dependentA:
 			// its namespace must follow the source (allVarsA's selection), not the visual parent.
 			// This is what the relation-chain resolution (JASPListControl::resolvedSelectionHost,
-			// mds-plan D4.2) buys over a visual-parent lookup.
+			//) buys over a visual-parent lookup.
 			AssignedVariablesList	{ id: srcDriven;	name: "srcDriven";	source: dependentA }
 		}
 
-		// mds-plan D6.2: a fourth host - an ASSIGNED list that hosts a selection of its own (the
+		// a fourth host - an ASSIGNED list that hosts a selection of its own (the
 		// second-source pattern the component zoo exercises; the module form does the same
 		// live). Its option is the destination of the cross-host typed-copy test below.
 		AssignedVariablesList		{ id: boundG;		name: "boundG";		dataSetSelectionOption:	"dataSetG" }
@@ -108,7 +108,7 @@ Item
 		}
 	}
 
-	// mds-plan D8.1 wiring 2: an R-code TextArea host for the qualified-reference encode test
+	// an R-code TextArea host for the qualified-reference encode test
 	// below (same late-host pattern as lateHostComponent, created and destroyed per test).
 	Component
 	{
@@ -186,7 +186,7 @@ Item
 			return null
 		}
 
-		// The phantom-slice class (agent-2 M3, mds-plan C3/M5): switching a host to ANOTHER
+		// The phantom-slice class: switching a host to ANOTHER
 		// FILTER OF THE SAME DATASET rewrites no value at all - the encoded column names stay
 		// perfectly valid - so provenance can only stay honest through the participation-keyed
 		// reconcile that HostFilterSelection::applyFilter drives on every selection change
@@ -222,7 +222,7 @@ Item
 				})
 				wait(50)
 
-				var bound = JSON.parse(jaspForm.createOptionsJsonAsJson(0))	//mds-plan D3.4: the generated Engine tree (the mirror is deleted)
+				var bound = JSON.parse(jaspForm.createOptionsJsonAsJson(0))	// the generated Engine tree (the mirror is deleted)
 				var meta = bound[".meta"]
 				var ids = bound[".filterIds"]
 
@@ -267,7 +267,7 @@ Item
 			}
 		}
 
-		// mds-plan C10/D2.4: the analysis itself is a VariableInfoProvider over the selection-host
+		// the analysis itself is a VariableInfoProvider over the selection-host
 		// registry (AnalysisBase::selectedSelectionFilters etc.) - one namespace while every host
 		// happens to sit on the same filter, MERGED once they split. The merged union keeps name
 		// collisions (a column behind two selected namespaces is two entries - the terms' filterId
@@ -333,7 +333,7 @@ Item
 			}
 		}
 
-		// mds-plan D2.5 (analysis side of the switch): a host selection change reaches the
+		// (analysis side of the switch): a host selection change reaches the
 		// ANALYSIS - the aware option-write path (dropdown mirroring the host) plus the explicit
 		// provider notification (HostFilterSelection::applyFilter -> AnalysisForm ->
 		// AnalysisBase::handleSelectionNamespaceMaybeChanged) mean dataSpecChanged re-emits on a
@@ -361,7 +361,7 @@ Item
 			}
 		}
 
-		// mds-plan post (ORIGIN-AUTHORITATIVE, -1 governance): stamps are born ONLY at origins -
+		// (ORIGIN-AUTHORITATIVE, -1 governance): stamps are born ONLY at origins -
 		// the pool universe's birth stamp - and a bind is not an origin: a bare bound value stays
 		// -1 forever, and its engine provenance follows its C13 chain per send (the generated
 		// sidecar re-reads the host each time). A term that CARRIES an origin stamp - a value
@@ -472,7 +472,7 @@ Item
 
 		// The fixture reopened the database (Tests/testqml.cpp), so this whole file runs against
 		// a REOPENED file. 'ReopenMe' was stored, never selected - it reaches the dropdown only
-		// because DataSet::dbLoad materialises every stored filter at open (mds-plan C2/EAGER;
+		// because DataSet::dbLoad materialises every stored filter at open (;
 		// before that it stayed a db row and was unselectable - agent1 m4).
 		function test_reopen_selection_survives_never_run_analysis()
 		{
@@ -542,7 +542,7 @@ Item
 			compare(allVarsB.filterSelectionValues.length, entries.length)
 		}
 
- 		// mds-plan D6.2: CROSS-HOST bindTo. A typed copy - the generated Storage tree of a list
+ 		// CROSS-HOST bindTo. A typed copy - the generated Storage tree of a list
  		// sitting on ANOTHER host's selection, per-term objects carrying the source filterId (the
  		// D5.1 file shape is exactly the carrier a save/reload or a control-to-control copy moves
  		// around) - bound into boundG, whose OWN selection points at a different dataset. The
@@ -611,7 +611,7 @@ Item
  				compare(ids.boundG[0], sourceFilter, "the generated sidecar provenances the copy with the SOURCE filter")
  				verify(ids.boundG[0] !== destFilter, "...which is NOT boundG's own selection")
 
- 				//mds-plan post (origin-authoritative participation): switching the DESTINATION host
+ 				// (origin-authoritative participation): switching the DESTINATION host
  				//moves only the references INTO the provider it left - the foreign copy (a different
  				//origin) is not one and stays with its source:
  				boundG.selectedFilterId = destAlt
@@ -708,7 +708,7 @@ Item
 
 		// A list without dataSetSelectionOption gets no selection at all (non-aware analyses, the
 		// FilterMenuButton world): no dropdown, no option, selection reads as unselected. And the
-		// form exposes NO selection API any more (mds-plan C10: stripped hard, no shims):
+		// form exposes NO selection API any more (stripped hard, no shims):
 		function test_list_without_option_has_no_selection()
 		{
 			compare(allVarsC.selectionAvailable, false)
@@ -744,8 +744,8 @@ Item
 			compare(String(options.dataSetA), String(allVarsA.selectedFilterId), "the other options stay put")
 		}
 
-		// mds-plan D8.1 wiring 2: a textarea's code text replays through the encoder on every
-		// commit. A qualified surface form (plan §5) in the code must resolve and become the
+		// a textarea's code text replays through the encoder on every
+		// commit. A qualified surface form in the code must resolve and become the
 		// REFERENCED slice's token - never mangled into the context namespace by the bare-name
 		// pass, never handed to R's parser - while bare names keep encoding under the context's
 		// own namespace (§4 fallback, unchanged). An unresolvable reference is loud and typed,
@@ -805,7 +805,7 @@ Item
 			}
 		}
 
-		// mds-plan D8.2: RSyntax term emission qualifies terms stamped OUTSIDE the emission
+		// RSyntax term emission qualifies terms stamped OUTSIDE the emission
 		// context. The context is the analysis' own filter (the namespace bare names resolve in
 		// at run time, D7.3 self-reference rule); a term whose origin is a FOREIGN host (list B
 		// on Second's default filter - the stamp was born when it was selected through that pool
@@ -852,7 +852,7 @@ Item
 		// loading cannot rescue) must NOT be coerced to the first dropdown entry. The option keeps
 		// the saved value while it waits for a model that can serve it, the host keeps its own
 		// selection, and the control reports the problem instead of rewriting the file's content
-		// behind the user's back (mds-plan C2/BIND). Restores anyway.
+		// behind the user's back. Restores anyway.
 		function test_unknown_saved_filter_id_waits_not_coerced()
 		{
 			var unknownId = 987654
@@ -969,7 +969,7 @@ Item
 
 		// The provenance a .jasp reload serves at the very first bind: setOptions is the same
 		// path a reload takes (store the loaded values, then setAnalysisUp rebinds every
-		// control), and the bind order comes from the derived edges alone. mds-plan post
+		// control), and the bind order comes from the derived edges alone.
 		// (ORIGIN-AUTHORITATIVE): a bare loaded value is UNQUALIFIED - it stays -1 through the
 		// bind (a bind is not an origin; the intake is stamp-free) - and its engine provenance
 		// is served per send by the generated sidecar reading each list's OWN loaded selection
@@ -1035,8 +1035,8 @@ Item
 					"the loaded options bound and carried their (id-free, C8) meta")
 
 			// "TestInts" lives in both datasets: only the provenance tells them apart. The values
-			// are -1 (bare, mds-plan post) - the provenance is read PER SEND off each list's own
-			// loaded selection through the C13 chain (mds-plan D3.4: the transient sidecar).
+			// are -1 (bare) - the provenance is read PER SEND off each list's own
+			// loaded selection through the C13 chain (the transient sidecar).
 			verify(ids && Array.isArray(ids.aDependent) && Array.isArray(ids.dependentA) && Array.isArray(ids.dependentB),
 					"the loaded column values carry sidecar provenance")
 			compare(ids.aDependent[0], savedFilterA,
@@ -1046,7 +1046,7 @@ Item
 			compare(ids.targetC[0], savedFilterB, "the hostless list's STAMPED term rides its own id, no chain needed")
 			//different datasets, not one analysis-wide stamp: each value is provenanced with the
 			//filter ITS host loaded (A on a 'Second'-dataset filter, B on the first dataset's),
-			//and those two saved filters are distinct ids (mds-plan D3.4: the sidecar carries
+			//and those two saved filters are distinct ids (the sidecar carries
 			//what the mirror's dataSetId/filterId stamp pair used to say; filter ids imply their
 			//dataset, so differing ids from dataset-distinct entries ARE the evidence - no
 			//label grammar parsed, C4).
@@ -1055,7 +1055,7 @@ Item
 					"the two provenances name different filters (A through the 'Second' host, B through the first dataset's), not one analysis-wide id")
 			verify(bound.aDependent.value.indexOf("TestInts") !== -1, "the value itself survived the bind")
 
-			// mds-plan C3/M5: provenance belongs on column-bearing values ONLY. The Switches never
+			// provenance belongs on column-bearing values ONLY. The Switches never
 			// carry columns, so they must not appear in .meta at all - and neither does a selection
 			// option: its value already IS the filter id. A stamp here would seed the engine's
 			// slice queue with a filter no value of this host uses (phantom slice) and could never
@@ -1069,7 +1069,7 @@ Item
 					"selection options need no provenance: their value is the filter id itself")
 		}
 
-		// mds-plan post (ORIGIN-AUTHORITATIVE prune): the staleness prune of a pool participates
+		// (ORIGIN-AUTHORITATIVE prune): the staleness prune of a pool participates
 		// only references INTO that pool's own provider (stamp == the pool's universe stamp,
 		// ListModel::termFollowsProviderChange). A foreign-stamped reference - another selection's
 		// typed copy, reaching the list the way a file delivers it (D5.1 Storage shape) - is not
@@ -1121,7 +1121,7 @@ Item
 			}
 		}
 
-		// mds-plan C4/RENDER + RESOLVER + LANG: the wrapper call shown in the form carries the
+		// + RESOLVER + LANG: the wrapper call shown in the form carries the
 		// syntax surface (bare dataset title for a default filter, "title - filterName" for a
 		// named one - never the bound filter id), re-renders when a selection changes, and
 		// survives a language switch: re-resolving the shown text through the bridge's own
@@ -1188,7 +1188,7 @@ Item
 			}
 		}
 
-		// mds-plan D2.3: the form's registry exposes the live selection HOSTS (count + list), the
+		// the form's registry exposes the live selection HOSTS (count + list), the
 		// selecting lists and the TextArea alike, and it tracks their lifecycle eagerly. The
 		// per-host bind-order promise (each host's FilterSelect before the controls it serves)
 		// is pinned in test_selection_dependency_is_derived; here: registry integrity - the
@@ -1225,9 +1225,9 @@ Item
 					"and the real hosts survived the churn")
 		}
 
-		// mds-plan C4/REGISTRY: the bridge reads the form's selection-option registry, so
+		// the bridge reads the form's selection-option registry, so
 		// dataSetSelectionOptionNames must hold exactly the live hosts' option names - the LIST
-		// hosts and the TextArea host alike (mds-plan D2.2 moved the form hosts onto the lists;
+		// hosts and the TextArea host alike (moved the form hosts onto the lists;
 		// the registry is host-type-agnostic). The old findChildren scan covered the statically
 		// created kinds; the registry covers every lifecycle point, tested here for membership.
 		function test_selectionOptionRegistry_membership()
@@ -1251,7 +1251,7 @@ Item
 			verify(form.dataSetSelectionOptionNames().indexOf("lateSet") !== -1,
 					"a host created after form completion registers immediately (M9)")
 
-			// mds-plan C5 (chunk-4 finding #1): destroying that host again is safe NOW. The plain
+			// (chunk-4 finding #1): destroying that host again is safe NOW. The plain
 			// createObject took the STATIC registration branch (JASPControl::componentComplete ->
 			// AnalysisForm::addControl), so the host also entered the form's control caches - which
 			// had no unregister path, and the next bind pass (setOptions -> setAnalysisUp ->

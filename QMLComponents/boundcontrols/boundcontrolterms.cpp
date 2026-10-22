@@ -32,11 +32,11 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 {
 	Terms::RelatedValuesPerTerm allControlValues;
 
-	//mds-plan D3.4: ONE parse step - the Terms json applier absorbs the shape normalization that
+	// ONE parse step - the Terms json applier absorbs the shape normalization that
 	//used to run here (and the list's
 	//interaction/row-component flags decide whether the R-syntax-simplified form gets row-wrapped,
 	//exactly as before). The parsed typed Terms are then copied into the model - provenance rides
-	//the Term objects (mds-plan C9), and legacy unqualified JSON parses to -1 terms that the D2.1
+	//the Term objects, and legacy unqualified JSON parses to -1 terms that the D2.1
 	//wildcard lookup matches against the stamped model.
 	Terms terms(value, _optionKeyValue(), _optionKeyLabel(), allControlValues,
 				_listView->containsInteractions(), _listView->hasRowComponent());
@@ -87,9 +87,9 @@ Json::Value BoundControlTerms::createJson() const
 	return _makeOption(_termsModel->terms(), _termsModel->getTermsWithComponentValues());
 }
 
-//mds-plan C11/D3.2: the transient per-term provenance of this list, POSITIONAL over the terms
+// the transient per-term provenance of this list, POSITIONAL over the terms
 //exactly like `types` is: one entry per term, `Term::filterId()` when the term is qualified
-//(>= 0, mds-plan C9), else the option's host filter (the same id createMeta stamps today - the
+//(>= 0), else the option's host filter (the same id createMeta stamps today - the
 //C13 fallback baked in so the generated Engine json is a COMPLETE input contract for
 //prepareMultiDataSetRun and the request encoding), else null (= unqualified, legacy/hostless:
 //the resolver's currentEncoder fallback, exactly today's unstamped behaviour). The whole node is
@@ -118,7 +118,7 @@ Json::Value BoundControlTerms::createFilterIds() const
 	return any ? ids : Json::nullValue;
 }
 
-//mds-plan D5.1 final: the Storage file shape = Terms::getStorageOptions - per-term
+// final: the Storage file shape = Terms::getStorageOptions - per-term
 //`{name, filterId?, types}` objects under the same row/optionKey discipline as the engine tree
 //(filterId omitted when -1; row children and textareas/combos/etc. keep today's shape). The
 //D5.1-preview positional `filterIds` member embedded next to {value, types} is GONE - the applier
@@ -133,7 +133,7 @@ Json::Value BoundControlTerms::createStorageValue() const
 
 bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 {
-	//mds-plan D5.1: valid input is the engine tree ({value, types} or a bare value), the Storage
+	// valid input is the engine tree ({value, types} or a bare value), the Storage
 	//option object ({value} + optional optionKey - types are inside the term objects there), or
 	//the single-row Storage form (value = one term object). Everything the file/save path can
 	//hand back must pass here or bindTo would reset the control "loaded with the wrong type".

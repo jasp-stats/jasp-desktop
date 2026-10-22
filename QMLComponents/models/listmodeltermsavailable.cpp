@@ -121,11 +121,11 @@ void ListModelTermsAvailable::sourceTermsReset()
 	if (listView()->addEmptyValue())
 		newTerms.add(Term("", listView()->placeholderText(), ""));
 
-	//getSourceTerms birth-stamps fresh dataset terms with this pool's CURRENT resolution
-	//(mds-plan post FIX 1); mirrored list-sources keep their own origins.
+	//getSourceTerms birth-stamps fresh dataset terms with this pool's CURRENT resolution;
+	// mirrored list-sources keep their own origins.
 	newTerms.add(getSourceTerms());
 
-	//mds-plan post (ORIGIN-AUTHORITATIVE): the PARTICIPATION KEY this rebuild reports - the
+	// (ORIGIN-AUTHORITATIVE): the PARTICIPATION KEY this rebuild reports - the
 	//filterId the affected terms currently carry: the previous universe's birth stamp (the old
 	//selection id on a host switch, the unchanged selection id on a data change, -1 for a
 	//hostless pool). No "new id" is reported: the rebuilt universe terms carry their own fresh
@@ -247,7 +247,7 @@ void ListModelTermsAvailable::removeTermsInAssignedList()
 	Terms	oldTerms = terms(),
 			newTerms = _allSortedTerms;
 
-	//mds-plan post (ORIGIN-AUTHORITATIVE prune, participation first-class - no provider id is
+	// (ORIGIN-AUTHORITATIVE prune, participation first-class - no provider id is
 	//passed around, and this is NOT the pool's NEW resolution, which would answer backwards):
 	//the participation key is this pool's own tracked `_universeFilterId`, the filterId the
 	//terms of the current universe carry (the pool's selection at its last rebuild, -1 for a

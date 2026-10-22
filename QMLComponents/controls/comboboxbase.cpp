@@ -38,7 +38,7 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 	const Terms& terms = _model->terms();
 	int index = -1;
 
-	//A bound value the model cannot serve yet stays pending, never rewritten (mds-plan C2/BIND).
+	//A bound value the model cannot serve yet stays pending, never rewritten.
 	//bindTo fully recomputes the pending state, so a value waiting from an earlier bind (or an
 	//earlier analysis in this form) can never leak into this one.
 	_unusedInitialValue	= "";
@@ -143,7 +143,7 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 		(optionValue.type() == Json::objectValue && optionValue.isMember("value") && optionValue["value"].isString());
 }
 
-//mds-plan D3.2: the combo holds ONE selected variable, so the sidecar is a scalar (schema:
+// the combo holds ONE selected variable, so the sidecar is a scalar (schema:
 //BoundControlTerms::createFilterIds): the selected model term's own filterId when it is qualified
 //(D2.1/D2.5 keep it in sync with the list's namespace), else the option's host filter - exactly
 //the id the host's sidecar node carries for this value - else null (non-aware/hostless: no sidecar, as today).
@@ -185,8 +185,8 @@ void ComboBoxBase::setUp()
 		connect(form(), &AnalysisForm::languageChanged,			this,	[this] () { _model->sourceTermsReset(); }	);
 		connect(form(), &AnalysisForm::analysisChanged,			this,	[this] () {
 			// analysisChanged fires at the END of setAnalysisUp, after the rebind, so it must
-			// not drop a value that is still waiting for its model to catch up (mds-plan
-			// C2/BIND); bindTo() owns resetting that one.
+			// not drop a value that is still waiting for its model to catch up;
+			// bindTo() owns resetting that one.
 			if (!_valueAwaitsModel)
 				_unusedInitialValue = "";
 		});
@@ -391,7 +391,7 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 }
 
 
-//mds-plan D3.4: the pending combo generates its held raw value, not a model projection (the
+// the pending combo generates its held raw value, not a model projection (the
 //combo is blank because the model cannot serve the value yet, but the OPTION - the component-owned
 //_boundValue - keeps it exactly as bound; recovery rebinds it for real when the model grows).
 //Bound normally this equals createJson() (the model term at the current index), so the override

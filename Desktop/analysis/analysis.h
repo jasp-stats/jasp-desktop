@@ -130,7 +130,7 @@ public:
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
-			///< mds-plan C12/D3.3: an analysis only dispatches with an INITIALIZED form - the run
+			///< an analysis only dispatches with an INITIALIZED form - the run
 			///< request is generated from component state (Analysis::createAnalysisRequestJson),
 			///< and before the form has attached through setAnalysisUp there is no component state
 			///< to generate from: the pending JSON parks and the run defers (stays Empty, the next
@@ -148,7 +148,7 @@ public:
 			void				reloadForm()				override;
 			void				exportResults()				override;
 			void				remove();
-			//mds-plan D3.4: the saved options are the GENERATED Engine tree (component-owned state, C11)
+			// the saved options are the GENERATED Engine tree (component-owned state, C11)
 	//with the transient `.filterIds` sidecar stripped - today's file shape minus the dev-era
 	//provenance stamps (never shipped, C15: no stamp migration). Generation walks the controls, so
 	//this is not a const read any more (the applyToAll/JS callers hold non-const pointers anyway).

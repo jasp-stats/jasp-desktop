@@ -30,7 +30,7 @@
 #include "json/json.h"
 #endif
 
-/// Class to "encode" the names of columns. It runs in three modes (mds-plan Phase 1, C1-C7):
+/// Class to "encode" the names of columns. It runs in three modes:
 ///
 ///  * FULL      - self-contained instance: owns a mint (name -> index and index -> (original,
 ///                type)) AND materializes the full-string encode/decode maps in its own prefix
@@ -78,7 +78,7 @@ public:
 	///< Resolves the encoder to use for a given option stamp (dataSetId, filterId), or nullptr to
 	/// fall back to the current encoder. filterId -1 means "no filter stamped" (unqualified option:
 	/// the resolver should return the dataset's shown-filter view / legacy fallback, C7).
-	/// Resolves the encoder a node's names must encode against (mds-plan D1.6, consumed per the
+	/// Resolves the encoder a node's names must encode against (consumed per the
 	/// D3.3/D3.7 flip). `filterId` is read from the transient `.filterIds` sidecar (scalar node =
 	/// the option-wide id, positional entry = per-term id, -1 = unqualified: the C7 legacy
 	/// fallback the resolver documents for its context). The resolver may RE-ATTRIBUTE
@@ -172,7 +172,7 @@ public:
 	/// These are THE decode entry points; O(1), context-free, strict (no hit ==> raw).
 	/// They cover every live filter block of every loaded dataset plus the extras and fallback
 	/// blocks, so results decoding needs no per-dataset sweep anymore (the instance-rooted decode
-	/// shims and their currentEncoder-flip dance retired at mds-plan D1.5).
+	/// shims and their currentEncoder-flip dance retired at).
 	static	std::string			decode(const std::string & in)									{ auto it = _decodeTable().find(in);	return it == _decodeTable().end() ? in : it->second.name;				}
 	static	bool				shouldDecode(const std::string & in)							{ return _decodeTable().count(in) > 0;																		}
 	static	columnType			columnTypeFromEncoded(const std::string & in)					{ auto it = _decodeTable().find(in);	return it == _decodeTable().end() ? columnType::unknown : it->second.type;	}
@@ -193,11 +193,11 @@ public:
 	static	std::string			tokenForNameInNames(const colTypeMap & names, const std::string & in, const std::string & prefix, const std::string & postfix = "_Encoded");
 
 	/// The pre-multi-dataset encode prefix every released JASP used (the class default from
-	/// before the D<ds>_F<filter> namespaces, mds-plan C15): released .jasp files can still hold
+	/// before the D<ds>_F<filter> namespaces): released .jasp files can still hold
 	/// `JaspColumn_<i>_Encoded` tokens inside PERSISTED results. See decodeJsonLegacyTokens.
 	static constexpr const char * LEGACY_DEFAULT_PREFIX = "JaspColumn_";
 
-	/// mds-plan D5.3: best-effort legacy-prefix result decoder for PRE-EXISTING persisted results.
+	/// best-effort legacy-prefix result decoder for PRE-EXISTING persisted results.
 	/// Materializes the released namespace - `LEGACY_DEFAULT_PREFIX + <i> + "_Encoded"` over the
 	/// CURRENT dataset column map, same pure mint (mintReverseOf, C1) released JASP minted with -
 	/// and sweeps it through every string value and member name of `json`, replacing hits by the
@@ -213,7 +213,7 @@ public:
 	/// none). No grammar parsing (C4): pure mint-index lookup, garbage in, raw out, never a crash.
 	static	void				decodeJsonLegacyTokens(Json::Value & json, const colTypeMap & namesWithTypes);
 
-	/// Scoped replay block of the global decode table (mds-plan D1.7): writes `prefix +
+	/// Scoped replay block of the global decode table: writes `prefix +
 	/// <mint index of names> + _Encoded -> (name, type)` on construction and, on destruction,
 	/// restores EXACTLY the table contents it found under those keys (undo log, not a blind
 	/// erase - entries a live block had at the colliding indices come back, never dropped).
@@ -237,9 +237,9 @@ public:
 	static	colsPlusTypes		encodeColumnNamesinOptions(Json::Value & options, bool preloadingData);
 
 	/// Multi-dataset aware version of encodeColumnNamesinOptions(): walks options, their .meta and
-	/// the transient `.filterIds` sidecar (mds-plan D3.2 schema, grammar at sidecarOwnFilterId) in
+	/// the transient `.filterIds` sidecar (schema, grammar at sidecarOwnFilterId) in
 	/// one pass and encodes every option against the encoder that `encoderFor` resolves for the
-	/// filterId that governs the node (mds-plan D3.3/D3.7: the stamped filter's VIEW, so an option
+	/// filterId that governs the node (the stamped filter's VIEW, so an option
 	/// encodes in exactly the namespace of the filter its terms were selected through - the same
 	/// view the slice for that filter is handed to R in). A POSITIONAL sidecar array encodes the
 	/// option's terms one by one through their own filters (mixed provenance within one list);
@@ -254,7 +254,7 @@ public:
 	static	perDataSetColsPlusTypes	encodeColumnNamesinOptionsPerDataSet(Json::Value & options, bool preloadingData, const EncoderFor & encoderFor, int primaryDataSetId);
 
 	// ----------------------------------------------------------------------------------------------
-	// `.filterIds` sidecar (mds-plan C11/D3.2 generators, D3.3/D3.7 consumption, stripped at the
+	// `.filterIds` sidecar (generators, D3.3/D3.7 consumption, stripped at the
 	// engine boundary before R sees the options). Grammar of one sidecar node, placed at the
 	// option's path inside the root tree `options[FILTERIDS_MEMBER]`:
 	//   int               option-level filterId; covers the whole option subtree (the inherit
@@ -264,7 +264,7 @@ public:
 	//                     the caller's C7 legacy fallback). A positional node never inherits
 	//                     parent->child, which structurally avoids the old provenance-meta walk's
 	//                     parent-stamp leak into child nodes.
-	//   array(array(int|null))  PER-FACTOR positional (FactorsForm family, mds-plan post): the
+	// array(array(int|null)) PER-FACTOR positional (FactorsForm family): the
 	//                     option value is an array of factor OBJECTS (each carrying its terms
 	//                     under the optionKey) and element i is factor i's per-term array, resolved
 	//                     factor-positionally then term-positionally. The discriminator is the
@@ -294,7 +294,7 @@ public:
 	///< Collects every int leaf of a `.filterIds` sidecar tree (scalars, positional arrays and
 	///  "$"-containers alike) - the queue input of DataBridge::prepareMultiDataSetRun (D3.3) and
 	///  of the D3.6 component-side reference computation. The provenance-meta collectors of the
-	///  stamped-mirror era are DELETED with the mirror itself (mds-plan C8/C11/D3.4): the
+	/// stamped-mirror era are DELETED with the mirror itself: the
 	///  sidecar is now the one place filter ids live.
 	static	void				collectFilterIdsFromSidecar(const Json::Value & sidecarNode, std::set<int> & filterIds);
 	// ----------------------------------------------------------------------------------------------

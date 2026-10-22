@@ -43,7 +43,7 @@ public:
 			const QList<ListModelAssignedInterface*>&	assignedModels()	const			{ return _assignedModels; }
 
 signals:
-			///< mds-plan post (ORIGIN-AUTHORITATIVE): the universe was rebuilt from this pool's
+			///< (ORIGIN-AUTHORITATIVE): the universe was rebuilt from this pool's
 			///  provider. `filterIdToUpdate` is the PARTICIPATION KEY - the filterId the affected
 			///  terms currently carry (the old selection id on a host switch, the unchanged
 			///  selection id on a data change, -1 for a hostless/default-provider pool); there is
@@ -71,7 +71,7 @@ public slots:
 protected:
 	Terms								_allTerms;
 	Terms								_allSortedTerms;
-	///< mds-plan post: the PARTICIPATION KEY of this pool - the filterId the terms of the last
+	///< the PARTICIPATION KEY of this pool - the filterId the terms of the last
 	///< built universe carry (the pool's own selection at that rebuild, else its source chain,
 	///< else -1 = the default provider). It is the from half of the transition the next rebuild
 	///< reports through availableTermsReset AND the participation key of the assigned prune

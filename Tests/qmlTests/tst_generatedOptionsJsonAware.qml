@@ -3,11 +3,11 @@ import QtQuick
 import JASP
 import JASP.Controls
 
-// mds-plan D3.1/D3.2/D3.4 - the Engine-json GOLDEN HARNESS, part 2: the AWARE form.
+// the Engine-json GOLDEN HARNESS, part 2: the AWARE form.
 //
 // Same contract as tst_generatedOptionsJson.qml (read that header first - the mirror is deleted,
 // the expectations are its frozen bytes), but here the analysis is multiDataSetAware: two
-// selecting AvailableVariablesLists (per-list selection, mds-plan C10/D2.2) plus a TextArea host,
+// selecting AvailableVariablesLists (per-list selection) plus a TextArea host,
 // so different lists resolve through DIFFERENT filters. The golden mirror bytes were captured with
 // their dataSetId/filterId stamp keys stripped (those were the harness' one documented tolerance,
 // and they never shipped: C8/C15) - the provenance they carried is asserted on the transient
@@ -33,7 +33,7 @@ Item
 		VariablesForm
 		{
 			AvailableVariablesList	{ id: allVarsA;	name: "allVarsA";	dataSetSelectionOption:	"dataSetA" }
-			// resolves through allVarsA's selection (related available list, mds-plan D2.2)
+			// resolves through allVarsA's selection (related available list)
 			AssignedVariablesList	{ id: depA;		name: "depA" }
 			// a variable combobox served by the same host
 			DropDown				{ id: comboA;	name: "comboA";	source: allVarsA; addEmptyValue: true }
@@ -407,7 +407,7 @@ Item
 			wait(40)
 		}
 
-		// ---- pre-attach parking (mds-plan D3.5/C12) ---------------------------------------------
+		// ---- pre-attach parking ---------------------------------------------
 
 		function test_pending_json_applied_once_and_stamps_never_read()
 		{
@@ -491,7 +491,7 @@ Item
 			verify(storage.depA.types === undefined, "no outer positional types in Storage (per-term since D5.1)")
 			verify(storage.depA.filterIds === undefined, "the D5.1-preview positional filterIds member is gone")
 
-			// D5.1 final: per-term {name, filterId?, types}. mds-plan post (ORIGIN-AUTHORITATIVE):
+			// D5.1 final: per-term {name, filterId?, types}. (ORIGIN-AUTHORITATIVE):
 			// a bare bind is UNQUALIFIED - a bind is not an origin - so Storage honestly omits the
 			// member, and the Engine sidecar serves the provenance PER SEND off the C13 chain
 			// (against the LIVE host, like every provenance assertion in this file):
@@ -571,7 +571,7 @@ Item
 		}
 		function test_wrapper_generation_uses_the_selection_title_surface()
 		{
-			// mds-plan D8.3: the aware wrapper must not pin `data <- datasets[[1]]` - the primary
+			// the aware wrapper must not pin `data <- datasets[[1]]` - the primary
 			// dataset is resolved per selection option through the TITLE surface (C4/RENDER), and
 			// the datasets contract is stated on the wrapper itself.
 			const sel = _bindAwareForm()

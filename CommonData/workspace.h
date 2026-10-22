@@ -6,7 +6,7 @@
 #include "datasetbasenode.h"
 #include "databaseinterface.h"
 
-// --- user-qualified column references (mds-plan D7.0a, plan §5) -------------------------------
+// --- user-qualified column references -------------------------------
 // The surface grammar of an outward column reference in filter/compute/analysis code:
 //
 //   "Dataset"."Filter"."Column"("Type")   full form, always valid
@@ -23,7 +23,7 @@
 // segment is a quoted columnType spelling (scale/ordinal/nominal/nominalText, case-insensitive,
 // canonical spelling on render) and WINS over the column's current type when present.
 //
-// BOUNDARY (mds-plan §4): these helpers parse/render/resolve QUALIFIED references only. A bare
+// BOUNDARY: these helpers parse/render/resolve QUALIFIED references only. A bare
 // column name is never resolved here - which namespace it falls back to is per-context (the
 // filter's own dataset, the selected input filter, the analysis host, the legacy current
 // encoder) and is the CALLER's concern. parse() still recognizes the bare production (so
@@ -78,8 +78,8 @@ struct QualifiedColumnRef
     /// ready-to-show `error` on any violation; a bare input parses with only columnName set.
     static bool		parse(const QString & text, QualifiedColumnRef & out, QString & error);
 
-    /// Scan R code text for quoted qualified references (mds-plan D7.3): every occurrence of
-    /// the plan §5 surface form with at least TWO segments ("DS"."Col", "F"."Col", the full
+    /// Scan R code text for quoted qualified references: every occurrence of
+    /// the surface form with at least TWO segments ("DS"."Col", "F"."Col", the full
     /// form, each with its optional ("Type") tail). R comments and single- or double-quoted R
     /// string literals are skipped wholesale - a surface form inside them is user text, not a
     /// reference - and the bare production (one quoted segment) IS an R string literal, so a
@@ -90,7 +90,7 @@ struct QualifiedColumnRef
     static std::vector<QualifiedRefOccurrence>	scanText(const std::string & code);
 };
 
-/// One qualified reference found in code text by QualifiedColumnRef::scanText (mds-plan D7.3):
+/// One qualified reference found in code text by QualifiedColumnRef::scanText:
 /// the byte range [begin, end) it occupies and the parsed segments. Never hand-built.
 struct QualifiedRefOccurrence
 {
@@ -182,7 +182,7 @@ public slots:
 			QVariantList						inputFilterDropDownList() const;
 			QVariantList						dataSetFilterDropDownList() const;
 
-			// --- dataset selection on the syntax surface (mds-plan C4) ------------------------------
+			// --- dataset selection on the syntax surface ------------------------------
 			// Selection options carry FILTER ids everywhere internally (options json, .jasp, engine,
 			// .meta) - but in syntax text (generated wrapper defaults, the call shown in the form,
 			// hand-written R) they are human strings only: a dropdown label "title - filterName" for
@@ -208,7 +208,7 @@ public slots:
 			///  bridge hands it to R users untouched by the UI language).
 			bool								resolveDataSetSelectionValue(const QString &optionName, const Json::Value &value, int &filterId, QString &error) const;
 
-			// --- user-qualified column references (mds-plan D7.0a / plan §5) -------------------
+			// --- user-qualified column references -------------------
 			// Parse/render are pure (QualifiedColumnRef); resolution runs against the live
 			// workspace: the dataset segment is matched by TITLE (exact, like the selection
 			// surface), the filter segment by NAME. The 2-segment form "X"."Column" resolves X
@@ -222,7 +222,7 @@ public slots:
 			///< filterId, column, type); `ref` must come from QualifiedColumnRef::parse or be
 			///  built to the same rules. Returns the rejection kind (none on success).
 			QualifiedRefError					resolveQualifiedColumnRef(const QualifiedColumnRef & ref, ResolvedQualifiedColumn & out, QString & error) const;
-			///< Context-aware minimal render (plan §5: qualify only what lies outside the
+			///< Context-aware minimal render (qualify only what lies outside the
 			///< context's default namespace): the plain unqualified column name when `filterId`
 			///< IS the caller's context filter `contextFilterId` (a filter editor's own
 			///< dataset+filter, the compute panel's selected input filter, an analysis host);
@@ -236,7 +236,7 @@ public slots:
 			///< filterById it may materialize a named filter of a reopened file.
 			QString								renderQualifiedColumnRef(int contextFilterId, int filterId, const std::string & columnName, columnType type);
 
-			///< mds-plan D7.4: the visual constructors' outward emission (ScriptNodeColumn::toR):
+			///< the visual constructors' outward emission (ScriptNodeColumn::toR):
 			///< the FULL qualified surface form ("Dataset"."Filter"."Column"("Type")) composed
 			///< from the RESOLVED pieces - the slice is resolved live from `dataSetTitle` (+
 			///< `filterName`, "" meaning the dataset's default filter), so a resolvable
@@ -247,10 +247,10 @@ public slots:
 			///< rendered text back. An unresolvable dataset title emits the STORED names
 			///< verbatim - the run then fails loudly with the typed unknownDataSet error
 			///< (D7.5) instead of degrading quietly. `type` unknown means no type segment
-			///  (nothing meaningful to stamp; the plan §5 type segment is optional).
+			/// (nothing meaningful to stamp; the type segment is optional).
 			QString								fullQualifiedColumnRef(const QString & dataSetTitle, const QString & filterName, const std::string & columnName, columnType type) const;
 
-			///< mds-plan D7.3: scan R code text (a filter expression, computed-column code,
+			///< scan R code text (a filter expression, computed-column code,
 			///< computed-dataset code) for qualified references, resolve each against this
 			///< workspace and collect the referenced FILTER ids - the transient
 			///< `referencedFilterIds` request sidecar the filter/compute request builders stamp
@@ -263,13 +263,13 @@ public slots:
 			///  error surface is the engine's, which is what D7.5's invalidation triggers on).
 			std::set<int>						referencedFilterIdsInCode(const std::string & code, QString * firstError = nullptr, QualifiedRefError * firstErrorKind = nullptr) const;
 
-			// --- mds-plan D7.1/D7.2: the editor-side surface of the same grammar ----------------
+			// --- the editor-side surface of the same grammar ----------------
 			// The three R editors (FilterWindow's filterEdit, ComputeColumnWindow's
 			// computeColumnEdit, ComputeDataSetPanel's codeEdit) share two needs beyond the D7.3
 			// request-side scan: a CATALOG to pick outward references from, and a cheap
 			// VALIDATION of the code as typed. Both are read-only views over the same helpers:
 			// insertion is always the verbatim output of renderQualifiedColumnRef (the minimal
-			// surface form per plan §5 - the context's own columns come out bare, everything
+			// surface form - the context's own columns come out bare, everything
 			// else qualified), and validation is the D7.3 scanner's typed first error. Neither
 			// writes anything: bare names are never validated here (§4 - their fallback is the
 			// editor's context, codified in the editors) and unresolvable references are a
@@ -312,7 +312,7 @@ signals:
 			void					dataSetCreated(int dataSetId);
 			void					dataSetRemoved(int dataSetId);
 			void					dataSetTitleChanged(int dataSetId);
-			///< mds-plan D7.5: relay of Filter::nameChanged for every named filter of every
+			///< relay of Filter::nameChanged for every named filter of every
 			///  loaded dataset (DataSet::workspace() is the hub) - the invalidation hook for
 			///  editors holding qualified references to that filter BY NAME: a renamed
 			///  referenced filter invalidates them (loudly, D7.5) without any edit on their side.

@@ -52,7 +52,7 @@ public:
 	/// Store node in the given slot (implementations must setParent() when node != nullptr).
 	virtual void			setSlot(int, ScriptNode *)			{}
 	/// Fresh node of the same type without children (row functions with one trailing empty slot).
-	/// For a column node "same identity" includes its outward source stamp (mds-plan D7.4):
+	/// For a column node "same identity" includes its outward source stamp:
 	/// a palette prototype for another dataset's column must spawn nodes that keep carrying it.
 	virtual ScriptNode	*	cloneEmpty()				const	= 0;
 
@@ -199,7 +199,7 @@ public:
 	bool			isComplete() const override { return true; }
 	ScriptNode	*	cloneEmpty() const override
 	{
-		//mds-plan D7.4: the clone must keep the outward source stamp (and the user type that
+		// the clone must keep the outward source stamp (and the user type that
 		//carries the source column's type) - the palette spawns drag nodes through cloneEmpty.
 		ScriptNodeColumn * clone = new ScriptNodeColumn(_columnName, _columnTypeUser);
 		clone->setDataSetName(_dataSetName);
@@ -211,7 +211,7 @@ public:
 	int columnTypeUser() const { return _columnTypeUser; }
 	int columnTypeDrop() const { return _columnTypeDrop; }
 	const std::string & dataSetName() const { return _dataSetName; }
-	///< mds-plan D7.4: the source slice's filter NAME for an outward node ("" = the dataset's
+	///< the source slice's filter NAME for an outward node ("" = the dataset's
 	///  default filter - the v1 dataset-level reference). Serialized alongside dataSetName.
 	const std::string & filterName() const { return _filterName; }
 

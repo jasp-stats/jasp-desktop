@@ -35,7 +35,7 @@ DataSet::DataSet(Workspace * workspace, int id)
 {
 	Log::log() << "DataSet::DataSet(id=" << id << ")" << std::endl;
 
-	_encoder = ColumnEncoder::createCanonical();	//mds-plan C2: the DataSet owns the mint, the namespaces (views) belong to the filters
+	_encoder = ColumnEncoder::createCanonical();	// the DataSet owns the mint, the namespaces (views) belong to the filters
 	_syncer  = new DataSetSyncer(this);
 	_emptyValues	= new EmptyValues(nullptr);
 	connect(_emptyValues,	&EmptyValues::emptyValuesChanged,	this,		&DataSet::emptyValuesChanged			);
@@ -331,7 +331,7 @@ void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Column
 
 		//Column names/types have (just) been (re)loaded into this DataSet, so keep our own encoder in
 		//sync; when this dataset is the shown/current one it is what the encoder indirection points at.
-		//mds-plan D6 (zoo run 2, codeF): the mint must keep the TYPED triple-per-column shape - a
+		// (zoo run 2, codeF): the mint must keep the TYPED triple-per-column shape - a
 		//names-only re-mint here (the shape a fresh import/sync ends with, and startFileSyncing's
 		//immediate doSync() guarantees one after every load) downgrades every view's block to one
 		//slot per column, so a bind-time encodeRScript (rlang/JAGS textareas) mints indexes the
@@ -701,7 +701,7 @@ void DataSet::dbCreate()
 
 	//Mint the (still empty) column names through the canonical; the default filter's view - whose
 	//block is rewritten as a consequence - got its final id from dbCreate above, so the funnel is
-	//live from here on (mds-plan D1.4).
+	//live from here on.
 	_encoder->setCurrentNames(getColumnTypesMap());
 }
 
@@ -815,7 +815,7 @@ void DataSet::dbLoad(int id, std::function<void(float)> progressCallback, Versio
 			f->dbUpdate(true);
 	}
 
-	//Remint the canonical with the loaded columns (mds-plan D1.4): every live filter view's block
+	//Remint the canonical with the loaded columns: every live filter view's block
 	//in the global decode table is rewritten as an automatic consequence, and the views attached
 	//just below (loadStoredFilter -> Filter::dbLoad) mint their blocks from this state.
 	_encoder->setCurrentNames(getColumnTypesMap());
@@ -824,7 +824,7 @@ void DataSet::dbLoad(int id, std::function<void(float)> progressCallback, Versio
 	//aware selections list LIVE filters only (Workspace::_filterDropDownList, RPC dataset_info),
 	//so a named filter that exists only as a db row is unselectable after a reopen - and a saved
 	//selection option naming it gets coerced away by ComboBoxBase::bindTo before it ever reaches
-	//the host (mds-plan C2/EAGER, findings M3/m4). loadStoredFilter attaches to the existing row
+	//the host. loadStoredFilter attaches to the existing row
 	//so the db row id - the invariant saved provenance refers to - is preserved, is a no-op for
 	//filters that are already live (default included), and runs after the canonical remint above
 	//so the freshly attached views mint their blocks from the loaded names.
@@ -1391,7 +1391,7 @@ stringset DataSet::findUsedColumnNames(std::string searchThis)
 	stringset columnsFound, columnsWithTypeFound;
 
 	//Text scanning encodes through the shown filter's VIEW (the canonical itself never mints
-	//full strings, mds-plan C2); which view it is cannot matter for the result set because the
+	//full strings); which view it is cannot matter for the result set because the
 	//encode->decode roundtrip below drops the namespace again.
 	ColumnEncoder * view = shownEncoder();
 
@@ -1808,7 +1808,7 @@ bool DataSet::insertColumns(int column, int count, const QModelIndex &)
 
 	emit datasetChanged(_dataSetId, tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
-	//mds-plan D6: typed re-mint - the new columns carry a type (scale default above), and a
+	// typed re-mint - the new columns carry a type (scale default above), and a
 	//names-only mint here would downgrade every existing column's triple to a single slot.
 	_encoder->setCurrentNames(getColumnTypesMap());
 
@@ -1838,7 +1838,7 @@ bool DataSet::removeColumns(int column, int count, const QModelIndex &)
 
 	emit datasetChanged(_dataSetId, tq(changed), tq(missingColumns), tq(changeNameColumns), false, false);
 
-	//mds-plan D6: the SURVIVING columns keep their types - a names-only re-mint here would
+	// the SURVIVING columns keep their types - a names-only re-mint here would
 	//downgrade their triples to single slots (same zoo-driven bug class as endBatchedToDB).
 	_encoder->setCurrentNames(getColumnTypesMap());
 

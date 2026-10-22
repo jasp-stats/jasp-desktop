@@ -240,7 +240,7 @@ static Json::Value columnEncoderContextJson()
 		dataSet ? dataSet->getColumnTypesMap() : ColumnEncoder::colTypeMap(),
 		extraEncoder ? extraEncoder->currentNames() : ColumnEncoder::colTypeMap(),
 		//The tokens ride the shown filter's VIEW namespace (JASPColumn_D<dsId>_F<filterId>_,
-		//mds-plan C1/C3) - the canonical itself carries no prefix.
+		//) - the canonical itself carries no prefix.
 		dataSet && dataSet->shownEncoder() ? dataSet->shownEncoder()->encodePrefix() : std::string()
 	).toJson();
 }
@@ -595,7 +595,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	//parse must never be picked up by a host registering during this one.
 	form->setPendingDataSetSelectionRawValues(Json::Value());
 
-	//Dataset selection options carry the syntax surface (mds-plan C4): human strings only - the
+	//Dataset selection options carry the syntax surface: human strings only - the
 	//bare dataset TITLE for a dataset's default filter, or the dropdown label "title - filterName"
 	//for a named one, resolved by EXACT lookup against Workspace::datasetSelectionSurfaceMap()
 	//(never parsed or split: titles may contain " - " or ":"). The control contract everywhere
@@ -649,7 +649,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 
 	Json::Value parsedOptions;
 	std::string errorMsg;
-	//mds-plan D3.3: parseOptions now REPORTS the generated Engine tree (values + send-time .meta
+	// parseOptions now REPORTS the generated Engine tree (values + send-time .meta
 	//minus provenance + the transient .filterIds sidecar), not a stored mirror - the
 	//binding below wrote every value through its control, so this is the same state, generated.
 	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg))
@@ -675,7 +675,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 		//filter before the lists bound ('depends'), so the .meta stamped per form, the options
 		//encode per dataset and the slice queue feeds the R-side reads. Syntax datasets have no
 		//user filters; a name resolved to the dataset's default filter. The primary is the first
-		//loaded dataset (mds-plan D8.3: in the generated wrapper this is the documented
+		//loaded dataset (in the generated wrapper this is the documented
 		//no-selection-surface fallback, `datasets[[1L]]`).
 		const int primaryId = DataSetProvider::getProvider(gl_initializedDbInMemory, false)->firstLoadedDataSetId();
 		const DataBridge::MultiDataSetRunPlan plan = gl_dataBridge->prepareMultiDataSetRun(parsedOptions, primaryId, "", analysisNameStr);
@@ -689,7 +689,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 		rbridge_setWantedCols(analysisColsTypes);
 	}
 
-	//mds-plan C11/D3.3: R never sees provenance - strip the transient `.filterIds` sidecar that
+	// R never sees provenance - strip the transient `.filterIds` sidecar that
 	//prepareMultiDataSetRun consumed above (and the classic path left alone) from what goes back
 	//into the syntax-bridge caller, exactly like Engine::runAnalysis does before
 	//rbridge_runModuleCall.
@@ -886,7 +886,7 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 }
 
 // Decode a WHOLE json payload (an analysis' results json, say) with the ONE process-global strict
-// decode table (mds-plan C4, converged at D1.5): a block per live filter of every dataset in the
+// decode table (converged at D1.5): a block per live filter of every dataset in the
 // bridge workspace, plus the extras and fallback blocks. The old per-encoder sweep (each DataSet's
 // own encoder, then the extra-options encoder, then the process-global one) collapsed into this
 // single static entry - every encoder only ever replaced the exact tokens it minted, so the sweep

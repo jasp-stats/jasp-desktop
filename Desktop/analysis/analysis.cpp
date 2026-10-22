@@ -57,7 +57,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 		_optionsFromDifferentVersion = _dynamicModule->version() != optionsVersion;
 
 	if (options)
-		setPendingOptions(options, true); //Same story as other constructor: park the file-load options (mds-plan C12), created-with-options
+		setPendingOptions(options, true); //Same story as other constructor: park the file-load options, created-with-options
 
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	_helpFile						= _dynamicModule ? _dynamicModule->helpFolderPath() + tq(analysisEntry->function()) : "";
@@ -123,7 +123,7 @@ void Analysis::initAnalysis()
 	connect(this,				&Analysis::createFormWhenYouHaveAMoment,	this,	&Analysis::createForm,				Qt::QueuedConnection);
 
 
-	//mds-plan D3.4: the explicit created-with-options bool (set when the file-load/RPC/duplicate
+	// the explicit created-with-options bool (set when the file-load/RPC/duplicate
 	//path parked options into the C12 parking lot) replaces the old mirror-shaped heuristic.
 	bool isNewAnalysis = !createdWithOptions();
 
@@ -820,7 +820,7 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 			if (fileData.size() > 0 && plotlyJson.isNull())
 				Log::log() << "loadPlotlyJsonInResults: parse produced null from non-empty file '" << tempFileRelativePath << "'" << std::endl;
 
-			//Decoding is context-free since mds-plan C4: plot files are written by R with encoded
+			//Decoding is context-free since plot files are written by R with encoded
 			//names and never pass through the engine's sendString, but the desktop's global decode
 			//table holds a block per live filter of every loaded dataset (plus extras), so ONE
 			//sweep resolves them all - aware and non-aware runs alike.
@@ -881,7 +881,7 @@ Json::Value Analysis::asJSON(bool withRSource)
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
-	//mds-plan D3.4/D5.1: the saved options are GENERATED from the components in the STORAGE shape
+	// the saved options are GENERATED from the components in the STORAGE shape
 	//(C11): per-term `{name, filterId?, types}` objects for the term families (filterId omitted
 	//when -1, provenance inside the term, same-name-different-filter twins immune to positional
 	//drift), every other family its value tree - no `.meta` and no sidecar (both are send-time
@@ -1078,7 +1078,7 @@ void Analysis::filterByNameDone(int dataSetId, const QString &name, const QStrin
 
 bool Analysis::shouldRun()
 {
-	//mds-plan C12/D3.3: the run request is GENERATED from component state
+	// the run request is GENERATED from component state
 	//(createAnalysisRequestJson -> AnalysisBase::createOptionsJson), so dispatch requires an
 	//initialized form: before setAnalysisUp has attached and bound it there is no component
 	//state, the pending JSON parks (and must never be read for a run), and staying Empty defers
@@ -1121,8 +1121,8 @@ Json::Value Analysis::createAnalysisRequestJson()
 
 		//A multi-dataset aware analysis encodes and loads per option: the transient `.filterIds`
 		//sidecar of the GENERATED Engine json names the filter each option/term was selected
-		//through (mds-plan D3.2/D3.3; DataBridge::prepareMultiDataSetRun consumes it, the engine
-		//strips it before R). mds-plan C11/D3.3 flip: the run request is no longer read from the
+		//through (DataBridge::prepareMultiDataSetRun consumes it, the engine
+		//strips it before R). The D3.3 flip: the run request is no longer read from the
 		//mirror-era read but generated from the components (AnalysisForm::createOptionsJson) -
 		//shouldRun() only dispatches with an initialized form, so there is always component state
 		//to generate from (no pre-attach request can read pending JSON, C12). For non-aware
@@ -1164,7 +1164,7 @@ QString Analysis::generateWrapper()
 					tq(_qml),
 					tq(_title),
 					_moduleData->preloadData(),
-					multiDataSetAware()   //mds-plan D8.3: like the bridge path (syntaxbridge.cpp generateWrapper), the live developer-mode button must produce aware wrappers
+					multiDataSetAware() // like the bridge path (syntaxbridge.cpp generateWrapper), the live developer-mode button must produce aware wrappers
 	);
 }
 

@@ -25,14 +25,14 @@ class BoundControl
 {
 
 public:
-	//mds-plan C11/D3.1: the two JSON shapes generated ON DEMAND from the components' typed state
+	// the two JSON shapes generated ON DEMAND from the components' typed state
 	//(the components are the source of truth; these generations are what replaces reading a
 	//stored options tree):
 	//  Engine  - the current R contract: exactly the option values the control writes today, plus
 	//            the send-time `.meta` (createEngineMeta, C8: never dataSetId/filterId) and the
 	//            transient per-term/per-option `.filterIds` sidecar (createFilterIds) that the
 	//            slice-queue build and the request encoding consume and that is STRIPPED at the
-	//            engine boundary before R ever sees it (C11, mds-plan D3.3).
+	// engine boundary before R ever sees it (C11).
 	//  Storage - clean typed state (D5.1 final): no `.meta`, no sidecar tree. The term families
 	//            serialize each term as the per-term object {name, filterId?, types} (filterId
 	//            omitted when -1, row optionKey discipline kept); every other family stores its
@@ -49,7 +49,7 @@ public:
 	virtual const Json::Value&			defaultBoundValue()												const	= 0;
 	virtual	void						setDefaultBoundValue(const Json::Value& defaultValue)					= 0;
 
-	///< The shape the NULL-PATH self-rebind round-trips through (mds-plan D6, zoo run 8):
+	///< The shape the NULL-PATH self-rebind round-trips through (zoo run 8):
 	/// JASPControl::_setInitialized re-binds an already-initialized control that a delta parse
 	/// left out from `value == null ? <own builder> : value`. For every family that builder is
 	/// the Engine shape and the round-trip is the identity; for the assigned-terms family the
@@ -59,7 +59,7 @@ public:
 	/// wrong dataset). Those families re-bind from their Storage shape instead, which the
 	/// applier parses back filterId-included (D5.1, lossless round-trip). Default: Engine.
 	virtual JsonFormat	selfRebindFormat()														const	{ return Engine;				}
-	///< Generate this control's option value in the requested shape (mds-plan D3.1). The default
+	///< Generate this control's option value in the requested shape. The default
 	/// is today's createJson() for both formats: BoundControlBase routes the two formats through
 	/// createEngineValue()/createStorageValue() and the families whose stored value is built from
 	/// live state (not from createJson's default builder) override those hooks, so the generation
@@ -67,19 +67,19 @@ public:
 	/// (TextAreaBase, VariablesListBase, TableViewBase) forward boundControl() to their companion,
 	/// which answers here.
 	virtual Json::Value	createJson(JsonFormat)														const	{ return createJson();			}
-	///< The send-time `.meta` node of this option (mds-plan C8/D3.2, THE single source since the
+	///< The send-time `.meta` node of this option (THE single source since the
 	/// D3.4 deletion of the mirror's createMeta stamping era): what the family generates
 	/// (shouldEncode/isRCode/filterForValues/loadFilteredData/encodeThis/...), never any
 	/// dataSetId/filterId - provenance is in the name (+ the transient sidecar below). Default:
 	/// no meta.
 	virtual Json::Value	createEngineMeta()															const	{ return Json::nullValue;		}
-	///< The transient per-term/per-option filterId node for this option (mds-plan C11/D3.2),
+	///< The transient per-term/per-option filterId node for this option,
 	/// placed at the option's path inside the generated `.filterIds` tree (same placement rules as
 	/// `.meta`). Schema: int | array of (int|null); an array is POSITIONAL over the option's term
 	/// values (null = unqualified term ⟹ the D3.7 resolver's fallback), a scalar covers the whole
 	/// option (the aware-run namespace). Null when there is nothing to say. Stripped at the
 	/// engine boundary (D3.3); never reaches Storage. Also the per-control provenance input of
-	/// AnalysisForm::collectFilterIds (mds-plan D3.6) - the only place filter ids are ever read
+	/// AnalysisForm::collectFilterIds - the only place filter ids are ever read
 	/// for behaviour besides the engine-side walk.
 	virtual Json::Value	createFilterIds()															const	{ return Json::nullValue;		}
 };

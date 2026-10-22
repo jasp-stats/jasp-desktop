@@ -123,7 +123,7 @@ ScopedColumnEncoderContext::ScopedColumnEncoderContext(const ColumnEncoderContex
 	if(!_supplied)
 		return;
 
-	// v2 replay (mds-plan D1.7): the captured column set becomes a SCOPED block of the one global
+	// v2 replay: the captured column set becomes a SCOPED block of the one global
 	// decode table - nothing else. The live canonical mint, every filter view and the extras
 	// encoder are never mutated (the v1 swap mutated whatever the current encoder pointed at,
 	// which after Phase 1 is a filter view funneling into the live dataset's mint - the landmine
@@ -151,7 +151,7 @@ Json::Value decodeColumnJson(const char * payloadJson, const char * encoderConte
 	ColumnEncoderContext context = ColumnEncoderContext::fromJsonString(encoderContextJson);
 	ScopedColumnEncoderContext scopedContext(context, extraEncoder);
 
-	ColumnEncoder::decodeJson(payload, replaceNames);	//context-free global table (mds-plan C4/D1.5)
+	ColumnEncoder::decodeJson(payload, replaceNames);	//context-free global table
 
 	return payload;
 }

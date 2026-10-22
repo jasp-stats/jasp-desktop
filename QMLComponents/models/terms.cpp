@@ -25,9 +25,9 @@
 
 using namespace std;
 
-//mds-plan C9: a term composed out of others (cross/way/interaction combination) inherits the
+// a term composed out of others (cross/way/interaction combination) inherits the
 //source filter only when ALL contributing terms agree on one — the components of an interaction
-//share the term-level filterId (mds-plan D6.1). Mixed provenance cannot be expressed by a single
+//share the term-level filterId. Mixed provenance cannot be expressed by a single
 //term-level id, so a mixed combination stays unqualified (-1) rather than lying about one source.
 namespace
 {
@@ -73,7 +73,7 @@ Terms::Terms(Terms *parent)
 	_parent = parent;
 }
 
-//mds-plan D3.4: the ONE options-json -> Terms applier (see the header). Absorbs the bind-time
+// the ONE options-json -> Terms applier (see the header). Absorbs the bind-time
 //shape normalization into this chokepoint:
 //  * `{value, types}` option objects are unwrapped (a bare string/array value parses too - that
 //    is what R-syntax-simplified and pre-{value,types} files carry),
@@ -84,7 +84,7 @@ Terms::Terms(Terms *parent)
 //    `{value: [...]}` keeps its rows as they are) and object rows pass through untouched.
 Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const std::string &keyLabel, RelatedValuesPerTerm &allControlValues, bool containsInteractions, bool hasRowComponent)
 {
-	//Provenance rides the wire only in the Storage shape (mds-plan D5.1, see the header):
+	//Provenance rides the wire only in the Storage shape (see the header):
 	//ENGINE-shape and released-file terms parse UNQUALIFIED (-1) exactly as before, the list they
 	//land in stamps the current selection in (ListModel::_setAllowedType, since D5.1 only onto
 	//terms that come in unqualified), bindTo-copied typed Terms keep their own ids (C9) and the
@@ -100,7 +100,7 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 	}
 	else if (valuesPart.isObject() && valuesPart.isMember("value") && !valuesPart.isMember("types"))
 	{
-		//mds-plan D5.1: the Storage option object `{value, optionKey?}` - types live INSIDE the
+		// the Storage option object `{value, optionKey?}` - types live INSIDE the
 		//per-term objects now. No pre-D5.1 path ever produced a `{value}`-without-`types` option
 		//object (BoundControlTerms::isJsonValid rejected it before this card), so this unwrap is
 		//strictly the new file shape; `{value, types}` keeps taking the engine branch above.
@@ -159,8 +159,8 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 
 		if (!str.empty())
 		{
-			//mds-plan D8.1: a single-string option value that IS a qualified surface form
-			//(plan §5) resolves into the typed term - ids only (D1.2), the ("Type") segment
+			// a single-string option value that IS a qualified surface form
+			// resolves into the typed term - ids only (D1.2), the ("Type") segment
 			//wins over the positional/lookup type when present. Bare values keep today's
 			//path byte-identically (§4: their fallback is the caller's context).
 			const QualifiedTermComponent resolved = resolveQualifiedTermComponent(tq(str));
@@ -175,7 +175,7 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 		}
 	}
 	else if (Term::isStorageTermObject(valuesPart))
-		//mds-plan D5.1: single-row Storage option - one term object as the value.
+		// single-row Storage option - one term object as the value.
 		add(Term::fromStorageTermObject(valuesPart));
 	else
 	{
@@ -193,7 +193,7 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 					types.push_back(columnTypeFromString(typesPart[termId].asString(), columnType::unknown));
 			}
 
-			//mds-plan D5.1: the entry dispatch. A Storage term object `{name, filterId?, types}`
+			// the entry dispatch. A Storage term object `{name, filterId?, types}`
 			//parses to a TYPED term (its filterId included, C9 - the flagship x@11/x@12 twins come
 			//back as two distinct Terms and Terms::add keeps both, strict equality from D2.1);
 			//every other entry keeps taking today's byte-identical path (bare string, or a row
@@ -206,7 +206,7 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 			{
 				if (row.isString())
 				{
-					//mds-plan D8.1: a string row that IS a qualified surface form (plan §5)
+					// a string row that IS a qualified surface form
 					//resolves into the typed term - the bare string rows around it keep today's
 					//path (and today's -1, which the list stamps with its host on intake, D5.1).
 					const QualifiedTermComponent resolved = resolveQualifiedTermComponent(tq(row.asString()));
@@ -238,7 +238,7 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 						if (name != keyValue)
 							controlMap[tq(name)] = *itr;
 					}
-					//mds-plan D6.1: keyed by ROW IDENTITY - twin rows parsed from the Storage shape
+					// keyed by ROW IDENTITY - twin rows parsed from the Storage shape
 					//carry their own filterId (C9) and now keep their OWN children; the -1 stamped
 					//later onto engine-shaped parses stays findable through relatedValuesForTerm()'s
 					//fallback. (Two same-name rows in one ENGINE tree still share the single -1
@@ -419,7 +419,7 @@ bool Terms::containsValue(const QString &value) const
 
 int Terms::indexOfValue(const Term &term) const
 {
-	//mds-plan C9/C13 lookup rule: an UNQUALIFIED lookup term (-1) matches on name alone — the
+	// lookup rule: an UNQUALIFIED lookup term (-1) matches on name alone — the
 	//context fallback ("this list holds that column, whichever filter it came through"): that is
 	//exactly how freshly parsed/bound terms (-1, no wire field yet) still find their stamped twins
 	//in a list. A STAMPED lookup term must match name AND filter — the same-name-different-filter
@@ -529,7 +529,7 @@ Terms Terms::crossCombinations() const
 					columnTypeVec termTypes = _terms.at(i).types();
 					combination.insert(combination.end(), components.begin(), components.end());
 					types.insert(types.end(), termTypes.begin(), termTypes.end());
-					carryFilterId(carriedFilterId, _terms.at(i).filterId());		//mds-plan C9
+					carryFilterId(carriedFilterId, _terms.at(i).filterId());
 				}
 			}
 
@@ -566,7 +566,7 @@ Terms Terms::wayCombinations(int ways) const
 					columnTypeVec termTypes = _terms.at(i).types();
 					combination.insert(combination.end(), components.begin(), components.end());
 					types.insert(types.end(), termTypes.begin(), termTypes.end());
-					carryFilterId(carriedFilterId, _terms.at(i).filterId());		//mds-plan C9
+					carryFilterId(carriedFilterId, _terms.at(i).filterId());
 				}
 			}
 
@@ -602,7 +602,7 @@ Terms Terms::ffCombinations(const Terms &terms)
 			columnTypeVec coTypes = combos.at(j).types();
 			types.insert(types.end(), coTypes.begin(), coTypes.end());
 
-			int carriedFilterId = kNoFilterIdYet;						//mds-plan C9: this-term and its
+			int carriedFilterId = kNoFilterIdYet;						// this-term and its
 			carryFilterId(carriedFilterId, _terms.at(i).filterId());		//combination part must agree
 			carryFilterId(carriedFilterId, combos.at(j).filterId());		//for the product to be qualified
 
@@ -738,7 +738,7 @@ Json::Value Terms::getValuesOptions() const
 	return options;
 }
 
-//mds-plan D6.1: the row-identity lookup for RelatedValuesPerTerm (see the header). Exact
+// the row-identity lookup for RelatedValuesPerTerm (see the header). Exact
 //(value, filterId) hit first; a stamped term whose row children were loaded UNQUALIFIED (the
 //JSON applier parses engine-shape input with filterId -1, and ListModel::_setAllowedType stamps
 //the host afterwards - the bind flow must still find them) falls back to that (value, -1) entry.
@@ -762,17 +762,17 @@ const QMap<QString, Json::Value> & Terms::relatedValuesForTerm(const Terms::Rela
 	return emptyValues;
 }
 
-//mds-plan D3.4: the row-with-related-values assembly lives HERE (the separate shuffle of the
+// the row-with-related-values assembly lives HERE (the separate shuffle of the
 //mirror era is deleted; ComponentsList/InputList row builders go
 //through this one serialization too). The row object is the on-demand aggregation of the
 //term's child values: keyValue (+ keyLabel when the list uses one) plus every related value
 //the model holds for the term - which is exactly what the form-wide generator then merges the
 //live row-child control values into, one implementation for both paths.
-//mds-plan D2.1/D5.1: this is the ENGINE serialization (the frozen R contract + the send-time
+// this is the ENGINE serialization (the frozen R contract + the send-time
 //shape): the per-term filterId deliberately does NOT appear here — on the run wire provenance
 //rides the transient `.filterIds` sidecar only (C11), and in the FILE it rides inside the
 //per-term objects of the Storage shape (getStorageOptions below).
-//mds-plan D6.1: the related values are looked up by ROW IDENTITY (value + filterId, with the
+// the related values are looked up by ROW IDENTITY (value + filterId, with the
 //-1 fallback), so same-name rows behind different filters each aggregate their OWN children.
 Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow, bool useValueAndType) const
 {
@@ -819,7 +819,7 @@ Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPe
 	return result;
 }
 
-//mds-plan D5.1: THE Storage serialization (see the header). Same row/value discipline as
+// THE Storage serialization (see the header). Same row/value discipline as
 //getOptions - optionKey kept, keyLabel kept, related child values keep today's row shape - but
 //each term entry is the clean typed object {name, filterId?, types} and there is no outer
 //positional `types` array (types live per term; the positional alignment of the Engine wire is
@@ -839,7 +839,7 @@ Json::Value Terms::getStorageOptions(const Terms::RelatedValuesPerTerm& relatedV
 
 		for (const Term& term : _terms)
 		{
-			const QMap<QString, Json::Value>& relatedValues = Terms::relatedValuesForTerm(relatedValuesPerTerm, term);	//mds-plan D6.1 row identity, see getOptions
+			const QMap<QString, Json::Value>& relatedValues = Terms::relatedValuesForTerm(relatedValuesPerTerm, term);	// row identity, see getOptions
 
 			Json::Value rowValues(Json::objectValue);
 
@@ -1068,7 +1068,7 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 			_terms.end(),
 			[&](Term& term)
 			{
-				//Name-based on purpose (mds-plan C9): the set partition of the row-level sync
+				//Name-based on purpose: the set partition of the row-level sync
 				//flows ("is that entry still part of this other list"), where stamps take no
 				//part - the origin-authoritative staleness logic lives pool-side (see
 				//ListModelTermsAvailable::removeTermsInAssignedList), not here.

@@ -34,7 +34,7 @@ public:
 	ListModelTermsAvailable*		availableModel() const													{ return _availableModel; }
 
 public slots:
-	///< mds-plan post (ORIGIN-AUTHORITATIVE): the pool's update (added/removed diff plus the
+	///< (ORIGIN-AUTHORITATIVE): the pool's update (added/removed diff plus the
 	///  participation key `filterIdToUpdate` - the filterId the affected terms currently
 	///  carry). Every family reconciles its references into the changed provider here: terms
 	///  stamped `filterIdToUpdate` follow (survivors are REPLACED BY the delivered universe

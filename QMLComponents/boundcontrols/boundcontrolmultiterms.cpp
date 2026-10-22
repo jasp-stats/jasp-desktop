@@ -54,7 +54,7 @@ Json::Value BoundControlMultiTerms::createJson() const
 	return Json::Value(Json::arrayValue);
 }
 
-//mds-plan D3.1: the tuples model IS the typed state; resetBoundValue (the write path, fired on
+// the tuples model IS the typed state; resetBoundValue (the write path, fired on
 //every tuple change) and the generators both read this one builder. Wrapped in {value, types}
 //with the list's defaultType exactly like setBoundValue wraps it (the encodeValue contract).
 Json::Value BoundControlMultiTerms::createEngineValue() const

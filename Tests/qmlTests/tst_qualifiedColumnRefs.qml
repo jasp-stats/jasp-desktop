@@ -9,13 +9,13 @@ import JASP.Controls
 //QtQuick.Controls TextArea that the production R editors (FilterWindow.qml, ComputeColumnWindow.qml)
 //actually insert into - and that QualifiedColumnPicker/Validator target.
 
-// mds-plan D7.1/D7.2: the editor-side surface of the qualified column-reference grammar.
+// the editor-side surface of the qualified column-reference grammar.
 // The three R editors (FilterWindow's filterEdit, ComputeColumnWindow's computeColumnEdit,
 // ComputeDataSetPanel's codeEdit) share two components:
 //
 //   - QualifiedColumnPicker: outward-reference insertion fed by
 //     Workspace::qualifiedColumnCandidates(contextFilterId). The context is the editor's
-//     bare-name fallback namespace per plan §4 (the filter editor: the EDITED filter, fixed -
+// bare-name fallback namespace (the filter editor: the EDITED filter, fixed -
 //     there is no fallback-selection UI; the compute editors: the selected compute/input
 //     filter). Insertion puts the rendered surface form in VERBATIM at the cursor - stored
 //     code stays raw (column.cpp:547), encoding happens only at run, engine-side (D7.3).
@@ -29,7 +29,7 @@ import JASP.Controls
 // rowid) with the same context resolution the editors use
 // (Workspace::filterIdByName(...)). "ReopenMe" (a named filter of "Second") plays the
 // filter editor's EDITED filter, and "Second"'s default filter plays the compute editors'
-// SELECTED INPUT FILTER - the plan §4 case where the fallback namespace belongs to ANOTHER
+// SELECTED INPUT FILTER - the case where the fallback namespace belongs to ANOTHER
 // dataset. The picker-cut/output-cut owner refinement (D7.0a NOTE): the picker may be
 // scoped to own-dataset columns, but what it emits for an OUTWARD pick is always the full
 // qualified surface form - asserted verbatim below. This file only READS the workspace, so
@@ -40,7 +40,7 @@ Item
 	width:	800
 	height:	600
 
-	//mds-plan D7.5: how often the lifecycle stub below was consulted (see the lifecycle test).
+	// how often the lifecycle stub below was consulted (see the lifecycle test).
 	property int lifecycleValidationCalls: 0
 
 	//The filter editor's context (D7.1): the edited filter's id.
@@ -58,7 +58,7 @@ Item
 
 	//The compute editors' context analogue (D7.2): the SELECTED INPUT FILTER - "Second"'s
 	//default filter here, another dataset's filter, exactly the
-	//"computed dataset | selected input filter" row of plan §4.
+	//"computed dataset | selected input filter" row of
 	readonly property int inputContextId:
 	{
 		if(!workspace)
@@ -120,7 +120,7 @@ Item
 		debounceInterval:	20
 	}
 
-	//mds-plan D7.5: a stand-in workspace to drive the validator's lifecycle watcher. QML cannot
+	// a stand-in workspace to drive the validator's lifecycle watcher. QML cannot
 	//reach the C++ mutators that really announce these signals (the C++ side proves those: the
 	//Filter::nameChanged -> Workspace::filterNameChanged relay, deleteShownDataSet's
 	//dataSetRemoved, DataSet's filtersCountChanged/datasetChanged relays - and this file must
@@ -143,7 +143,7 @@ Item
 		}
 	}
 
-	//mds-plan D7.4: the visual script constructor shares the qualified grammar - an outward
+	// the visual script constructor shares the qualified grammar - an outward
 	//column node (dataSetName [+ filterName] set) generates the FULL qualified surface form
 	//in its R output. This drives the production view/model through the QML properties
 	//(chrome build deferred: the palette is not needed for the emission).
@@ -328,7 +328,7 @@ Item
 
 			wait(validator.debounceInterval * 4)
 			compare(validator.error, "")	//bare names are never errors: their fallback is the
-											//editor's context, codified at the editor (plan §4)
+											//editor's context, codified at the editor
 
 			validatedEditor.text = 'contGamma > mean("Second"."TestInts")'
 			wait(validator.debounceInterval * 4)
@@ -355,7 +355,7 @@ Item
 			compare(validator.error, "")
 		}
 
-		//mds-plan D7.5: the lifecycle invalidation wiring, editor side. A reference that was
+		// the lifecycle invalidation wiring, editor side. A reference that was
 		//valid when typed must turn invalid IN THE EDITOR - without any edit - on each
 		//workspace lifecycle event (dataset unloaded/retitled, referenced filter renamed or
 		//deleted, column churn). The real emitters are proven in C++ (Tests/testall.cpp);
@@ -393,7 +393,7 @@ Item
 			compare(root.lifecycleValidationCalls, before + 6)
 		}
 
-		//mds-plan D7.4: the constructor's generated R for an OUTWARD column node is the FULL
+		// the constructor's generated R for an OUTWARD column node is the FULL
 		//qualified surface form (owner refinement: picker cut != output cut) - emitted through
 		//the production view/model path (constructorJson property -> model -> rCode property).
 		//The type segment comes from the referenced dataset's column ("TestInts" is scale in

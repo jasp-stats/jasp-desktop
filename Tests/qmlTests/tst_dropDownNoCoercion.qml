@@ -2,7 +2,7 @@ import QtTest
 import QtQuick
 import JASP.Controls
 
-// The scheduled follow-up from mds-plan C2/TESTS: ComboBoxBase::bindTo's no-coercion is GENERAL
+// The scheduled follow-up: ComboBoxBase::bindTo's no-coercion is GENERAL
 // combobox behaviour since commit cce0207fa (the multiDataSetAware() gate of C2's first pass was
 // removed by Joris' amendment), so it must hold for a plain, NON-aware analysis form too: a
 // bound value the DropDown cannot serve goes to the error state and stays pending - the option
@@ -59,7 +59,7 @@ Item
 			compare(methodCombo.currentValue, "", "and the combo shows nothing rather than a coerced entry 0")
 
 			var bound = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
-			compare(String(bound.method), "notInOptionsYet", "the option keeps the value as it came in, NOT the coerced first entry (mds-plan D3.4: the generated Engine value of a pending combo IS the held component value - ComboBoxBase::createEngineValue, successor of the deleted mirror's storage of it)")
+			compare(String(bound.method), "notInOptionsYet", "the option keeps the value as it came in, NOT the coerced first entry (the generated Engine value of a pending combo IS the held component value - ComboBoxBase::createEngineValue, successor of the deleted mirror's storage of it)")
 
 			//Recovery: the moment the model can serve the value, termsChangedHandler binds it for
 			//real and clears the error - no rebind from the user needed.

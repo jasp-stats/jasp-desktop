@@ -290,7 +290,7 @@ void TestColumnEncoderContext::malformedContextDoesNotMutateLiveState()
 
 void TestColumnEncoderContext::replayNeverMutatesLiveEncodersAndNestsExactly()
 {
-	//The v2 contract (mds-plan D1.7): replaying a captured context registers a scoped block of
+	//The v2 contract: replaying a captured context registers a scoped block of
 	//the global decode table and undoes it on exit - the live canonical mint, its filter views
 	//and the extras encoder are NEVER mutated (v1 swapped the current encoder's names, which
 	//after Phase 1 funnels straight into a live dataset's mint). Nesting restores exactly, and
@@ -414,7 +414,7 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 
 	Json::Value options = twoDataSetOptions();
 
-	//mds-plan D3.3 flip: provenance is read from the `.filterIds` sidecar, not from the .meta
+	// The D3.3 flip: provenance is read from the `.filterIds` sidecar, not from the .meta
 	//stamps anymore - and the stamps still sitting in this fixture are now inert input. Make
 	//them LIE about the dataset: the encoding and the per-dataset attribution must ignore them
 	//completely (the resolver re-attributes dataSetId from the resolved filter).
@@ -427,7 +427,7 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 			options, true,
 			[&dsOne, &dsTwo](int & dataSetId, int filterId) -> ColumnEncoder *
 			{
-				//mds-plan D3.3/D3.7 resolver shape: the sidecar filterId resolves the encoder AND
+				// resolver shape: the sidecar filterId resolves the encoder AND
 				//re-attributes the dataset (filter ids imply their dataset).
 				if(filterId == 11)	{ dataSetId = 1; return &dsOne; }
 				if(filterId == 22)	{ dataSetId = 2; return &dsTwo; }
@@ -452,7 +452,7 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 	QVERIFY(colsPerDataSet[2].count(std::make_pair(std::string("Score.scale"), columnType::scale)) == 1);
 }
 
-// mds-plan D1.6/D3.3: the resolver gets the filterId that governs every option node (since the
+// the resolver gets the filterId that governs every option node (since the
 // D3.3 flip from the `.filterIds` sidecar, before it from the .meta stamp), so two options that
 // refer to the same column through two different filters of ONE dataset encode into two distinct
 // namespaces - the same two namespaces their slices are handed to R in. An option without a
@@ -486,7 +486,7 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToStampedFilterView(
 	options[".meta"]["dependent"]["shouldEncode"]	= true;
 	options[".meta"]["splitBy"]["shouldEncode"]		= true;
 	options[".meta"]["unqualified"]["shouldEncode"]	= true;
-	//mds-plan D3.3 flip: the (dataSetId, filterId) stamps move from .meta to the transient
+	// The D3.3 flip: the (dataSetId, filterId) stamps move from .meta to the transient
 	//`.filterIds` sidecar; an option the sidecar does not name stays unqualified (C7 fallback).
 	options[".filterIds"]["dependent"]	= 12;					//the HOST filter, not the shown one
 	options[".filterIds"]["splitBy"]	= 11;					//the shown filter
@@ -535,7 +535,7 @@ void TestColumnEncoderContext::encodePerDataSetAttributedToPrimaryWithoutProvena
 	makeTwoDataSets(dsOne, dsTwo);
 
 	Json::Value options = twoDataSetOptions();
-	options[".meta"]["covariate"].removeMember("dataSetId"); //mds-plan D3.3: .meta stamps are inert input; this tree carries no `.filterIds` sidecar at all, so EVERY option - named or not - falls back to the primary dataset
+	options[".meta"]["covariate"].removeMember("dataSetId"); // .meta stamps are inert input; this tree carries no `.filterIds` sidecar at all, so EVERY option - named or not - falls back to the primary dataset
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true,
@@ -659,7 +659,7 @@ void TestColumnEncoderContext::decodeJsonCoversEveryBlockAndHonoursSafeHtml()
 }
 
 // ---------------------------------------------------------------------------------------------
-// mds-plan Phase 1: canonical mint + per-filter views + the one global decode table (C1-C4, C16)
+// canonical mint + per-filter views + the one global decode table (C1-C4, C16)
 // ---------------------------------------------------------------------------------------------
 
 void TestColumnEncoderContext::canonicalAnswersNoFullStringEncodeDecode()

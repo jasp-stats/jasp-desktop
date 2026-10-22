@@ -40,11 +40,11 @@ void HostFilterSelection::setOption(const QString & option)
 	const QString previous = _option;
 	_option = option;
 
-	//Registry membership follows the property (mds-plan C4/REGISTRY): the syntax bridge reads
+	//Registry membership follows the property: the syntax bridge reads
 	//the form's registry instead of scanning children, and a re-registered host applies its own
 	//pending raw selection value (left behind by a parse that ran before this host existed)
 	//immediately. When the form is not yet known here, analysisBecameKnown() registers later.
-	//Hosts are per-LIST/TextArea selection owners (mds-plan C10/D2.2), see VariablesListBase.
+	//Hosts are per-LIST/TextArea selection owners, see VariablesListBase.
 	if (AnalysisForm * form = _host->form())
 	{
 		if (!previous.isEmpty())
@@ -160,7 +160,7 @@ void HostFilterSelection::applyFilter(Filter * filter)
 	if (newId == _selectedFilterId && filter == _selectedFilter)
 		return;
 
-	//mds-plan post (ORIGIN-AUTHORITATIVE): the host only re-points its provider here - it owns
+	// (ORIGIN-AUTHORITATIVE): the host only re-points its provider here - it owns
 	//NO stamps and moves none. The term provenance of everything served by this selection
 	//follows through the ONE signal-driven flow: setProvider() (below) makes the host's
 	//VariableInfo emit dataSetChanged, the pools fed by this host re-diff their universe in
@@ -177,7 +177,7 @@ void HostFilterSelection::applyFilter(Filter * filter)
 
 	emit selectedFilterIdChanged();
 
-	//mds-plan C10/D2.4: the analysis-wide provider view (AnalysisBase : VariableInfoProvider)
+	// the analysis-wide provider view (AnalysisBase : VariableInfoProvider)
 	//aggregates over exactly this - tell it the namespace moved, AFTER the provider re-point so
 	//it re-reads a settled state. Covers hosts with nothing bound yet too, where no dropdown has
 	//an option to write.

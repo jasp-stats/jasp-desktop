@@ -82,7 +82,7 @@ public:
 	bool			allFresh()		const;
 	bool			allFinished()	const;
 	void			setAnalysesUserData(Json::Value userData);
-	// mds-plan D5.3: `doUpgradeFrom` is the ARCHIVE version of the file being loaded (the
+	// `doUpgradeFrom` is the ARCHIVE version of the file being loaded (the
 	// do019Fix/do0961Fix pattern from DataSet::dbLoad, threaded Workspace::dbLoad-style from
 	// DataSetPackage through the analysis-load entry points). It gates the best-effort legacy
 	// bare-prefix result decode (see decodeLegacyResultTokens) - released files (< 7.0.0) can
@@ -92,7 +92,7 @@ public:
 	void			loadAnalysesFromDatasetPackage(bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom = Version());
 	void			loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom = Version());
 
-	/// mds-plan D5.3: run ColumnEncoder::decodeJsonLegacyTokens (read-side only, NOTHING hits
+	/// run ColumnEncoder::decodeJsonLegacyTokens (read-side only, NOTHING hits
 	/// the global decode table - live decode stays strict-table, C4) over one file entry's
 	/// stored results tree, gated on the file's archive version as described above. Public for
 	/// the upgrade-path tests; the load wiring calls it from createFromJaspFileEntry for both

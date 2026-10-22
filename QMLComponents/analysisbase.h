@@ -14,14 +14,14 @@ class AnalysisForm;
 class DataSet;
 class Filter;
 
-// mds-plan C10/D2.4: the analysis IS a VariableInfoProvider - the AnalysisBase analogue of
+// the analysis IS a VariableInfoProvider - the AnalysisBase analogue of
 // Filter::columnEncoder() (CommonData/filter.cpp) - over the form's selection-host registry
-// (AnalysisForm::selectionHostControls, mds-plan D2.3):
+// (AnalysisForm::selectionHostControls):
 //
 //   - every registered host is asked for its currently selected filter through the virtual
 //     JASPControl::selectedSelectionFilter() PER USE. Nothing is ever cached (not a ColumnEncoder*,
 //     not even a Filter*): a Filter's encode handle lazy-attaches to the filter's final rowid and
-//     is dropped when the filter dies (mds-plan D1.2), and hosts come and go with the QML tree.
+// is dropped when the filter dies, and hosts come and go with the QML tree.
 //   - exactly ONE selected filter       ⟹ the provider IS that filter's namespace: provideInfo/
 //     absorbInfo/providerModel/columnEncoder delegate straight to it (columnEncoder() = the live
 //     Filter's own view handle, resolved at call time).
@@ -30,8 +30,8 @@ class Filter;
 //   - MORE THAN ONE distinct filter      ⟹ MERGED namespace (union view over the selected filters):
 //       * VariableNames is the union of the hosts' names, one entry per distinct selected filter
 //         that holds the column - same-name columns coming through different filters COEXIST
-//         (they are different namespaces, mds-plan C3; the terms' filterId disambiguates them
-//         downstream, mds-plan C9/C13),
+// (they are different namespaces; the terms' filterId disambiguates them
+// downstream),
 //       * every other request scans the hosts in registration order and answers with the first
 //         hit (per-name) or the first host (dataset-wide),
 //       * columnEncoder() and providerModel() return nullptr: there is no single namespace, and
@@ -44,12 +44,12 @@ class Filter;
 // selectionNamespaceChanged() is emitted whenever the aggregate could have changed: a host
 // registers or unregisters (AnalysisForm::selectionHostsChanged) or a host's selected filter
 // moves (AnalysisForm::selectionHostFilterChanged). The per-control resolution walk was deleted
-// with mds-plan Phase 4 (D4.1/D4.2): controls resolve locally through their own selection host
+// with controls resolve locally through their own selection host
 // or the analysis-level VariableInfo (JASPControl::resolvedVarInfo); this provider is the
 // analysis-wide endpoint.
 class AnalysisBase : public QObject, public VariableInfoProvider
 {
-	friend class TestAll; ///< mds-plan D3.5: simulate an attached+initialized form (no QML controls in the C++ harness) to pin the pre-attach deferral vs the attached read
+	friend class TestAll; ///< simulate an attached+initialized form (no QML controls in the C++ harness) to pin the pre-attach deferral vs the attached read
 	Q_OBJECT
 	QML_ELEMENT
 
@@ -97,7 +97,7 @@ public:
 	virtual				bool				isColumnFreeOrMine(const QString & columnName)				const	{ return false; }
 	virtual				DataSet *			dataSet()													const	{ return nullptr; }
 
-	// ---- VariableInfoProvider over the selection-host registry (mds-plan C10/D2.4) -------------
+	// ---- VariableInfoProvider over the selection-host registry -------------
 	// See the class doc above for the one/many/none semantics; every access re-resolves the live
 	// filters through the form's registry, nothing is cached.
 	QVariant								provideInfo(varInfoType info, const QString &name = "", int row = 0)	const override;
@@ -116,7 +116,7 @@ public:
 	///  own filter). Introspection/QML surface of selectedSelectionFilters().
 	Q_INVOKABLE QVariantList				selectionNamespaceFilterIds() const;
 	///< The provider's name universe: single namespace = that filter's names; merged = the union
-	///  with one entry per distinct source filter (collisions COEXIST, mds-plan C3/C9).
+	/// with one entry per distinct source filter (collisions COEXIST).
 	Q_INVOKABLE QStringList					selectionNamespaceVariableNames() const;
 
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue)													const	{ return defaultValue;		}
@@ -124,13 +124,13 @@ public:
 	virtual bool				optionLocked(const QString& name)																				const	{ return false; };
 	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
 
-	// ---- mds-plan C11/D3.4: the components own the state, JSON is generated on demand --------
+	// ---- the components own the state, JSON is generated on demand --------
 	// The mirror and its whole reader/writer API are DELETED here:
 	// the run request, save, RPC report, QML options() and script rendering all GENERATE from the
 	// controls (createOptionsJson below), and the one value home is BoundControlBase._boundValue.
 	// What survives of "push a tree in" is the explicit C12 PENDING parking below.
 
-	// ---- mds-plan D3.4/C12: PENDING pre-attach options (setAnalysisUp's bootstrap, as an
+	// ---- PENDING pre-attach options (setAnalysisUp's bootstrap, as an
 	// explicit small member - the mirror's one sanctioned reader, never read for behaviour) -----
 	///< Park options that arrive before a form has attached (file load, RPC create, QML
 	///  setOptions, the downstream-widget fallback). setAnalysisUp consumes the parking lot ONCE
@@ -147,17 +147,16 @@ public:
 	Q_INVOKABLE bool	hasPendingOptions()	const	{ return _hasPendingOptions;	}
 	const Json::Value &	pendingOptions()		const	{ return _pendingOptions;		}
 	///< True when this analysis was CREATED with options (file load, RPC create with options,
-	///  duplication): the explicit successor of the old mirror-sized new-analysis heuristic
-	///  (mds-plan D3.4).
+	///  duplication): the explicit successor of the old mirror-sized new-analysis heuristic.
 	bool				createdWithOptions()	const	{ return _createdWithOptions;	}
 
-	///< mds-plan D3.4: strip the transient `.filterIds` sidecar from a generated Engine tree for
+	///< strip the transient `.filterIds` sidecar from a generated Engine tree for
 	///  consumers outside the run pipeline (RPC response["options"], QML options(), script
 	///  rendering): provenance never leaves the desktop (C11); `.meta` stays as generated
 	///  (send-time keys only - C8 already keeps dataSetId/filterId out of it).
 	static void			stripTransientSidecar(Json::Value & options);
 
-	// ---- mds-plan C11/D3.1: JSON generated on demand from the components ---------------------
+	// ---- JSON generated on demand from the components ---------------------
 	// The mirror era is over (D3.4): these generators are the ONLY options tree. Engine = today's
 	// R contract + send-time `.meta` (C8, never dataSetId/filterId) + the transient `.filterIds`
 	// sidecar (D3.2); Storage = clean typed state (D5.1 preview).
@@ -168,7 +167,7 @@ public:
 	///< format 0 = Engine, 1 = Storage.
 	Q_INVOKABLE QString		createOptionsJsonAsJson(int format);
 
-	///< mds-plan D3.1: the ONE path implementation for a nested (row-control) option location
+	///< the ONE path implementation for a nested (row-control) option location
 	///< (the generators' own placement walk, sharing the row-chain semantics the mirror's lookup
 	///< used to provide). parentKeys describe the row chain; parentNames collects the enclosing option names on
 	///< the found path (what send-time `.meta` / `.filterIds` are nested under), found says the
@@ -177,12 +176,12 @@ public:
 	static Json::Value	&	resolveOptionParent(Json::Value & root,
 												 const QVector<JASPControl::ParentKey> & parentKeys,
 												 QVector<std::string> & parentNames, bool & found, bool createAnyway = false);
-	///< mds-plan D3.1: place one option's meta node in a meta tree at the same parent path its value
+	///< place one option's meta node in a meta tree at the same parent path its value
 	///< sits at (the mirror's setBoundValue `.meta` nesting, shared with the generators' `.meta` and
 	///< `.filterIds` trees so all three agree on placement).
 	static void				placeOptionMeta(Json::Value & metaRoot, const QVector<std::string> & parentNames,
 											  const std::string & name, const Json::Value & meta);
-	///< mds-plan D3.3: like placeOptionMeta, but for the transient `.filterIds` sidecar: a bare
+	///< like placeOptionMeta, but for the transient `.filterIds` sidecar: a bare
 	///< int/array own-node colliding with named row-child nodes is demoted into the container's
 	///< reserved "$" member (grammar: ColumnEncoder::sidecarOwnFilterId) instead of tripping
 	///< jsoncpp's objectValue assert. Non-colliding placements stay byte-identical to
@@ -206,17 +205,17 @@ public:
 						bool				usesDataSet(int dataSetId)						const;
 	virtual				bool				multiDataSetAware()								const	{ return _multiDataSetAware;		}
 	void					setMultiDataSetAware(bool multiDataSetAware);
-	///< What this analysis runs on, computed ON DEMAND from component state (mds-plan D3.6): the
+	///< What this analysis runs on, computed ON DEMAND from component state: the
 	///< typed filterIds the bound controls generate (their `.filterIds` sidecar state), the
 	///< registered selection hosts' filters, and the analysis' own filter - mapped to the
 	///< dataSetId -> filterId pairs they live in. The primary dataset/filter of the analysis
 	///< itself is included; every consumer dedups against it anyway. Defers (answers {}) until
-	///< the form has attached - pending JSON is never read for behaviour (mds-plan D3.5/C12).
+	///< the form has attached - pending JSON is never read for behaviour.
 	std::map<int, int>	referencedDataSets()												const;
 	///< Let consumers re-read dataSpec()/referencedDataSets() (emits dataSpecChanged): used by
-	///< AnalysisForm::setAnalysisUp once attach has produced real component state (mds-plan D3.5).
+	///< AnalysisForm::setAnalysisUp once attach has produced real component state.
 	void				notifyDataSpecChanged();
-	///< mds-plan D3.4: the pure change-notification tail of the deleted mirror write - called by
+	///< the pure change-notification tail of the deleted mirror write - called by
 	///< BoundControlBase::writeCurrentValue for every committed option value: emits
 	///< boundValuesChanged (rSyntax text, results-JS) and, for aware analyses, dataSpecChanged
 	///  (a changed value can change what the analysis runs on - the generated sidecar moved).
@@ -245,10 +244,10 @@ public slots:
 	virtual void	onUsedVariablesChanged()																	{}
 	///< The form's selection-host registry changed (host registered/unregistered) or a host moved
 	///  to another filter: re-emits selectionNamespaceChanged() (the merged-namespace signal of the
-	///  VariableInfoProvider, mds-plan C10/D2.4) and, for aware analyses, dataSpecChanged() - the
+	/// VariableInfoProvider) and, for aware analyses, dataSpecChanged() - the
 	///  analysis-wide view of "what this analysis runs on" may have moved even when no option
 	///  value changed (a same-dataset host switch rewrites no value, but it restamps provenance and
-	///  can change the referenced datasets, mds-plan C3/M5). Wired by AnalysisForm at pairing.
+	/// can change the referenced datasets). Wired by AnalysisForm at pairing.
 	void			handleSelectionNamespaceMaybeChanged();
 
 
@@ -261,7 +260,7 @@ signals:
 	void			boundValuesChanged();
 	void			filterChanged(Filter * f);
 	void			dataSpecChanged();
-	///< mds-plan C10/D2.4: the aggregate over the selection hosts (this class' provider namespace)
+	///< the aggregate over the selection hosts (this class' provider namespace)
 	///< may have changed - consumers re-read it through selectedSelectionFilters()/provideInfo(),
 	///< never cache it.
 	void			selectionNamespaceChanged();
@@ -284,10 +283,10 @@ protected:
 	QPointer<DataSet>				_filterDataSet		;
 
 private:
-	//mds-plan C12/D3.4: the PENDING pre-attach parking lot (setAnalysisUp consumes it once through
+	// the PENDING pre-attach parking lot (setAnalysisUp consumes it once through
 	//bindTo; nothing else reads it) and the explicit created-with-options flag that replaces the
 	//old mirror-sized new-analysis heuristic. The mirror itself is
-	//DELETED (mds-plan C11): components own the state, JSON is generated on demand.
+	//DELETED: components own the state, JSON is generated on demand.
 	Json::Value		_pendingOptions		= Json::objectValue;
 	bool			_hasPendingOptions	= false,
 					_createdWithOptions	= false;

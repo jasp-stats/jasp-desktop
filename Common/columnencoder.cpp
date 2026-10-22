@@ -50,7 +50,7 @@ std::map<std::string, ColumnEncoder::DecodeEntry> & ColumnEncoder::_decodeTable(
 ColumnEncoder * ColumnEncoder::columnEncoder()
 {
 	//This static getter is the ENGINE-ONLY entry point for the R bridge encoder context, set by
-	//setCurrentEncoder() in provideAndUpdateDataSet - after mds-plan Phase 1 that is a VIEW (the
+	//setCurrentEncoder() in provideAndUpdateDataSet - that is a VIEW (the
 	//shown dataset's shown filter's handle), never a canonical. Desktop code must use
 	//provider->columnEncoder() (the filter's own view) which reads from the instance directly.
 	if(!_currentEncoder)
@@ -294,7 +294,7 @@ std::string ColumnEncoder::encode(const std::string &in)
 	if(in == "") return "";
 
 	if(_mode == Mode::canonical)
-		throw std::runtime_error("ColumnEncoder::encode called on a canonical mint, the canonical answers no full-string encode (mds-plan C2)!");
+		throw std::runtime_error("ColumnEncoder::encode called on a canonical mint, the canonical answers no full-string encode!");
 
 	const auto & forward = mintForward();
 	auto found = forward.find(in);
@@ -325,7 +325,7 @@ void ColumnEncoder::setCurrentColumnTypePerName(const colTypeMap &theMap)
 
 std::vector<std::pair<std::string, columnType>> ColumnEncoder::mintReverseOf(const colTypeMap & namesWithTypes)
 {
-	// THE deterministic mint (mds-plan C1): alphabetical map order, `.scale`/`.ordinal`/`.nominal`
+	// THE deterministic mint: alphabetical map order, `.scale`/`.ordinal`/`.nominal`
 	// triple per typed column (the data type also claims the bare name), unknown types take a
 	// single slot. buildMint(), ScopedDecodeBlock and tokenForNameInNames() all derive from this
 	// one function, which is what makes desktop/engine/syntax-bridge blocks identical.
@@ -372,7 +372,7 @@ std::string ColumnEncoder::tokenForNameInNames(const colTypeMap & names, const s
 	return "";
 }
 
-//mds-plan D5.3: the best-effort legacy-prefix result decoder - see the header for the contract
+// the best-effort legacy-prefix result decoder - see the header for the contract
 //(read-side only, NOTHING registers into the global table, correct only while the dataset's
 //columns are unchanged since save, everything else stays raw per C16). The map is built from the
 //same pure mint every live block uses (mintReverseOf, C1/D1.7), with the released default prefix;
@@ -527,7 +527,7 @@ void ColumnEncoder::sortVectorBigToSmall(std::vector<std::string> & vec)
 ColumnEncoder::colMap ColumnEncoder::ownEncodingMap() const
 {
 	if(_mode == Mode::canonical)
-		throw std::runtime_error("ColumnEncoder: encode-side map requested on a canonical mint, it answers no full-string encode (mds-plan C2)!");
+		throw std::runtime_error("ColumnEncoder: encode-side map requested on a canonical mint, it answers no full-string encode!");
 
 	if(_mode == Mode::full)
 		return _encodingMap;
@@ -543,7 +543,7 @@ ColumnEncoder::colMap ColumnEncoder::ownEncodingMap() const
 ColumnEncoder::colVec ColumnEncoder::ownOriginalNames() const
 {
 	if(_mode == Mode::canonical)
-		throw std::runtime_error("ColumnEncoder: encode-side names requested on a canonical mint, it answers no full-string encode (mds-plan C2)!");
+		throw std::runtime_error("ColumnEncoder: encode-side names requested on a canonical mint, it answers no full-string encode!");
 
 	if(_mode == Mode::full)
 		return _originalNames;
@@ -560,7 +560,7 @@ ColumnEncoder::colVec ColumnEncoder::ownOriginalNames() const
 ColumnEncoder::colVec ColumnEncoder::ownEncodedNames() const
 {
 	if(_mode == Mode::canonical)
-		throw std::runtime_error("ColumnEncoder: encoded names requested on a canonical mint, it answers no full-string encode (mds-plan C2)!");
+		throw std::runtime_error("ColumnEncoder: encoded names requested on a canonical mint, it answers no full-string encode!");
 
 	if(_mode == Mode::full)
 		return _encodedNames;
@@ -956,7 +956,7 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 					jsonValueOrg	= valueList[i],
 					jsonValue		= (optionKey.empty() || keepOriginalOption || !jsonValueOrg.isMember(optionKey)) ? jsonValueOrg : jsonValueOrg[optionKey];
 
-		//mds-plan D3.3/D3.7: resolve THIS term's namespace from the sidecar before touching the
+		// resolve THIS term's namespace from the sidecar before touching the
 		//encoder - a positional entry gives the term its own filter's VIEW (and that filter's
 		//dataset re-attributes the collected cols+types), a scalar node covers every position,
 		//and a null position (or absent node) keeps the option-level/C7 legacy resolution. For
@@ -997,7 +997,7 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				newOption.append(jsonValueOrg);
 			}
 
-			//mds-plan post (nominal-FactorsForm fatal): an EXPLICIT type must be trusted for the
+			// (nominal-FactorsForm fatal): an EXPLICIT type must be trusted for the
 			//TYPE of a term, never for the column's EXISTENCE in the resolved namespace - the
 			//collector used to insert every typed term into the slice's wanted columns, and
 			//rbridge_readDataSetRequested then refused the whole run ("gets 'X.type' but its not
@@ -1030,7 +1030,7 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				std::string columnNameWithType = columnName.empty() ? "" : (columnName + (hasType ? "." + type : ""));
 				newColumnNames.append(columnNameWithType);
 
-				//Same existence guard as the single-term case above (mds-plan post): a typed
+				//Same existence guard as the single-term case above: a typed
 				//component of an interaction whose column the resolved namespace lacks must not
 				//enter the slice queue either.
 				if (!columnNameWithType.empty() && hasType && encoder && encoder->currentNames().count(columnName))
@@ -1059,7 +1059,7 @@ void ColumnEncoder::_handleTermOptionObject(Json::Value & parentObject, const st
 	//The {value, types} term-option shape shared by every term-bearing family: convert it (and
 	//collect the wanted cols per resolved dataset). Extracted from the object case of
 	//_addTypeToColumnNamesInOptionsRecursively so the per-factor array case can drive the SAME
-	//handling for the term member nested inside a factor object (mds-plan post: the option's
+	//handling for the term member nested inside a factor object (the option's
 	//sidecar arrives pre-resolved per factor there).
 	if(preloadingData)
 		_convertPreloadingDataOption(parentObject, optionName, colTypesPerDataSet, dataSetId, filterId, sidecar, encoderFor);
@@ -1084,7 +1084,7 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 			if (optionName == FILTERIDS_MEMBER)	//the provenance tree is CONSUMED by this walk (threaded alongside meta), never walked as data
 				continue;
 
-			//mds-plan D3.3/D3.7: provenance comes from the `.filterIds` sidecar node at the
+			// provenance comes from the `.filterIds` sidecar node at the
 			//option's path (grammar: sidecarOwnFilterId), no longer from the retired .meta
 			//stamps - and the dataSetId is not threaded from meta either: a resolved filterId
 			//re-attributes the cols collected under it to that filter's own dataset inside
@@ -1119,7 +1119,7 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 			const Json::Value & elementSidecar	= sidecar.isObject() ? sidecar : elementNode;
 			const int			elementFlId		= positional ? (elementNode.isInt() ? elementNode.asInt() : -1) : filterId;
 
-			//mds-plan post (per-factor provenance, FactorsForm): a factor-form option value is an
+			// (per-factor provenance, FactorsForm): a factor-form option value is an
 			//array of factor OBJECTS, each carrying its terms under the optionKey (still the
 			//{value, types} shape at this stage), and its sidecar node is an ARRAY-OF-ARRAYS:
 			//element i = factor i's per-term positional filterId array (generator:
@@ -1159,7 +1159,7 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 		ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, filterId, encoderFor);	//may re-attribute dataSetId
 
 		//The count() check already refuses columns the resolved namespace does not have - the
-		//existence guard the typed-term conversion below needed too (mds-plan post: see the
+		//existence guard the typed-term conversion below needed too (see the
 		//nominal-FactorsForm fatal note in _convertPreloadingDataOption).
 		if(encoder && encoder->currentNames().count(possibleCol))
 		{
@@ -1192,7 +1192,7 @@ ColumnEncoder::perDataSetColsPlusTypes ColumnEncoder::encodeColumnNamesinOptions
 
 	//LOGGER << "Options before encoding: " << options.toStyledString() << std::endl;
 
-	//mds-plan D3.3/D3.7: the provenance this walk encodes against is the transient `.filterIds`
+	// the provenance this walk encodes against is the transient `.filterIds`
 	//sidecar the Engine generator places next to `.meta` (grammar: sidecarOwnFilterId) - fetched
 	//with get() so walking a sidecar-less tree cannot create the member. `.meta` keeps its
 	//existing operator[] threading (today's byte shape, untouched by the flip).
@@ -1271,7 +1271,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 	if(meta.isNull())
 		return;
 
-	//A node's provenance is the `.filterIds` sidecar (mds-plan D3.3/D3.7, grammar at
+	//A node's provenance is the `.filterIds` sidecar (grammar at
 	//sidecarOwnFilterId): a scalar node names the filter for this option's whole subtree, an
 	//absent node keeps the enclosing resolution and a POSITIONAL array is consumed
 	//element-wise below. filterId -1 = unqualified, resolved through the C7 legacy fallback.
@@ -1283,7 +1283,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 			isRCode			= meta.isObject() && meta.get("rCode",			false).asBool();
 
 	//Every resolved encoder here is a filter VIEW whose tokens embed the dataset id AND the filter
-	//id (mds-plan Phase 1, C1), so a multi-dataset options blob can be encoded slice by slice:
+	//id, so a multi-dataset options blob can be encoded slice by slice:
 	//every option against the namespace of the filter its terms come from - the very namespace the
 	//slice queue hands that filter's data to R in. Without a resolver this is the old behaviour:
 	//everything against the process-global current encoder (C7 legacy - sidecar presence cannot
@@ -1298,7 +1298,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 
 		if(encodePlease)
 		{
-			//mds-plan D3.7 single walk: a positional sidecar encodes the terms one by one
+			// single walk: a positional sidecar encodes the terms one by one
 			//through their own filters (mixed provenance within one option). For uniform
 			//positions - every form that exists today - this is byte-identical to the
 			//whole-array call: replaceAllStrict (encodeJson) distributes over array elements,
@@ -1308,7 +1308,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 				{
 					const Json::Value &	termId	= i < positional->size() ? (*positional)[i] : Json::Value::null;
 
-					//mds-plan post (per-factor provenance, FactorsForm): a PER-FACTOR element - the
+					// (per-factor provenance, FactorsForm): a PER-FACTOR element - the
 					//option value element is a factor OBJECT and the sidecar element is that
 					//factor's per-term filterId array (discriminator + byte-identity argument
 					//documented at the twin case in _addTypeToColumnNamesInOptionsRecursively; the

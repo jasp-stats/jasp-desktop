@@ -190,7 +190,7 @@ void ComponentsListBase::resetDefaultValue()
 	if (defaultJson.size() > defaultValuesRows)
 	{
 		const Terms& terms = _termsModel->terms();
-		const QMap<TermRowKey, RowControls*>& allRowControls = _termsModel->getAllRowControls();	//mds-plan D6.1: row-identity keyed
+		const QMap<TermRowKey, RowControls*>& allRowControls = _termsModel->getAllRowControls();	// row-identity keyed
 
 		for (uint i = defaultValuesRows; i < defaultJson.size(); i++)
 		{
@@ -270,7 +270,7 @@ void ComponentsListBase::bindOffsets()
 {
 	if (_termsModel && _termsModel->rowCount() > 0)
 	{
-		RowControls* row = _termsModel->getRowControls(TermRowKey::ofTerm(_termsModel->terms().at(0)));	//mds-plan D6.1: exact row identity
+		RowControls* row = _termsModel->getRowControls(TermRowKey::ofTerm(_termsModel->terms().at(0)));	// exact row identity
 		if (row)
 			for (JASPControl* control : row->getJASPControlsMap().values())
 			{
@@ -298,7 +298,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 	std::vector<int> xOffsets;
 	QMap<QString, int> nameXOffsetMap;
-	TermRowKey key = TermRowKey::ofTerm(_termsModel->terms().at(0));	//mds-plan D6.1: exact row identity
+	TermRowKey key = TermRowKey::ofTerm(_termsModel->terms().at(0));	// exact row identity
 	auto rowControls = _termsModel->getAllRowControls();
 	if (!rowControls.contains(key))
 		return result;
@@ -359,11 +359,11 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues, bool storageShape) const
 {
-	//mds-plan D3.4: the rows-with-related-values shuffle of the mirror era is
+	// the rows-with-related-values shuffle of the mirror era is
 	//deleted - this is the on-demand child aggregation itself, one serialization through
 	//Terms::getOptions (the row branch), with the value-part taken out. useValueAndType keeps
 	//this list family's `{value, types}` row-entry shape (containsVariables()) exactly as before.
-	//mds-plan D5.1: storageShape switches to the FILE serialization - the same rows, but the term
+	// storageShape switches to the FILE serialization - the same rows, but the term
 	//entry under the optionKey becomes the per-term object {name, filterId?, types} (row children
 	//keep today's shape, optionKey kept). The collision that blocked the D5.1-preview embedding
 	//(a positional `filterIds` sibling would parse as a row child) is gone: the provenance rides
@@ -374,7 +374,7 @@ Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, c
 	return terms.getOptions(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false, containsVariables())["value"];
 }
 
-//mds-plan D5.1: the file shape for this row-bearing family (see getJsonFromComponentValues).
+// the file shape for this row-bearing family (see getJsonFromComponentValues).
 Json::Value ComponentsListBase::createStorageValue() const
 {
 	if (!_termsModel)
@@ -412,7 +412,7 @@ void ComponentsListBase::addItemHandler()
 		{
 			std::string keyString = fq(terms.at(size_t(currentInd)).value());
 			
-			//mds-plan D6.1 (landmine): the row-key entry under optionKeyValue is a plain string in
+			// the row-key entry under optionKeyValue is a plain string in
 			//the ENGINE shape, but the control's own value right after a STORAGE bind (file load -
 			//BoundControlBase::bindTo parks the raw input until the first regeneration) carries the
 			//per-term object {name, filterId?, types}. `.asString()` on a jsoncpp object THROWS, so
@@ -441,7 +441,7 @@ void ComponentsListBase::addItemHandler()
 					jsonValues[_optionKeyLabel] = fq(newItemLabel);
 			}
 		}
-		//mds-plan D6.1: the new row is fresh and unqualified, key it (name, -1) - the term gets its
+		// the new row is fresh and unqualified, key it (name, -1) - the term gets its
 		//host stamp at intake and Terms::relatedValuesForTerm() finds these values through that key.
 		rowValues[TermRowKey(newItemValue, -1)] = jsonValues;
 	}
@@ -498,7 +498,7 @@ void ComponentsListBase::keyValueChangedHandler(int index, QString newLabel)
 	newLabel = _makeUnique(newLabel, _termsModel->terms().labels(), index);
 	QString newValue = _optionKeyLabel.isEmpty() ? newLabel : term.value();
 
-	//mds-plan D6.1: a row rename must not drop the row's provenance - carry the old term's
+	// a row rename must not drop the row's provenance - carry the old term's
 	//filterId over (ListModelTermsAssigned::changeTerm moves the row maps to the new key).
 	Term newTerm(newValue, newLabel);
 	newTerm.setFilterId(term.filterId());

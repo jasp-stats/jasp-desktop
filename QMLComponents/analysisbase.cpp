@@ -23,7 +23,7 @@ AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	: QObject(parent)
 	, VariableInfoProvider(this)
 {
-	//mds-plan D3.4: a duplicate is seeded from the source's GENERATED Storage tree (clean typed
+	// a duplicate is seeded from the source's GENERATED Storage tree (clean typed
 	//state), parked exactly like a file-load and applied once through the controls when the
 	//duplicate's form attaches (setAnalysisUp -> bindTo). The old mirror copy is gone; a source
 	//without an attached form has no component state to duplicate (empty Storage), matching the
@@ -173,7 +173,7 @@ void AnalysisBase::setIsAnnotated(bool isAnnotated)
 }
 
 
-//mds-plan D3.1/D3.4: the ONE implementation of nested (row-control) option placement, the
+// the ONE implementation of nested (row-control) option placement, the
 //generators' own walk - it places values at the
 //byte-identical paths the mirror used to - same row-chain semantics, same parentNames bookkeeping.
 //The tree it walks is a parameter (the generated options root).
@@ -275,7 +275,7 @@ Json::Value & AnalysisBase::resolveOptionParent(Json::Value & root, const QVecto
 	return *parentBoundValue;
 }
 
-//mds-plan D3.1: the mirror's send-tree placement (was inline in setBoundValue), shared with the
+// the mirror's send-tree placement (was inline in setBoundValue), shared with the
 //generators so `.meta` and `.filterIds` nest by the same rule on both sides.
 void AnalysisBase::placeOptionMeta(Json::Value & metaRoot, const QVector<std::string> & parentNames, const std::string & name, const Json::Value & meta)
 {
@@ -285,7 +285,7 @@ void AnalysisBase::placeOptionMeta(Json::Value & metaRoot, const QVector<std::st
 	(*metaBoundValue)[name] = meta;
 }
 
-//mds-plan D3.3: sidecar placement differs from meta placement in ONE way: a meta node is always
+// sidecar placement differs from meta placement in ONE way: a meta node is always
 //an object, so row-child meta merges into the parent option's node freely. A `.filterIds` node
 //is a bare int/array, and a list control with stamped row children would have its positional
 //array sitting exactly where the children's named nodes go - placing through placeOptionMeta
@@ -322,7 +322,7 @@ void AnalysisBase::placeOptionFilterIds(Json::Value & filterIdsRoot, const QVect
 
 
 
-//mds-plan C12/D3.4: the explicit pending-options parking lot. setAnalysisUp consumes it ONCE
+// the explicit pending-options parking lot. setAnalysisUp consumes it ONCE
 //(takePendingOptions) and routes it through bindTo; run/save/dataSpec never read it. wasCreatedByOptions
 //distinguishes "the analysis arrived with these options" (file/RPC/duplicate) from a later
 //programmatic rebind.
@@ -345,7 +345,7 @@ Json::Value AnalysisBase::takePendingOptions()
 	return options;
 }
 
-//mds-plan C11/D3.4: the transient `.filterIds` sidecar is desktop-internal provenance (consumed by
+// the transient `.filterIds` sidecar is desktop-internal provenance (consumed by
 //the slice-queue build and request encoding) and never leaves to R, RPC clients, QML options() or
 //generated scripts. Stripping is the one top-level member removal D3.3 established.
 void AnalysisBase::stripTransientSidecar(Json::Value & options)
@@ -354,7 +354,7 @@ void AnalysisBase::stripTransientSidecar(Json::Value & options)
 }
 
 
-//mds-plan C11/D3.4: the whole options tree GENERATED from the components (the form walks its
+// the whole options tree GENERATED from the components (the form walks its
 //registered controls). Since the mirror deletion this is the only tree there is - the equivalence
 //harness that proved generator == mirror during the transition lives on as generator-vs-GOLDEN
 //pins (tst_generatedOptionsJson*.qml). An analysis without a form has no component state to
@@ -402,7 +402,7 @@ bool AnalysisBase::usesDataSet(int dataSetId) const
 
 std::map<int, int> AnalysisBase::referencedDataSets() const
 {
-	//mds-plan D3.6/C11: computed ON DEMAND from component state - the typed filterIds the bound
+	// computed ON DEMAND from component state - the typed filterIds the bound
 	//controls generate (the same per-control createFilterIds() output that rides the transient
 	//`.filterIds` sidecar at send time, positional per-term entries included), the filters the
 	//registered selection hosts hold, and the analysis' own filter. No mirror, no meta: the
@@ -446,7 +446,7 @@ std::map<int, int> AnalysisBase::referencedDataSets() const
 	};
 
 	//(a) the values' own typed provenance: per-control createFilterIds generations, including
-	// foreign filterIds a bindTo-copied term carries from another host's selection (mds-plan C9).
+	// foreign filterIds a bindTo-copied term carries from another host's selection.
 	std::set<int> valueFilterIds;
 	_analysisForm->collectFilterIds(valueFilterIds);
 	for(int filterId : valueFilterIds)
@@ -473,7 +473,7 @@ void AnalysisBase::notifyDataSpecChanged()
 	emit dataSpecChanged();
 }
 
-//mds-plan D3.4: the notification tail of the deleted mirror write. boundValuesChanged drives the
+// the notification tail of the deleted mirror write. boundValuesChanged drives the
 //R-syntax text refresh; for a multi-dataset aware analysis a committed option can change what the
 //analysis runs on (its typed sidecar provenance moved), so dataSpecChanged rides along - exactly
 //the pair the mirror's setBoundValue emitted, gated on the form being initialized as before.
@@ -505,7 +505,7 @@ QString AnalysisBase::dataSpec() const
 	//aware analyses - the results header showed nothing and every call spammed the log. The spec
 	//comes from the datasets the options actually reference instead: own dataset first when it
 	//has one, then the others, " + " joined - deleting any of them has consequences for this
-	//analysis as well (mds-plan C3/M7).
+	//analysis as well.
 	if(multiDataSetAware())
 	{
 		Workspace * workspace = Workspace::singleton();
@@ -572,9 +572,9 @@ void AnalysisBase::setFilterId(int filterId)
 	refresh();
 }
 
-// ---- VariableInfoProvider over the selection-host registry (mds-plan C10/D2.4) -----------------
+// ---- VariableInfoProvider over the selection-host registry -----------------
 // The whole point of this endpoint is that it is DERIVED, never stored: every call re-enumerates
-// the form's live selection hosts (which unregister eagerly, mds-plan D2.3) and reads their filter
+// the form's live selection hosts (which unregister eagerly) and reads their filter
 // through the virtual - a Filter's encode handle lazy-attaches and dies with the filter (D1.2),
 // so caching a handle/encoder/filter pointer here would be the first stale namespace in the
 // house. See the class doc in analysisbase.h for the one/many/none semantics and what merged
@@ -659,7 +659,7 @@ QVariant AnalysisBase::provideInfo(varInfoType info, const QString& name, int ro
 	if(filters.size() == 1)
 		return filters.first()->provideInfo(info, name, row);
 
-	//Merged view (mds-plan C10): the union of the selected filters. Only VariableNames is truly
+	//Merged view: the union of the selected filters. Only VariableNames is truly
 	//aggregated - with collisions KEPT (a column that lives behind two selected namespaces is two
 	//entries; the terms' filterId tells them apart downstream, C9). Everything else has no honest
 	//union: per-name requests scan the hosts in registration order for the first hit, dataset-wide

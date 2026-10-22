@@ -63,7 +63,7 @@ private:
 	static QString					_transformToRName(const QString& name);
 	QString							_analysisFullName()														const;
 	QString							_transformInteractionTerms(ListModel* model)							const;
-	// mds-plan D8.2: the string-literal content for one term component of the list() branch -
+	// the string-literal content for one term component of the list() branch -
 	// qualified minimal form for a foreign-stamped term (escaped for R), legacy verbatim
 	// otherwise.
 	QString							_rLiteralForTermComponent(const Term& term, const QString& component, int contextFilterId, class Workspace* ws) const;

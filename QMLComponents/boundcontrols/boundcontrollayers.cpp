@@ -89,7 +89,7 @@ void BoundControlLayers::resetBoundValue()
 	setBoundValue(createEngineValue());
 }
 
-//mds-plan D3.1: the layers model IS the typed state - one builder for the write path and the
+// the layers model IS the typed state - one builder for the write path and the
 //generators.
 Json::Value BoundControlLayers::createEngineValue() const
 {

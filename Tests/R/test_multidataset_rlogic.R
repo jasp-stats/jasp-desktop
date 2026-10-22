@@ -149,8 +149,8 @@ check(is.null(primaryAttr), "absent primary member yields NULL primarySliceKey (
 
 syntaxLib <- Sys.getenv("JASP_SYNTAX_LIB", file.path(dirname(jaspSourceDir), ".toolLib"))
 moduleDir <- Sys.getenv("JASP_TESTMODULE_DIR", file.path(dirname(jaspSourceDir), "jaspTestModule"))
-# Non-aware single-dataset form for the parse round trips below. mds-plan C4/M8 deleted the
-# multiDataSetNonAware twin it used to target; testVariablesForm is a plain non-aware analysis
+# Non-aware single-dataset form for the parse round trips below. The
+# multiDataSetNonAware twin it used to target was deleted; testVariablesForm is a plain non-aware analysis
 # with a variables list (varS), which is all this section needs. Cross-repo pairing: the twin's
 # removal lands in the same change in jaspTestModule.
 moduleQml  <- file.path(moduleDir, "inst", "qml", "testVariablesForm.qml")
@@ -183,7 +183,7 @@ if (!haveBridge) {
 	optionsParsed <- jsonlite::fromJSON(parsed, simplifyVector = FALSE)
 	encodedValue  <- as.character(optionsParsed$varS[[1]])
 
-	# mds-plan Phase 1 (jasp-desktop): tokens are minted per FILTER view now -
+	# tokens are minted per FILTER view now -
 	# JASPColumn_D<dsId>_F<filterId>_<index>_Encoded (C1).
 	check(grepl("^JASPColumn_D[0-9]+_F[0-9]+_[0-9]+_Encoded$", encodedValue),
 	      paste("QML parsing yields real encoded option values (", encodedValue, ")"))
@@ -234,7 +234,7 @@ if (!haveBridge) {
 		cat("SKIP : C1/M1 stale-slice regression (aware test qml not in", moduleDir, ")\n")
 	}
 
-	# --- C4/RESOLVER: the selection syntax surface is human strings only (mds-plan C4) -------------
+	# --- C4/RESOLVER: the selection syntax surface is human strings only -------------
 	# Bare dataset TITLE = default filter, dropdown label "title - filterName" = a named one,
 	# resolved by exact lookup against the live workspace. Dataset ids and filter ids are NOT
 	# enterable in syntax (M4): a number resolves only when a dataset is titled that number.

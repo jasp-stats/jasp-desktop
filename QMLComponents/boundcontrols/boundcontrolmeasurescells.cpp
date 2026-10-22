@@ -78,7 +78,7 @@ void BoundControlMeasuresCells::resetBoundValue()
 	setBoundValue(createEngineValue());
 }
 
-//mds-plan D3.1: the cells terms model IS the typed state - one builder for write + generate.
+// the cells terms model IS the typed state - one builder for write + generate.
 Json::Value BoundControlMeasuresCells::createEngineValue() const
 {
 	Json::Value boundValue(Json::arrayValue);

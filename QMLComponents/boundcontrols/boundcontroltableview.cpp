@@ -137,7 +137,7 @@ void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListM
 Json::Value BoundControlTableView::createEngineValue() const
 {
 	//Same builder the write path uses (resetBoundValue): live TableTerms through the virtual
-	//fillBoundValue, mds-plan D3.1 - see the header.
+	//fillBoundValue - see the header.
 	Json::Value boundValue(Json::arrayValue);
 	fillBoundValue(boundValue, _tableView->tableModel()->tableTerms());
 	return boundValue;

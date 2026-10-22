@@ -24,7 +24,7 @@
 
 /// A captured column-encoder namespace, replayable through the process-global decode table.
 ///
-/// v2 (mds-plan D1.7): replay is a pair of scoped table blocks (ColumnEncoder::ScopedDecodeBlock)
+/// v2: replay is a pair of scoped table blocks (ColumnEncoder::ScopedDecodeBlock)
 /// - registered on scope entry, undone on exit - and it NEVER mutates a live encoder: not the
 /// canonical mint, not a filter view, not the extras encoder. The context is the captured column
 /// set plus the namespace prefix its tokens live under (the host filter's `JASPColumn_D<ds>_F<f>_`

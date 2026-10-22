@@ -54,7 +54,7 @@ TestQml::TestQml(QObject *parent)
 
 		//Then reopen the database the way File > Open does: the workspace is rebuilt from the
 		//stored rows and every test runs against a *reopened file* - the state the eager filter
-		//materialisation of DataSet::dbLoad (mds-plan C2/EAGER) exists for. 'ReopenMe' reaches
+		//materialisation of DataSet::dbLoad exists for. 'ReopenMe' reaches
 		//the dataset/filter dropdown only because dbLoad materialised the stored row; the
 		//reopen tests in tst_dataSetSelectionVariablesList.qml assert exactly that.
 		prov->reloadWorkspace();

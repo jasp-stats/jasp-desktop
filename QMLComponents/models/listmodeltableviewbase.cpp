@@ -456,14 +456,14 @@ JASPControl *ListModelTableViewBase::getRowControl(const QString &key, const QSt
 
 JASPControl *ListModelTableViewBase::getRowControl(const TermRowKey &key, const QString &name) const
 {
-	//mds-plan D6.1: tableview rows are keyed by the row-index string the control carried at
+	// tableview rows are keyed by the row-index string the control carried at
 	//registration (context property rowIndex, filterId -1): forward the name part unchanged.
 	return getRowControl(key.name(), name);
 }
 
 bool ListModelTableViewBase::addRowControl(const TermRowKey &key, JASPControl *control)
 {
-	_itemControls[key.name()][control->name()] = control;	//mds-plan D6.1: index string from the row key
+	_itemControls[key.name()][control->name()] = control;	// index string from the row key
 
 	if (control->controlType() == JASPControl::ControlType::TextField)
 	{

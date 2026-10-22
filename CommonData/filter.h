@@ -130,7 +130,7 @@ public:
 	QAbstractItemModel		*	providerModel() override;
 	QVariant					provideInfo(varInfoType info, const QString& name = "", int row = 0)			const	override;
 	bool						absorbInfo(	varInfoType info, const QString& name,		int row, QVariant value)		override;
-	///< This filter's own namespace view (mds-plan C3): a non-owning {canonical of its DataSet,
+	///< This filter's own namespace view: a non-owning {canonical of its DataSet,
 	///< prefix "JASPColumn_D<dsId>_F<filterId>_"} handle. Consumers that en-/decode column names
 	///< through the provider chain (host selections!) get the namespace of THIS filter, never the
 	///< process-global current one. See VariableInfoProvider::columnEncoder.
@@ -162,7 +162,7 @@ private:
 			///< (Re)create the namespace view once _id is final (dbCreate/dbLoad/setId); no-op
 			///< while it already matches this filter's (datasetId, filterId). The view registers
 			///< its block in the global decode table; destroying it erases the block again, so a
-			///< deleted filter's tokens go raw (mds-plan C16).
+			///< deleted filter's tokens go raw.
 			void				ensureColumnView();
 			void				dropColumnView();
 	
@@ -176,7 +176,7 @@ private:
 	~Filter() override;
 
 	DataSet					*	_data				= nullptr;
-	ColumnEncoder			*	_columnView			= nullptr;	///< mds-plan C3: this filter's view on its dataset's canonical mint
+	ColumnEncoder			*	_columnView			= nullptr;	///< this filter's view on its dataset's canonical mint
 	int							_id					= -1,
 								_filteredRowCount	= 0;
 	std::string					_rFilter			= "",
