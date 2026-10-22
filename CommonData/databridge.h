@@ -100,7 +100,7 @@ public:
 
 	/// Prepare a multi-dataset aware analysis run: the generated Engine json names the filter every
 	/// option/term was selected through in the transient `.filterIds` sidecar (
-	/// the .meta provenance stamps retired with C8), so the options are encoded per dataset (each
+	/// the .meta provenance stamps are retired), so the options are encoded per dataset (each
 	/// filter VIEW mints tokens embedding its ids) and one read slice per involved filter is
 	/// queued for rbridge_readDataSetRequested. Used by both Engine::runAnalysis and the syntax
 	/// bridge, so the two cannot drift apart. The sidecar stays in `options` (consumed here and

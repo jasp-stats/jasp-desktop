@@ -24,11 +24,11 @@ import JASP
 	\inqmlmodule JASP.Controls 1.0
 	\brief Debounced editor-side validation of qualified column references.
 
-	Watches an R editor's text and runs the D7.3 scanner on it
+	Watches an R editor's text and runs the qualified-reference scanner on it
 	(\c Workspace::qualifiedRefErrorInCode): "" when every qualified reference in the code
 	resolves against the live workspace, otherwise the first typed error message. The editors
 	show \c error inline as a NON-BLOCKING warning - the run itself still fails loudly at the
-	engine when a reference cannot resolve there (the D7.5 surface); this is only the
+	engine when a reference cannot resolve there; this is only the
 	type-time feedback, so it stays cheap (debounced) and never triggers a run.
 */
 QtObject
@@ -44,7 +44,7 @@ QtObject
 	property int		debounceInterval: 400
 	///< Set false to suspend validation without disconnecting the editor.
 	property bool		active: true
-	///< The first typed error of the D7.3 scanner ("" = clean, nothing to warn about).
+	///< The first typed error of the qualified-reference scanner ("" = clean, nothing to warn about).
 	property string		error: ""
 
 	function validateNow()
@@ -80,7 +80,7 @@ QtObject
 	//lifecycle events (all relayed on the Workspace: dataSetRemoved / dataSetTitleChanged /
 	//filterNameChanged / filtersCountChanged / datasetChanged) so a previously-valid
 	//reference turns invalid IN THE EDITOR - loud, inline, non-blocking (the run itself
-	//still fails loudly at the engine with the same typed message; no tombstoning, C16).
+	//still fails loudly at the engine with the same typed message; no tombstoning).
 	property Connections _workspaceWatcher: Connections
 	{
 		target: qualifiedColumnValidator.workspace

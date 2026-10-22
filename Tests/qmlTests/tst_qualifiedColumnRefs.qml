@@ -18,11 +18,11 @@ import JASP.Controls
 // bare-name fallback namespace (the filter editor: the EDITED filter, fixed -
 //     there is no fallback-selection UI; the compute editors: the selected compute/input
 //     filter). Insertion puts the rendered surface form in VERBATIM at the cursor - stored
-//     code stays raw (column.cpp:547), encoding happens only at run, engine-side (D7.3).
-//   - QualifiedColumnValidator: debounced live validation = the D7.3 scanner's first typed
+//     code stays raw (column.cpp:547), encoding happens only at run, engine-side.
+//   - QualifiedColumnValidator: debounced live validation = the scanner's first typed
 //     error (Workspace::qualifiedRefErrorInCode). Non-blocking: bare names are never errors
 //     here, and an unresolvable reference warns inline while the run itself still fails
-//     loudly at the engine (D7.5's surface).
+//     loudly at the engine.
 //
 // The components are driven directly against the harness fixture (Tests/testqml.cpp:
 // dataset 1 + "Second", REOPENED from the database so every filter id is a final stored
@@ -30,7 +30,7 @@ import JASP.Controls
 // (Workspace::filterIdByName(...)). "ReopenMe" (a named filter of "Second") plays the
 // filter editor's EDITED filter, and "Second"'s default filter plays the compute editors'
 // SELECTED INPUT FILTER - the case where the fallback namespace belongs to ANOTHER
-// dataset. The picker-cut/output-cut owner refinement (D7.0a NOTE): the picker may be
+// dataset. The picker-cut/output-cut rule: the picker may be
 // scoped to own-dataset columns, but what it emits for an OUTWARD pick is always the full
 // qualified surface form - asserted verbatim below. This file only READS the workspace, so
 // it cannot disturb the tests that alphabetically surround it.
@@ -43,7 +43,7 @@ Item
 	// how often the lifecycle stub below was consulted (see the lifecycle test).
 	property int lifecycleValidationCalls: 0
 
-	//The filter editor's context (D7.1): the edited filter's id.
+	//The filter editor's context: the edited filter's id.
 	readonly property int filterContextId:
 	{
 		if(!workspace)
@@ -56,7 +56,7 @@ Item
 		return -1
 	}
 
-	//The compute editors' context analogue (D7.2): the SELECTED INPUT FILTER - "Second"'s
+	//The compute editors' context analogue: the SELECTED INPUT FILTER - "Second"'s
 	//default filter here, another dataset's filter, exactly the
 	//"computed dataset | selected input filter" row of
 	readonly property int inputContextId:
@@ -181,8 +181,8 @@ Item
 	{
 		name: "QualifiedColumnRefs"
 
-		//The catalog against the FILTER EDITOR's context (D7.1): only the edited filter's own
-		//columns are bare (that namespace is the bare-name fallback BY DEFINITION, C13 - no
+		//The catalog against the FILTER EDITOR's context: only the edited filter's own
+		//columns are bare (that namespace is the bare-name fallback BY DEFINITION - no
 		//fallback-selection UI), every other slice comes out as the minimal qualified surface
 		//form - including the OTHER filters of the edited filter's own dataset (bare means the
 		//edited filter's namespace, not "own dataset").
@@ -216,7 +216,7 @@ Item
 			compare(dataSet1Default.code, '"' + dataSet1Title + '"."TestInts"')
 		}
 
-		//The catalog against the COMPUTE EDITORS' context (D7.2): the selected input filter is
+		//The catalog against the COMPUTE EDITORS' context: the selected input filter is
 		//THE bare-name fallback namespace - even though it belongs to ANOTHER dataset. Its
 		//columns come out bare; everything else (including the editor's own dataset) qualified.
 		function test_candidates_input_filter_context_is_the_fallback_namespace()
@@ -230,7 +230,7 @@ Item
 				compare(candidate.isBare, candidate.filterId === inputContextId)
 
 			//Second's columns are bare under this context (they resolve unqualified at run time
-			//through the selected input filter, D7.3's runComputeDataSet):
+			//through the selected input filter, runComputeDataSet):
 			const secondInts = findCandidate(candidates, "Second", "DEFAULT_FILTER", "TestInts")
 			verify(secondInts)
 			compare(secondInts.code, "TestInts")
@@ -244,8 +244,8 @@ Item
 
 		//Insertion: the rendered surface form goes in VERBATIM at the cursor and the caret
 		//stays behind it. An OUTWARD pick is always the full qualified surface form - the
-		//picker cut (v1 scope) limits what is OFFERED, never what is EMITTED (D7.0a owner
-		//refinement: picker cut != output cut).
+		//picker cut (v1 scope) limits what is OFFERED, never what is EMITTED (the picker
+		//cut is not the output cut).
 		function test_insertion_puts_rendered_form_verbatim_at_cursor()
 		{
 			filterEditorPicker.openForInsertion()
@@ -318,7 +318,7 @@ Item
 		}
 
 		//Validation: clean code and bare names are silent; an unresolvable reference reports
-		//the FIRST typed error, debounced (D7.3's scanner, editor-side).
+		//the FIRST typed error, debounced (the scanner, editor-side).
 		function test_validator_clean_bare_and_debounced_first_error()
 		{
 			compare(validator.error, "")	//initial (empty) code is clean
@@ -406,7 +406,7 @@ Item
 			//node on the left still consults: that one stays the bare "TestInts.scale").
 			compare(constructor.rCode, '(TestInts.scale > as.integer("Second"."DEFAULT_FILTER"."TestInts"("ordinal")))\n')
 
-			//And the emission resolves back through the same grammar (the sidecar D7.3 stamps
+			//And the emission resolves back through the same grammar (the sidecar stamped
 			//from this text will carry exactly the referenced filter):
 			const error = workspace.qualifiedRefErrorInCode(constructor.rCode)
 			compare(error, "")

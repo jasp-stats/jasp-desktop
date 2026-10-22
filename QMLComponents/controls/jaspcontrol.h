@@ -178,7 +178,7 @@ public:
 	/// an active selection hands out its own VariableInfo (provider = the selected Filter) here.
 	/// the old parent-chain resolution walk is DELETED - consumers resolve
 	/// LOCALLY: their own selection (ownedSelectionVarInfo below), the analysis-wide
-	/// form()->varInfo() (legitimate C13 fallback: analysis filter, else shown filter), or a
+	/// form()->varInfo() (legitimate fallback: analysis filter, else shown filter), or a
 	/// term's filterId through Workspace::filterById.
 	virtual VariableInfo			* ownedSelectionVarInfo()						{ return nullptr; }
 	///< Hosts only: the filter currently picked through this host's own selection
@@ -186,7 +186,7 @@ public:
 	/// Registry consumers - above all (AnalysisBase as VariableInfoProvider over the
 	/// registered selected filters) - enumerate the form's selection hosts and read their filter
 	/// THROUGH THIS. They must never cache a ColumnEncoder*: a Filter's encode handle lazy-attaches
-	/// to the filter's final rowid and is dropped when the filter dies (D1.2), so only the
+	/// to the filter's final rowid and is dropped when the filter dies, so only the
 	/// filterId/Filter* re-resolved at use time is safe to hold.
 	virtual Filter					* selectedSelectionFilter() const				{ return nullptr; }
 	///< Hosts only: the NAME of the option carrying the selection whose VariableInfo is handed out

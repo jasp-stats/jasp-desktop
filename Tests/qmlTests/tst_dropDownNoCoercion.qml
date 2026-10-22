@@ -3,7 +3,7 @@ import QtQuick
 import JASP.Controls
 
 // The scheduled follow-up: ComboBoxBase::bindTo's no-coercion is GENERAL
-// combobox behaviour since commit cce0207fa (the multiDataSetAware() gate of C2's first pass was
+// combobox behaviour since commit cce0207fa (the multiDataSetAware() gate was
 // removed by Joris' amendment), so it must hold for a plain, NON-aware analysis form too: a
 // bound value the DropDown cannot serve goes to the error state and stays pending - the option
 // keeps the value exactly as it came in and is NEVER rewritten to entry 0 - and it binds for

@@ -10,7 +10,7 @@ import JASP.Controls
 // selecting AvailableVariablesLists (per-list selection) plus a TextArea host,
 // so different lists resolve through DIFFERENT filters. The golden mirror bytes were captured with
 // their dataSetId/filterId stamp keys stripped (those were the harness' one documented tolerance,
-// and they never shipped: C8/C15) - the provenance they carried is asserted on the transient
+// and they never shipped) - the provenance they carried is asserted on the transient
 // `.filterIds` sidecar instead, against the LIVE host selections (never against captured ids, so
 // the file stays fixture-order-robust). The flagship: "TestInts" selected in TWO lists through
 // TWO filters of the same dataset generates byte-identical VALUES but distinguishable provenance.
@@ -48,7 +48,7 @@ Item
 		}
 
 		// A list with no host anywhere: today it is stamped through the FORM's VariableInfo
-		// (analysis filter else shown filter) and the sidecar must carry that same id (C13
+		// (analysis filter else shown filter) and the sidecar must carry that same id (the
 		// host-bound fallback), so an aware run never loses the option-level provenance.
 		AssignedVariablesList	{ id: aloneA;	name: "aloneA" }
 
@@ -190,8 +190,8 @@ Item
 			return node
 		}
 
-		// The frozen expected trees, captured from the deleted mirror at the D3.4 deletion
-		// commit by this harness while it still asserted generated == mirror (so they are the
+		// The frozen expected trees, captured from the deleted mirror
+		// by this harness while it still asserted generated == mirror (so they are the
 		// authoritative old bytes), with the dead stamp keys removed - the harness' one documented
 		// tolerance. goldenAware is the state after _bindAwareForm(); the mid-session switch and
 		// the Storage round-trip reach the same bytes (same VALUES; the moved ids lived only in the
@@ -217,7 +217,7 @@ Item
 			delete generated[".filterIds"]
 
 			// the golden was captured with the stamp keys stripped (the mirror's, dead since the
-			// D3.3 flip); strip the generated side symmetrically - and the raw-tree C8 audit in
+			// sidecar flip); strip the generated side symmetrically - and the raw-tree audit in
 			// test_aware_engine_matches_mirror_bytes proves the generated side has nothing to strip.
 			stripMetaProvenance(generated)
 
@@ -225,7 +225,7 @@ Item
 			if (d !== "")
 				console.log("GOLDEN-DIFF[" + stage + "] golden=" + golden + " generated=" + JSON.stringify(generated) + " diffs=" + d)
 			compare(d, "",
-				stage + ": createOptionsJson(Engine) differs from the golden mirror bytes frozen at the D3.4 deletion")
+				stage + ": createOptionsJson(Engine) differs from the golden mirror bytes")
 
 			generated[".filterIds"] = sidecar
 			return generated
@@ -273,12 +273,12 @@ Item
 
 			assertEngineEqualsGolden("aware form", goldenAware)
 
-			// C8 in the other direction, asserted on the RAW generated tree (the golden comparison
+			// The same meta-cleanliness rule in the other direction, asserted on the RAW generated tree (the golden comparison
 			// stripped both sides symmetrically): the generator must not emit a single provenance
 			// key, while every other meta key of the options the mirror stamped survives.
 			const rawGenerated	= generatedOf(false)
 			const genStamps		= collectStamps(rawGenerated[".meta"] || {}, "", [])
-			compare(genStamps.length, 0, "generated .meta holds NO dataSetId/filterId keys (C8): " + JSON.stringify(genStamps))
+			compare(genStamps.length, 0, "generated .meta holds NO dataSetId/filterId keys: " + JSON.stringify(genStamps))
 
 			compare(stampedPaths.length, 5, "the frozen golden state stamped several options")	// the mirror-side guard of the golden capture
 			for (const stampPath of stampedPaths)
@@ -287,7 +287,7 @@ Item
 				verify(genNode !== undefined, "the generated meta keeps a node for the golden-stamped option '" + stampPath + "'")
 				verify(genNode.shouldEncode === true, "shouldEncode survives into the generated (send-time) meta of '" + stampPath + "'")
 				if (stampPath === "factorLevelsA")
-					verify(Array.isArray(genNode.encodeThis), "encodeThis survives into the generated meta (C6)")
+					verify(Array.isArray(genNode.encodeThis), "encodeThis survives into the generated meta")
 			}
 		}
 
@@ -323,7 +323,7 @@ Item
 				"comboA's scalar entry carries its host filter - the equality the mirror stamp asserted")
 
 			// and the sidecar stays EMPTY on an analysis whose values are not column-bearing:
-			verify(sidecar.swA === undefined, "scalars generate no sidecar node (C3/M5)")
+			verify(sidecar.swA === undefined, "scalars generate no sidecar node")
 			verify(sidecar.dataSetA === undefined && sidecar.dataSetB === undefined && sidecar.codeSet === undefined,
 				"the selection options generate no sidecar (their value IS the filter id)")
 
@@ -335,10 +335,10 @@ Item
 
 		function test_aware_sidecar_distinguishes_same_name_in_two_lists()
 		{
-			// The flagship (C9/C11): "TestInts" selected through TWO different filters of the same
+			// The flagship: "TestInts" selected through TWO different filters of the same
 			// dataset in ONE form. The values are byte-identical, the mirror stamps the two options
 			// with their host filters - and the sidecar must carry the distinction per term, which
-			// is what D3.3's slice-queue build and D3.7's per-term encoding consume.
+			// is what the slice-queue build and the per-term encoding consume.
 			const sel = _bindAwareForm()
 			wait(100)
 
@@ -376,8 +376,8 @@ Item
 			wait(100)
 
 			// Mid-session switch of host A onto ANOTHER filter of the same dataset rewrites no
-			// value (D2.5's restamp class): the sidecar must move with the typed terms and leave
-			// the abandoned filter out of the tree entirely (no phantom-slice input, C3/M5).
+			// value (the restamp on host change): the sidecar must move with the typed terms and leave
+			// the abandoned filter out of the tree entirely (no phantom-slice input).
 			allVarsA.selectedFilterId = sel.fB
 			wait(100)
 
@@ -413,7 +413,7 @@ Item
 		{
 			// Options may arrive as PENDING JSON before/while the controls bind (file load parks
 			// them via setBoundValues, setAnalysisUp applies them exactly once through the
-			// controls). From the D3.3 flip on, NOTHING reads pending JSON for behaviour: bindTo
+			// controls). From the sidecar flip on, NOTHING reads pending JSON for behaviour: bindTo
 			// only walks control names, the mirror is cleared and rebuilt by the controls, and
 			// the generated Engine tree (values + sidecar) comes from component state - so a
 			// wedged-in ".meta" stamp in the pending tree is inert input that must vanish with
@@ -457,11 +457,11 @@ Item
 			assertEngineEqualsGolden("aware form after pending-stamp re-attach", goldenReattach)
 		}
 
-		// ---- Storage shape (D5.1 final) ----------------------------------------------------------
+		// ---- Storage shape (the file format) ----------------------------------------------------------
 
 		function test_storage_roundtrips_through_the_json_to_state_appliers()
 		{
-			// C12/D3.5 + D5.1: the file format IS the Storage tree now, so the JSON->state appliers
+			// The file format IS the Storage tree now, so the JSON->state appliers
 			// (bindTo path) must take it back losslessly: generate, feed through setOptions,
 			// regenerate, BYTE-EQUAL - the exact save/reload loop of a .jasp file.
 			_bindAwareForm()
@@ -486,21 +486,21 @@ Item
 			const engine	= generatedOf(false)
 			const storage	= generatedOf(true)
 
-			verify(storage[".meta"] === undefined, "Storage carries no .meta tree (it is a send-time artifact, C8/C11)")
+			verify(storage[".meta"] === undefined, "Storage carries no .meta tree (it is a send-time artifact)")
 			verify(storage[".filterIds"] === undefined, "Storage carries no sidecar tree - provenance rides INSIDE the term objects")
-			verify(storage.depA.types === undefined, "no outer positional types in Storage (per-term since D5.1)")
-			verify(storage.depA.filterIds === undefined, "the D5.1-preview positional filterIds member is gone")
+			verify(storage.depA.types === undefined, "no outer positional types in Storage (per-term)")
+			verify(storage.depA.filterIds === undefined, "the preview positional filterIds member is gone")
 
-			// D5.1 final: per-term {name, filterId?, types}. (ORIGIN-AUTHORITATIVE):
+			// The final shape: per-term {name, filterId?, types}. (ORIGIN-AUTHORITATIVE):
 			// a bare bind is UNQUALIFIED - a bind is not an origin - so Storage honestly omits the
-			// member, and the Engine sidecar serves the provenance PER SEND off the C13 chain
+			// member, and the Engine sidecar serves the provenance PER SEND off the host-bound fallback chain
 			// (against the LIVE host, like every provenance assertion in this file):
 			compare(storage.depA.value.length, 1)
 			verify(storage.depA.value[0].name === "TestInts", "term value lives inside the per-term object")
 			verify(storage.depA.value[0].filterId === undefined,
 				"a bare bind stays unqualified in Storage (stamps are born at origins only, never at intake)")
 			compare(sidecarAt(engine[".filterIds"], "depA")[0], sel.fA,
-				"the Engine sidecar backfills the resolved host per send (C13 chain)")
+				"the Engine sidecar backfills the resolved host per send (the host-bound fallback chain)")
 			verify(Array.isArray(storage.depA.value[0].types), "types ride per term")
 			verify(storage.fixedB.value[0].filterId === undefined, "the second host's bare bind likewise stays unqualified in Storage")
 			compare(sidecarAt(engine[".filterIds"], "fixedB")[0], sel.fB,
@@ -516,18 +516,18 @@ Item
 
 			// non-term families store exactly the engine value; scalars and selection options ride along:
 			compare(deepDiff(storage.factorLevelsA, engine.factorLevelsA, ""), "", "the factorLevelList stores the engine value unchanged")
-			compare(deepDiff(storage.rCodeBoxB, engine.rCodeBoxB, ""), "", "the textarea code stays raw in Storage (rCode contract, D7.1 keeps it so)")
+			compare(deepDiff(storage.rCodeBoxB, engine.rCodeBoxB, ""), "", "the textarea code stays raw in Storage (rCode contract)")
 			verify(storage.swA === true && storage.dataSetA !== undefined, "scalars and selection options ride along unchanged")
 		}
 
 		function test_storage_twin_terms_survive_the_save_reload_cycle()
 		{
-			// The D5.1 flagship (C9, strict Term equality from D2.1): TWO terms named "TestInts"
+			// The flagship (strict Term equality): TWO terms named "TestInts"
 			// with DIFFERENT filterIds in ONE list must not dedupe through a save/reload cycle.
 			// The Engine sidecar expresses them positionally ([fA, fB] over identical value
 			// entries); the Storage format carries the ids inline, so the distinction survives
-			// verbatim - and the intake stamping (ListModel::_setAllowedType, owns-the-stamp since
-			// D5.1) leaves the loaded ids alone even though host A resolves to fA only.
+			// verbatim - and the intake stamping (ListModel::_setAllowedType, owns-the-stamp)
+			// leaves the loaded ids alone even though host A resolves to fA only.
 			const sel = _bindAwareForm()
 			wait(100)
 
@@ -561,7 +561,7 @@ Item
 				"and the typed twins (with the foreign stamp) survived the rebind too")
 
 			// the Engine wire expresses the same distinction positionally, aligned with the bare
-			// value array (the frozen D3.3 contract - per-term objects never reach it):
+			// value array (the frozen contract - per-term objects never reach it):
 			const engine	= generatedOf(false)
 			compare(JSON.stringify(engine.depA.value), JSON.stringify(["TestInts", "TestInts"]), "Engine values stay bare and aligned")
 			const ids		= engine[".filterIds"].depA
@@ -572,7 +572,7 @@ Item
 		function test_wrapper_generation_uses_the_selection_title_surface()
 		{
 			// the aware wrapper must not pin `data <- datasets[[1]]` - the primary
-			// dataset is resolved per selection option through the TITLE surface (C4/RENDER), and
+			// dataset is resolved per selection option through the TITLE surface, and
 			// the datasets contract is stated on the wrapper itself.
 			const sel = _bindAwareForm()
 			wait(100)
@@ -588,7 +588,7 @@ Item
 			verify(wrapper.indexOf("#' @param datasets") >= 0, "the datasets contract is documented on the wrapper")
 			verify(wrapper.indexOf(", datasets = datasets))") >= 0, "runWrappedAnalysis receives the datasets")
 
-			// C4/RENDER: the selection defaults enter the wrapper as surface strings, never ids
+			// The surface rule: the selection defaults enter the wrapper as surface strings, never ids
 			// (here the unbound FilterSelect default resolves to the first dataset's title).
 			verify(/dataSetA = "[^0-9]/.test(wrapper), "dataSetA default is a title surface, not an id: " + wrapper.match(/dataSetA = "[^"]*"/))
 			verify(/dataSetB = "[^0-9]/.test(wrapper), "dataSetB default is a title surface, not an id")

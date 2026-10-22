@@ -122,10 +122,10 @@ void ListModel::_setAllowedType(Term& term) const
 		}
 	}
 
-	// (ORIGIN-AUTHORITATIVE): the D2.1 destination stamp is GONE. A term that
+	// (ORIGIN-AUTHORITATIVE): the destination stamp is GONE. A term that
 	//enters a list without an origin STAYS -1 forever: -1 is not "origin-less" but a reference
-	//into the provider WITHOUT host selection, resolved at use time through this list's own C13
-	//chain (its selection host, else the analysis' own filter else the shown filter) - so the
+	//into the provider WITHOUT host selection, resolved at use time through this list's own
+	//host-bound fallback chain (its selection host, else the analysis' own filter else the shown filter) - so the
 	//engine-side provenance of such a term follows THAT provider's changes automatically
 	//(BoundControlBase::generatedHostFilter re-reads it per send), and no list may re-route it
 	//by stamping its own namespace onto it. Stamps are born only at origins: a pool's available
@@ -143,7 +143,7 @@ int ListModel::_currentSelectionFilterId() const
 	//with no host is the analysis-wide VariableInfo — legacy behaviour, and legacy terms stay
 	//-1). resolvedSelectionHost() (local relation resolution, the walk is deleted)
 	//reports nullptr exactly in that fallthrough case. The filter is read through the host's own
-	//selection VariableInfo provider at use time - never cached (D1.2/D2.3 landmine).
+	//selection VariableInfo provider at use time - never cached (the lazy-attach landmine).
 	JASPControl *	host	= _listView->resolvedSelectionHost();
 	Filter			*	filter	= host ? dynamic_cast<Filter *>(host->ownedSelectionVarInfo()->provider()) : nullptr;
 
@@ -348,7 +348,7 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 	for (const TermRowKey& key : _rowControlsMap.keys())
 		// term-aware presence check - a twin key only survives while a term with
 		//that SAME (name, filterId) is still in the list (unqualified keys keep the name-only
-		//wildcard lookup of D2.1).
+		//wildcard lookup).
 		if (!terms().containsValue(key.asTerm()))
 		{
 			_rowControlsMap[key]->disconnectAndDeleteControls();

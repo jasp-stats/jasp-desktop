@@ -84,7 +84,7 @@ public:
 	///< (successor of the deleted namespace-resolution chain): a list resolves its namespace
 	///  through its RELATION edges - the explicit `source:` list first, else the related
 	///  available list (VariablesListBase::relatedNamespaceList) - hop by hop until a list is an
-	///  active selection host (it serves itself and everyone it feeds, C13 host-bound) or the
+	///  active selection host (it serves itself and everyone it feeds, host-bound) or the
 	///  chain runs out. Direct relation reads only: the deleted walk's visual-parent-chain
 	///  fallback is replaced by the analysis-level VariableInfo (JASPControl::resolvedVarInfo).
 	///  nullptr: no explicit host serves this list.

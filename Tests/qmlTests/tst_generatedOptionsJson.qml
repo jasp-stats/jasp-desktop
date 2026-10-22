@@ -8,14 +8,14 @@ import JASP.Controls
 // Phase 3 inverted the options pipeline: the controls' typed state is the source of truth and the
 // two JSON shapes (Engine request / Storage file) are GENERATED on demand
 // (AnalysisForm::createOptionsJson). During the transition this pair of files proved the
-// generator equal to the analysis-wide mirror; the mirror is now DELETED (D3.4), so the expected
+// generator equal to the analysis-wide mirror; the mirror is now DELETED, so the expected
 // trees are frozen GOLDEN strings captured from that mirror at the deletion commit - the exact
 // bytes the mirror held (values + `.meta`), with its dead dataSetId/filterId stamp keys removed
-// (C8 - the harness asserted equality modulo exactly those keys, and they never shipped: C15).
+// (the harness asserted equality modulo exactly those keys, and they never shipped).
 // For this NON-aware file the equivalence was byte-for-byte INCLUDING meta (nothing is ever
 // stamped without a selecting host), so the goldens are the complete expected Engine tree minus
-// the transient `.filterIds` sidecar, which must be absent here altogether (D3.2).
-// The Storage shape (D5.1 preview) and the aware-side provenance assertions live in
+// the transient `.filterIds` sidecar, which must be absent here altogether.
+// The Storage shape (the preview shape) and the aware-side provenance assertions live in
 // tst_generatedOptionsJsonAware.qml (one Form per test document: the controls resolve their
 // AnalysisForm through the root item's `form` property, so a second Form would register its
 // controls on the wrong analysis).
@@ -195,7 +195,7 @@ Item
 			return tree
 		}
 
-		// The tolerances of the D3.1 contract, applied ONLY inside the ".meta" subtree (a
+		// The tolerances of the contract, applied ONLY inside the ".meta" subtree (a
 		// dataSetId leaking into the VALUES would therefore not be hidden):
 		function stripMetaProvenance(tree)
 		{
@@ -212,20 +212,20 @@ Item
 			return JSON.parse(plainForm.createOptionsJsonAsJson(storage ? 1 : 0))
 		}
 
-		// The frozen expected trees: the mirror bytes captured at the D3.4 deletion
+		// The frozen expected trees: the mirror bytes captured at the deletion
 		// commit, from THIS harness while it still asserted generated == mirror (so these strings
 		// are the authoritative old behaviour, not the generator's opinion). Non-aware: no stamp
 		// keys existed to remove, so the goldens are complete Engine trees minus `.filterIds`
-		// (which a non-aware form must not generate at all, D3.2).
+		// (which a non-aware form must not generate at all).
 		// "dblP" is 2.5, not the old 0 - the mirror-era bytes had frozen the
 		// qvariantToJson bug that turned every QML number into null (the bound value was dropped
-		// and the default kept). D5.1 fixed the bridge (numbers round-trip; Storage term filterIds
+		// and the default kept). The bridge now round-trips numbers (Storage term filterIds
 		// ride it), so the value now arrives as bound. Everything else is the frozen mirror bytes.
 		readonly property string goldenScalars: `{".meta":{"comboP":{"shouldEncode":true},"depP":{"shouldEncode":true},"factorLevelsP":{"encodeThis":["FacP 1","LevP 1","LevP 2"],"shouldEncode":true},"filteredP":{"loadFilteredData":{"column":"auditResultP","filter":"ListModelFilteredDataEntry_2"},"shouldEncode":true},"fixedP":{"shouldEncode":true},"formulaP":{"isRCode":true},"interP":{"shouldEncode":true},"rowsP":{"shouldEncode":true}},"cbP":true,"comboP":{"types":"unknown","value":""},"compListP":[{"hypP":"","incP":false,"value":["#"]}],"dblP":2.5,"depP":{"types":["ordinal"],"value":["TestInts"]},"factorLevelsP":[{"levels":["LevP 1","LevP 2"],"name":"FacP 1"}],"filteredP":[{"colName":"auditResultP","dataCols":[],"extraCol":[],"filter":"TRUE","filterName":"ListModelFilteredDataEntry_2"}],"fixedP":{"types":[],"value":[]},"formulaP":"2 * TestInts","intP":7,"interP":{"optionKey":"components","types":["scale","nominal","nominal"],"value":[{"components":["TestDoubles"]},{"components":["TestLetters"]},{"components":["TestNominal"]}]},"jagsP":{"columns":[],"model":"","modelOriginal":"","parameters":[]},"plainTextP":"hello","plotHeight":320,"plotWidth":480,"rCodeP":{"columns":[],"model":"","modelOriginal":"","optionKey":"value","prefixedColumns":{"data.":[]},"types":[],"value":[]},"radP":"secondP","rowsP":{"optionKey":"variable","types":[],"value":[]},"swP":true}`
 		readonly property string goldenTerms:	 `{".meta":{"comboP":{"shouldEncode":true},"depP":{"shouldEncode":true},"factorLevelsP":{"encodeThis":["FacP 1","LevP 1","LevP 2"],"shouldEncode":true},"filteredP":{"loadFilteredData":{"column":"auditResultP","filter":"ListModelFilteredDataEntry_4"},"shouldEncode":true},"fixedP":{"shouldEncode":true},"formulaP":{"isRCode":true},"interP":{"shouldEncode":true},"rowsP":{"shouldEncode":true}},"cbP":true,"comboP":{"types":"unknown","value":""},"compListP":[{"hypP":"","incP":false,"value":["#"]}],"dblP":2.5,"depP":{"types":["ordinal","scale"],"value":["TestInts","TestDoubles"]},"factorLevelsP":[{"levels":["LevP 1","LevP 2"],"name":"FacP 1"}],"filteredP":[{"colName":"auditResultP","dataCols":[],"extraCol":[],"filter":"TRUE","filterName":"ListModelFilteredDataEntry_4"}],"fixedP":{"types":["nominal"],"value":["TestLetters"]},"formulaP":"2 * TestInts","intP":7,"interP":{"optionKey":"components","types":[["scale","nominal"]],"value":[{"components":["TestInts","TestLetters"]}]},"jagsP":{"columns":[],"model":"","modelOriginal":"","parameters":[]},"plainTextP":"","plotHeight":320,"plotWidth":480,"rCodeP":{"columns":[],"model":"","modelOriginal":"","optionKey":"value","prefixedColumns":{"data.":[]},"types":[],"value":[]},"radP":"secondP","rowsP":{"optionKey":"variable","types":["ordinal"],"value":[{"keepP":true,"variable":["TestInts"]}]},"swP":true}`
 		readonly property string goldenRich:	 `{".meta":{"comboP":{"shouldEncode":true},"depP":{"shouldEncode":true},"factorLevelsP":{"encodeThis":["FacP 1","LevP 1","LevP 2"],"shouldEncode":true},"filteredP":{"loadFilteredData":{"column":"auditResultP","filter":"ListModelFilteredDataEntry_1"},"shouldEncode":true},"fixedP":{"shouldEncode":true},"formulaP":{"isRCode":true},"interP":{"shouldEncode":true},"rowsP":{"shouldEncode":true}},"cbP":false,"comboP":{"types":"nominal","value":"TestLetters"},"compListP":[{"hypP":"row one","incP":true,"value":["h1"]}],"dblP":0,"depP":{"types":["ordinal"],"value":["TestInts"]},"factorLevelsP":[{"levels":["LevP 1","LevP 2"],"name":"FacP 1"}],"filteredP":[{"colName":"auditResultP","dataCols":[],"extraCol":[],"filter":"TRUE","filterName":"ListModelFilteredDataEntry_1"}],"fixedP":{"types":[],"value":[]},"formulaP":"2 * TestInts","intP":0,"interP":{"optionKey":"components","types":["scale","nominal","nominal"],"value":[{"components":["TestDoubles"]},{"components":["TestLetters"]},{"components":["TestNominal"]}]},"jagsP":{"columns":[],"model":"x ~ dnorm(0, 1)","modelOriginal":"x ~ dnorm(0, 1)","parameters":["x"]},"plainTextP":"r ~ code","plotHeight":320,"plotWidth":480,"rCodeP":{"columns":["JASPColumn_D1_F1_4_Encoded"],"model":"summary(JASPColumn_D1_F1_4_Encoded)","modelOriginal":"summary(TestInts)","optionKey":"value","prefixedColumns":{"data.":[]},"types":["unknown"],"value":["TestInts"]},"radP":"firstP","rowsP":{"optionKey":"variable","types":[],"value":[]},"swP":false}`
 
-		// the core D3.1/D3.4 assertion: generator == the golden mirror bytes (raw, no tolerances
+		// the core assertion: generator == the golden mirror bytes (raw, no tolerances
 		// needed: a non-aware tree never carried provenance); returns the generated tree (sidecar
 		// put back) for follow-up assertions
 		function assertEngineEqualsGolden(stage, golden)
@@ -248,7 +248,7 @@ Item
 			if (d !== "")
 				console.log("GOLDEN-DIFF[" + stage + "] golden=" + golden + " generated=" + JSON.stringify(generated) + " diffs=" + d)
 			compare(d, "",
-				stage + ": createOptionsJson(Engine) differs from the golden mirror bytes frozen at the D3.4 deletion")
+				stage + ": createOptionsJson(Engine) differs from the golden mirror bytes")
 
 			generated[".filterIds"] = sidecar
 			return generated
@@ -270,7 +270,7 @@ Item
 			const meta = gen[".meta"] || {}
 			verify(meta.swP === undefined && meta.cbP === undefined && meta.intP === undefined
 				&& meta.dblP === undefined && meta.radP === undefined,
-				"scalars keep generating no meta (C3/M5): " + JSON.stringify(meta))
+				"scalars keep generating no meta: " + JSON.stringify(meta))
 		}
 
 		function test_term_lists_rows_and_interactions_match_mirror()
@@ -308,7 +308,7 @@ Item
 			const meta = gen[".meta"] || {}
 			verify(meta.depP && meta.depP.shouldEncode === true, "the generated meta keeps shouldEncode for encoded values")
 			verify(meta.depP.dataSetId === undefined && meta.depP.filterId === undefined,
-				"the generated meta carries NO provenance keys (C8)")
+				"the generated meta carries NO provenance keys")
 		}
 
 		function test_factorlevels_combo_textarea_and_table_match_mirror()
@@ -331,14 +331,14 @@ Item
 			const meta = gen[".meta"] || {}
 			verify(Array.isArray(meta.factorLevelsP && meta.factorLevelsP.encodeThis)
 				&& meta.factorLevelsP.encodeThis.indexOf("FacP 1") !== -1,
-				"the generated meta keeps the factorLevelList's encodeThis array (C6 extras feed): " + JSON.stringify(meta.factorLevelsP))
+				"the generated meta keeps the factorLevelList's encodeThis array (the extras feed): " + JSON.stringify(meta.factorLevelsP))
 			verify(meta.filteredP && meta.filteredP.loadFilteredData && meta.filteredP.loadFilteredData.column === "auditResultP",
 				"the generated meta keeps loadFilteredData {filter, column} for the filtered tableview: " + JSON.stringify(meta.filteredP))
 			// isRCode: TextInputBase::bindTo stamps it for a string-valued FormulaField. (The
 			// R-code TextArea does NOT get an isRCode meta even in the mirror today - the rlang
 			// companion overrides checkSyntax without calling setIsRCode; the equivalence check
 			// above pins that whatever the mirror holds, the generator reproduces. Flagged for
-			// the D3.4 handoff as a createMeta quirk the generator inherits, not introduces.)
+			// the handoff as a createMeta quirk the generator inherits, not introduces.)
 			verify(meta.formulaP && meta.formulaP.isRCode === true,
 				"the generated meta keeps isRCode for the string-valued formula field: " + JSON.stringify(meta.formulaP))
 			verify(meta.rCodeP === undefined && JSON.parse(goldenRich)[".meta"].rCodeP === undefined,
@@ -357,20 +357,20 @@ Item
 			})
 
 			const storage = generatedOf(true)
-			verify(storage[".meta"] === undefined, "Storage carries no .meta tree (send-time artifact, C8/C11)")
+			verify(storage[".meta"] === undefined, "Storage carries no .meta tree (send-time artifact)")
 			verify(storage[".filterIds"] === undefined, "Storage carries no sidecar tree")
 
 			// The final shape: terms are per-term {name, types} objects (filterId only
 			// when qualified - nothing is qualified here), the outer positional types came out,
-			// and the D5.1-preview `filterIds` member is gone. (TestInts' bound type is corrected
+			// and the preview `filterIds` member is gone. (TestInts' bound type is corrected
 			// to its real ordinal type by bindTo, same as the Engine goldens show. The whole-tree
 			// Storage round trip through the appliers is pinned in the AWARE harness and in
 			// testStorageTermShapeAndRoundTrip - an extra setOptions leg HERE would bump the
 			// filtered tableview's filter-name counter out from under test_term_lists' golden.)
-			verify(storage.depP.types === undefined, "Storage has no outer positional types (per-term since D5.1)")
+			verify(storage.depP.types === undefined, "Storage has no outer positional types (per-term)")
 			verify(storage.depP.filterIds === undefined, "the preview positional filterIds member is gone")
 			compare(JSON.stringify(storage.depP.value), JSON.stringify([{ name: "TestInts", types: ["ordinal"] }]),
-				"D5.1: non-aware simple list = per-term {name, types} objects; filterId omitted (never null) for unqualified terms")
+				"non-aware simple list = per-term {name, types} objects; filterId omitted (never null) for unqualified terms")
 
 			// everything that is not a term list stores exactly the engine value:
 			const engine = generatedOf(false)

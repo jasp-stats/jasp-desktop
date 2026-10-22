@@ -34,7 +34,7 @@
 enum class QualifiedRefError
 {
     none = 0,
-    unqualifiedReference,	///< bare name: no context in these helpers (the callers' fallback, §4)
+    unqualifiedReference,	///< bare name: no context in these helpers (the callers' fallback)
     unknownDataSet,			///< the dataset segment names no loaded dataset
     unknownFilterInDataSet,	///< the filter segment names no filter of the named dataset
     ambiguousFilterName,	///< 2-segment form: the filter name exists in several datasets (error lists them)
@@ -45,7 +45,7 @@ enum class QualifiedRefError
 
 /// The concrete resolution of a parsed reference against the live Workspace. Ids only on
 /// purpose: consumers resolve the live objects per use (Workspace::filterById/dataSetById)
-/// and never cache Filter*/Column* pointers (the D1.2 lazy-attach landmine).
+/// and never cache Filter*/Column* pointers (the lazy-attach landmine).
 struct ResolvedQualifiedColumn
 {
     int			dataSetId	= -1;
@@ -83,7 +83,7 @@ struct QualifiedColumnRef
     /// form, each with its optional ("Type") tail). R comments and single- or double-quoted R
     /// string literals are skipped wholesale - a surface form inside them is user text, not a
     /// reference - and the bare production (one quoted segment) IS an R string literal, so a
-    /// bare name is never a reference (the §4 boundary above). The candidate shapes are
+    /// bare name is never a reference (the bare-name boundary above). The candidate shapes are
     /// validated by the strict parse() before they count, so the scanner cannot produce an
     /// occurrence parse() would reject. Positions are byte offsets into `code` (the grammar
     /// is ASCII-structural, so they are stable); feed them to callers that rewrite the text.
@@ -216,7 +216,7 @@ public slots:
 			// is X treated as a filter name, and then only when UNIQUE across all loaded
 			// datasets - ambiguity is a rejection listing the candidate datasets. Every failure
 			// kind is a distinct QualifiedRefError plus a ready-to-show message (syntax-facing
-			// English, like resolveDataSetSelectionValue). Bare names are NOT resolved here (§4:
+			// English, like resolveDataSetSelectionValue). Bare names are NOT resolved here (the
 			// context fallback is the callers' concern - see the grammar block at the top).
 			///< Parse a surface-form reference and resolve it to the concrete (dataSetId,
 			///< filterId, column, type); `ref` must come from QualifiedColumnRef::parse or be
@@ -242,39 +242,39 @@ public slots:
 			///< `filterName`, "" meaning the dataset's default filter), so a resolvable
 			///< reference emits its current title/name and the default filter emits its
 			///< internal DEFAULT_FILTER spelling (the full form always names the filter; the
-			///< D7.0a grammar resolves that spelling). This is the compose-from-resolved-ids
+			///< qualified-reference grammar resolves that spelling). This is the compose-from-resolved-ids
 			///< helper: the emission is built from the resolved segments, never by parsing
 			///< rendered text back. An unresolvable dataset title emits the STORED names
 			///< verbatim - the run then fails loudly with the typed unknownDataSet error
-			///< (D7.5) instead of degrading quietly. `type` unknown means no type segment
+			///< instead of degrading quietly. `type` unknown means no type segment
 			/// (nothing meaningful to stamp; the type segment is optional).
 			QString								fullQualifiedColumnRef(const QString & dataSetTitle, const QString & filterName, const std::string & columnName, columnType type) const;
 
 			///< scan R code text (a filter expression, computed-column code,
 			///< computed-dataset code) for qualified references, resolve each against this
 			///< workspace and collect the referenced FILTER ids - the transient
-			///< `referencedFilterIds` request sidecar the filter/compute request builders stamp
-			///< (design doc §3.2/§3.3). Bare names are NOT references here (the context filter's
-			///< own namespace is the callers' C13 fallback, §4 boundary). A reference that does
+			///< `referencedFilterIds` request sidecar the filter/compute request builders stamp.
+			///< Bare names are NOT references here (the context filter's
+			///< own namespace is the callers' host-bound fallback). A reference that does
 			///< not resolve is skipped (it contributes no slice) and reported through
 			///< `firstError`/`firstErrorKind` when given: the engine re-scans the very same code
 			///< at run time and fails the run LOUDLY with the same kind + message, so the
 			///< request side stays passive by design (no crash, no silent fallback - the run
-			///  error surface is the engine's, which is what D7.5's invalidation triggers on).
+			///  error surface is the engine's, which is what the rename invalidation triggers on).
 			std::set<int>						referencedFilterIdsInCode(const std::string & code, QString * firstError = nullptr, QualifiedRefError * firstErrorKind = nullptr) const;
 
 			// --- the editor-side surface of the same grammar ----------------
 			// The three R editors (FilterWindow's filterEdit, ComputeColumnWindow's
-			// computeColumnEdit, ComputeDataSetPanel's codeEdit) share two needs beyond the D7.3
+			// computeColumnEdit, ComputeDataSetPanel's codeEdit) share two needs beyond the
 			// request-side scan: a CATALOG to pick outward references from, and a cheap
 			// VALIDATION of the code as typed. Both are read-only views over the same helpers:
 			// insertion is always the verbatim output of renderQualifiedColumnRef (the minimal
 			// surface form - the context's own columns come out bare, everything
-			// else qualified), and validation is the D7.3 scanner's typed first error. Neither
-			// writes anything: bare names are never validated here (§4 - their fallback is the
+			// else qualified), and validation is the scanner's typed first error. Neither
+			// writes anything: bare names are never validated here (their fallback is the
 			// editor's context, codified in the editors) and unresolvable references are a
-			// non-blocking warning, the run itself still fails loudly at the engine (D7.5).
-			///< The slice catalog for the editors' pickers/autocomplete (design doc §1.3): every
+			// non-blocking warning, the run itself still fails loudly at the engine.
+			///< The slice catalog for the editors' pickers/autocomplete: every
 			///< column of every filter of every loaded dataset, rendered through
 			///< renderQualifiedColumnRef against `contextFilterId` (the edited filter / selected
 			///< input filter; -1 = no context, everything renders qualified). Each entry is
@@ -285,7 +285,7 @@ public slots:
 			///< purpose: like renderQualifiedColumnRef it may materialize named filters of a
 			///  reopened file.
 			Q_INVOKABLE QVariantList			qualifiedColumnCandidates(int contextFilterId);
-			///< The D7.3 scanner as editor-side live validation: "" when every qualified
+			///< The scanner as editor-side live validation: "" when every qualified
 			///< reference in `code` resolves against this workspace, otherwise the first typed
 			///< error message (ready to show; same message the engine fails the run with).
 			Q_INVOKABLE QString					qualifiedRefErrorInCode(const QString & code) const;
@@ -315,7 +315,7 @@ signals:
 			///< relay of Filter::nameChanged for every named filter of every
 			///  loaded dataset (DataSet::workspace() is the hub) - the invalidation hook for
 			///  editors holding qualified references to that filter BY NAME: a renamed
-			///  referenced filter invalidates them (loudly, D7.5) without any edit on their side.
+			///  referenced filter invalidates them (loudly) without any edit on their side.
 			void					filterNameChanged(int dataSetId);
 			void					filterByNameDone(int dataSetId, const QString & name, const QString & error);
 			void					dataModeChanged(bool dataMode);

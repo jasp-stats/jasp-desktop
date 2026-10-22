@@ -83,11 +83,11 @@ public:
 	bool						keepVariablesWhenMoved()																const				{ return _keepVariablesWhenMoved;					}
 	bool						containsInteractions()																	const	override;
 	///< a list that declares its own dataset/filter selection IS declaring that its
-	///  values are columns of that namespace (C10 list-as-host, C13 host-bound) - no available-list
+	///  values are columns of that namespace (list-as-host, host-bound) - no available-list
 	///  or dataset-source relation required. Without this the second-source pattern (a standalone
 	///  AssignedVariablesList with its own dataSetSelectionOption) never encodes: encodeValue()
 	///  gates on containsVariables(), and the list's values would stay raw names that no slice
-	///  column matches (found by the D6 zoo; zero effect on lists without a selection).
+	///  column matches (found by the zoo; zero effect on lists without a selection).
 	bool						containsVariables()																				const	override;
 	bool						addInteractionsByDefault()																const				{ return _addInteractionsByDefault;					}
 	bool						interactionContainLowerTerms()															const				{ return _interactionContainLowerTerms;				}
@@ -109,7 +109,7 @@ public:
 	///< A list inherits the namespace of the control its items come from: explicit `source`
 	///< (JASPListControl) first, else - when this list has no selection of its own - the related
 	///< available list (dropKeys[0], set in _setRelations). A list that declares its own
-	///< dataSetSelectionOption serves itself and skips the inherited edge (C13 host-bound).
+	///< dataSetSelectionOption serves itself and skips the inherited edge (host-bound).
 	///< the direct relation reads behind JASPListControl::resolvedSelectionHost's
 	///< chain (the deleted walk's namespace override lived here).
 	JASPListControl		  * relatedNamespaceList() override;

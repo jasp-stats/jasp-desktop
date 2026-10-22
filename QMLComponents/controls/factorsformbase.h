@@ -51,7 +51,7 @@ public:
 
 	// (per-factor provenance): the transient `.filterIds` sidecar node of this
 	//option - an ARRAY-OF-ARRAYS, element i being factor i's per-term positional filterId array
-	//(the D3.2 schema's positional grammar one level up: factors are POSITIONAL in the bound
+	//(the schema's positional grammar one level up: factors are POSITIONAL in the bound
 	//value, so no named-children grammar and no factor-name stability problem). Null when
 	//nothing is stamped (non-aware/hostless runs generate no node, byte-identical trees).
 	Json::Value		createFilterIds()							const	override;
@@ -97,15 +97,15 @@ protected:
 	/// the engine generation reads the same builder (createJson stays the defaults builder).
 	Json::Value		createEngineValue()												const	override;
 
-	///< (per-factor provenance, D5.1 discipline per factor): the Storage file shape.
+	///< (per-factor provenance, the per-term discipline): the Storage file shape.
 	/// Each factor's terms serialize as the established per-term objects ({name, filterId?, types},
 	/// interactions nested under the optionKey) via Terms::getStorageOptions, so a saved file
 	/// keeps every factor term's provenance; the applier (bindTo) parses both this and the
 	/// legacy/engine {value, types} shape byte-identically.
 	Json::Value		createStorageValue()											const	override;
 
-	///< (the D6.2 self-rebind landmine, factors flavour): the Engine builder carries
-	/// no per-term filterIds (D2.1), so the null-path self-rebind must round-trip the Storage
+	///< (the self-rebind landmine, factors flavour): the Engine builder carries
+	/// no per-term filterIds, so the null-path self-rebind must round-trip the Storage
 	/// shape - same rule and rationale as BoundControlTerms::selfRebindFormat.
 	BoundControl::JsonFormat	selfRebindFormat()										const	override	{ return BoundControl::Storage; }
 

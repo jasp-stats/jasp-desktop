@@ -88,9 +88,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	Json::Value				&	optionsJson		= analysisData["options"];
 
 	// released files' stored results can still carry old bare-prefix
-	//`JaspColumn_<i>_Encoded` tokens (C15) - best-effort decode them from the current column
+	//`JaspColumn_<i>_Encoded` tokens - best-effort decode them from the current column
 	//order before the results tree is loaded (and only there: live decoding stays strict-table
-	//and the legacy map registers nowhere, C4; churned/removed columns leave tokens raw, C16).
+	//and the legacy map registers nowhere; churned/removed columns leave tokens raw).
 	decodeLegacyResultTokens(analysisData, doUpgradeFrom);
 	std::string					title			= analysisData.get("title", "").asString();
 
@@ -436,7 +436,7 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 				// only (re)create forms that are actually missing or broken. A description
 				//rescan (any Description.qml property change - e.g. the dev module's own live-JS title
 				//updates) used to destroyAndRecreate EVERY form of the module here; the fresh
-				//setAnalysisUp then consumed only the last-sent options delta as pending (C12) and every
+				//setAnalysisUp then consumed only the last-sent options delta as pending and every
 				//un-sent option reset to its default - silently wiping user state mid-session. QML edits
 				//need no rescan-driven recreation: each Analysis watches its own qml file since
 				//construction (watchQmlForm in the ctor, analysisQMLFileChanged -> reloadForm), and the
@@ -504,7 +504,7 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 //7.x skips. The sweep takes the SHOWN dataset's current columns - released files are
 //single-dataset by construction; multi-dataset files are 7.x and never reach this. Best-effort
 //and read-side only either way: ColumnEncoder::decodeJsonLegacyTokens registers nothing, and an
-//unresolvable token (column churned since save) simply stays raw (C15/C16).
+//unresolvable token (column churned since save) simply stays raw.
 void Analyses::decodeLegacyResultTokens(Json::Value & analysisData, const Version & doUpgradeFrom)
 {
 	if(doUpgradeFrom.major() >= JASPExporter::jaspArchiveVersion.major())
@@ -1050,9 +1050,9 @@ void Analyses::_rpcWriteStatus(Json::Value& response, Analysis* a)
 
 void Analyses::_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc)
 {
-	// the RPC options report the GENERATED Engine tree (component state, C11) with
+	// the RPC options report the GENERATED Engine tree (component state) with
 	//the transient `.filterIds` sidecar stripped - verifier-compatible with the old mirror output
-	//minus the documented-dead provenance keys (C8 keeps them out of `.meta` anyway).
+	//minus the documented-dead provenance keys (kept out of `.meta` anyway).
 	Json::Value options = a->createOptionsJson(BoundControl::Engine);
 	AnalysisBase::stripTransientSidecar(options);
 	response["options"]    = options;

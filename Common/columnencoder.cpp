@@ -33,12 +33,12 @@ ColumnEncoder				*	ColumnEncoder::_columnEncoder				= nullptr;
 ColumnEncoder				*	ColumnEncoder::_currentEncoder				= nullptr;
 std::set<ColumnEncoder*>	*	ColumnEncoder::_otherEncoders				= nullptr;
 
-/// The ONE process-global strict decode table (C4): full encoded string -> (originalName, type).
+/// The ONE process-global strict decode table: full encoded string -> (originalName, type).
 /// Contains one block per live filter of every loaded dataset, plus the extras encoder's block
 /// and the process-global fallback encoder's block. Single writer: rebuildBlock(), which erases
 /// the block's bounded key space (its prefix x mint indices) before writing, so rename re-mints,
 /// column-count shrinks and filter drops all close over every token the block could ever have
-/// minted. That makes stale tokens impossible without tombstones (C16: deleted-filter tokens go
+/// minted. That makes stale tokens impossible without tombstones (deleted-filter tokens go
 /// raw because their block is erased).
 std::map<std::string, ColumnEncoder::DecodeEntry> & ColumnEncoder::_decodeTable()
 {
@@ -116,7 +116,7 @@ ColumnEncoder::ColumnEncoder(ColumnEncoder * canonical, std::string prefix, std:
 ColumnEncoder::ColumnEncoder(const std::map<std::string, std::string> & decodeDifferently)
 	: _encodePrefix("JASPColumn_"), _encodePostfix("_For_Replacement"), _writesBlock(false)
 {
-	// The replacer-encoder (C5): registers nowhere - not in the decode table and not in
+	// The replacer-encoder: registers nowhere - not in the decode table and not in
 	// _otherEncoders - it only exists inside replaceColumnNamesInRScript() and its private maps
 	// are hacked to point back at the replaced names, so it must not leak into anything global.
 
@@ -141,9 +141,9 @@ ColumnEncoder::~ColumnEncoder()
 	if(_currentEncoder == this)
 		_currentEncoder = nullptr;
 
-	//A dying encoder first erases and detaches every live view (their tokens go raw, C16) so the
-	//views' destructors never touch freed memory - DataSet deletes its canonical (or, during the
-	//Phase-1 transition, its still-FULL encoder) before its filters die as QObject children.
+	//A dying encoder first erases and detaches every live view (their tokens go raw) so the
+	//views' destructors never touch freed memory - DataSet deletes its canonical (or a legacy
+	//FULL encoder) before its filters die as QObject children.
 	orphanViews();
 
 	if(_mode == Mode::view && _canonical)
@@ -190,7 +190,7 @@ void ColumnEncoder::orphanViews()
 
 void ColumnEncoder::rebuildBlock()
 {
-	// THE block writer (C4): erase the bounded key space of the previous write, then write.
+	// THE block writer: erase the bounded key space of the previous write, then write.
 	// The key space is enumerable from the mint: prefix + index + postfix for every index the
 	// counter ever handed out (dense [0, mintSize)), so erase-then-write is closed under
 	// rename re-mints, shrinking column counts and prefix reforges.
@@ -261,7 +261,7 @@ void ColumnEncoder::resetForTests()
 ColumnEncoder::ScopedDecodeBlock::ScopedDecodeBlock(const std::string & prefix, const colTypeMap & names)
 	: _prefix(prefix)
 {
-	//Write the replay block (mint order = every live block's mint order, C1) and remember what
+	//Write the replay block (mint order = every live block's mint order) and remember what
 	//occupied these exact keys, so the destructor puts the table back to the bit - nesting is
 	//exact (LIFO) and live blocks survive a replay that collides with their namespace.
 	const std::vector<std::pair<std::string, columnType>> reverse = mintReverseOf(names);
@@ -374,8 +374,8 @@ std::string ColumnEncoder::tokenForNameInNames(const colTypeMap & names, const s
 
 // the best-effort legacy-prefix result decoder - see the header for the contract
 //(read-side only, NOTHING registers into the global table, correct only while the dataset's
-//columns are unchanged since save, everything else stays raw per C16). The map is built from the
-//same pure mint every live block uses (mintReverseOf, C1/D1.7), with the released default prefix;
+//columns are unchanged since save, everything else stays raw). The map is built from the
+//same pure mint every live block uses (mintReverseOf), with the released default prefix;
 //every index resolves to its bare original name, exactly like the released decodeJson did.
 void ColumnEncoder::decodeJsonLegacyTokens(Json::Value & json, const colTypeMap & namesWithTypes)
 {
@@ -474,7 +474,7 @@ void ColumnEncoder::setCurrentNames(const colTypeMap & namesWithTypes)
 
 	case Mode::canonical:
 		buildMint(namesWithTypes);
-		for(ColumnEncoder * view : _views)			//every live view's block is a consequence of this mint (D1.4 funnel)
+		for(ColumnEncoder * view : _views)			//every live view's block is a consequence of this mint (the mutation funnel)
 			view->rebuildBlock();
 		return;
 
@@ -532,7 +532,7 @@ ColumnEncoder::colMap ColumnEncoder::ownEncodingMap() const
 	if(_mode == Mode::full)
 		return _encodingMap;
 
-	colMap map;	//view: compose canonical index + own prefix on the fly, nothing is stored (C3)
+	colMap map;	//view: compose canonical index + own prefix on the fly, nothing is stored
 
 	for(const auto & nameIndex : mintForward())
 		map[nameIndex.first] = _encodePrefix + std::to_string(nameIndex.second) + _encodePostfix;
@@ -959,7 +959,7 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 		// resolve THIS term's namespace from the sidecar before touching the
 		//encoder - a positional entry gives the term its own filter's VIEW (and that filter's
 		//dataset re-attributes the collected cols+types), a scalar node covers every position,
-		//and a null position (or absent node) keeps the option-level/C7 legacy resolution. For
+		//and a null position (or absent node) keeps the option-level legacy resolution. For
 		//every form that exists today all positions resolve to the option-level host, so the
 		//conversion - and the colTypes it collects - are byte-identical to the pre-flip walk.
 		int elemFlId	= filterId;
@@ -1001,9 +1001,9 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 			//TYPE of a term, never for the column's EXISTENCE in the resolved namespace - the
 			//collector used to insert every typed term into the slice's wanted columns, and
 			//rbridge_readDataSetRequested then refused the whole run ("gets 'X.type' but its not
-			//a columnname at all"). Unreachable pre-plan (one dataset: a term always lived in
+			//a columnname at all"). Unreachable before multi-dataset (one dataset: a term always lived in
 			//its namespace), but the aware path can stamp a hostless panel's term into a
-			//namespace lacking the column (FactorsForm panels are hostless, D3.2 NOTE) - the
+			//namespace lacking the column (FactorsForm panels are hostless) - the
 			//missing guard became a run-fatal. The option VALUE is left untouched: R simply sees
 			//a value that does not index its slice, like any other unresolved one.
 			if (!columnNameWithType.empty() && hasType && encoder && encoder->currentNames().count(columnName))
@@ -1107,7 +1107,7 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 		//Meta for an array is either an array (element-wise) or a single object shared by all elements,
 		//exactly like _encodeColumnNamesinOptions() below treats it. The sidecar for an array is either
 		//POSITIONAL (consumed element-wise, nulls erase to the unqualified -1, never inherit - the
-		//D3.2 leak rule) or a shared node: a container (row children next to its positional "$") stays
+		//leak rule) or a shared node: a container (row children next to its positional "$") stays
 		//shared for the named-child lookups while its "$" entries drive the per-element filterId.
 		const bool metaIsArray = meta.isArray();
 		const Json::Value * positional = sidecarPositional(sidecar);
@@ -1139,7 +1139,7 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 				{
 					if (options[i][memberName].isObject() && options[i][memberName].isMember("value") && options[i][memberName].isMember("types"))
 						//the factor's term member: its per-term array IS the sidecar, and the
-						//factor level itself says nothing (nulls never inherit, the D3.2 leak rule -
+						//factor level itself says nothing (nulls never inherit, the leak rule -
 						//the per-term entries carry the ids, backfilled by the generator)
 						_handleTermOptionObject(options[i], memberName, dataSetId, elementFlId, elementNode, preloadingData, colTypesPerDataSet, encoderFor);
 					else
@@ -1274,7 +1274,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 	//A node's provenance is the `.filterIds` sidecar (grammar at
 	//sidecarOwnFilterId): a scalar node names the filter for this option's whole subtree, an
 	//absent node keeps the enclosing resolution and a POSITIONAL array is consumed
-	//element-wise below. filterId -1 = unqualified, resolved through the C7 legacy fallback.
+	//element-wise below. filterId -1 = unqualified, resolved through the legacy fallback.
 	const int ownFilterId = sidecarOwnFilterId(sidecar);
 	if(ownFilterId >= 0)
 		filterId = ownFilterId;
@@ -1286,7 +1286,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 	//id, so a multi-dataset options blob can be encoded slice by slice:
 	//every option against the namespace of the filter its terms come from - the very namespace the
 	//slice queue hands that filter's data to R in. Without a resolver this is the old behaviour:
-	//everything against the process-global current encoder (C7 legacy - sidecar presence cannot
+	//everything against the process-global current encoder (legacy - sidecar presence cannot
 	//change that, which is what keeps the classic encodeColumnNamesinOptions() byte-identical).
 	ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, filterId, encoderFor);
 

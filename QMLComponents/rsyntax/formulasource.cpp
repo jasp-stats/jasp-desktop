@@ -201,7 +201,7 @@ QStringList FormulaSource::modelSources() const
 }
 
 // the emission context is the namespace BARE names resolve in at run time
-//(D7.3 self-reference rule): the ANALYSIS' own filter, else - C13 fallback chain, the same
+//(the self-reference rule): the ANALYSIS' own filter, else - the host-bound fallback chain, the same
 //one varInfo's provider follows (analysisform.cpp setAnalysisUp) - the SHOWN filter. A term
 //stamped with exactly that id emits bare (byte-identical); any other live filter id emits the
 //qualified minimal form; no filter at all means no context and the legacy unqualified emission.
@@ -278,7 +278,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms, int conte
 
 			// the grouping factor is emitted like any other term - a foreign
 			//slice's column must address that slice, not silently the context's same-named
-			//column. key carries the row's own filterId (D6.1).
+			//column. key carries the row's own filterId.
 			QString groupingFactor = key.name();
 			if (contextFilterId >= 0 && key.filterId() >= 0 && key.filterId() != contextFilterId)
 			{

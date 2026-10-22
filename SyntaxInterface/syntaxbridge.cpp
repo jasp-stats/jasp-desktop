@@ -601,7 +601,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	//(never parsed or split: titles may contain " - " or ":"). The control contract everywhere
 	//carries FILTER ids, so the translation happens here, before anything binds, and the QML side
 	//stays byte-identical in desktop and syntax mode. There is no numeric-id path: a number
-	//resolves only when a dataset is titled that number (M4's title-shadows-id went away together
+	//resolves only when a dataset is titled that number (the title-shadows-id confusion went away together
 	//with id acceptance). Unknown strings fail loudly, listing what IS selectable. Hosts that did
 	//not exist yet when this parse ran (async ComponentsList instantiation) get the still
 	//untranslated raw values handed to the form as pending, and resolve their own option the
@@ -886,7 +886,7 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 }
 
 // Decode a WHOLE json payload (an analysis' results json, say) with the ONE process-global strict
-// decode table (converged at D1.5): a block per live filter of every dataset in the
+// decode table: a block per live filter of every dataset in the
 // bridge workspace, plus the extras and fallback blocks. The old per-encoder sweep (each DataSet's
 // own encoder, then the extra-options encoder, then the process-global one) collapsed into this
 // single static entry - every encoder only ever replaced the exact tokens it minted, so the sweep

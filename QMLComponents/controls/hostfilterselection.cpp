@@ -107,7 +107,7 @@ void HostFilterSelection::analysisBecameKnown()
 		return;
 
 	//The property may have been set before this host knew its form (async instantiation, the
-	//M9 case): registration is idempotent, so doing it again here is harmless - and it is what
+	//late-host case): registration is idempotent, so doing it again here is harmless - and it is what
 	//puts dynamically created selection hosts into the bridge's registry at all.
 	_host->form()->registerDataSetSelectionOption(_option, _host);
 	//A selection option makes this a multi-dataset analysis by definition: the desktop entry
@@ -120,7 +120,7 @@ void HostFilterSelection::analysisBecameKnown()
 
 	if (Workspace * workspace = Workspace::singleton())
 	{
-		//C10: when the selected filter (or its whole dataset) vanishes the selection must not
+		//when the selected filter (or its whole dataset) vanishes the selection must not
 		//dangle: fall back to another filter, or stay empty when nothing is left.
 		connect(workspace, &Workspace::dataSetRemoved,		this, &HostFilterSelection::validateSelection, Qt::UniqueConnection);
 		connect(workspace, &Workspace::filtersCountChanged,	this, &HostFilterSelection::validateSelection, Qt::UniqueConnection);

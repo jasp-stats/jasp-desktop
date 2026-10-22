@@ -115,7 +115,7 @@ private slots:
 	// names of the live namespaces; stale/foreign tokens decode raw.
 	void	testEncoderMutationFunnel();
 
-	// Decode-superset semantics (C4/C16): every results-decode site is the static
+	// Decode-superset semantics: every results-decode site is the static
 	// entry now, so ONE sweep resolves tokens from ANY live namespace - other datasets, other
 	// filters, the extras block - while unknown, foreign-never-live and deleted-filter tokens
 	// stay raw everywhere.
@@ -123,7 +123,7 @@ private slots:
 
 	// The computed-column results site in EngineRepresentation (enginerepresentation.cpp) must
 	// decode with the one global table too - extras tokens included (known gap,
-	// closed and pinned at D1.5).
+	// closed and pinned).
 	void	testComputedColumnSiteDecodesExtrasTokens();
 
 	// Multi-dataset selection: the workspace must offer every filter of every dataset (value =
@@ -142,7 +142,7 @@ private slots:
 	// queue restores the legacy single-dataset read-path.
 	void	testMultiDataSetQueueHandout();
 
-	// C1/M1 request-boundary discipline: filling the queue through a real prepareMultiDataSetRun
+	// Request-boundary discipline: filling the queue through a real prepareMultiDataSetRun
 	// and clearing it through the very call the syntax bridge entry and Engine::receiveAnalysisMessage
 	// make (setMultiDataSetQueue({})) must leave nothing for the next request - a half-consumed
 	// aware queue can never leak into a later (non-aware) read.
@@ -174,17 +174,17 @@ private slots:
 	// single JSON->Terms applier accepting BOTH the new Storage shape and the legacy Engine-shape
 	// input with byte-identical semantics there, and lossless Storage-json -> parse -> regenerate
 	// round trips - including the flagship same-name-different-filter twins (x@11 + x@12 must not
-	// dedupe through a save/reload cycle; strict Term equality since D2.1 makes this real).
+	// dedupe through a save/reload cycle; strict Term equality makes this real).
 	void	testStorageTermShapeAndRoundTrip();
 	void	testApplierAcceptsEngineAndStorageShapes();
 	void	testRelatedValuesPerTermRowKeying();
 
 	// NO stamp migration - old released options (plain names, no filterIds
-	// anywhere) must parse to all-`-1` terms and encode end-to-end through the C13 fallbacks
+	// anywhere) must parse to all-`-1` terms and encode end-to-end through the host-bound fallbacks
 	// exactly like a non-aware run today (engine walk hits the shown-filter view / current
 	// encoder, queue holds only the analysis' own slice), and a sidecar id that no longer
-	// resolves (a stale/foreign filterId LOADED from the D5.1 Storage format - those survive
-	// restamp by design, landmine D4.x) must degrade through the very same fallback, never
+	// resolves (a stale/foreign filterId LOADED from the Storage format - those survive
+	// restamp by design) must degrade through the very same fallback, never
 	// crash and never queue a phantom slice.
 	void	testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade();
 
@@ -201,13 +201,13 @@ private slots:
 	// the legacy sweep. testJaspArchiveVersionBlocksOlderBuilds stays green next to it.
 	void	testReleasedFormatFileUpgradesOnLoad();
 
-	// C1/M6 loadFilteredData provenance: the stamped filterId is globally unique and implies its
+	// loadFilteredData provenance: the stamped filterId is globally unique and implies its
 	// dataset, so it anchors the column lookup; a mismatching dataSetId is verification-only and a
 	// dead dataSetId cannot pull the read to the wrong dataset. Without a filterId the legacy
 	// name-based path must behave exactly as before.
 	void	testLoadFilteredDataFilterFirstProvenance();
 
-	// C1/e4 primarySliceKey: a real primary filter yields its id as the "primary" member, and when
+	// primarySliceKey: a real primary filter yields its id as the "primary" member, and when
 	// no primary filter exists the member is ABSENT (jaspBase keys on !is.null - "" would read as
 	// a bogus key).
 	void	testPrepareMultiDataSetRunPrimarySliceKey();
@@ -216,7 +216,7 @@ private slots:
 	// referenced datasets of the .meta, not from (the absence of) its own filter.
 	void	testAnalysisBaseUsesDataSetWhenAware();
 
-	// C3/M7: and neither has dataSpec() - the results-header spec must be built from the
+	// and neither has dataSpec() - the results-header spec must be built from the
 	// referenced datasets (workspace titles, deduped, own dataset first, " + " joined) instead
 	// of early-returning "" on the single-dataset accessor that aware analyses refuse (whose
 	// desktop implementation also logged a warning on every call).
@@ -269,7 +269,7 @@ private slots:
 	// Workspace::referencedFilterIdsInCode - the desktop-side scan that builds
 	// the transient `referencedFilterIds` request sidecar: distinct resolved filter ids (self-
 	// references included), bare names excluded, unresolvable refs skipped with the typed
-	// first-error reported (the engine's run-time scan is the loud surface, D7.5).
+	// first-error reported (the engine's run-time scan is the loud surface).
 	void	testWorkspaceReferencedFilterIdsInCode();
 
 	// rbridge_prepareSliceRunScript - the engine-side consumption of the sidecar:
@@ -300,7 +300,7 @@ private slots:
 
 	// cross-dataset dependency invalidation - a qualified reference that was
 	// valid when typed can be invalidated WITHOUT any edit on the editor side, and every kind
-	// invalidates LOUDLY and TYPED (no tombstoning, C16): a renamed referenced filter (the
+	// invalidates LOUDLY and TYPED (no tombstoning): a renamed referenced filter (the
 	// Filter::nameChanged -> Workspace::filterNameChanged relay), an unloaded dataset
 	// (deleteShownDataSet), and column churn. Per invalidation kind, the scanner's first
 	// typed error names the missing slice (the same message the engine fails the run with).
@@ -308,25 +308,25 @@ private slots:
 	void	testQualifiedRefInvalidatedByDataSetUnload();
 	void	testQualifiedRefInvalidatedByColumnChurn();
 
-	// (wiring 1 + 3, the D3.4 single JSON->Terms parse chokepoint): a STRING term
+	// (the single JSON->Terms parse chokepoint): a STRING term
 	// component that *is* a qualified surface form resolves into a TYPED term - the
-	// plain column name plus its filterId (ids only, D1.2) - so same-name terms from different
+	// plain column name plus its filterId (ids only) - so same-name terms from different
 	// filters stay distinct through parse/bind; bare components and non-references pass through
-	// untouched (§4), the ("Type") segment wins over the positional type, uniform-qualified
+	// untouched, the ("Type") segment wins over the positional type, uniform-qualified
 	// interaction rows stamp as one term and anything mixed/unresolvable fails the parse LOUDLY
 	// with the typed message. Storage roundtrip keeps the ids.
 	void	testQualifiedTermComponentsParseTyped();
 
 	// RSyntax term emission - terms stamped outside the emission context (the
-	// analysis' own filter) render as the D7.0a qualified MINIMAL forms (backtick-wrapped in
+	// analysis' own filter) render as the qualified minimal forms (backtick-wrapped in
 	// formula text, quote-escaped in the addQuotes list() path, byte-identical bare for -1 and
 	// own-context terms); the formula text parser keeps qualified forms verbatim (quote-aware
-	// separator split) so the re-parse resolves through the D8.1 applier into typed terms
+	// separator split) so the re-parse resolves through the applier into typed terms
 	// again - the full emission->re-parse roundtrip.
 	void	testQualifiedTermEmissionMinimalFormsAndReparse();
 
 	// the bridge leaves the raw options JSON of its parse on the form; a
-	// selection host registering after that parse (async instantiation, the M9 case) resolves
+	// selection host registering after that parse (async instantiation, the late-host case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values
 	// immediately - dead hosts are pruned from the registry at read.
 	void	testSelectionRegistryLateHostAppliesPendingValue();
@@ -340,14 +340,14 @@ private slots:
 
 	// a Term carries the filterId it was selected through (-1 = unqualified) and
 	// it is part of identity: same-name terms from different filters never compare equal, Terms
-	// lookups distinguish stamped terms but keep the C13 fallback (an unqualified lookup matches
+	// lookups distinguish stamped terms but keep the host-bound fallback (an unqualified lookup matches
 	// on name), moves/copies carry the id and combination terms inherit it when uniform. No JSON
 	// wire field: options stay byte-identical until Phase 3's generators.
 	void	testTermFilterIdIsPartOfIdentity();
 
 	// the selection-host registry on AnalysisForm is introspectable (count/list in
 	// registration order, per-option names kept) and unregisters eagerly on destruction - the
-	// foundation D2.4 (AnalysisBase as VariableInfoProvider) aggregates over.
+	// foundation (AnalysisBase as VariableInfoProvider) aggregates over.
 	void	testSelectionHostRegistryIntrospection();
 
 	// AnalysisBase implements VariableInfoProvider over that registry -

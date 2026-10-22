@@ -57,7 +57,7 @@ protected:
 	/// is propagated as a pure notification chain: AnalysisBase::notifyOptionsChanged()
 	/// (boundValuesChanged + the aware dataSpecChanged, so dataSpec/RPC/script consumers re-read
 	/// the generated tree) and the control's own boundValueChanged -> form -> analysis run
-	/// trigger. No option tree is written: components own the state, JSON is generated (C11).
+	/// trigger. No option tree is written: components own the state, JSON is generated.
 	void						writeCurrentValue(const Json::Value& value, bool emitChange);
 
 	bool						_isValueWithTypes(const Json::Value &value)					const;
@@ -70,15 +70,15 @@ protected:
 	/// through the same builder, so the generator and the control's own written value are one
 	/// implementation (components own the state, JSON is generated from it).
 	virtual Json::Value			createEngineValue()												const	{ return createJson();			}
-	///< Storage-shape value (D5.1 preview): clean typed state. Defaults to the engine value -
+	///< Storage-shape value (the preview shape): clean typed state. Defaults to the engine value -
 	/// the shapes only differ where per-term filterIds must ride inside the option itself
 	/// (term lists), see BoundControlTerms::createStorageValue.
 	virtual Json::Value			createStorageValue()											const	{ return createEngineValue();	}
 	///< The filter this control's values are provenanced through at generation time, or nullptr:
 	/// multiDataSetAware analysis + a resolvable host filter (the provider of
 	/// JASPControl::resolvedVarInfo). SINGLE source of truth for the host
-	/// provenance since the D3.4 deletion: createFilterIds() derives the transient sidecar from
-	/// here - the send-time `.meta` carries no ids at all (C8).
+	/// provenance since the mirror deletion: createFilterIds() derives the transient sidecar from
+	/// here - the send-time `.meta` carries no ids at all.
 	Filter						*	generatedHostFilter()												const;
 	///< The host filter's id (see generatedHostFilter), or -1 when the control has no host.
 	/// Family generators read provenance through THIS (not the Filter*) so they need no dependency

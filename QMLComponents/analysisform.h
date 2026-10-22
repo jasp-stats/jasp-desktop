@@ -81,13 +81,12 @@ public:
 	/// options tree along the controls' bindTo paths: walks _dependsOrderedCtrls exactly like
 	/// bindTo does (so a row child's parent row has been generated before the child is placed),
 	/// places values through AnalysisBase::resolveOptionParent (the mirror's own path code) and,
-	/// for Engine, attaches the send-time `.meta` tree (BoundControl::createEngineMeta - C8: no
+	/// for Engine, attaches the send-time `.meta` tree (BoundControl::createEngineMeta - no
 	/// dataSetId/filterId, every other meta key flows from the family's createMeta) and the
 	/// transient `.filterIds` sidecar tree (BoundControl::createFilterIds) at the
 	/// same parent paths the mirror uses. Storage omits both trees and carries term filterIds
-	/// inside the term options themselves (D5.1 preview).
-	/// This is the machinery that replaced reading the analysis-wide mirror at the consumer flip
-	/// (D3.3/D3.5);
+	/// inside the term options themselves (the preview shape).
+	/// This is the machinery that replaced reading the analysis-wide mirror;
 	/// the golden harness tst_generatedOptionsJson.qml keeps the shape pinned (modulo the
 	/// intentional deltas documented there).
 	Json::Value				createOptionsJson(BoundControl::JsonFormat format);
@@ -201,7 +200,7 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	void					cleanUpForm();
 	bool					hasError();
 
-	// --- selection-host registry (M9, D2.3) --------------------------------
+	// --- selection-host registry --------------------------------
 	// The syntax bridge must translate the surface strings of dataset selection options before
 	// anything binds, and it used a findChildren scan for that - blind to hosts instantiated
 	// asynchronously (ComponentsList rows). Selection HOSTS - the lists with a dataSetSelection-
@@ -222,7 +221,7 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 
 	///< Live registry entries (deduplicated, dead hosts pruned); read by the syntax bridge.
 	Q_INVOKABLE QStringList	dataSetSelectionOptionNames() const;
-	///< Live selection hosts (dead pruned, deduplicated) in registration order - D2.4's input.
+	///< Live selection hosts (dead pruned, deduplicated) in registration order - the VariableInfoProvider's input.
 	QList<JASPControl *>	selectionHostControls() const;
 	///< Introspection (QML/tests): how many live hosts own a selection right now.
 	Q_INVOKABLE int			selectionHostCount() const;

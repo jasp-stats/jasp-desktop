@@ -944,9 +944,9 @@ void JASPControl::_setInitialized(const Json::Value &value)
 		//control absent from this parse goes through the family's selfRebindFormat (default
 		//Engine = today's builder; the assigned-terms family answers Storage, whose per-term
 		//{name, filterId?, types} objects the applier parses back WITH their provenance - the
-		//Engine builder deliberately omits per-term filterIds (D2.1), so a round-trip through it
+		//Engine builder deliberately omits per-term filterIds, so a round-trip through it
 		//erased the stamps and the intake re-stamped the terms with the control's own host,
-		//silently re-routing a typed copy (D6.2) or a host-restamped term (D3.5) onto the wrong
+		//silently re-routing a typed copy or a host-restamped term onto the wrong
 		//dataset).
 		bControl->bindTo(value == Json::nullValue
 			? (bControl->selfRebindFormat() == BoundControl::Storage ? bControl->createJson(BoundControl::Storage) : bControl->createJson())
@@ -960,7 +960,7 @@ void JASPControl::_setInitialized(const Json::Value &value)
 
 VariableInfo * JASPControl::resolvedVarInfo()
 {
-	// (C13, host-bound): the explicit host of this control serves its namespace
+	// (host-bound): the explicit host of this control serves its namespace
 	//while it holds one; otherwise the analysis-wide VariableInfo does (the analysis filter,
 	//else the shown filter - how every non-aware analysis has always worked). No component-chain
 	//walk any more: resolvedSelectionHost() is a LOCAL resolution (see JASPListControl), and the

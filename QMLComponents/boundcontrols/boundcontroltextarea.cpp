@@ -106,11 +106,11 @@ void BoundControlTextArea::checkSyntax()
 	setBoundValue(fq(text));
 }
 
-// (see the header block): the D7.0a grammar helpers do the parsing and
+// (see the header block): the grammar helpers do the parsing and
 //resolution; the rewrite composes each occurrence's replacement from the referenced filter's
-//LIVE view (Workspace::filterById -> columnEncoder()->encode), exactly the primitive the D7.3
+//LIVE view (Workspace::filterById -> columnEncoder()->encode), exactly the primitive the
 //slice-run script rewriter uses - the desktop and the engine cannot disagree about what a
-//reference becomes. Nothing is cached (D1.2).
+//reference becomes. Nothing is cached.
 QString BoundControlTextArea::encodeQualifiedColumnRefs(const QString & code, QStringList * tokensFormed)
 {
 	const std::vector<QualifiedRefOccurrence> occurrences = QualifiedColumnRef::scanText(fq(code));

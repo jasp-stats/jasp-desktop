@@ -128,14 +128,14 @@ public:
 	// The mirror and its whole reader/writer API are DELETED here:
 	// the run request, save, RPC report, QML options() and script rendering all GENERATE from the
 	// controls (createOptionsJson below), and the one value home is BoundControlBase._boundValue.
-	// What survives of "push a tree in" is the explicit C12 PENDING parking below.
+	// What survives of "push a tree in" is the explicit pending-options parking below.
 
 	// ---- PENDING pre-attach options (setAnalysisUp's bootstrap, as an
 	// explicit small member - the mirror's one sanctioned reader, never read for behaviour) -----
 	///< Park options that arrive before a form has attached (file load, RPC create, QML
 	///  setOptions, the downstream-widget fallback). setAnalysisUp consumes the parking lot ONCE
 	///  through bindTo and it is then discarded; no run/save/dataSpec path ever reads pending
-	///  JSON (the C12 rule pinned by testPreAttachOptionsParkAndAreNeverReadForBehaviour).
+	///  JSON (pinned by testPreAttachOptionsParkAndAreNeverReadForBehaviour).
 	///  createdWithOptions marks the parking as what the analysis was CONSTRUCTED with (file
 	///  load / RPC create / duplication) - see createdWithOptions().
 	void				setPendingOptions(const Json::Value & options, bool wasCreatedByOptions = false);
@@ -152,14 +152,14 @@ public:
 
 	///< strip the transient `.filterIds` sidecar from a generated Engine tree for
 	///  consumers outside the run pipeline (RPC response["options"], QML options(), script
-	///  rendering): provenance never leaves the desktop (C11); `.meta` stays as generated
-	///  (send-time keys only - C8 already keeps dataSetId/filterId out of it).
+	///  rendering): provenance never leaves the desktop; `.meta` stays as generated
+	///  (send-time keys only - dataSetId/filterId never enter it).
 	static void			stripTransientSidecar(Json::Value & options);
 
 	// ---- JSON generated on demand from the components ---------------------
-	// The mirror era is over (D3.4): these generators are the ONLY options tree. Engine = today's
-	// R contract + send-time `.meta` (C8, never dataSetId/filterId) + the transient `.filterIds`
-	// sidecar (D3.2); Storage = clean typed state (D5.1 preview).
+	// The mirror era is over: these generators are the ONLY options tree. Engine = today's
+	// R contract + send-time `.meta` (never dataSetId/filterId) + the transient `.filterIds`
+	// sidecar; Storage = clean typed state (the preview shape).
 	///< Generate the whole options tree from component state (delegates to the AnalysisForm; an
 	///< analysis without a form has no state to generate from and returns an empty object).
 	Json::Value				createOptionsJson(BoundControl::JsonFormat format);

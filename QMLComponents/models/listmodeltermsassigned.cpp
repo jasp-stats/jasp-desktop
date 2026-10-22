@@ -200,7 +200,7 @@ void ListModelTermsAssigned::changeTerm(int index, const Term& term)
 		//missing and rebuild it with defaults. _checkTermType is pure, so calling it here
 		//computes that very identity. A rename keeps the row's provenance: keyValueChangedHandler
 		//carries the old term's filterId onto the new term; a caller that does not gets the
-		//host-stamped identity _setAllowedType assigns (unchanged D5.1 intake semantics).
+		//host-stamped identity _setAllowedType assigns (unchanged intake semantics).
 		const TermRowKey oldKey		= TermRowKey::ofTerm(oldTerm);
 		const TermRowKey newKey		= TermRowKey::ofTerm(_checkTermType(term));
 

@@ -133,7 +133,7 @@ wrapper <- function() {
 wrapper()
 check(identical(env$.multiDataSetMode(), FALSE), "on.exit reset clears the mode (also on error paths)")
 
-# --- primarySliceKey contract (C1/e4): the C++ side OMITS "primary" when there is no primary ----
+# --- primarySliceKey contract: the C++ side OMITS "primary" when there is no primary ----
 # filter; jaspBase keys on !is.null, so an omitted member must give NULL (a "" would surface as a
 # non-NULL key of nothing - what prepareMultiDataSetRun used to emit).
 dsInfoNoPrimary <- list(ids = c("5"), names = c("5" = "Alpha"), dataSetIds = c("5" = "3"))
@@ -184,14 +184,14 @@ if (!haveBridge) {
 	encodedValue  <- as.character(optionsParsed$varS[[1]])
 
 	# tokens are minted per FILTER view now -
-	# JASPColumn_D<dsId>_F<filterId>_<index>_Encoded (C1).
+	# JASPColumn_D<dsId>_F<filterId>_<index>_Encoded.
 	check(grepl("^JASPColumn_D[0-9]+_F[0-9]+_[0-9]+_Encoded$", encodedValue),
 	      paste("QML parsing yields real encoded option values (", encodedValue, ")"))
 	# decode = FALSE: the index-directly invariant lives in the RAW encoded
 	# namespace (that is what jaspBase keys `datasets[[...]]` by). Decoded names
 	# are the high-level API's job (decode = TRUE), pinned one check below via
-	# the native decode roundtrip. (D1.8 made readRequestedDataset(decode = TRUE)
-	# actually decode D1 tokens - this check used to lean on the R-side guard not
+	# the native decode roundtrip. (That made readRequestedDataset(decode = TRUE)
+	# actually decode encoded tokens - this check used to lean on the R-side guard not
 	# recognising the new shape.)
 	slice <- jaspSyntax$readRequestedDataset(decode = FALSE)
 	check(is.data.frame(slice) && encodedValue %in% names(slice),
@@ -207,7 +207,7 @@ if (!haveBridge) {
 	encoded2  <- as.character(jsonlite::fromJSON(parsed2, simplifyVector = FALSE)$varS[[1]])
 	check(identical(encoded2, encodedValue), "decode -> encode cycle is stable")
 
-	# --- C1/M1 stale-slice regression (agent-3's leak repro) --------------------------------------
+	# --- stale-slice regression (the leak repro) --------------------------------------
 	# An aware parse queues one slice per referenced filter; a run that never consumes them (R died
 	# before the read loop) must not leave them for the NEXT request: syntaxBridgeLoadQmlAndParseOptions-
 	# Status clears the queue at entry, exactly like Engine::receiveAnalysisMessage does per message.
@@ -231,13 +231,13 @@ if (!haveBridge) {
 		check(is.data.frame(staleSlice) && nrow(staleSlice) == 7L,
 		      "stale aware slices do not survive the bridge request boundary (read got the non-aware dataset)")
 	} else {
-		cat("SKIP : C1/M1 stale-slice regression (aware test qml not in", moduleDir, ")\n")
+		cat("SKIP : stale-slice regression (aware test qml not in", moduleDir, ")\n")
 	}
 
-	# --- C4/RESOLVER: the selection syntax surface is human strings only -------------
+	# --- The selection syntax surface is human strings only -------------
 	# Bare dataset TITLE = default filter, dropdown label "title - filterName" = a named one,
 	# resolved by exact lookup against the live workspace. Dataset ids and filter ids are NOT
-	# enterable in syntax (M4): a number resolves only when a dataset is titled that number.
+	# enterable in syntax: a number resolves only when a dataset is titled that number.
 	awareParse <- function(selA, selB) {
 		jaspSyntax$loadQmlAndParseOptionsStatus("jaspTestModule", "multiDataSetFunc", awareQml,
 			as.character(jsonlite::toJSON(list(
@@ -264,7 +264,7 @@ if (!haveBridge) {
 
 		errNum <- tryCatch({ awareParse(as.character(surfaceIds[[1]]), "B"); "" }, error = function(e) conditionMessage(e))
 		check(grepl("matches no dataset selection string", errNum),
-		      "a numeric DATASET id is rejected outright (M4: ids are internal wire format, never syntax)")
+		      "a numeric DATASET id is rejected outright (ids are internal wire format, never syntax)")
 
 		errName <- tryCatch({ awareParse("42 - myfilter", "B"); "" }, error = function(e) conditionMessage(e))
 		check(grepl("matches no dataset selection string", errName) && grepl("available:", errName),
@@ -281,7 +281,7 @@ if (!haveBridge) {
 			""
 		}, error = function(e) conditionMessage(e))
 		check(grepl("pass the dataset title directly", errShape),
-		      "a shaped selection value with no plain string inside is rejected with the direct-title hint (M9)")
+		      "a shaped selection value with no plain string inside is rejected with the direct-title hint")
 
 		stPlain <- tryCatch(awareParse(list(types = "unknown", value = "42"), "B"), error = function(e) e)
 		check(!inherits(stPlain, "error"),

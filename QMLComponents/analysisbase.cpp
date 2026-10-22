@@ -28,7 +28,7 @@ AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	//duplicate's form attaches (setAnalysisUp -> bindTo). The old mirror copy is gone; a source
 	//without an attached form has no component state to duplicate (empty Storage), matching the
 	//old "copy the (empty) mirror" behaviour. The duplicate is "created with options" whenever
-	//the source held any. Since D5.1 the Storage tree carries the per-term filterIds inside the
+	//the source held any. The Storage tree carries the per-term filterIds inside the
 	//term objects, so provenance survives the duplicate exactly like it survives a save/reload.
 	_pendingOptions			= duplicateMe->createOptionsJson(BoundControl::Storage);
 	_hasPendingOptions		= _pendingOptions.size() > 0;
@@ -290,9 +290,9 @@ void AnalysisBase::placeOptionMeta(Json::Value & metaRoot, const QVector<std::st
 //is a bare int/array, and a list control with stamped row children would have its positional
 //array sitting exactly where the children's named nodes go - placing through placeOptionMeta
 //would hit jsoncpp's "requires objectValue" assert the moment such an aware form generates
-//(latent since D3.2, live from the D3.3 flip on: every run generates). On collision the
-//own-node is demoted into the container's reserved "$" member - the grammar
-//ColumnEncoder::sidecarOwnFilterId reads; non-colliding trees keep the D3.2 shape byte-identically.
+//(latent in the schema, live from the sidecar flip on: every run generates). On collision the
+//own-node is demoted into the container's reserved "$" member - the spelling
+//ColumnEncoder::sidecarOwnFilterId reads back; non-colliding trees keep the old shape byte-identically.
 void AnalysisBase::placeOptionFilterIds(Json::Value & filterIdsRoot, const QVector<std::string> & parentNames, const std::string & name, const Json::Value & filterIds)
 {
 	Json::Value * node = &filterIdsRoot;
@@ -347,7 +347,7 @@ Json::Value AnalysisBase::takePendingOptions()
 
 // the transient `.filterIds` sidecar is desktop-internal provenance (consumed by
 //the slice-queue build and request encoding) and never leaves to R, RPC clients, QML options() or
-//generated scripts. Stripping is the one top-level member removal D3.3 established.
+//generated scripts. Stripping is the one top-level member removal the sidecar flip established.
 void AnalysisBase::stripTransientSidecar(Json::Value & options)
 {
 	options.removeMember(ColumnEncoder::FILTERIDS_MEMBER);
@@ -407,14 +407,14 @@ std::map<int, int> AnalysisBase::referencedDataSets() const
 	//`.filterIds` sidecar at send time, positional per-term entries included), the filters the
 	//registered selection hosts hold, and the analysis' own filter. No mirror, no meta: the
 	//.meta-stamp walk over the bound-values tree is
-	//dead input since the D3.3 flip and retires with the mirror (D3.4).
+	//dead input since the sidecar flip and retires with the mirror.
 	//
-	//The D3.5/C12 gate stays: references exist only once the form has attached and its controls
+	//The gate stays: references exist only once the form has attached and its controls
 	//bound - pending JSON is never read for behaviour, and setAnalysisUp re-notifies consumers
 	//through notifyDataSpecChanged() when real component state appears.
 	//
-	//Filter ids imply their dataset (C1); an id that names no live filter contributes nothing
-	//(the C16 doctrine: stale provenance goes raw, it must not keep a dead dataset claimed -
+	//Filter ids imply their dataset; an id that names no live filter contributes nothing
+	//(stale provenance goes raw, it must not keep a dead dataset claimed -
 	//the old map carried dead stamped ids through, but every consumer already resolved them to
 	//no dataset and skipped them). Two filters of one dataset: first seen wins, matching the
 	//old walk's keep-the-first-pair rule; every consumer (dataSpec, usesDataSet, RPC
@@ -434,7 +434,7 @@ std::map<int, int> AnalysisBase::referencedDataSets() const
 		if(filterId < 0)
 			return;
 
-		Filter * filter = workspace->filterById(filterId);	//resolves named filters of reopened files too (D1.6)
+		Filter * filter = workspace->filterById(filterId);	//resolves named filters of reopened files too
 
 		if(!filter || !filter->data())
 			return;
@@ -575,7 +575,7 @@ void AnalysisBase::setFilterId(int filterId)
 // ---- VariableInfoProvider over the selection-host registry -----------------
 // The whole point of this endpoint is that it is DERIVED, never stored: every call re-enumerates
 // the form's live selection hosts (which unregister eagerly) and reads their filter
-// through the virtual - a Filter's encode handle lazy-attaches and dies with the filter (D1.2),
+// through the virtual - a Filter's encode handle lazy-attaches and dies with the filter,
 // so caching a handle/encoder/filter pointer here would be the first stale namespace in the
 // house. See the class doc in analysisbase.h for the one/many/none semantics and what merged
 // consumers must do.
@@ -589,7 +589,7 @@ QList<Filter *> AnalysisBase::selectedSelectionFilters() const
 
 	for(JASPControl * host : _analysisForm->selectionHostControls())
 	{
-		Filter * filter = host ? host->selectedSelectionFilter() : nullptr;	//per-use virtual (D2.3)
+		Filter * filter = host ? host->selectedSelectionFilter() : nullptr;	//per-use virtual
 		if(filter && !filters.contains(filter))
 			filters << filter;
 	}
@@ -631,7 +631,7 @@ ColumnEncoder *AnalysisBase::columnEncoder()
 	const QList<Filter *> filters = selectedSelectionFilters();
 
 	if(filters.isEmpty())
-		return _filter ? _filter->columnEncoder() : nullptr;	//no host selection: analysis filter (C13 host-bound fallback)
+		return _filter ? _filter->columnEncoder() : nullptr;	//no host selection: analysis filter (the host-bound fallback)
 	if(filters.size() > 1)
 		return nullptr;										//merged: no single namespace, say so with nullptr
 
@@ -661,7 +661,7 @@ QVariant AnalysisBase::provideInfo(varInfoType info, const QString& name, int ro
 
 	//Merged view: the union of the selected filters. Only VariableNames is truly
 	//aggregated - with collisions KEPT (a column that lives behind two selected namespaces is two
-	//entries; the terms' filterId tells them apart downstream, C9). Everything else has no honest
+	//entries; the terms' filterId tells them apart downstream). Everything else has no honest
 	//union: per-name requests scan the hosts in registration order for the first hit, dataset-wide
 	//requests answer from the first host. Consumers that need a single namespace must use the
 	//analysis' own filter or a specific host - see the class doc.

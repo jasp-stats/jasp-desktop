@@ -1609,8 +1609,8 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 		Json::Reader().parse(utf8, root);
 
 		// the image request carries the analysis' CURRENT send-time `.meta`,
-		//generated from the components (C8: never held provenance keys; the mirror's were
-		//documented-dead input for the engine since the D3.3 flip) instead of the mirror's tree.
+		//generated from the components (never held provenance keys; the mirror's were
+		//documented-dead input for the engine since the sidecar flip) instead of the mirror's tree.
 		Json::Value generatedOptions = analysis->createOptionsJson(BoundControl::Engine);
 		if (generatedOptions.isMember(".meta"))
 			root[".meta"] = generatedOptions[".meta"];
@@ -2488,11 +2488,11 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	// JSON->state goes through the controls, never through a direct mirror write.
-	//Since the D3.3 flip the run request is GENERATED from component state, so a bare
+	//Since the sidecar flip the run request is GENERATED from component state, so a bare
 	//setBoundValues here would be written but never read - the downstream change would silently
 	//vanish. parseOptions is the same applier the RPC analysis_run uses (bindTo walks the bound
 	//controls; each write re-stamps and refreshes the mirror on the way). Without a form the
-	//options park as pending JSON (C12): setAnalysisUp applies them exactly once at attach.
+	//options park as pending JSON: setAnalysisUp applies them exactly once at attach.
 	if (AnalysisForm * form = analysis->form())
 	{
 		Json::Value parsed;
@@ -2503,7 +2503,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 					   << " could not be applied: " << errorMsg << std::endl;
 	}
 	else
-		analysis->setPendingOptions(root);	//C12 parking only (no form to apply through yet)
+		analysis->setPendingOptions(root);	//pending-options parking only (no form to apply through yet)
 }
 
 bool MainWindow::startDataEditorHandler()

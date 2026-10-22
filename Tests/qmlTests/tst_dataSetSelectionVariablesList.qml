@@ -228,8 +228,8 @@ Item
 
 				verify(meta && meta.dependentB, "the column value bound and meta'd itself")
 				verify(ids && Array.isArray(ids.dependentB), "the column value carries its sidecar provenance")
-				compare(ids.dependentB[0], f1, "the column value is provenanced with the live selection (positional sidecar, C11)")
-				verify(meta.dependentB.shouldEncode === true, "the gate keeps the generic .meta of an encoded value (C8: no ids in meta)")
+				compare(ids.dependentB[0], f1, "the column value is provenanced with the live selection (positional sidecar)")
+				verify(meta.dependentB.shouldEncode === true, "the gate keeps the generic .meta of an encoded value (no ids in meta)")
 
 				//and the assigned list that resolves through this host is stamped likewise:
 				//(dependentB declares depends: on the option; its namespace comes from allVarsB)
@@ -257,7 +257,7 @@ Item
 				})(ids)
 				verify(seen.indexOf(f1) === -1, "the abandoned filter id is gone from the whole sidecar: " + JSON.stringify(seen))
 
-				//scalars and the selection option carry no provenance at all (C3/M5 gate):
+				//scalars and the selection option carry no provenance at all:
 				verify(meta.bSwitch === undefined && ids.bSwitch === undefined, "a scalar carries neither meta nor sidecar node")
 				verify(meta.dataSetB === undefined && ids.dataSetB === undefined, "the selection option carries no provenance: its value IS the filter id")
 			} finally
@@ -308,7 +308,7 @@ Item
 						"both selected filters are in the aggregate, got: " + ids)
 
 				//The union view: 'TestInts' lives in BOTH datasets, so it must appear once per
-				//source filter - both visible, distinct (C9 disambiguates downstream).
+				//source filter - both visible, distinct (the filterId disambiguates downstream).
 				var names = jaspForm.analysis.selectionNamespaceVariableNames()
 				var testInts = names.filter(function (n) { return n === "TestInts" }).length
 				compare(testInts, 2, "'TestInts' must be visible once per selected filter, got: " + names)
@@ -363,9 +363,9 @@ Item
 
 		// (ORIGIN-AUTHORITATIVE, -1 governance): stamps are born ONLY at origins -
 		// the pool universe's birth stamp - and a bind is not an origin: a bare bound value stays
-		// -1 forever, and its engine provenance follows its C13 chain per send (the generated
+		// -1 forever, and its engine provenance follows its host-bound fallback chain per send (the generated
 		// sidecar re-reads the host each time). A term that CARRIES an origin stamp - a value
-		// saved in a file after it was selected through its pool, reaching a reload in the D5.1
+		// saved in a file after it was selected through its pool, reaching a reload in the
 		// Storage shape (exactly how this test delivers it) - is a reference into that provider
 		// and FOLLOWS it when the pool's selection moves: the signal-driven reconcile REPLACES it
 		// by the pool's delivered universe term (the successor of the deleted restamp walk; no
@@ -410,25 +410,25 @@ Item
 				wait(50)
 
 				//bind-time typed state: a stamped term keeps its origin through the bind (the
-				//intake is stamp-free, D5.1 intake guard), a bare bind stays unqualified - and
+				//intake is stamp-free), a bare bind stays unqualified - and
 				//NOTHING is destination-stamped any more:
 				compare(dependentA.model.termProvenanceForTest().join(","), "TestInts@" + fSecond,
 						"the origin-stamped term keeps its provenance through the bind (stamps are born at origins only)")
 				compare(dependentB.model.termProvenanceForTest().join(","), "TestInts@" + fFirst,
 						"host B's term keeps ITS origin - same column name, different provider")
 				compare(aDependent.model.termProvenanceForTest().join(","), "TestInts@-1",
-						"a bare bind stays -1 (a reference into the provider WITHOUT host selection, governed by the C13 chain)")
+						"a bare bind stays -1 (a reference into the provider WITHOUT host selection, governed by the host-bound fallback chain)")
 				compare(srcDriven.model.termProvenanceForTest().join(","), "TestInts@-1",
 						"the source-driven list's bare bind sits unqualified until its source edge re-syncs (the setup-bound resync does not run)")
 				compare(targetC.model.termProvenanceForTest().join(","), "TestInts@-1",
-						"the hostless list never acquires a stamp from a bind (C13 legacy)")
+						"the hostless list never acquires a stamp from a bind (legacy)")
 
 				//the generated sidecar provenances every value through its list's own resolution -
-				//for -1 terms that is the C13 chain, read per send, no typed state involved:
+				//for -1 terms that is the host-bound fallback chain, read per send, no typed state involved:
 				var ids = JSON.parse(jaspForm.createOptionsJsonAsJson(0))[".filterIds"]
 				compare(ids.dependentA[0], fSecond, "the stamped term rides its own id")
 				compare(ids.dependentB[0], fFirst, "host B's stamped term rides its own id")
-				compare(ids.aDependent[0], fSecond, "the bare term's sidecar backfills host A's chain (C13, per send)")
+				compare(ids.aDependent[0], fSecond, "the bare term's sidecar backfills host A's chain (per send)")
 				compare(ids.srcDriven[0], fSecond, "the source-driven one through its SOURCE's host, not its visual parent")
 
 				//The mid-session switch, same dataset, OTHER filter: the pool re-points and
@@ -487,7 +487,7 @@ Item
 			{
 				//The same bind path a .jasp load takes; the dummy analysis is NEVER run, so no
 				//engine pass materialises anything here - exactly the disabled-analysis case of
-				//finding M1, where the old coercion destroyed the saved selection for good.
+				//the old coercion bug, which destroyed the saved selection for good.
 				jaspForm.setOptions({ dataSetA: reopenEntry.value })
 				wait(50)
 
@@ -544,10 +544,10 @@ Item
 
  		// CROSS-HOST bindTo. A typed copy - the generated Storage tree of a list
  		// sitting on ANOTHER host's selection, per-term objects carrying the source filterId (the
- 		// D5.1 file shape is exactly the carrier a save/reload or a control-to-control copy moves
+ 		// file shape is exactly the carrier a save/reload or a control-to-control copy moves
  		// around) - bound into boundG, whose OWN selection points at a different dataset. The
- 		// destination rules must NOT requalify it: the intake guard (ListModel::_setAllowedType,
- 		// D5.1) stamps only UNQUALIFIED terms, and the signal-driven reconcile (the origin-
+ 		// destination rules must NOT requalify it: the intake guard (ListModel::_setAllowedType)
+ 		// stamps only UNQUALIFIED terms, and the signal-driven reconcile (the origin-
  		// authoritative successor of the deleted restamp walk) moves only references INTO the
  		// provider that changed. So the copy keeps the SOURCE filterId through the bind, is
  		// provenanced to the source in the generated sidecar (the engine encodes it through the
@@ -577,7 +577,7 @@ Item
  			try
  			{
  				//source side: dependentA under host A (a 'Second' filter) gets a column that
- 				//CARRIES its origin - bound in the D5.1 Storage shape, exactly how a term selected
+ 				//CARRIES its origin - bound in the Storage shape, exactly how a term selected
  				//through pool A reaches a reload (a bare bind would stay -1: stamps are born at
  				//origins only, never at intake)
  				allVarsA.selectedFilterId = sourceFilter
@@ -595,7 +595,7 @@ Item
  				verify(storage.dependentA && storage.dependentA.value && storage.dependentA.value.length === 1,
  						"storage shape present for dependentA: " + JSON.stringify(storage.dependentA))
  				compare(storage.dependentA.value[0].filterId, sourceFilter,
- 						"the D5.1 storage term object carries the source filterId (the copy's carrier)")
+ 						"the storage term object carries the source filterId (the copy's carrier)")
 
  				//bind the copy into boundG - its own host sits on the OTHER dataset:
  				jaspForm.setOptions({ boundG: storage.dependentA })
@@ -603,10 +603,10 @@ Item
 
  				compare(boundG.selectedFilterId, destFilter, "boundG still holds its OWN selection")
  				compare(boundG.model.termProvenanceForTest().join(","), "TestInts@" + sourceFilter,
- 						"THE FLAGSHIP: the typed copy keeps the SOURCE filterId - the destination host must not requalify it (D5.1 intake guard, only unqualified terms get stamped)")
+ 						"THE FLAGSHIP: the typed copy keeps the SOURCE filterId - the destination host must not requalify it (the intake guard, only unqualified terms get stamped)")
 
  				//the generated sidecar hands the copy to the engine with the SOURCE id (encoding
- 				//goes through the source filter's VIEW, D3.3 per-term walk):
+ 				//goes through the source filter's VIEW, the per-term walk):
  				var ids = JSON.parse(jaspForm.createOptionsJsonAsJson(0))[".filterIds"]
  				compare(ids.boundG[0], sourceFilter, "the generated sidecar provenances the copy with the SOURCE filter")
  				verify(ids.boundG[0] !== destFilter, "...which is NOT boundG's own selection")
@@ -623,13 +623,13 @@ Item
 
  				//sanity of the -1 governance: a term bound AFTER the destination switch stays
  				//UNQUALIFIED (a bind is not an origin) - its engine provenance follows the
- 				//destination host through the C13 chain, in the sidecar, per send:
+ 				//destination host through the host-bound fallback chain, in the sidecar, per send:
  				jaspForm.setOptions({ boundG: { value: ["SecondOnly"], types: ["scale"] } })
  				wait(50)
  				compare(boundG.model.termProvenanceForTest().join(","), "SecondOnly@-1",
  						"an UNQUALIFIED bind stays -1 (no destination stamping; the bind replaces the list's value)")
  				ids = JSON.parse(jaspForm.createOptionsJsonAsJson(0))[".filterIds"]
- 				compare(ids.boundG[0], destAlt, "and the bare term's sidecar backfills the destination host (C13, per send)")
+ 				compare(ids.boundG[0], destAlt, "and the bare term's sidecar backfills the destination host (per send)")
  			} finally
  			{
  				jaspForm.setOptions({ dependentA: { value: [], types: [] }, boundG: { value: [], types: [] } })
@@ -748,7 +748,7 @@ Item
 		// commit. A qualified surface form in the code must resolve and become the
 		// REFERENCED slice's token - never mangled into the context namespace by the bare-name
 		// pass, never handed to R's parser - while bare names keep encoding under the context's
-		// own namespace (§4 fallback, unchanged). An unresolvable reference is loud and typed,
+		// own namespace (unchanged). An unresolvable reference is loud and typed,
 		// but non-blocking: the message shows in the text area and the text stays raw.
 		function test_textarea_qualified_reference_encodes_into_referenced_slice()
 		{
@@ -807,9 +807,9 @@ Item
 
 		// RSyntax term emission qualifies terms stamped OUTSIDE the emission
 		// context. The context is the analysis' own filter (the namespace bare names resolve in
-		// at run time, D7.3 self-reference rule); a term whose origin is a FOREIGN host (list B
+		// at run time, the self-reference rule); a term whose origin is a FOREIGN host (list B
 		// on Second's default filter - the stamp was born when it was selected through that pool
-		// and reaches the bind in the D5.1 Storage shape, the file carrier) must render as the
+		// and reaches the bind in the Storage shape, the file carrier) must render as the
 		// qualified minimal form ("Dataset"."Column") in the generated R syntax - never mangled
 		// into the context namespace, never carrying a bare ".type" suffix next to its own
 		// ("type") segment. Unstamped/own-context terms stay byte-identical legacy (C++-tested).
@@ -959,7 +959,7 @@ Item
 			verify(!allVarsC.dependsOnForTest("dataSetA"),
 					"neither does an available list that selects nothing itself")
 			verify(!aSwitch.dependsOnForTest("dataSetA"),
-					"a plain Switch resolves through no selection, so it has no derived edge (C10)")
+					"a plain Switch resolves through no selection, so it has no derived edge")
 
 			// a host is the OWNER of its selection, not a dependent of it
 			verify(!allVarsA.dependsOnForTest("dataSetA"), "the host itself is not its own dependency")
@@ -973,8 +973,8 @@ Item
 		// (ORIGIN-AUTHORITATIVE): a bare loaded value is UNQUALIFIED - it stays -1 through the
 		// bind (a bind is not an origin; the intake is stamp-free) - and its engine provenance
 		// is served per send by the generated sidecar reading each list's OWN loaded selection
-		// through the C13 chain. A value that carries an origin stamp in the file (here: the
-		// hostless list's term, bound in the D5.1 Storage shape) keeps it verbatim.
+		// through the host-bound fallback chain. A value that carries an origin stamp in the file (here: the
+		// hostless list's term, bound in the Storage shape) keeps it verbatim.
 		function test_first_bind_bareStaysMinusOne_sidecarFollowsLoadedSelections()
 		{
 			var secondEntry = _entryFor("Second - ")
@@ -1032,11 +1032,11 @@ Item
 
 			compare(parseInt(String(bound.dataSetA)), savedFilterA, "list A took the loaded selection")
 			verify(meta && meta.aDependent && meta.dependentA && meta.dependentB,
-					"the loaded options bound and carried their (id-free, C8) meta")
+					"the loaded options bound and carried their (id-free) meta")
 
 			// "TestInts" lives in both datasets: only the provenance tells them apart. The values
 			// are -1 (bare) - the provenance is read PER SEND off each list's own
-			// loaded selection through the C13 chain (the transient sidecar).
+			// loaded selection through the host-bound fallback chain (the transient sidecar).
 			verify(ids && Array.isArray(ids.aDependent) && Array.isArray(ids.dependentA) && Array.isArray(ids.dependentB),
 					"the loaded column values carry sidecar provenance")
 			compare(ids.aDependent[0], savedFilterA,
@@ -1049,7 +1049,7 @@ Item
 			//and those two saved filters are distinct ids (the sidecar carries
 			//what the mirror's dataSetId/filterId stamp pair used to say; filter ids imply their
 			//dataset, so differing ids from dataset-distinct entries ARE the evidence - no
-			//label grammar parsed, C4).
+			//label grammar parsed).
 			verify(savedFilterA !== savedFilterB, "fixture: the two saved selections name different filters")
 			verify(ids.dependentA[0] !== ids.dependentB[0],
 					"the two provenances name different filters (A through the 'Second' host, B through the first dataset's), not one analysis-wide id")
@@ -1072,7 +1072,7 @@ Item
 		// (ORIGIN-AUTHORITATIVE prune): the staleness prune of a pool participates
 		// only references INTO that pool's own provider (stamp == the pool's universe stamp,
 		// ListModel::termFollowsProviderChange). A foreign-stamped reference - another selection's
-		// typed copy, reaching the list the way a file delivers it (D5.1 Storage shape) - is not
+		// typed copy, reaching the list the way a file delivers it (the Storage shape) - is not
 		// this pool's namespace: even when its name is absent from this pool's universe entirely
 		// it must survive the prune with its provenance intact, and it must NOT hide this pool's
 		// own same-name column (the exclusion stays strict identity; the pre-post name-based
@@ -1238,7 +1238,7 @@ Item
 			verify(names.indexOf("rCodeSet")  !== -1, "the TextArea host's option is registered, got: " + names)
 			verify(names.indexOf("dependentA") === -1, "a plain list option is not a selection option, got: " + names)
 
-			// The M9 case proper: a host instantiated AFTER form completion (what a ComponentsList
+			// The late-host case proper: a host instantiated AFTER form completion (what a ComponentsList
 			// row does) must be in the registry right away - the bridge translates its option from
 			// then on, no findChildren moment needed. The production dynamic path reaches the host
 			// through JASPControl's formIsKnown signal (RowControls set the isDynamic context
@@ -1249,7 +1249,7 @@ Item
 			late.formIsKnown(jaspForm)
 			wait(20)
 			verify(form.dataSetSelectionOptionNames().indexOf("lateSet") !== -1,
-					"a host created after form completion registers immediately (M9)")
+					"a host created after form completion registers immediately")
 
 			// (chunk-4 finding #1): destroying that host again is safe NOW. The plain
 			// createObject took the STATIC registration branch (JASPControl::componentComplete ->

@@ -652,7 +652,7 @@ bool Workspace::resolveDataSetSelectionValue(const QString &optionName, const Js
 	}
 
 	//No numeric-id path, ever: a number resolves only when a dataset is actually titled that
-	//number (M4's title-shadows-id disappears together with the id-acceptance it shadowed).
+	//number (the title-shadows-id confusion disappears together with the id-acceptance it shadowed).
 	error = "The dataset selection option '" + optionName + "' holds '" + text + "', which matches no dataset selection string (available: " + surfaceMap.keys().join(", ") + ")";
 	return false;
 }
@@ -801,7 +801,7 @@ bool QualifiedColumnRef::parse(const QString & text, QualifiedColumnRef & out, Q
 	if(text[pos] != '"')
 	{
 		//The bare production: the whole (trimmed) text is the unqualified column name. Dots
-		//are never split here - bare handling is the callers' context fallback (§4 boundary).
+		//are never split here - bare handling is the callers' context fallback.
 		out.columnName = text.trimmed();
 		return true;
 	}
@@ -1055,7 +1055,7 @@ QString Workspace::renderQualifiedColumnRef(int contextFilterId, int filterId, c
 	}
 
 	//Inside the caller's default namespace: the plain name IS the reference (the callers'
-	//bare-name fallback machinery takes it from here, §4). Filter ids are globally unique,
+	//bare-name fallback machinery takes it from here). Filter ids are globally unique,
 	//so id equality means the very same namespace.
 	Filter * context = contextFilterId >= 0 ? filterById(contextFilterId) : nullptr;
 
@@ -1112,7 +1112,7 @@ QString Workspace::fullQualifiedColumnRef(const QString & dataSetTitle, const QS
 	//resolved objects are the emission's source of truth - never re-parsed text). An
 	//unresolvable dataset title keeps the stored names verbatim: the emitted form then
 	//no longer resolves, and the run fails LOUDLY with the typed unknownDataSet error
-	//(D7.5's invalidation surface) instead of silently degrading to a bare name. An
+	//instead of silently degrading to a bare name. An
 	//empty stored filter name still means the default filter (the DEFAULT_FILTER
 	//spelling), so the emitted form stays the full form the node meant.
 	DataSet * dataSet = dataSetByTitle(dataSetTitle);
@@ -1128,7 +1128,7 @@ QString Workspace::fullQualifiedColumnRef(const QString & dataSetTitle, const QS
 
 	//"" means the dataset's default filter (the v1 constructor nodes carry the dataset
 	//only); a stored filter name is resolved by NAME - the default filter's own name is
-	//the internal DEFAULT_FILTER spelling, which the D7.0a grammar accepts in the full
+	//the internal DEFAULT_FILTER spelling, which the qualified-reference grammar accepts in the full
 	//form. An unresolvable stored name keeps verbatim (loud unknownFilterInDataSet at run).
 	Filter * filter = filterName.isEmpty() ? dataSet->defaultFilter() : dataSet->filter(fq(filterName));
 
@@ -1143,7 +1143,7 @@ std::vector<QualifiedRefOccurrence> QualifiedColumnRef::scanText(const std::stri
 	//ASCII-structural (quotes, '.', '(' ')'), so the scan runs on bytes; segment CONTENT may
 	//be any UTF-8 - each candidate's exact byte range is re-parsed by the strict parse()
 	//before it counts, so the scanner and the parser can never disagree about what a
-	//reference is. The D7.0a whitespace tolerance is honored between segments.
+	//reference is. The grammar's whitespace tolerance is honored between segments.
 	std::vector<QualifiedRefOccurrence> occurrences;
 
 	const size_t size = code.size();
@@ -1298,7 +1298,7 @@ std::set<int> Workspace::referencedFilterIdsInCode(const std::string & code, QSt
 		{
 			//Unresolvable here: it contributes no slice, and the omission is logged - never
 			//silent. The engine re-scans the very same code at run time and fails the run
-			//LOUDLY with this kind + message when it still cannot resolve (the D7.5 error
+			//LOUDLY with this kind + message when it still cannot resolve (the error
 			//surface; the loud-failure doctrine forbids a silent fallback to nothing).
 			Log::log() << "Workspace::referencedFilterIdsInCode: the reference '" << occurrence.ref.render().toStdString()
 					   << "' does not resolve: " << error.toStdString() << " (contributes no slice; the engine will fail the run loudly if it cannot resolve it at run time either)" << std::endl;
@@ -1342,7 +1342,7 @@ QVariantList Workspace::qualifiedColumnCandidates(int contextFilterId)
 	{
 		//Columns are the dataset's (a filter filters ROWS, not columns), minted names are the
 		//bare originals; the same column is offered once per filter, because each filter is
-		//its own namespace (C3) and the rendered form differs per namespace.
+		//its own namespace and the rendered form differs per namespace.
 		const DataSet::colTypeMap columns = dataSet->getColumnTypesMap();
 
 		for(Filter * filter : dataSet->filters())
@@ -1386,8 +1386,8 @@ QVariantList Workspace::qualifiedColumnCandidates(int contextFilterId)
 
 QString Workspace::qualifiedRefErrorInCode(const QString & code) const
 {
-	//Exactly the D7.3 scanner's typed first error; empty string = all references resolve.
-	//Bare names are never errors here (§4: the editors' context fallback is not this helper's
+	//Exactly the scanner's typed first error; empty string = all references resolve.
+	//Bare names are never errors here (the editors' context fallback is not this helper's
 	//business - it is codified at each editor's insertion context).
 	QString error;
 	referencedFilterIdsInCode(code.toStdString(), &error);

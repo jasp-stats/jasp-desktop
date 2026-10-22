@@ -106,12 +106,12 @@ public:
 	///  file serialization (the Engine wire shape above stays frozen as today's R contract).
 	///  `name` is the value string for a single-component term and the component array for an
 	///  interaction; `types` is always the per-component type array; `filterId` is emitted only
-	///  when the term is qualified (>= 0, C9) and omitted for -1 exactly like the Engine sidecar
+	///  when the term is qualified (>= 0) and omitted for -1 exactly like the Engine sidecar
 	///  omits nulls. Re-enters through the Terms(json) applier, which recognizes the shape via
 	///  isStorageTermObject() (see the collision rules documented there).
 	Json::Value toJsonStorage() const;
 
-	///< Strict shape test for the D5.1 Storage term object: an OBJECT with a `name` member
+	///< Strict shape test for the Storage term object: an OBJECT with a `name` member
 	///  (string or array of strings) AND at least one of `types` (string or array of strings) /
 	///  `filterId` (int; an explicit null or an integral double counts as absent/that int - the
 	///  QML->Json bridge turned every JS number into null for years), and NO other members.
@@ -152,16 +152,16 @@ inline size_t qHash(const Term &term, size_t seed)
 
 ///
 /// the resolution of ONE string term component that entered through the JSON
-/// appliers (Terms(json) / Term(json)) - the D3.4 single JSON->Terms parse chokepoint.
+/// appliers (Terms(json) / Term(json)) - the single JSON->Terms parse chokepoint.
 /// A component that *is* a qualified surface form ("DS"."Col", "F"."Col", the full
 /// form, each with its optional ("Type") tail) is parsed with QualifiedColumnRef::parse and
-/// resolved against the live Workspace (ids only, D1.2: no Filter*/encoder is cached here);
-/// `bareName` becomes the plain column name and `filterId` rides the typed Term (C9), which
+/// resolved against the live Workspace (ids only: no Filter*/encoder is cached here);
+/// `bareName` becomes the plain column name and `filterId` rides the typed Term, which
 /// is exactly what keeps same-name terms from different filters distinct (the flagship).
-/// Everything else - bare names above all (§4: their fallback is the caller's context and
+/// Everything else - bare names above all (their fallback is the caller's context and
 /// their behavior must not change) and strings that are no reference at all - passes through
 /// untouched. A parseable reference that does NOT resolve throws std::runtime_error with the
-/// typed ready-to-show message (the loud D7.5 doctrine; AnalysisForm::parseOptions surfaces
+/// typed ready-to-show message (the loud-failure doctrine; AnalysisForm::parseOptions surfaces
 /// it as the parse error). Throws equally when no workspace is loaded, since nothing could
 /// resolve there.
 ///
@@ -169,7 +169,7 @@ struct QualifiedTermComponent
 {
 	QString		bareName;				///< the plain column name (== the input when unqualified)
 	int			filterId		= -1;	///< the resolved slice when `qualified`, else -1
-	columnType	type			= columnType::unknown;	///< type segment when present (it wins, §5), else the column's current type
+	columnType	type			= columnType::unknown;	///< type segment when present (it wins), else the column's current type
 	bool		qualified		= false;///< the input was a qualified surface form
 	bool		hasTypeSegment	= false;///< the input carried an explicit ("Type") tail
 };
@@ -180,7 +180,7 @@ QualifiedTermComponent resolveQualifiedTermComponent(const QString & component);
 /// the identity of a ROW of a term list for the row-scoped satellite state
 /// (Terms::RelatedValuesPerTerm and ListModel's row-controls map). Those maps used to be keyed
 /// by term.value() — the NAME — so a list holding two rows with the same column behind different
-/// filters (the C9 twins) shared, and silently clobbered, one entry: the second row's children
+/// filters (the same-name twins) shared, and silently clobbered, one entry: the second row's children
 /// overwrote the first's, and both rows resolved to the same RowControls object.
 /// TermRowKey is the minimal identity that separates twins — (value, filterId) — while staying
 /// stable over type edits (types are not part of it, like Term::operator==) and over a host
@@ -202,7 +202,7 @@ public:
 	int					filterId()	const	{ return _filterId;	}
 
 	///< Lookup term for Terms::containsValue(Term)-style identity checks: exact when the key is
-	///  qualified, name-only (the D2.1 wildcard) when filterId is -1. Type never takes part.
+	///  qualified, name-only (the wildcard lookup) when filterId is -1. Type never takes part.
 	Term asTerm() const { Term term(_name); term.setFilterId(_filterId); return term; }
 
 	bool operator<(const TermRowKey & other) const

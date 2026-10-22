@@ -93,7 +93,7 @@ public:
 	void			loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom = Version());
 
 	/// run ColumnEncoder::decodeJsonLegacyTokens (read-side only, NOTHING hits
-	/// the global decode table - live decode stays strict-table, C4) over one file entry's
+	/// the global decode table - live decode stays strict-table) over one file entry's
 	/// stored results tree, gated on the file's archive version as described above. Public for
 	/// the upgrade-path tests; the load wiring calls it from createFromJaspFileEntry for both
 	/// the module and the report branch.

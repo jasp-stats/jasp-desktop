@@ -119,7 +119,7 @@ public:
 			///  default provider IS that pool's provider, and the replacement it delivers is
 			///  -1-stamped too, so -1 terms never change identity through this); on a qualified
 			///  update a -1 term is a reference into the provider WITHOUT host selection, which
-			///  resolves at use time through the C13 chain and is governed by THAT provider, so
+			///  resolves at use time through the host-bound fallback chain and is governed by THAT provider, so
 			///  it is never touched here. A foreign stamp (a typed copy picked/bound through
 			/// another pool) belongs to that other provider and keeps its
 			///  provenance.

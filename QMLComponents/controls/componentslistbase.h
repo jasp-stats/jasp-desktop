@@ -106,7 +106,7 @@ protected:
 	//generation reuses the very same builder (getJsonFromComponentValues), optionKey discipline
 	//included. Its per-row provenance sidecar is positional over the rows (= the terms): the row
 	//key term's Term::filterId(), host filter as fallback, null = unqualified (see
-	//BoundControlTerms::createFilterIds for the schema). D5.1 resolved the row-embedding
+	//BoundControlTerms::createFilterIds for the schema). The row-embedding
 	//collision the preview note feared: the file format nests the term object UNDER the row key
 	//(`{optionKey: {name, filterId?, types}}`, children stay siblings), so no unknown row member
 	//is ever introduced and the engine sidecar stays positional as always.

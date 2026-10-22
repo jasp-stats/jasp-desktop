@@ -27,7 +27,7 @@ import JASP
 
 	A popup fed by \c Workspace::qualifiedColumnCandidates(contextFilterId): every column of
 	every filter of every loaded dataset, rendered by \c Workspace::renderQualifiedColumnRef.
-	The context filter's own columns come out as the bare names (that namespace is the C13
+	The context filter's own columns come out as the bare names (that namespace is the
 	fallback for unqualified names - the editor's own dataset for the filter editor, the
 	selected compute/input filter for the compute editors); every other slice comes out as the
 	minimal qualified surface form ("DS"."Col", "F"."Col" when the filter name is unique, the
@@ -44,7 +44,7 @@ Popup
 
 	///< The editor TextArea the reference is inserted into (a QtQuick.Controls TextArea).
 	property var		target: null
-	///< The bare-name fallback namespace (C13): the edited filter (FilterWindow), the selected
+	///< The bare-name fallback namespace: the edited filter (FilterWindow), the selected
 	///  compute filter (ComputeColumnWindow) or the selected input filter (ComputeDataSetPanel).
 	///  -1 = no context: every candidate renders qualified.
 	property int		contextFilterId: -1
@@ -86,7 +86,7 @@ Popup
 	onClosed:		if(target) target.forceActiveFocus()
 
 	///Rebuild the candidate list from the workspace (fresh every open: datasets, filters and
-	///columns can have changed since last time - the catalog is never cached, C13/D1.2).
+	///columns can have changed since last time - the catalog is never cached).
 	function rebuildCandidates()
 	{
 		candidates = workspace ? workspace.qualifiedColumnCandidates(contextFilterId) : []

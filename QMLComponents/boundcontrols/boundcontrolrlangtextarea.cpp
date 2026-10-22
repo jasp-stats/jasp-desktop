@@ -87,10 +87,10 @@ void BoundControlRlangTextArea::checkSyntax()
 	_prefixedUsedColumnNames.clear();
 
 	// resolve the qualified column references BEFORE the
-	//bare-name encode pass - each becomes the referenced slice's token (the D7.3 rewrite
+	//bare-name encode pass - each becomes the referenced slice's token (the rewrite
 	//primitive), so the encoded tokens form under the right namespaces and the surface form
 	//is never mangled into the context namespace nor handed to R's parser. Bare names keep
-	//encoding against the context encoder exactly as before (§4 fallback, unchanged).
+	//encoding against the context encoder exactly as before (unchanged).
 	QStringList qualifiedTokens;
 	QString resolvedText;
 	try
@@ -99,7 +99,7 @@ void BoundControlRlangTextArea::checkSyntax()
 	}
 	catch (const std::exception & e)
 	{
-		//Loud and typed, but non-blocking (the D7.5 editor doctrine): the message shows in
+		//Loud and typed, but non-blocking: the message shows in
 		//the text area and the text is left UNencoded - running the bare pass over an
 		//unresolved reference would mangle its components into the context namespace - so
 		//the run fails on the surface form until the reference resolves again.

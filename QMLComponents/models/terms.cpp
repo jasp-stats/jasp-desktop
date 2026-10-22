@@ -86,9 +86,9 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 {
 	//Provenance rides the wire only in the Storage shape (see the header):
 	//ENGINE-shape and released-file terms parse UNQUALIFIED (-1) exactly as before, the list they
-	//land in stamps the current selection in (ListModel::_setAllowedType, since D5.1 only onto
-	//terms that come in unqualified), bindTo-copied typed Terms keep their own ids (C9) and the
-	//D2.1 wildcard lookup matches the freshly parsed unqualified terms against the stamped model.
+	//land in stamps the current selection in (ListModel::_setAllowedType, only onto
+	//terms that come in unqualified), bindTo-copied typed Terms keep their own ids and the
+	//name-only wildcard lookup matches the freshly parsed unqualified terms against the stamped model.
 	Json::Value valuesPart	= optionValue;
 	Json::Value typesPart	= Json::arrayValue;
 
@@ -101,8 +101,8 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 	else if (valuesPart.isObject() && valuesPart.isMember("value") && !valuesPart.isMember("types"))
 	{
 		// the Storage option object `{value, optionKey?}` - types live INSIDE the
-		//per-term objects now. No pre-D5.1 path ever produced a `{value}`-without-`types` option
-		//object (BoundControlTerms::isJsonValid rejected it before this card), so this unwrap is
+		//per-term objects now. No legacy path ever produced a `{value}`-without-`types` option
+		//object (BoundControlTerms::isJsonValid always rejected it), so this unwrap is
 		//strictly the new file shape; `{value, types}` keeps taking the engine branch above.
 		valuesPart = valuesPart["value"];
 	}
@@ -160,9 +160,9 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 		if (!str.empty())
 		{
 			// a single-string option value that IS a qualified surface form
-			// resolves into the typed term - ids only (D1.2), the ("Type") segment
+			// resolves into the typed term - ids only, the ("Type") segment
 			//wins over the positional/lookup type when present. Bare values keep today's
-			//path byte-identically (§4: their fallback is the caller's context).
+			//path byte-identically (their fallback is the caller's context).
 			const QualifiedTermComponent resolved = resolveQualifiedTermComponent(tq(str));
 			Term term(fq(resolved.bareName), type);
 			if (resolved.qualified)
@@ -194,8 +194,8 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 			}
 
 			// the entry dispatch. A Storage term object `{name, filterId?, types}`
-			//parses to a TYPED term (its filterId included, C9 - the flagship x@11/x@12 twins come
-			//back as two distinct Terms and Terms::add keeps both, strict equality from D2.1);
+			//parses to a TYPED term (its filterId included - the flagship x@11/x@12 twins come
+			//back as two distinct Terms and Terms::add keeps both, strict equality);
 			//every other entry keeps taking today's byte-identical path (bare string, or a row
 			//object whose keyValue entry may itself be a nested Storage term object, see
 			//Term(json)). The strict member test in isStorageTermObject is what keeps rows and
@@ -208,13 +208,13 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 				{
 					// a string row that IS a qualified surface form
 					//resolves into the typed term - the bare string rows around it keep today's
-					//path (and today's -1, which the list stamps with its host on intake, D5.1).
+					//path (and today's -1, which the list stamps with its host on intake).
 					const QualifiedTermComponent resolved = resolveQualifiedTermComponent(tq(row.asString()));
 					Term parsed(fq(resolved.bareName), types);
 					if (resolved.qualified)
 					{
 						parsed.setFilterId(resolved.filterId);
-						if (resolved.hasTypeSegment)	//the ("Type") segment wins over the positional type (§5)
+						if (resolved.hasTypeSegment)	//the ("Type") segment wins over the positional type
 							parsed.setType(resolved.type);
 					}
 					return parsed;
@@ -239,10 +239,10 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 							controlMap[tq(name)] = *itr;
 					}
 					// keyed by ROW IDENTITY - twin rows parsed from the Storage shape
-					//carry their own filterId (C9) and now keep their OWN children; the -1 stamped
+					//carry their own filterId and now keep their OWN children; the -1 stamped
 					//later onto engine-shaped parses stays findable through relatedValuesForTerm()'s
 					//fallback. (Two same-name rows in one ENGINE tree still share the single -1
-					//entry - the wire carries no provenance to tell them apart, C8/C15.)
+					//entry - the wire carries no provenance to tell them apart.)
 					allControlValues[TermRowKey::ofTerm(term)] = controlMap;
 				}
 			}
@@ -770,7 +770,7 @@ const QMap<QString, Json::Value> & Terms::relatedValuesForTerm(const Terms::Rela
 //live row-child control values into, one implementation for both paths.
 // this is the ENGINE serialization (the frozen R contract + the send-time
 //shape): the per-term filterId deliberately does NOT appear here — on the run wire provenance
-//rides the transient `.filterIds` sidecar only (C11), and in the FILE it rides inside the
+//rides the transient `.filterIds` sidecar only, and in the FILE it rides inside the
 //per-term objects of the Storage shape (getStorageOptions below).
 // the related values are looked up by ROW IDENTITY (value + filterId, with the
 //-1 fallback), so same-name rows behind different filters each aggregate their OWN children.

@@ -74,11 +74,11 @@ private:
 	void					runRCodeCommander(	int dataSet,	std::string   rCode																						);
 
 	///< extract the transient `referencedFilterIds` sidecar of a filter/
-	///< compute request - the desktop's scan of the run's code (the D7.0a helpers). Consumed
+	///< compute request - the desktop's scan of the run's code (the grammar helpers). Consumed
 	///< HERE and only for slice materialization: it is never forwarded into anything R
 	///< evaluates (the R-visible code is built by rbridge_prepareSliceRunScript from the code
 	///< text alone), so the sidecar dies with the request json - the strip point for these
-	///< requests, mirroring D3.3's last-moment doctrine.
+	///< requests, mirroring the last-moment doctrine.
 	static	std::vector<int>	referencedFilterIdsFromRequest(const Json::Value & jsonRequest);
 
 	void					stopEngine();

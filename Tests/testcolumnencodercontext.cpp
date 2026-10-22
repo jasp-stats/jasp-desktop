@@ -60,7 +60,7 @@ void activateContext(const ColumnEncoderContext & encoderContext, ColumnEncoder 
 }
 
 // v2 replay is decode-only (the captured namespace lands in the global table for the scope's
-// duration), so payload tokens are minted as pure strings - exactly the C1 shape the replay
+// duration), so payload tokens are minted as pure strings - exactly the token shape the replay
 // block writes - instead of the v1 "swap the live encoder, then encode" dance.
 std::string encodeColumn(const ColumnEncoderContext & encoderContext, ColumnEncoder & /*extraEncoder*/, const std::string & column)
 {
@@ -317,7 +317,7 @@ void TestColumnEncoderContext::replayNeverMutatesLiveEncodersAndNestsExactly()
 	const std::string archivedToken		= ColumnEncoder::tokenForNameInNames(archived.columns(),	"Old Score",		archived.prefix());
 	const std::string archivedExtra		= ColumnEncoder::tokenForNameInNames(archived.extra(),		"archived level",	ExtraOptionsPrefix);
 
-	QCOMPARE(liveExtraToken, archivedExtra);	//same token string, one shared extras namespace (C6)
+	QCOMPARE(liveExtraToken, archivedExtra);	//same token string, one shared extras namespace)
 	QCOMPARE(ColumnEncoder::decode(liveToken), std::string("Score"));
 	QCOMPARE(ColumnEncoder::decode(archivedToken), archivedToken);				//archive not live: raw
 	QCOMPARE(ColumnEncoder::decode(archivedExtra), std::string("live level"));	//before the replay, live extras answers
@@ -327,7 +327,7 @@ void TestColumnEncoderContext::replayNeverMutatesLiveEncodersAndNestsExactly()
 
 		QCOMPARE(ColumnEncoder::decode(archivedToken), std::string("Old Score"));
 		QCOMPARE(ColumnEncoder::decode(archivedExtra), std::string("archived level"));	//replay displaces the colliding entry
-		QCOMPARE(ColumnEncoder::decode(liveToken), std::string("Score"));				//other live namespaces keep decoding (superset, C4)
+		QCOMPARE(ColumnEncoder::decode(liveToken), std::string("Score"));				//other live namespaces keep decoding (superset)
 
 		//The whole point vs v1: entering the scope mutated nothing live:
 		QVERIFY2(canonical->currentNames() == liveColumns,	"replay must not touch the live canonical mint");
@@ -414,7 +414,7 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 
 	Json::Value options = twoDataSetOptions();
 
-	// The D3.3 flip: provenance is read from the `.filterIds` sidecar, not from the .meta
+	// The sidecar flip: provenance is read from the `.filterIds` sidecar, not from the .meta
 	//stamps anymore - and the stamps still sitting in this fixture are now inert input. Make
 	//them LIE about the dataset: the encoding and the per-dataset attribution must ignore them
 	//completely (the resolver re-attributes dataSetId from the resolved filter).
@@ -453,11 +453,11 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 }
 
 // the resolver gets the filterId that governs every option node (since the
-// D3.3 flip from the `.filterIds` sidecar, before it from the .meta stamp), so two options that
+// sidecar flip: first from the `.filterIds` sidecar, before it from the .meta stamp), so two options that
 // refer to the same column through two different filters of ONE dataset encode into two distinct
 // namespaces - the same two namespaces their slices are handed to R in. An option without a
 // sidecar node (or naming a dead filter) must fall back to the dataset-level view the resolver
-// picks (C7 legacy).
+// picks (legacy).
 void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToStampedFilterView()
 {
 	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
@@ -486,8 +486,8 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToStampedFilterView(
 	options[".meta"]["dependent"]["shouldEncode"]	= true;
 	options[".meta"]["splitBy"]["shouldEncode"]		= true;
 	options[".meta"]["unqualified"]["shouldEncode"]	= true;
-	// The D3.3 flip: the (dataSetId, filterId) stamps move from .meta to the transient
-	//`.filterIds` sidecar; an option the sidecar does not name stays unqualified (C7 fallback).
+	// The sidecar flip: the (dataSetId, filterId) stamps move from .meta to the transient
+	//`.filterIds` sidecar; an option the sidecar does not name stays unqualified (the fallback).
 	options[".filterIds"]["dependent"]	= 12;					//the HOST filter, not the shown one
 	options[".filterIds"]["splitBy"]	= 11;					//the shown filter
 	//no node for "unqualified": resolver fallback, exactly the old no-filterId dual-read
@@ -496,7 +496,7 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToStampedFilterView(
 			options, true,
 			[&viewShown, &viewHost](int &, int filterId) -> ColumnEncoder *
 			{
-				//exactly the D3.3 shape of DataBridge::prepareMultiDataSetRun's resolver
+				//exactly the shape of DataBridge::prepareMultiDataSetRun's resolver
 				return filterId == 12 ? viewHost : viewShown;
 			},
 			1);
@@ -510,7 +510,7 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToStampedFilterView(
 	QVERIFY2(options["splitBy"][0].asString().rfind("JASPColumn_D1_F11_", 0) == 0,	"shown-stamped option encodes in the shown view");
 
 	//Both namespaces are live in the one table, so a single context-free sweep decodes both sides
-	//of the same-name collision - the host/shown landmine resolving through the table (C4):
+	//of the same-name collision - the host/shown landmine resolving through the table:
 	Json::Value sweep(Json::arrayValue);
 	sweep.append(dependentToken);
 	sweep.append(options["splitBy"][0].asString());
@@ -601,9 +601,8 @@ QTEST_MAIN(TestColumnEncoderContext)
 
 // The single all-blocks results decoder that Engine::sendString, the syntax bridge, the plotly
 // loader and the computed-column site all use now: it resolves tokens minted by the global current
-// encoder, the extras encoder (C6) AND every live dataset's filter blocks in ONE context-free
-// sweep (the instance-rooted across-encoders decode and its encoder-vector parameter retired at
-// D1.5), and the
+// encoder, the extras encoder AND every live dataset's filter blocks in ONE context-free
+// sweep (the instance-rooted across-encoders decode and its encoder-vector parameter retired), and the
 // safeHtml switch must be the only difference between desktop (escaped) and bridge/wrapper
 // (plain) output.
 void TestColumnEncoderContext::decodeJsonCoversEveryBlockAndHonoursSafeHtml()
@@ -621,7 +620,7 @@ void TestColumnEncoderContext::decodeJsonCoversEveryBlockAndHonoursSafeHtml()
 
 	Json::Value payload;
 	payload["a"] = defaultEncoder->encodeAll("global col");	//global/current encoder's token
-	payload["b"] = extras        .encodeAll("extra col");		//extras (a first-class block, C6)
+	payload["b"] = extras        .encodeAll("extra col");		//extras (a first-class block)
 	payload["c"] = dsOne         .encodeAll("one col");			//a dataset block's token
 	payload["d"] = dsTwo         .encodeAll("two col");			//...and a second one's
 
@@ -659,7 +658,7 @@ void TestColumnEncoderContext::decodeJsonCoversEveryBlockAndHonoursSafeHtml()
 }
 
 // ---------------------------------------------------------------------------------------------
-// canonical mint + per-filter views + the one global decode table (C1-C4, C16)
+// canonical mint + per-filter views + the one global decode table
 // ---------------------------------------------------------------------------------------------
 
 void TestColumnEncoderContext::canonicalAnswersNoFullStringEncodeDecode()
@@ -674,17 +673,17 @@ void TestColumnEncoderContext::canonicalAnswersNoFullStringEncodeDecode()
 	QVERIFY2(!canonical->shouldEncode("Nope"),			"unknown names are not members");
 	QCOMPARE(canonical->currentNames().size(), size_t(2));
 
-	// ... but full-string encode is not the canonical's job (C2). Decode-side there is nothing left
-	// to assert at D1.5: the instance decode API is gone entirely (decode/shouldDecode/
+	// ... but full-string encode is not the canonical's job. Decode-side there is nothing left
+	// to assert: the instance decode API is gone entirely (decode/shouldDecode/
 	// columnTypeFromEncoded/decodeAll/decodeJson are static table entries now), so the canonical
 	// not answering full-string decode is enforced by the compile itself.
 	QVERIFY2(!captureError([&](){ canonical->encode("Score"); }).empty(),	"encode on a canonical must throw");
 	QCOMPARE(canonical->encodePrefix(), std::string());	// no namespace of its own
 
 	// The only decode answer for a canonical-looking token is the global table's, and the
-	// canonical registers nothing there (C2): without a live view the token is simply unknown.
+	// canonical registers nothing there: without a live view the token is simply unknown.
 	QVERIFY2(!ColumnEncoder::shouldDecode("JASPColumn_D1_F11_3_Encoded"),	"a bare canonical registers no block");
-	QCOMPARE(ColumnEncoder::decode("JASPColumn_D1_F11_3_Encoded"), std::string("JASPColumn_D1_F11_3_Encoded"));	//raw (C4)
+	QCOMPARE(ColumnEncoder::decode("JASPColumn_D1_F11_3_Encoded"), std::string("JASPColumn_D1_F11_3_Encoded"));	//raw
 
 	delete canonical;
 }
@@ -700,12 +699,12 @@ void TestColumnEncoderContext::filterViewsMintDistinctTokensThatBothDecode()
 	const std::string tokenOne = viewOne->encode("Score");
 	const std::string tokenTwo = viewTwo->encode("Score");
 
-	// C1 shape + the classic alphabetical mint (Group owns 0-2 with bare->2, Score 3-5 with bare->3):
+	// The token shape + the classic alphabetical mint (Group owns 0-2 with bare->2, Score 3-5 with bare->3):
 	QCOMPARE(tokenOne, std::string("JASPColumn_D1_F11_3_Encoded"));
 	QCOMPARE(tokenTwo, std::string("JASPColumn_D1_F12_3_Encoded"));
 	QVERIFY2(tokenOne != tokenTwo, "the same name in two filters of one dataset must mint distinct tokens");
 
-	// Both decode through the one global table, context-free (C4):
+	// Both decode through the one global table, context-free:
 	QCOMPARE(ColumnEncoder::decode(tokenOne), std::string("Score"));
 	QCOMPARE(ColumnEncoder::decode(tokenTwo), std::string("Score"));
 	QCOMPARE(ColumnEncoder::columnTypeFromEncoded(tokenOne), columnType::scale);
@@ -716,7 +715,7 @@ void TestColumnEncoderContext::filterViewsMintDistinctTokensThatBothDecode()
 	QCOMPARE(ColumnEncoder::columnTypeFromEncoded(std::string("JASPColumn_D1_F12_5_Encoded")), columnType::nominal);
 	QCOMPARE(ColumnEncoder::decode(std::string("JASPColumn_D1_F12_0_Encoded")), std::string("Group"));
 
-	// shouldEncode is canonical membership (C3), not a per-view map:
+	// shouldEncode is canonical membership, not a per-view map:
 	QVERIFY2(viewOne->shouldEncode("Group"),	"membership comes from the shared mint");
 	QVERIFY2(!viewOne->shouldEncode("Nope"),	"unknown names are not encodable");
 
@@ -739,7 +738,7 @@ void TestColumnEncoderContext::remintRewritesEveryViewBlockAndStaleTokensGoRaw()
 	QCOMPARE(ColumnEncoder::decode(zetaOne), std::string("Zeta"));
 
 	// Column removal (setCurrentNames is the single funnel): the mint shrinks and every view block
-	// is rewritten as an automatic consequence - no caller has to remember (D1.4).
+	// is rewritten as an automatic consequence - no caller has to remember.
 	canonical->setCurrentNames(names({{"Alpha", columnType::scale}}));
 
 	QCOMPARE(viewOne->encode("Alpha"), alphaOne);
@@ -794,7 +793,7 @@ void TestColumnEncoderContext::destroyingViewOrCanonicalErasesBlocks()
 	const std::string deadToken = doomedView->encode("Score");
 	const std::string liveToken = liveView->encode("Score");
 
-	// Filter destroy: the view dies, its block is erased (C16), the canonical and its other views
+	// Filter destroy: the view dies, its block is erased, the canonical and its other views
 	// keep working.
 	delete doomedView;
 
@@ -853,7 +852,7 @@ void TestColumnEncoderContext::extrasStyleInstanceFeedsTheGlobalTable()
 	std::string tokenA, tokenB;
 
 	{
-		ColumnEncoder extras(ExtraOptionsPrefix);	//a FULL self-contained instance: the extras shape (C6)
+		ColumnEncoder extras(ExtraOptionsPrefix);	//a FULL self-contained instance: the extras shape
 		extras.setCurrentNames(names({{"level A", columnType::unknown}, {"level B", columnType::unknown}}));
 
 		tokenA = extras.encode("level A");

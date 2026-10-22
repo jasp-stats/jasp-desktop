@@ -40,7 +40,7 @@ class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
 	Q_PROPERTY( bool				canUndo					READ canUndo				NOTIFY canUndoChanged				)
 	Q_PROPERTY( bool				canRedo					READ canRedo				NOTIFY canRedoChanged				)
 	Q_PROPERTY( bool				deferUntilVisible		READ deferUntilVisible		WRITE setDeferUntilVisible	NOTIFY deferUntilVisibleChanged	)
-	///< the bare-name fallback namespace (C13) of the editor hosting this
+	///< the bare-name fallback namespace of the editor hosting this
 	///  constructor - the edited filter (FilterWindow), the selected compute filter
 	///  (ComputeColumnWindow). The outward section of the column palette is the picker
 	///  catalog (Workspace::qualifiedColumnCandidates) rendered against it: the context's

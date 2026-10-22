@@ -168,8 +168,8 @@ Rectangle
 		}
 
 		// live validation of the qualified references in the R code as typed
-		// (the D7.3 scanner's first typed error). Non-blocking: it warns, the run itself still
-		// fails loudly at the engine when a reference cannot resolve there (D7.5's surface).
+		// (the scanner's first typed error). Non-blocking: it warns, the run itself still
+		// fails loudly at the engine when a reference cannot resolve there.
 		Text
 		{
 			id:					refWarning
@@ -218,9 +218,9 @@ Rectangle
 
 	// outward-reference support for the computed-dataset R code. The
 	// input-filter DropDown above is THE fallback encoder selection for bare names in this
-	// editor (C13, the "computed dataset | selected input filter" row): the picker's
+	// editor (the "computed dataset | selected input filter" row): the picker's
 	// context is that selected input filter's id - the same filter the run reads the input
-	// slice through (D7.3: EngineSync::computeDataSet -> engine resolves defaultInputFilterId)
+	// slice through (EngineSync::computeDataSet -> engine resolves defaultInputFilterId)
 	// - so its own-dataset columns come out of the picker as the bare names the bare names in
 	// this code resolve to at run time. This is a plain dataset rCode context (no compute
 	// filter of its own). The validator is debounced and read-only: it warns, it never

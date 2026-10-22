@@ -572,7 +572,7 @@ std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider)
 	{
 		// an OUTWARD reference - the node carries the source slice's dataset
 		//(and optionally its filter) - is emitted as the FULL qualified surface form
-		//("Dataset"."Filter"."Column"("Type")). Owner refinement on D7.0-Q3: the
+		//("Dataset"."Filter"."Column"("Type")). The
 		//constructor's output is visible R code, so every outward reference uses the full
 		//surface grammar (picker cut != output cut). The form is COMPOSED from the resolved
 		//slice (Workspace::fullQualifiedColumnRef), never by re-parsing text. The type
@@ -592,7 +592,7 @@ std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider)
 
 		//The type segment reflects the SOURCE type (what the reference points at); when even
 		//that cannot be resolved (stale slice, no user override) the segment is omitted
-		//(optional) and the reference still fails the run loudly (D7.5). The
+		//(optional) and the reference still fails the run loudly. The
 		//unknown type must not pick up the as.character default wrap: an unresolvable
 		//reference wraps as nothing meaningful, so it emits unwrapped.
 		const int segmentType = effective;
@@ -606,7 +606,7 @@ std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider)
 		{
 			//No workspace in this process (ad-hoc unit context): compose the full form from
 			//the stored names verbatim - the grammar accepts the DEFAULT_FILTER spelling,
-			//and an unresolvable name fails the run loudly (D7.5).
+			//and an unresolvable name fails the run loudly.
 			QualifiedColumnRef ref;
 			ref.dataSetName	= tq(_dataSetName);
 			ref.filterName	= tq(_filterName.empty() ? DEFAULT_FILTER_NAME : _filterName);

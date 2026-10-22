@@ -109,7 +109,7 @@ void InputListBase::termsChangedHandler()
 
 // the live input terms exactly as the write path puts them in the control's own
 //value (row-component lists keep the optionKey discipline through the single
-//Terms::getOptions row serialization - the D3.4 deletion folded the shuffle into it).
+//Terms::getOptions row serialization - the mirror deletion folded the shuffle into it).
 Json::Value InputListBase::createEngineValue() const
 {
 	if (!_inputModel)

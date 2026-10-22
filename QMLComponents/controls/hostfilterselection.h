@@ -83,7 +83,7 @@ signals:
 	void filterSelectionValuesChanged();
 
 private slots:
-	void validateSelection();							///< C10: vanished filter -> fall back, never dangle
+	void validateSelection();							///< vanished filter -> fall back, never dangle
 
 private:
 	void applyFilter(Filter * filter);				///< store + re-point provider; the term provenance below the host follows through the pool signals (ORIGIN-AUTHORITATIVE)

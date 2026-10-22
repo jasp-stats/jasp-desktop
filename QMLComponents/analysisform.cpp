@@ -131,7 +131,7 @@ QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue, QString m
 
 QVariant AnalysisForm::options() const
 {
-	// the QML-visible options are the GENERATED Engine tree (component state, C11)
+	// the QML-visible options are the GENERATED Engine tree (component state)
 	//with the transient `.filterIds` sidecar stripped - the same view the RPC hands out, and what
 	//the old mirror returned (modulo the provenance keys that were already documented-dead).
 	if(!_analysis)
@@ -418,7 +418,7 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 			//this tree through prepareMultiDataSetRun and back to R, so it must carry the
 			//sidecar the engine-side walk consumes (the mirror's meta stamps are dead input
 			//from the flip on). For a form whose controls are all bound this is what the
-			//mirror used to hold, modulo C8 provenance (equivalence harness pins it).
+			//mirror used to hold, modulo the provenance keys (equivalence harness pins it).
 			parsedOptions = _analysis->createOptionsJson(BoundControl::Engine);
 		}
 	}
@@ -626,12 +626,12 @@ void AnalysisForm::addFormError(const QString & error)
 //tst_generatedOptionsJson*.qml keeps the shape pinned). Two rules define it:
 //  * placement: AnalysisBase::resolveOptionParent / placeOptionMeta / placeOptionFilterIds are
 //    the ONE path implementation (the mirror's former code, now the generators' alone; the
-//    filterIds variant adds the D3.3 "$"-container collision demotion for provenanced row
+//    filterIds variant adds the "$"-container collision demotion for provenanced row
 //    children), and the walk order is bindTo's _dependsOrderedCtrls, so a nested row value lands
 //    exactly where its parent row is;
 //  * content: each control generates through the same builder its write path uses
 //    (BoundControlBase::createEngineValue and the per-family overrides), and the Engine `.meta`
-//    is createEngineMeta() (C8: never dataSetId/filterId), so family meta additions (encodeThis,
+//    is createEngineMeta() (never dataSetId/filterId), so family meta additions (encodeThis,
 //    loadFilteredData, isRCode, filterForValues) cannot drift out of the generated tree.
 Json::Value AnalysisForm::createOptionsJson(BoundControl::JsonFormat format)
 {
@@ -764,7 +764,7 @@ QStringList AnalysisForm::dataSetSelectionOptionNames() const
 {
 	QStringList names;
 
-	//Registry instead of a findChildren scan (M9): hosts register when
+	//Registry instead of a findChildren scan: hosts register when
 	//their dataSetSelectionOption is set (or when the form becomes known to them after that),
 	//so dynamically instantiated hosts are in here too. Dead hosts drop out at read time.
 	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
@@ -795,7 +795,7 @@ void AnalysisForm::registerDataSetSelectionOption(const QString &option, JASPCon
 
 	_dataSetSelectionHosts.append({QPointer<JASPControl>(host), option});
 
-	// unregistering is eager - the registry is the introspection surface D2.4
+	// unregistering is eager - the registry is the introspection surface the VariableInfoProvider
 	//aggregates over, so a dying host drops out on destruction, not only at the next read
 	//(read-time pruning of null QPointers stays as the belt).
 	connect(host, &QObject::destroyed, this, &AnalysisForm::handleSelectionHostDestroyed, Qt::UniqueConnection);
@@ -855,7 +855,7 @@ QList<JASPControl *> AnalysisForm::selectionHostControls() const
 //through the same createFilterIds() that places its `.filterIds` sidecar
 //node, and the sidecar's leaf grammar (int | positional array) is exactly what
 //ColumnEncoder::collectFilterIdsFromSidecar sweeps. Nothing is stored or cached: this is a
-//generation, not a read (C11), and it sees bindTo-copied foreign term provenance
+//generation, not a read, and it sees bindTo-copied foreign term provenance
 //that no host selection would imply.
 void AnalysisForm::collectFilterIds(std::set<int> & filterIds) const
 {
@@ -941,7 +941,7 @@ void AnalysisForm::_applyPendingDataSetSelectionValue(const QString &option)
 	if(!workspace->resolveDataSetSelectionValue(option, _pendingSelectionRawOptions[option.toStdString()], filterId, error))
 	{
 		//Same contract as the bridge, but the parse itself already answered: all that is left
-		//to do is leave the value untouched (the combo will hold it pending, C2/BIND) and log.
+		//to do is leave the value untouched (the combo will hold it pending) and log.
 		Log::log() << "AnalysisForm: late selection host for option '" << fq(option) << "' could not resolve its pending value: "
 		           << fq(error) << std::endl;
 		return;

@@ -55,10 +55,10 @@ protected:
 	///  must never reach R's parser, and the bare-name encode pass that runs afterwards must
 	///  never mangle a reference's components into the CONTEXT namespace. Bare names are not
 	///  touched here: the context encoder (the host's filter view; the captured D<ds>_F<f>
-	///  prefix in the bridge, D1.7) stays their fallback namespace (§4). Comments and R string
+	///  prefix in the bridge) stays their fallback namespace. Comments and R string
 	///  literals are never references (QualifiedColumnRef::scanText rules). A reference that
-	///  does not resolve throws filterException with the typed ready-to-show message (the loud
-	///  D7.5 doctrine, no tombstoning) - the textareas surface it through their checkSyntax
+	///  does not resolve throws filterException with the typed ready-to-show message
+	/// (no tombstoning) - the textareas surface it through their checkSyntax
 	///  error handling. `tokensFormed` (when given) receives the encoded tokens in order of
 	///  appearance, for the callers' used-column bookkeeping.
 	static QString				encodeQualifiedColumnRefs(const QString & code, QStringList * tokensFormed = nullptr);

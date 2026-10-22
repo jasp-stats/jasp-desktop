@@ -73,7 +73,7 @@ void TestQml::qmlEngineAvailable(QQmlEngine *engine)
 
 	// The multi-dataset fixture workspace (dataset 1 + "Second"), the same object the app
 	// exposes as a context property for the data editors. The qualified-column-ref editor
-	// tests (tst_qualifiedColumnRefs.qml) drive the D7.1/D7.2 picker/validator components
+	// tests (tst_qualifiedColumnRefs.qml) drive the picker/validator components
 	// against it; the components take the workspace as a property, exactly like the
 	// FilterWindow/ComputeColumnWindow/ComputeDataSetPanel wiring does.
 	if(Workspace * ws = Workspace::singleton())

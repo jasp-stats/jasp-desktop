@@ -1105,12 +1105,12 @@ void ScriptConstructorView::buildColumnPalette()
 	}
 
 	// outward column sourcing - the picker catalog's non-bare entries (every
-	//column of every OTHER loaded slice, rendered by the D7.0a grammar against
+	//column of every OTHER loaded slice, rendered by the qualified-form grammar against
 	//contextFilterId) join the palette as draggable prototypes. Dropping one stamps the
 	//node with its source slice (dataSetName + filterName, plus the source column's type
 	//as the user type), and ScriptNodeColumn::toR emits the full qualified surface form
-	//for it - the v1 picker cut limits what is OFFERED, never what is EMITTED (D7.0a owner
-	//refinement: picker cut != output cut). The context's own columns are already offered
+	//for it - the v1 picker cut limits what is OFFERED, never what is EMITTED (the picker
+	//cut is not the output cut). The context's own columns are already offered
 	//above (bare there), so only the outward refs are added here.
 	if(Workspace * ws = Workspace::singleton())
 	{

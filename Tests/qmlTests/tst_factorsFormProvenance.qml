@@ -7,7 +7,7 @@ import JASP.Controls
 //
 // The factors option's transient `.filterIds` sidecar is an ARRAY-OF-ARRAYS (element i = factor
 // i's per-term filterId array, FactorsFormBase::createFilterIds) and its Storage shape carries the
-// per-term objects ({name, filterId?, types} - the D5.1 discipline applied per factor), so a
+// per-term objects ({name, filterId?, types} - the per-term discipline applied per factor), so a
 // same-name term in two factors of one form keeps two DISTINCT provenances through a save/reload
 // cycle (the flagship twins, at factor granularity). The engine-side consumption is pinned
 // C++-side (testPerFactorProvenanceEncodesViaOwnViews + the no-misfire pins); this file pins the
@@ -177,7 +177,7 @@ Item
 
 			try
 			{
-				//the D5.1 Storage shape, per factor: {value: [{name, types, filterId?}]}
+				//the Storage shape, per factor: {value: [{name, types, filterId?}]}
 				jaspForm.setOptions({
 					factorsFF: [
 						{ name: "Fac1", title: "Factor 1", indicators: { value: [{ name: "TestInts", types: ["scale"], filterId: f1 }] } },
@@ -225,7 +225,7 @@ Item
 				const intSidecar = genInt[".filterIds"]["factorsInt"]
 				verify(Array.isArray(intSidecar) && intSidecar.length === 1 && Array.isArray(intSidecar[0]),
 						"the interaction factor gets its per-term array too")
-				compare(intSidecar[0][0], f2, "the interaction term's components share the term-level filterId (D6.1)")
+				compare(intSidecar[0][0], f2, "the interaction term's components share the term-level filterId")
 				compare(JSON.stringify(genInt["factorsInt"][0]["components"]["value"][0]), JSON.stringify(["TestInts", "TestDoubles"]),
 						"the interaction term's engine value is the component array (frozen shape)")
 

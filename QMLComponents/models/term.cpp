@@ -70,7 +70,7 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 	// Storage row entry `{keyValue: {name, types, filterId?}}` - the per-term object
 	//of the final file format nested under the row's optionKey (optionKey discipline kept, row
 	//children stay siblings and are collected by the Terms(json) applier exactly like today). The
-	//term's OWN types win over the positional fallback; its filterId rides the typed Term (C9).
+	//term's OWN types win over the positional fallback; its filterId rides the typed Term.
 	if (jsonValue.isObject() && isStorageTermObject(jsonValue))
 	{
 		Term parsed = fromStorageTermObject(jsonValue, types);
@@ -84,8 +84,8 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 		// resolve qualified surface forms in the STRING components at
 		//the parse chokepoint: each component that *is* a reference ("DS"."Col", "F"."Col",
 		//the full form, optional ("Type") tail) becomes the plain column name plus the typed
-		//filterId (C9) - the flagship same-name-different-filter twins stay distinct terms.
-		//Bare components (and non-reference strings) pass through untouched (§4: their
+		//filterId - the flagship same-name-different-filter twins stay distinct terms.
+		//Bare components (and non-reference strings) pass through untouched (their
 		//fallback is the caller's context, behavior unchanged). A term carries ONE filterId,
 		//so a qualified interaction row must be uniformly qualified into the SAME slice;
 		//anything else qualified is a loud typed error - keeping the surface strings would
@@ -132,8 +132,8 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 			resolvedTypes.push_back(resolved.type);
 		}
 
-		//A term carries ONE filterId (C9): bare and qualified components in one term cannot
-		//coexist - uniformly stamping it would re-route the bare components' data (§4: bare
+		//A term carries ONE filterId: bare and qualified components in one term cannot
+		//coexist - uniformly stamping it would re-route the bare components' data (bare
 		//behavior must not change), keeping the surface strings would send an unencodable
 		//term to the engine. Loud and typed either way.
 		if (anyQualified && anyBare)
@@ -445,9 +445,9 @@ Term Term::fromStorageTermObject(const Json::Value & json, const columnTypeVec &
 	return term;
 }
 
-// see the header block on QualifiedTermComponent. Wiring only: the D7.0a grammar
+// see the header block on QualifiedTermComponent. Wiring only: the grammar
 //helpers (QualifiedColumnRef::parse + Workspace::resolveQualifiedColumnRef) do all the work -
-//ids only come back out (D1.2), the resolution runs against the LIVE workspace per call.
+//ids only come back out, the resolution runs against the LIVE workspace per call.
 QualifiedTermComponent resolveQualifiedTermComponent(const QString & component)
 {
 	QualifiedTermComponent out;
@@ -456,7 +456,7 @@ QualifiedTermComponent resolveQualifiedTermComponent(const QString & component)
 	QualifiedColumnRef ref;
 	QString parseError;
 	if (!QualifiedColumnRef::parse(component, ref, parseError) || ref.isBare())
-		return out;	//no reference at all, or the bare production (§4 boundary: untouched)
+		return out;	//no reference at all, or the bare production (untouched)
 
 	Workspace * workspace = Workspace::singleton();
 	if (!workspace)
@@ -465,7 +465,7 @@ QualifiedTermComponent resolveQualifiedTermComponent(const QString & component)
 	ResolvedQualifiedColumn resolved;
 	QString error;
 	if (workspace->resolveQualifiedColumnRef(ref, resolved, error) != QualifiedRefError::none)
-		throw std::runtime_error(fq(error));	//typed, ready-to-show (the D7.5 loud doctrine)
+		throw std::runtime_error(fq(error));	//typed, ready-to-show
 
 	out.bareName		= tq(resolved.columnName);
 	out.filterId		= resolved.filterId;

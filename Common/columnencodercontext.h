@@ -68,7 +68,7 @@ private:
 /// from the parse before anything is written, so the live table can never be corrupted by one.
 /// The extras encoder (and every live dataset) is never consulted for anything but its prefix -
 /// its state is not mutated, and live namespaces keep decoding while a replay is in scope
-/// (decode is a superset over live blocks, C4; colliding indices resolve to the replayed context).
+/// (decode is a superset over live blocks; colliding indices resolve to the replayed context).
 class ScopedColumnEncoderContext
 {
 public:

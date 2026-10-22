@@ -37,7 +37,7 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 //paths; families add encodeThis/loadFilteredData on top of this via the same virtual) and NEVER a
 //dataSetId/filterId: provenance is in the encoded name (+ the transient `.filterIds` sidecar,
 //createFilterIds below, which the slice-queue build and the request encoding consume and the
-//engine strips before R - C8/C11). The host resolution that used to feed the mirror's stamp keys
+//engine strips before R). The host resolution that used to feed the mirror's stamp keys
 //(generatedHostFilter) now serves the sidecar only.
 Json::Value BoundControlBase::createEngineMeta()  const
 {
@@ -72,9 +72,9 @@ Filter *BoundControlBase::generatedHostFilter() const
 	//chain, else the analysis-level VariableInfo) replaced the deleted walk; the provider of
 	//whatever VariableInfo serves the control IS the provenance this option belongs to: the
 	//selected Filter of an explicit host, or the analysis'/shown filter at analysis level
-	//(C13 host-bound fallback - dynamic_cast, not selectedSelectionFilter(): the analysis-level
+	//(the host-bound fallback - dynamic_cast, not selectedSelectionFilter(): the analysis-level
 	//provider is a Filter too and the sidecar must name it as well). Re-read per call, never
-	//cached (D1.2/D2.3).
+	//cached).
 	VariableInfo * varInfo = _control->resolvedVarInfo();
 	Filter * stampFilter = varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
 	return stampFilter && stampFilter->data() ? stampFilter : nullptr;
@@ -135,7 +135,7 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 }
 
 // Every value the control commits goes through HERE. The value lands
-//in the component-owned `_boundValue` (the generators' home - C11) and the change propagates as
+//in the component-owned `_boundValue` (the generators' home) and the change propagates as
 //pure notification: AnalysisBase::notifyOptionsChanged() re-emits boundValuesChanged + the aware
 //dataSpecChanged (the tail the mirror's setBoundValue used to carry, gated exactly as before),
 //and boundValueChanged drives control -> form -> analysis (the run trigger). Nothing is pushed

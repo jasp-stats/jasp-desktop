@@ -36,8 +36,8 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	//used to run here (and the list's
 	//interaction/row-component flags decide whether the R-syntax-simplified form gets row-wrapped,
 	//exactly as before). The parsed typed Terms are then copied into the model - provenance rides
-	//the Term objects, and legacy unqualified JSON parses to -1 terms that the D2.1
-	//wildcard lookup matches against the stamped model.
+	//the Term objects, and legacy unqualified JSON parses to -1 terms that the
+	//name-only wildcard lookup matches against the stamped model.
 	Terms terms(value, _optionKeyValue(), _optionKeyLabel(), allControlValues,
 				_listView->containsInteractions(), _listView->hasRowComponent());
 
@@ -75,7 +75,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	}
 
 	//The control's own value is the canonical serialization of what was parsed (the same builder
-	//the write path and the generator use - C11), not the raw input tree the old mirror-era bind
+	//the write path and the generator use), not the raw input tree the old mirror-era bind
 	//stored; every consumer that reads this option reads the generated form anyway.
 	BoundControlBase::bindTo(_makeOption(terms, allControlValues));
 
@@ -90,13 +90,13 @@ Json::Value BoundControlTerms::createJson() const
 // the transient per-term provenance of this list, POSITIONAL over the terms
 //exactly like `types` is: one entry per term, `Term::filterId()` when the term is qualified
 //(>= 0), else the option's host filter (the same id createMeta stamps today - the
-//C13 fallback baked in so the generated Engine json is a COMPLETE input contract for
+//host-bound fallback baked in so the generated Engine json is a COMPLETE input contract for
 //prepareMultiDataSetRun and the request encoding), else null (= unqualified, legacy/hostless:
 //the resolver's currentEncoder fallback, exactly today's unstamped behaviour). The whole node is
 //omitted when there is nothing to say, so non-aware runs generate filterId-less Engine json that
 //matches today's byte-for-byte. This is the ENGINE wire and stays frozen (R contract + the
-//D3.3 positional walk); the Storage format took the provenance out of this sidecar and into the
-//per-term objects (D5.1 final, createStorageValue below) - the positional array exists exactly
+//positional walk); the Storage format took the provenance out of this sidecar and into the
+//per-term objects (the final shape, createStorageValue below) - the positional array exists exactly
 //because the engine value tree cannot carry per-term members without breaking the frozen shape.
 Json::Value BoundControlTerms::createFilterIds() const
 {
@@ -121,7 +121,7 @@ Json::Value BoundControlTerms::createFilterIds() const
 // final: the Storage file shape = Terms::getStorageOptions - per-term
 //`{name, filterId?, types}` objects under the same row/optionKey discipline as the engine tree
 //(filterId omitted when -1; row children and textareas/combos/etc. keep today's shape). The
-//D5.1-preview positional `filterIds` member embedded next to {value, types} is GONE - the applier
+//The preview positional `filterIds` member embedded next to {value, types} is GONE - the applier
 //(Terms(json)) accepts both this final shape and every engine/legacy shape byte-identically, and
 //a generated Storage tree round-trips parse->regenerate->byte-equal including same-name-
 //different-filter twins (testStorageTermShapeAndRoundTrip).

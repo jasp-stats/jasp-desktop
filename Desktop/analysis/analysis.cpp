@@ -124,7 +124,7 @@ void Analysis::initAnalysis()
 
 
 	// the explicit created-with-options bool (set when the file-load/RPC/duplicate
-	//path parked options into the C12 parking lot) replaces the old mirror-shaped heuristic.
+	//path parked options into the pending-options parking) replaces the old mirror-shaped heuristic.
 	bool isNewAnalysis = !createdWithOptions();
 
 	if(!_isDuplicate && isNewAnalysis)
@@ -882,14 +882,14 @@ Json::Value Analysis::asJSON(bool withRSource)
 	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
 	// the saved options are GENERATED from the components in the STORAGE shape
-	//(C11): per-term `{name, filterId?, types}` objects for the term families (filterId omitted
+	//): per-term `{name, filterId?, types}` objects for the term families (filterId omitted
 	//when -1, provenance inside the term, same-name-different-filter twins immune to positional
 	//drift), every other family its value tree - no `.meta` and no sidecar (both are send-time
-	//artifacts, C8/C11). The Engine wire (createAnalysisRequestJson below) keeps the frozen
+	//artifacts). The Engine wire (createAnalysisRequestJson below) keeps the frozen
 	//{value,types} + sidecar contract untouched. bindTo/Terms(json) re-apply this tree verbatim on
 	//reload (the applier accepts both shapes); version STAYS 7.0.0 - the shape never shipped, so
-	//released files (plain names, all-`-1` ⟹ C13 fallbacks forever) and old bare-prefix result
-	//tokens are handled by D5.2/D5.3, no stamp migration (C15).
+	//released files (plain names, all-`-1` ⟹ host-bound fallbacks forever) and old bare-prefix result
+	//tokens are handled by the legacy-token decode, no stamp migration.
 	analysisAsJson["options"]		= createOptionsJson(BoundControl::Storage);
 	analysisAsJson["userdata"]		= userData();
 	analysisAsJson["plotEdits"]		= _plotEdits;
@@ -1083,7 +1083,7 @@ bool Analysis::shouldRun()
 	//initialized form: before setAnalysisUp has attached and bound it there is no component
 	//state, the pending JSON parks (and must never be read for a run), and staying Empty defers
 	//the dispatch to a later sync pass - by then the form is up. QML load failure means no form
-	//forever: no analysis, no state case (C12).
+	//forever: no analysis, no state case.
 	return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && form()->initialized() && !_isReport;
 }
 
@@ -1122,10 +1122,10 @@ Json::Value Analysis::createAnalysisRequestJson()
 		//A multi-dataset aware analysis encodes and loads per option: the transient `.filterIds`
 		//sidecar of the GENERATED Engine json names the filter each option/term was selected
 		//through (DataBridge::prepareMultiDataSetRun consumes it, the engine
-		//strips it before R). The D3.3 flip: the run request is no longer read from the
+		//strips it before R). The sidecar flip: the run request is no longer read from the
 		//mirror-era read but generated from the components (AnalysisForm::createOptionsJson) -
 		//shouldRun() only dispatches with an initialized form, so there is always component state
-		//to generate from (no pre-attach request can read pending JSON, C12). For non-aware
+		//to generate from (no pre-attach request can read pending JSON). For non-aware
 		//analyses the generated tree is byte-identical to the mirror (equivalence harness).
 		if (multiDataSetAware())
 			json["multiDataSetAware"]	= true;

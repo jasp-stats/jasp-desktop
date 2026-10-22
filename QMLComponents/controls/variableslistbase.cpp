@@ -289,7 +289,7 @@ bool VariablesListBase::containsInteractions() const
 }
 
 // (found by the component zoo): declaring dataSetSelectionOption on a list IS the
-//declaration that its values are columns of that namespace (C10 list-as-host) - no available-list
+//declaration that its values are columns of that namespace (list-as-host) - no available-list
 //or dataset-source relation required for that. JASPListControl::containsVariables() only knows the
 //RELATION routes, so a standalone host-assigned list (the second-source pattern) came out false,
 //which turned encodeValue() off: its values were never encoded and never provenanced into the
@@ -401,7 +401,7 @@ JASPListControl * VariablesListBase::relatedNamespaceList()
 	//assigned lists (dropKeys[0], wired into availableModel() by _setRelations) is where those
 	//lists' items come from - so their namespace follows it, exactly like an explicit source.
 	//A list that declares its own dataSetSelectionOption serves itself instead: own the edge,
-	//do not inherit one (C13: the host-bound fallback applies to the list that HAS the host).
+	//do not inherit one (the host-bound fallback applies to the list that HAS the host).
 	if (_hostSelection.selectionAvailable())
 		return nullptr;
 
@@ -465,8 +465,8 @@ void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl
 	{
 		//the self-skip compares row VALUES on purpose: keyTerm is parsed from
 		//the checkbox's rowValue string and is unqualified, so comparing Term objects would use
-		//the strict identity incl. filterId (C9) and the skip would silently stop firing. (The
-		//row CONTROLS lookup below is exact-row-keyed since .)
+		//the strict identity incl. filterId and the skip would silently stop firing. (The
+		//row CONTROLS lookup below is exact-row-keyed since the re-keying.)
 		if (otherTerm.value() == keyTerm.value())
 			continue;
 

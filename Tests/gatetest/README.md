@@ -190,10 +190,10 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
 - **Hang (unfixed, upstream)** — `jaspLearnBayes/LSgameofchance` and
   `LSgameofskill`: extreme or non-numeric `pointsToWin` (e.g. 1e308 or
   `"not-a-number"`) reaches the R simulation loop, which then runs (nearly)
-  forever. (The saved `.repro.json` files were removed at mds-plan D9.1 as
-  stale pre-plan artifacts: both date from the 2026-09-09 macOS fuzz run,
+  forever. (The saved `.repro.json` files were removed as
+  stale artifacts: both date from the 2026-09-09 macOS fuzz run,
   their embedded csv paths don't resolve off that machine, the hang lives in
-  the module's own R loop untouched by the plan, and the plan's final
+  the module's own R loop, and a final
   fuzzSmoke run produced no repro files.) The QML validators clamp user
   input; the RPC path bypasses them, so a range clamp at the option layer is
   the likely fix.

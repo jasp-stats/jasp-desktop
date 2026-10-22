@@ -69,8 +69,8 @@ public:
 	static const QString			interceptTerm;
 	static QVector<FormulaSource*>	makeFormulaSources(FormulaBase* formula, const QVariant& var);
 	// the emission context - the filter id whose namespace BARE names resolve in
-	// at run time (D7.3 self-reference rule): the analysis' own filter, else the shown filter
-	// (the C13 fallback chain varInfo's provider follows). -1 (no form/filter) keeps every
+	// at run time (the self-reference rule): the analysis' own filter, else the shown filter
+	// (the host-bound fallback chain varInfo's provider follows). -1 (no form/filter) keeps every
 	// emission on the legacy unqualified path.
 	static int						contextFilterIdForForm(AnalysisForm * form);
 	static int						contextFilterIdFor(const ListModel* model);

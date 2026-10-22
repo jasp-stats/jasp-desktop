@@ -461,7 +461,7 @@ void TestEngine::testEngineRegistryPropagatesColumnMutations()
 	// on the same sqlite db and its own process-local copy of the global decode table. It
 	// re-materialises that table per request: provideAndUpdateDataSet() -> Workspace/DataSet/
 	// Column::checkForUpdates (pull from db) -> canonical setCurrentNames(getColumnTypesMap())
-	// -> rebuildBlock of every filter-view block (the D1.4 funnel). A compute-column request
+	// -> rebuildBlock of every filter-view block (the mutation funnel). A compute-column request
 	// only succeeds when that child-side registry is current end-to-end: the rCode is encoded
 	// against the child's mint, R's data environment is named by the child's tokens, and the
 	// result column name is decoded through the child's table on the way back.
@@ -508,12 +508,12 @@ void TestEngine::testEngineRegistryPropagatesColumnMutations()
 	target->setRCode("contNormal+1");
 	runOk("contExpon", "contNormal+1", "baseline compute");
 
-	// Desktop-side namespace: the shown filter's VIEW (C3), tokens per C1.
+	// Desktop-side namespace: the shown filter's VIEW, tokens in the standard shape.
 	ColumnEncoder *view = _data->shownEncoder();
 	QVERIFY2(view, "shown dataset must answer with a filter-view encoder");
 	const std::string oldToken = view->encode("contNormal");
 	QVERIFY2(tq(oldToken).startsWith("JASPColumn_D") && tq(oldToken).endsWith("_Encoded"),
-			 qPrintable("shown view must mint the C1 token shape, got: " + tq(oldToken)));
+			 qPrintable("shown view must mint the standard token shape, got: " + tq(oldToken)));
 	QCOMPARE(tq(ColumnEncoder::decode(oldToken)), QString("contNormal"));
 
 	// 2. Desktop-side rename. setName() only writes the db and bumps the column revision -
@@ -555,11 +555,11 @@ void TestEngine::testEngineRegistryPropagatesColumnMutations()
 	runOk("contExpon", "addedCol+1", "engine request via the added column");
 
 	// 7. Shrink: the alphabetically-last column's token sits at the end of the block's key
-	// space, so erase-then-write (C4) must leave it RAW on the desktop side after removal...
+	// space, so erase-then-write must leave it RAW on the desktop side after removal...
 	const std::string lastToken = view->encode("unicode");
 	QVERIFY2(ColumnEncoder::shouldDecode(lastToken), "last column's token missing before removal");
 	_data->removeColumns(_data->columnIndex(_data->column("unicode")), 1);
-	QCOMPARE(tq(ColumnEncoder::decode(lastToken)), tq(lastToken));	// raw (C16)
+	QCOMPARE(tq(ColumnEncoder::decode(lastToken)), tq(lastToken));	// raw
 	// ...and the child must refuse it too on its next request.
 	target->setRCode("unicode+1");
 	runFails("contExpon", "unicode+1", "engine must not resolve the removed column", "unicode");
@@ -712,7 +712,7 @@ void TestEngine::testScriptConstructorFuzz()
 
 void TestEngine::testQualifiedSliceReferencesEndToEnd()
 {
-	// (design doc §3.2): end-to-end through the real out-of-process engine. A
+	// End-to-end through the real out-of-process engine. A
 	//computed column and a filter whose code carries a qualified outward reference must run
 	//against the REFERENCED filter's materialized slice (its filtered rows, its view's tokens),
 	//and an unresolvable reference must fail the run loudly with the typed message - no silent
@@ -842,7 +842,7 @@ void TestEngine::testQualifiedSliceReferencesEndToEnd()
 			QCOMPARE(filtered[i], std::stod(ownContNormal[i].asString()) > expectedMean);
 	}
 
-	//(c) An unresolvable reference fails the run LOUDLY with the typed message (D7.5's error
+	//(c) An unresolvable reference fails the run LOUDLY with the typed message (the error
 	//surface - the desktop scan skips it with a warning, the engine's run-time scan refuses),
 	//and the target column is left untouched (dataChanged false keeps it invalidated).
 	Column * badTarget = _data->column("contcor2");
@@ -878,10 +878,10 @@ void TestEngine::testQualifiedConstructorReferencesEndToEnd()
 	//the by-name request path - which is how EVERY filter run is queued in production
 	//(Filter::setInvalidated -> sendFilterByName). EngineSync::sendFilterByName stamps the
 	//referencedFilterIds sidecar from BOTH halves of the run code (rFilter + the
-	//constructor-generated generatedFilter; D7.4's union fix) - without it the engine's own
+	//constructor-generated generatedFilter; the union fix) - without it the engine's own
 	//re-scan would fail the run with "did not list as a referenced slice (stale request?)".
-	//Also pins the D7.5 invalidation surface end-to-end: renaming the referenced filter
-	//makes the re-run fail LOUDLY with the typed message (no tombstoning, C16 spirit).
+	//Also pins the invalidation surface end-to-end: renaming the referenced filter
+	//makes the re-run fail LOUDLY with the typed message (no tombstoning).
 	QVERIFY2(_data,			"No dataset!");
 	QVERIFY2(_engines,		"No EngineSync!");
 	QVERIFY2(_engineRep,	"No EngineRepresentation!");
@@ -937,7 +937,7 @@ void TestEngine::testQualifiedConstructorReferencesEndToEnd()
 	QVERIFY2(expectedSliceRows > 0, "KeepPos's filter would keep no rows - fixture is wrong");
 
 	//The constructor-generated code, built through the real ScriptConstructorModel -> toR
-	//emission (D7.4): contNormal > mean("Beta"."KeepPos"."contNormal"("scale"), na.rm=TRUE).
+	//emission: contNormal > mean("Beta"."KeepPos"."contNormal"("scale"), na.rm=TRUE).
 	ScriptConstructorModel model;
 	model.setMode(ScriptConstructorMode::Filter);
 
@@ -1016,7 +1016,7 @@ void TestEngine::testQualifiedConstructorReferencesEndToEnd()
 			QCOMPARE(filtered[i], std::stod(ownContNormal[i].asString()) > expectedMean);
 	}
 
-	//(b) D7.5 invalidation leg: renaming the REFERENCED filter invalidates the reference.
+	//(b) The invalidation leg: renaming the REFERENCED filter invalidates the reference.
 	//The re-run fails LOUDLY with the typed message - on the reply AND on the filter's own
 	//error surface (Filter::errorMsg, what FilterWindow shows) - and nothing is tombstoned.
 	keepPos->setName("KeepPosRenamed");

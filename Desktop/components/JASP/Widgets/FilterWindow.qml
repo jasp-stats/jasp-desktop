@@ -182,7 +182,7 @@ FocusScope
 				//catalog (every column of every other loaded slice) joins the own dataset's
 				//columns; dropping one stamps the node with its source slice and the generated
 				//R carries the full qualified surface form. The context is the EDITED filter
-				//(the same bare-name fallback namespace the R editor's picker uses, C13).
+				//(the same bare-name fallback namespace the R editor's picker uses).
 				contextFilterId:	filterModel.currentFilterId
 
 				anchors
@@ -493,13 +493,13 @@ FocusScope
 			}
 
 			// the edited filter's own DataSet is the bare-name fallback BY
-			// DEFINITION (C13) - there is deliberately no fallback/dataset-selection UI here.
+			// DEFINITION - there is deliberately no fallback/dataset-selection UI here.
 			// What the R editor gains is the outward surface: insertion of qualified references
 			// from the other loaded slices (the picker; insertion = the verbatim
 			// renderQualifiedColumnRef output with context = the edited filter's id) and live
 			// validation of what the user typed (non-blocking warning; the run still fails
-			// loudly at the engine, D7.5's surface). The easy constructor below stays v1: its
-			// palette offers only the own dataset's columns (owner Q3 scope cut), so its JSON
+			// loudly at the engine). The easy constructor below stays v1: its
+			// palette offers only the own dataset's columns (the v1 scope cut), so its JSON
 			// column references stay as today for own-dataset picks.
 			Text
 			{
@@ -687,9 +687,9 @@ FocusScope
 
 			// outward-reference support for the R filter editor. The insertion
 			// context is the EDITED filter's id (filterModel.currentFilterId): its own dataset's
-			// columns come out of the picker as the bare names (the C13 fallback), everything
+			// columns come out of the picker as the bare names (the host-bound fallback), everything
 			// else as the minimal qualified surface form. The validator is debounced and
-			// read-only: it warns, it never triggers a run (the D7.5 re-trigger belongs to the
+			// read-only: it warns, it never triggers a run (the re-trigger belongs to the
 			// apply paths, which always re-scan fresh code at queue time).
 			JaspControls.QualifiedColumnValidator
 			{

@@ -342,7 +342,7 @@ void Engine::runFilterByName(const std::string & name, int dataSetId, int reques
 	try
 	{
 		// the run's slice context is the filter being run - its own view encodes
-		//the code (C13, fixed for filter expressions), and the request's referencedFilterIds
+		//the code (fixed for filter expressions), and the request's referencedFilterIds
 		//sidecar drives the materialization of any referenced foreign slices.
 		filterResult		= rbridge_applyFilter(strippedFilter, localFilter->generatedFilter(), localFilter, referencedFilterIds);
 		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
@@ -385,7 +385,7 @@ void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const s
 	{		
 		std::string		strippedFilter		= stringUtils::stripRComments(filter);
 		// the run's slice context is the DEFAULT filter being run (its own view
-		//encodes the code, C13) plus the request's referencedFilterIds sidecar.
+		//encodes the code) plus the request's referencedFilterIds sidecar.
 		boolvec			filterResult		= rbridge_applyFilter(strippedFilter, generatedFilter, dataSet->defaultFilter(), referencedFilterIds);
 		std::string		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
@@ -457,8 +457,8 @@ void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const
 std::vector<int> Engine::referencedFilterIdsFromRequest(const Json::Value & jsonRequest)
 {
 	// the transient `referencedFilterIds` sidecar of a filter/compute
-	//request - the desktop's scan of the run's code (the D7.0a helpers, design doc §3.2).
-	//This extraction IS the strip point for these requests (mirroring D3.3's last-moment
+	//request - the desktop's scan of the run's code (the grammar helpers).
+	//This extraction IS the strip point for these requests (mirroring the last-moment
 	//doctrine): the ids are consumed for slice materialization only and are never forwarded
 	//into anything R evaluates - the R-visible code is built by rbridge_prepareSliceRunScript
 	//from the code text alone, and the sidecar member dies with the request json here.
@@ -620,7 +620,7 @@ void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnNa
 			
 			const std::string useThisFilter = compCol ? compCol->computeFilter() : "";
 			
-			// (design doc §3.1): the run's slice context is the COMPUTE
+			// The run's slice context is the COMPUTE
 			//FILTER's view - the same view the data frame R reads inside
 			//rbridge_evalRComputedColumn, and the namespace bare names in the code fall back
 			//to. The output-name encode uses that same explicit handle; the process-global

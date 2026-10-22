@@ -159,7 +159,7 @@ bool FormulaBase::parseRSyntaxOptions(Json::Value &options) const
 
 	//Provider chain: a Formula is not a list and not a selection host, so the
 	//analysis-wide VariableInfo of its form serves it (the deleted walk's parent-chain lookup
-	//of a selecting host ancestor had no live case left: since C10 hosts are lists and text
+	//of a selecting host ancestor had no live case left: since hosts are lists and text
 	//areas, and formulas sit on the form itself). The provider default mirrors what the form
 	//does at setAnalysisUp (analysis filter, else whatever setProvider already installed).
 	AnalysisForm * analysisForm = form();

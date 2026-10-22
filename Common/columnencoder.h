@@ -36,26 +36,26 @@
 ///                type)) AND materializes the full-string encode/decode maps in its own prefix
 ///                namespace. Its namespace is registered as a block in the process-global strict
 ///                decode table (see the static decode()). Used by the process-global fallback encoder,
-///                the extras encoder (DataBridge's `JaspExtraOptions_`, C6) and ad-hoc callers
+///                the extras encoder (DataBridge's `JaspExtraOptions_`) and ad-hoc callers
 ///                (tests, ColumnEncoderContext replay).
 ///
-///  * CANONICAL - the per-DataSet mint (C2), created via createCanonical(): keeps only
+///  * CANONICAL - the per-DataSet mint, created via createCanonical(): keeps only
 ///                `name -> index` and `index -> (originalName, type)` built by
 ///                setCurrentNames()/updateColumnTypesOnly() with the classic alphabetical-counter
 ///                semantics (`.scale`/`.ordinal`/`.nominal` triples + bare-name default). It
 ///                NEVER holds or answers full-string encode/decode; instead every live VIEW
 ///                minted on top of it gets its block rewritten whenever the mint changes.
 ///
-///  * VIEW      - the per-Filter namespace handle (C3), created via createView(): a non-owning
+///  * VIEW      - the per-Filter namespace handle, created via createView(): a non-owning
 ///                {canonical*, prefix} pair. encode() = canonical index lookup + own prefix
 ///                compose, shouldEncode() = canonical membership, no materialized per-view
 ///                string maps. Its block lives in the global decode table and is erased when
-///                the view dies (deleted filter's tokens go raw, C16).
+///                the view dies (deleted filter's tokens go raw).
 ///
-/// Decoding is always context-free (C4): the ONE process-global table (a block per live filter
+/// Decoding is always context-free: the ONE process-global table (a block per live filter
 /// of every loaded dataset plus the extras and fallback blocks) is the only decode source,
 /// membership-only, unknown tokens stay raw. Encode-side unioning of the registered "other"
-/// encoders (extras) survives per C5; all decode-side merging is gone.
+/// encoders (extras) survives; all decode-side merging is gone.
 ///
 /// Per-process ownership: the desktop, the engine and the syntax-bridge each keep their own
 /// canonicals/views/table - they are separate processes. Deterministic minting (identical
@@ -77,18 +77,18 @@ public:
 	typedef std::map<int, colsPlusTypes>						perDataSetColsPlusTypes;
 	///< Resolves the encoder to use for a given option stamp (dataSetId, filterId), or nullptr to
 	/// fall back to the current encoder. filterId -1 means "no filter stamped" (unqualified option:
-	/// the resolver should return the dataset's shown-filter view / legacy fallback, C7).
+	/// the resolver should return the dataset's shown-filter view / legacy fallback).
 	/// Resolves the encoder a node's names must encode against (consumed per the
-	/// D3.3/D3.7 flip). `filterId` is read from the transient `.filterIds` sidecar (scalar node =
-	/// the option-wide id, positional entry = per-term id, -1 = unqualified: the C7 legacy
+	/// sidecar flip). `filterId` is read from the transient `.filterIds` sidecar (scalar node =
+	/// the option-wide id, positional entry = per-term id, -1 = unqualified: the legacy
 	/// fallback the resolver documents for its context). The resolver may RE-ATTRIBUTE
 	/// `dataSetId` (in-out) to the dataset of the namespace it resolved — filter ids imply their
 	/// dataset (Filter::data) — which is how the collected cols+types stay keyed per dataset
 	/// without the retired meta stamps. A null resolver reproduces the classic behaviour exactly:
-	/// process-global current encoder, no re-attribution (C7).
+	/// process-global current encoder, no re-attribution.
 	typedef std::function<ColumnEncoder *(int & dataSetId, int filterId)>	EncoderFor;
 
-	/// One entry of the process-global strict decode table (C4): token -> (original name, type).
+	/// One entry of the process-global strict decode table: token -> (original name, type).
 	struct DecodeEntry
 	{
 		std::string	name	= "";
@@ -101,10 +101,10 @@ public:
 								ColumnEncoder(const std::map<std::string, std::string> & decodeDifferently);
 								~ColumnEncoder();
 
-	/// Create the canonical mint for a DataSet (C2): mint-only, answers no full-string
+	/// Create the canonical mint for a DataSet: mint-only, answers no full-string
 	/// encode/decode, registers no block itself (its views' blocks are its footprint).
 	static ColumnEncoder	*	createCanonical();
-	/// Create a view (C3) on `canonical` minting `prefix + <index> + postfix` tokens; registers
+	/// Create a view on `canonical` minting `prefix + <index> + postfix` tokens; registers
 	/// with the canonical and mints its block in the global decode table right away. Destroying
 	/// the view (or the canonical) erases the block again.
 	static ColumnEncoder	*	createView(ColumnEncoder * canonical, const std::string & prefix, const std::string & postfix = "_Encoded");
@@ -115,8 +115,8 @@ public:
 	/// which is only meaningful in the engine's request context.
 	static ColumnEncoder	*	fallbackEncoder();
 	static ColumnEncoder	*	currentEncoder();
-	/// Points the legacy non-aware request-context indirection at `encoder` (C7: after Phase 1
-	/// this is a VIEW - the shown dataset's shown filter's handle - never a canonical).
+	/// Points the legacy non-aware request-context indirection at `encoder` (this is a VIEW -
+	/// the shown dataset's shown filter's handle - never a canonical).
 	static void					setCurrentEncoder(ColumnEncoder * encoder);
 
 	static	bool				isColumnName(const std::string & in)							{ return columnEncoder()->shouldEncode(in);	}
@@ -150,8 +150,8 @@ public:
 			void				setCurrentColumnTypePerName(const colTypeMap & theMap);									///< Do not use! Deprecated
 			void				setCurrentNamesFromOptionsMeta(const Json::Value & json);
 
-			/// raw name (bare or `name.type`) -> full encoded token. Canonical never answers
-			/// (C2); a view composes canonical index + own prefix (C3).
+			/// raw name (bare or `name.type`) -> full encoded token. Canonical never answers;
+			/// a view composes canonical index + own prefix.
 			std::string			encode(const std::string &in);
 
 			///Replace all occurences of columnNames in a string by their encoded versions, taking into account the presence of word boundaries and parentheses.
@@ -160,14 +160,14 @@ public:
 			std::string			encodeRScript(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, std::set<std::string> * columnNamesFound = nullptr, const std::string& acceptedPrefix = "");
 
 		///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
-		///Instance method: encodes against *this* encoder (own namespace + the registered extras,
-		///C5). Decode is context-free and goes through the global table instead.
+		///Instance method: encodes against *this* encoder (own namespace + the registered extras)
+		/// Decode is context-free and goes through the global table instead.
 			std::string			encodeAll(const std::string & text) const;
 
 			///Replace all occurences of columnNames in a string by their encoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
 			void				encodeJson(Json::Value & json, bool replaceNames = false, bool replaceStrict = false) const;
 
-	/// --- The ONE process-global strict decode table (C4) -------------------------------
+	/// --- The ONE process-global strict decode table -------------------------------
 	/// Single writer: rebuildBlock() (erase the block's bounded key space, then write).
 	/// These are THE decode entry points; O(1), context-free, strict (no hit ==> raw).
 	/// They cover every live filter block of every loaded dataset plus the extras and fallback
@@ -183,7 +183,7 @@ public:
 	///< Forget every block (test isolation). Live instances re-mint on their next rebuild.
 	static	void				resetForTests();
 
-	/// The deterministic C1 mint over a raw column map: index -> (originalName, type), exactly
+	/// The deterministic mint over a raw column map: index -> (originalName, type), exactly
 	/// what buildMint() stores and every block is written from. Pure - no instance, no table.
 	static	std::vector<std::pair<std::string, columnType>>	mintReverseOf(const colTypeMap & namesWithTypes);
 	/// raw name (bare or `name.type`) -> `prefix + <mint index> + postfix` token under the
@@ -199,25 +199,25 @@ public:
 
 	/// best-effort legacy-prefix result decoder for PRE-EXISTING persisted results.
 	/// Materializes the released namespace - `LEGACY_DEFAULT_PREFIX + <i> + "_Encoded"` over the
-	/// CURRENT dataset column map, same pure mint (mintReverseOf, C1) released JASP minted with -
+	/// CURRENT dataset column map, same pure mint (mintReverseOf) released JASP minted with -
 	/// and sweeps it through every string value and member name of `json`, replacing hits by the
 	/// bare original name (exactly what the released instance decoder did).
 	///
-	/// READ-SIDE ONLY by construction (the single-writer rule, C4): NOTHING is registered into
+	/// READ-SIDE ONLY by construction (the single-writer rule): NOTHING is registered into
 	/// the global decode table, live decoding stays strict-table, and the sweep is applied once
 	/// at file load to stored result trees only (Analyses::createFromJaspFileEntry). The honest
 	/// limitation, loud and clear: the namespace can only be rebuilt from the columns as they
 	/// are NOW - correct exactly when the dataset has not changed since the file was saved.
-	/// Renamed/reordered/deleted columns leave their old tokens RAW (C16) or map to whatever the
+	/// Renamed/reordered/deleted columns leave their old tokens RAW or map to whatever the
 	/// deterministic mint points at now; deleted filters have no bearing (the legacy format had
-	/// none). No grammar parsing (C4): pure mint-index lookup, garbage in, raw out, never a crash.
+	/// none). No grammar parsing: pure mint-index lookup, garbage in, raw out, never a crash.
 	static	void				decodeJsonLegacyTokens(Json::Value & json, const colTypeMap & namesWithTypes);
 
 	/// Scoped replay block of the global decode table: writes `prefix +
 	/// <mint index of names> + _Encoded -> (name, type)` on construction and, on destruction,
 	/// restores EXACTLY the table contents it found under those keys (undo log, not a blind
 	/// erase - entries a live block had at the colliding indices come back, never dropped).
-	/// The sanctioned scoped exception to the rebuildBlock-single-writer rule (C4): purely
+	/// The sanctioned scoped exception to the rebuildBlock-single-writer rule: purely
 	/// derived, LIFO-nesting, and it is what lets ColumnEncoderContext replay an archived
 	/// namespace through the one table without mutating any live canonical/view/extras.
 	class ScopedDecodeBlock
@@ -250,18 +250,18 @@ public:
 	/// cols+types are returned per dataSetId: attributed through the resolver's re-attachment
 	/// (see EncoderFor), everything the sidecar does not name stays with `primaryDataSetId`.
 	/// A null `encoderFor` reproduces encodeColumnNamesinOptions() exactly - sidecar or not
-	/// (C7: classic encoding always runs against the current encoder).
+	/// (classic encoding always runs against the current encoder).
 	static	perDataSetColsPlusTypes	encodeColumnNamesinOptionsPerDataSet(Json::Value & options, bool preloadingData, const EncoderFor & encoderFor, int primaryDataSetId);
 
 	// ----------------------------------------------------------------------------------------------
-	// `.filterIds` sidecar (generators, D3.3/D3.7 consumption, stripped at the
+	// `.filterIds` sidecar (generators produce, request encoding consumes, stripped at the
 	// engine boundary before R sees the options). Grammar of one sidecar node, placed at the
 	// option's path inside the root tree `options[FILTERIDS_MEMBER]`:
 	//   int               option-level filterId; covers the whole option subtree (the inherit
-	//                     analogue of what an enclosing .meta stamp did in the D1.6 lockstep).
+	//                     analogue of what an enclosing .meta stamp did in the old lockstep).
 	//   array(int|null)   POSITIONAL over the option's term values (aligned like `types`): each
 	//                     entry is the term's filterId, null = unqualified term (resolves through
-	//                     the caller's C7 legacy fallback). A positional node never inherits
+	//                     the caller's legacy fallback). A positional node never inherits
 	//                     parent->child, which structurally avoids the old provenance-meta walk's
 	//                     parent-stamp leak into child nodes.
 	// array(array(int|null)) PER-FACTOR positional (FactorsForm family): the
@@ -292,8 +292,8 @@ public:
 	///< node is not a container or names no child; FILTERIDS_SELF is never a child lookup).
 	static	Json::Value			sidecarChild(const Json::Value & sidecarNode, const std::string & optionName);
 	///< Collects every int leaf of a `.filterIds` sidecar tree (scalars, positional arrays and
-	///  "$"-containers alike) - the queue input of DataBridge::prepareMultiDataSetRun (D3.3) and
-	///  of the D3.6 component-side reference computation. The provenance-meta collectors of the
+	///  "$"-containers alike) - the queue input of DataBridge::prepareMultiDataSetRun and
+	///  of the component-side reference computation. The provenance-meta collectors of the
 	/// stamped-mirror era are DELETED with the mirror itself: the
 	///  sidecar is now the one place filter ids live.
 	static	void				collectFilterIdsFromSidecar(const Json::Value & sidecarNode, std::set<int> & filterIds);
@@ -302,9 +302,9 @@ public:
 private:
 	static	ColumnEncoder	*	_columnEncoder;
 	static	ColumnEncoder	*	_currentEncoder;
-	static	ColumnEncoders	*	_otherEncoders;		///< encode-side union members (extras etc.), C5; never a canonical or view
+	static	ColumnEncoders	*	_otherEncoders;		///< encode-side union members (extras etc.); never a canonical or view
 
-	static	std::map<std::string, DecodeEntry> &	_decodeTable();					///< token -> (original name, type), C4
+	static	std::map<std::string, DecodeEntry> &	_decodeTable();					///< token -> (original name, type)
 
 						ColumnEncoder(CanonicalTag);
 						ColumnEncoder(ColumnEncoder * canonical, std::string prefix, std::string postfix);
@@ -335,7 +335,7 @@ private:
 
 	//Encode-side map builders rooted at a specific encoder (FULL reads its materialized maps,
 	//VIEW composes canonical indices with its own prefix on the fly; both union in the extra
-	//encodings from _otherEncoders exactly like before - C5).
+	//encodings from _otherEncoders exactly like before).
 			colMap				ownEncodingMap() const;
 			colVec				ownOriginalNames() const;
 			colVec				ownEncodedNames() const;
@@ -364,7 +364,7 @@ private:
 	size_t						_blockCount		= 0;	///< indices last written to the table under the block prefix/postfix below
 	std::string					_blockPrefix,
 								_blockPostfix;
-	bool						_writesBlock	= true;	///< false for the replacer-encoder and the canonical (they register nowhere, C5/C2)
+	bool						_writesBlock	= true;	///< false for the replacer-encoder and the canonical (they register nowhere)
 };
 
 #endif // COLUMNENCODER_H

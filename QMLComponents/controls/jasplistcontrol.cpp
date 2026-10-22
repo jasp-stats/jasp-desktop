@@ -59,7 +59,7 @@ JASPControl * JASPListControl::resolvedSelectionHost()
 {
 	// follow the RELATION chain hop by hop (explicit `source:` first, else the
 	//related available list) until a list is an ACTIVE selection host - it serves its own subtree
-	//and everyone it feeds (C13 host-bound) - or the chain runs out. Keeping the source edge
+	//and everyone it feeds (host-bound) - or the chain runs out. Keeping the source edge
 	//ahead of the own-host check preserves the old semantic main path: a list that declares
 	//where its variables come from follows that control, dependency over visuals. The deleted
 	//walk's recursion and its `visited` cycle-guard machinery are gone: relations are declared

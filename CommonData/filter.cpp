@@ -131,7 +131,7 @@ void Filter::ensureColumnView()
 
 void Filter::dropColumnView()
 {
-	delete _columnView;	//~ColumnEncoder erases the block: this filter's tokens go raw (C16)
+	delete _columnView;	//~ColumnEncoder erases the block: this filter's tokens go raw
 	_columnView = nullptr;
 }
 

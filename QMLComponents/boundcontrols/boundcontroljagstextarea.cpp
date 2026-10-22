@@ -68,7 +68,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 
 	// resolve the qualified column references before the
 	//bare-name encode pass, exactly like the rlang companion - each becomes the referenced
-	//slice's token, bare names keep the context encoder as their fallback (§4). Loud and
+	//slice's token, bare names keep the context encoder as their fallback. Loud and
 	//typed, but non-blocking: an unresolved reference shows in the text area and the text is
 	//left unencoded (the bare pass would mangle it into the context namespace).
 	QString resolvedText;
@@ -113,7 +113,7 @@ void BoundControlJAGSTextArea::checkSyntax()
                 paramName = paramName.left(paramName.indexOf("["));
 
 			//Token membership is the context-free global table's answer, not
-			//the host encoder's own map - the instance decode shims retired with D1.5.
+			//the host encoder's own map - the instance decode shims are retired.
 			if (paramName != "" && !ColumnEncoder::shouldDecode(fq(paramName)))
 				_usedParameters.insert(paramName);
 

@@ -40,7 +40,7 @@ public:
 
 	// `contextFilterId` is the default namespace bare names resolve in at run
 	// time (the analysis' own filter). A term stamped with a DIFFERENT live filter id renders
-	// as the D7.0a qualified MINIMAL form (renderQualifiedColumnRef: bare inside the context,
+	// as the qualified minimal form (renderQualifiedColumnRef: bare inside the context,
 	// "DS"."Col" / "F"."Col" / full form outside it) - qualification never happens for -1
 	// (unqualified) terms, so every legacy emission stays byte-identical. The default -1 keeps
 	// every caller that cannot know a context on the legacy path.

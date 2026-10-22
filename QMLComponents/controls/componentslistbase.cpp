@@ -365,7 +365,7 @@ Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, c
 	//this list family's `{value, types}` row-entry shape (containsVariables()) exactly as before.
 	// storageShape switches to the FILE serialization - the same rows, but the term
 	//entry under the optionKey becomes the per-term object {name, filterId?, types} (row children
-	//keep today's shape, optionKey kept). The collision that blocked the D5.1-preview embedding
+	//keep today's shape, optionKey kept). The collision that blocked the preview embedding
 	//(a positional `filterIds` sibling would parse as a row child) is gone: the provenance rides
 	//INSIDE the nested term object, which the applier reads before anything else at that level.
 	if (storageShape)

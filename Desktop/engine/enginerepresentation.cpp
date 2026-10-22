@@ -10,7 +10,7 @@ namespace
 {
 // stamp the transient `referencedFilterIds` sidecar (the desktop's scan of the
 //run's code) onto a filter/compute request json. The engine consumes it for slice
-//materialization and strips it before anything reaches R (D3.3 doctrine); for legacy requests
+//materialization and strips it before anything reaches R (the provenance doctrine); for legacy requests
 //the set is empty and no member is written at all, keeping the json byte-identical.
 void stampReferencedFilterIds(Json::Value & json, const std::set<int> & referencedFilterIds)
 {

@@ -83,7 +83,7 @@ ColumnEncoderContext ColumnEncoderContext::fromJson(const Json::Value & context)
 		throw std::runtime_error("Unsupported column encoder context version.");
 	// v1 and v2 share one wire shape (the replay semantics moved into the table, not the JSON):
 	// a v1 context (no prefix or a dataset prefix) parses and replays exactly like v2's, so no
-	// migration exists and none is needed (C15: dev-branch fixtures, regenerate don't compat).
+	// migration exists and none is needed (dev-branch fixtures: regenerate, don't compat).
 
 	return ColumnEncoderContext(
 		columnTypesFromJson(context["columns"], "columns"),

@@ -29,11 +29,11 @@ public:
 	//(the components are the source of truth; these generations are what replaces reading a
 	//stored options tree):
 	//  Engine  - the current R contract: exactly the option values the control writes today, plus
-	//            the send-time `.meta` (createEngineMeta, C8: never dataSetId/filterId) and the
+	//            the send-time `.meta` (createEngineMeta: never dataSetId/filterId) and the
 	//            transient per-term/per-option `.filterIds` sidecar (createFilterIds) that the
 	//            slice-queue build and the request encoding consume and that is STRIPPED at the
-	// engine boundary before R ever sees it (C11).
-	//  Storage - clean typed state (D5.1 final): no `.meta`, no sidecar tree. The term families
+	// engine boundary before R ever sees it).
+	//  Storage - clean typed state (the final shape): no `.meta`, no sidecar tree. The term families
 	//            serialize each term as the per-term object {name, filterId?, types} (filterId
 	//            omitted when -1, row optionKey discipline kept); every other family stores its
 	//            engine value (the shapes coincide wherever there are no per-term ids to carry).
@@ -53,11 +53,11 @@ public:
 	/// JASPControl::_setInitialized re-binds an already-initialized control that a delta parse
 	/// left out from `value == null ? <own builder> : value`. For every family that builder is
 	/// the Engine shape and the round-trip is the identity; for the assigned-terms family the
-	/// Engine builder deliberately carries no per-term filterIds (D2.1), so re-binding from it
+	/// Engine builder deliberately carries no per-term filterIds, so re-binding from it
 	/// erases the terms' provenance stamps (the intake then re-stamps them with the control's
-	/// own host - silently re-routing typed copies D6.2 / host-restamped terms D3.5 onto the
+	/// own host - silently re-routing typed copies or host-restamped terms onto the
 	/// wrong dataset). Those families re-bind from their Storage shape instead, which the
-	/// applier parses back filterId-included (D5.1, lossless round-trip). Default: Engine.
+	/// applier parses back filterId-included (lossless round-trip). Default: Engine.
 	virtual JsonFormat	selfRebindFormat()														const	{ return Engine;				}
 	///< Generate this control's option value in the requested shape. The default
 	/// is today's createJson() for both formats: BoundControlBase routes the two formats through
@@ -68,7 +68,7 @@ public:
 	/// which answers here.
 	virtual Json::Value	createJson(JsonFormat)														const	{ return createJson();			}
 	///< The send-time `.meta` node of this option (THE single source since the
-	/// D3.4 deletion of the mirror's createMeta stamping era): what the family generates
+	/// mirror's createMeta stamping era was deleted): what the family generates
 	/// (shouldEncode/isRCode/filterForValues/loadFilteredData/encodeThis/...), never any
 	/// dataSetId/filterId - provenance is in the name (+ the transient sidecar below). Default:
 	/// no meta.
@@ -76,9 +76,9 @@ public:
 	///< The transient per-term/per-option filterId node for this option,
 	/// placed at the option's path inside the generated `.filterIds` tree (same placement rules as
 	/// `.meta`). Schema: int | array of (int|null); an array is POSITIONAL over the option's term
-	/// values (null = unqualified term ⟹ the D3.7 resolver's fallback), a scalar covers the whole
+	/// values (null = unqualified term ⟹ the resolver's fallback), a scalar covers the whole
 	/// option (the aware-run namespace). Null when there is nothing to say. Stripped at the
-	/// engine boundary (D3.3); never reaches Storage. Also the per-control provenance input of
+	/// engine boundary); never reaches Storage. Also the per-control provenance input of
 	/// AnalysisForm::collectFilterIds - the only place filter ids are ever read
 	/// for behaviour besides the engine-side walk.
 	virtual Json::Value	createFilterIds()															const	{ return Json::nullValue;		}

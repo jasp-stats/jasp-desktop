@@ -66,7 +66,7 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 				// Snapping to index 0 here used to rewrite the option and push the coerced
 				// value into whatever the control drives, silently destroying what the file
 				// saved (the classic hit: a reopened multi-dataset selection naming a filter
-				// the dropdown offers only a moment later, finding M1). Show the error and
+				// the dropdown offers only a moment later). Show the error and
 				// keep the value pending instead: the combo stays blank, the option keeps
 				// the value as it came in, and termsChangedHandler() binds it for real (and
 				// clears the error) the moment the model can serve it.
@@ -145,7 +145,7 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 
 // the combo holds ONE selected variable, so the sidecar is a scalar (schema:
 //BoundControlTerms::createFilterIds): the selected model term's own filterId when it is qualified
-//(D2.1/D2.5 keep it in sync with the list's namespace), else the option's host filter - exactly
+//(the list re-stamps it on host changes), else the option's host filter - exactly
 //the id the host's sidecar node carries for this value - else null (non-aware/hostless: no sidecar, as today).
 Json::Value ComboBoxBase::createFilterIds() const
 {

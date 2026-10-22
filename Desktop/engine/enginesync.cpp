@@ -42,8 +42,8 @@ EngineSync * EngineSync::_singleton = nullptr;
 // a filter's run code is BOTH halves - the hand-written rFilter AND the
 //constructor-generated code (generatedFilter; Engine::runFilterByName/runDefaultFilter pass
 //both into rbridge_applyFilter, which prepares them as ONE script). The referencedFilterIds
-//sidecar must therefore list the references of both, exactly like sendFilter's union scan
-//(D7.3): the constructor output can carry qualified outward refs (ScriptNodeColumn::toR
+//sidecar must therefore list the references of both, exactly like sendFilter's union scan:
+//the constructor output can carry qualified outward refs (ScriptNodeColumn::toR
 //emits them for outward nodes). Bare/label-generated code holds no references, so scanning
 //the generated half is always safe.
 static std::set<int> referencedFilterIdsOf(const Filter * filter)
@@ -585,10 +585,10 @@ int EngineSync::sendFilter(int dataSetId, const QString & generatedFilter, const
 	int requestId = ++_waitingFilterRequestIDCounter;
 	_waitingFilters.emplace_back(new RFilterStore(dataSetId, generatedFilter, filter, requestId));
 
-	// stamp the transient referencedFilterIds sidecar onto the request (D3.3
-	//doctrine: desktop owns provenance, engine consumes and strips). Both halves of the run's
+	// stamp the transient referencedFilterIds sidecar onto the request (desktop owns provenance,
+	//engine consumes and strips). Both halves of the run's
 	//code are scanned - the hand-written filter and the machine-generated constructor code -
-	//because the D8.1 editors can emit qualified surface forms in either. Unresolvable
+	//because the editors can emit qualified surface forms in either. Unresolvable
 	//references are logged inside the scan and the engine fails the run loudly at run time.
 	std::set<int> & referencedIds = _waitingFilters.back()->referencedFilterIds;
 	if(Workspace::singleton())
@@ -627,7 +627,7 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 				//here while the older request is still queued). The engine loads the code by name
 				//from the db at dispatch time, so the CODE is fresh but the SIDECAR would be
 				//stale: the engine's own re-scan would fail the run loudly on a reference the
-				//sidecar never queued (the D7.5 error surface). Refresh the waiting store's
+				//sidecar never queued). Refresh the waiting store's
 				//sidecar from a fresh scan instead - the run then sees exactly the references
 				//the current code holds, without re-queueing a duplicate request.
 				if(Workspace::singleton())
@@ -656,10 +656,10 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 	//and must never clear the filter's stale flag.
 	RFilterByNameStore * store = new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module);
 
-	// stamp the transient referencedFilterIds sidecar (D3.3 doctrine: desktop
-	//owns provenance, engine consumes and strips). For a by-name run the code lives inside
+	// stamp the transient referencedFilterIds sidecar (desktop owns
+	//provenance, engine consumes and strips). For a by-name run the code lives inside
 	//the named filter object, so the scan runs over BOTH halves of its run code here - the
-	//hand-written rFilter and the constructor-generated code (generatedFilter), which D7.4's
+	//hand-written rFilter and the constructor-generated code (generatedFilter), which the
 	//outward constructor emission can qualify - when the dataset is not loaded desktop-side
 	//the sidecar stays empty and the engine's own re-scan of the code it loads fails the run
 	//loudly instead of guessing.
@@ -695,8 +695,8 @@ void EngineSync::computeColumn(int dataSetId, const QString & columnName, const 
 
 	_waitingCompCols.push(new RComputeColumnStore(dataSetId, columnName, computeCode, colType));
 
-	// stamp the transient referencedFilterIds sidecar onto the request (D3.3
-	//doctrine: desktop owns provenance, engine consumes and strips). Unresolvable references
+	// stamp the transient referencedFilterIds sidecar onto the request (desktop owns provenance,
+	//engine consumes and strips). Unresolvable references
 	//are logged inside the scan; the engine fails the run loudly at run time if it cannot
 	//resolve them either.
 	if(Workspace::singleton())
@@ -722,8 +722,8 @@ void EngineSync::computeDataSet(int dataSetId, const QString & computeCode, int 
 
 	_waitingCompDataSets.push(new RComputeDataSetStore(dataSetId, computeCode, defaultInputFilterId));
 
-	// stamp the transient referencedFilterIds sidecar onto the request (D3.3
-	//doctrine: desktop owns provenance, engine consumes and strips). Unresolvable references
+	// stamp the transient referencedFilterIds sidecar onto the request (desktop owns provenance,
+	//engine consumes and strips). Unresolvable references
 	//are logged inside the scan; the engine fails the run loudly at run time if it cannot
 	//resolve them either.
 	if(Workspace::singleton())

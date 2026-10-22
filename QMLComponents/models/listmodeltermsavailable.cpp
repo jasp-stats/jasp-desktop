@@ -254,7 +254,7 @@ void ListModelTermsAvailable::removeTermsInAssignedList()
 	//hostless pool). Only references INTO that provider can be stale here - a name the universe
 	//no longer serves. Foreign-stamped terms point into other providers (they resolve through
 	//their own filter's view) and -1 terms under a qualified provider resolve at use time
-	//through the C13 chain: neither is ever touched by this prune - a stale one of those
+	//through the host-bound fallback chain: neither is ever touched by this prune - a stale one of those
 	//degrades on the engine side instead (Common/columnencoder.cpp refuses to queue a column
 	//the resolved namespace lacks). The exclusion below stays strict IDENTITY (Term equality
 	//includes the stamp): only the very same reference is hidden from the pool, so a same-name

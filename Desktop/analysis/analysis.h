@@ -135,7 +135,7 @@ public:
 			///< and before the form has attached through setAnalysisUp there is no component state
 			///< to generate from: the pending JSON parks and the run defers (stays Empty, the next
 			///< sync pass dispatches once the form is up). A form-less analysis (QML load failed)
-			///< never runs - "no analysis, no state case" (C12), as before.
+			///< never runs - "no analysis, no state case", as before.
 			bool				shouldRun();
 			bool				isReport()			const				{ return _isReport;						}
 			void				setReport(bool report)					{ _isReport = report;							}
@@ -148,9 +148,9 @@ public:
 			void				reloadForm()				override;
 			void				exportResults()				override;
 			void				remove();
-			// the saved options are the GENERATED Engine tree (component-owned state, C11)
+			// the saved options are the GENERATED Engine tree (component-owned state)
 	//with the transient `.filterIds` sidecar stripped - today's file shape minus the dev-era
-	//provenance stamps (never shipped, C15: no stamp migration). Generation walks the controls, so
+	//provenance stamps (never shipped: no stamp migration). Generation walks the controls, so
 	//this is not a const read any more (the applyToAll/JS callers hold non-const pointers anyway).
 	Json::Value			asJSON(bool withRSources = false);
 			void				checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);

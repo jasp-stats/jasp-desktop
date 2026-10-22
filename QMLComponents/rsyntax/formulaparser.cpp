@@ -19,7 +19,7 @@ Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 	};
 
 	// split on `separator` OUTSIDE double-quoted segments. A qualified column
-	//reference ("DS"."Filter"."Col"("Type"), D7.0a grammar) may contain any character inside
+	//reference ("DS"."Filter"."Col"("Type")) may contain any character inside
 	//its quotes - including the interaction separators themselves - and must never be split.
 	auto splitRespectingQuotes = [] (const QString& input, char separator) -> QStringList
 	{
@@ -59,7 +59,7 @@ Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 	auto readTermWithType = [provider] (const QString& input) -> std::pair<QString, columnType>
 	{
 		// a qualified surface form is kept VERBATIM as the component - it owns
-		//its ("Type") segment, and resolution into typed ids happens once, in the D8.1
+		//its ("Type") segment, and resolution into typed ids happens once, in the
 		//applier (Term(json) -> resolveQualifiedTermComponent). The bare-name dot-suffix
 		//logic and the provider lookup must not touch the quotes. The R-name guard wraps
 		//non-syntactic names (qualified forms included) in backticks, and - unlike the whole
@@ -217,15 +217,15 @@ QString FormulaParser::transformToFormulaTerm(const Term &term, const Json::Valu
 		columnType type = columnTypeFromString(compType, columnType::unknown);
 
 		// a term stamped with a foreign live filter id renders as the qualified
-		//MINIMAL form (D7.0a renderer: bare inside the context, "DS"."Col"/"F"."Col"/full
-		//outside; type segment on demand). The component string itself stays bare (C9: typed
+		//MINIMAL form (bare inside the context, "DS"."Col"/"F"."Col"/full
+		//outside; type segment on demand). The component string itself stays bare (typed
 		//terms carry names + one filterId; qualification is an emission-time act) and the
 		//".type" bare suffix is not appended - the qualified form carries its own ("Type")
 		//segment, and appending the bare spelling would poison the type-wins rule at re-parse.
 		//An empty render (dead slice) cannot be addressed at all: the bare component is kept
-		//and logged loudly - the re-parse then resolves it through the context fallback (C13),
+		//and logged loudly - the re-parse then resolves it through the context fallback,
 		//which is wrong-slice data but parseable R; the loud log + the restamp on the next
-		//dataSpec regeneration bound the damage. (D7.0a doctrine: never a made-up form.)
+		//dataSpec regeneration bound the damage. (Never a made-up form.)
 		if (contextFilterId >= 0 && term.filterId() >= 0 && term.filterId() != contextFilterId)
 		{
 			QString qualified;

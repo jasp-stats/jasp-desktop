@@ -31,7 +31,7 @@
 QString RSyntax::FunctionOptionIndent	= "          ";
 QString RSyntax::FunctionLineIndent		= "   ";
 
-// C4/RENDER: a dataset selection option holds a FILTER id on the wire, but the syntax surface
+// A dataset selection option holds a FILTER id on the wire, but the syntax surface
 // (generated wrapper defaults, the call shown in the form) carries human strings only: the bare
 // dataset title for a default filter, "title - filterName" for a named one, "" for no selection.
 // Reverse lookup through the live workspace; a value that already is a surface string (a combo
@@ -132,9 +132,9 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 			formulaSources.append(formula->modelSources());
 	}
 
-	// script rendering reads the GENERATED Engine tree (component state, C11) with
+	// script rendering reads the GENERATED Engine tree (component state) with
 	//the transient `.filterIds` sidecar stripped - the bytes the deleted mirror held are pinned by
-	//the golden harness (tst_generatedOptionsJson*.qml); the script surface and its C4/RENDER
+	//the golden harness (tst_generatedOptionsJson*.qml); the script surface and its
 	//selection handling are untouched (ScriptConstructorGoldenR known-reds unchanged).
 	//`.meta` stays skipped as before.
 	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
@@ -681,8 +681,8 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 
 	if (terms.size() == 0)	return "NULL";
 
-	// the emission context - the analysis' own filter (else the shown-filter C13
-	//fallback) is the namespace bare names resolve in at run time (D7.3 self-reference rule);
+	// the emission context - the analysis' own filter (else the shown-filter
+	//fallback) is the namespace bare names resolve in at run time (the self-reference rule);
 	//terms stamped with another live filter id emit the qualified minimal form, -1/own-filter
 	//terms stay byte-identical.
 	int contextFilterId = FormulaSource::contextFilterIdForForm(_form);
@@ -723,7 +723,7 @@ QString RSyntax::_rLiteralForTermComponent(const Term& term, const QString& comp
 {
 	// the list() branch has no per-term type info, so the qualified minimal form
 	//is rendered with columnType::unknown (no type segment). A dead slice renders to nothing:
-	//the bare name is kept under a loud log (parseable R resolving through the C13 context
+	//the bare name is kept under a loud log (parseable R resolving through the context
 	//fallback, wrong-slice but never a made-up form), exactly like the formula branch.
 	QString value = component;
 
