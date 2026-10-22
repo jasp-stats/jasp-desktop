@@ -31,6 +31,10 @@ public:
 	bool	hasUpgradesToApply(	const std::string & function, const Version	& version)  { Version v(version); return findClosestVersion(function, v); }
 	void	applyUpgrade(		const std::string & function, const Version	& version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken);
 
+	///Upgrade and Change* register themselves while Qt is still creating the QML items, an exception thrown from there cannot pass through Qt and terminates JASP.
+	///So they store the error here instead and DynamicModule::loadUpgradesQML throws it once the QML has been created.
+	static void							addLoadError(const std::string & error)	{ _loadErrors.push_back(error); }
+	static std::vector<std::string>		takeLoadErrors();
 	
 	
 public slots:
@@ -46,6 +50,8 @@ private:
 private:
 	FunctionsPerVersion	_steps;
 	QString				_module; //To get the name of the module easily for error etc.
+
+	static std::vector<std::string>	_loadErrors;
 };
 
 }

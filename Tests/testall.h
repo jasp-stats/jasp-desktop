@@ -143,6 +143,14 @@ private slots:
 	void	testCliSyncExportChainFailsOnBadDataFile();
 	void	testCliSyncExportWaitsForAnalysesToSettle();
 
+	// The msg's of an Upgrades.qml (above the form and on a control) have to be on the analysis
+	// before it is added to the Analyses model, because that is where its form gets created.
+	void	testUpgradeMsgsAreSetBeforeAnalysisIsStored();
+
+	// A mistake in an Upgrades.qml (like two Upgrades from the same version) must give a warning, and not
+	// terminate JASP because the error was thrown while Qt was still creating the QML.
+	void	testBrokenUpgradesQmlGivesWarning();
+
 	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
 	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the
 	// JSON stored in .jasp files and the R code that gets sent to the engine.
@@ -198,6 +206,7 @@ private:
 	bool					_checkDoSyncFake();
 	static bool				_writeTextFile(const QString & path, const QByteArray & contents);
 	QSignalSpy			*	_newMainWindowWithExitSpy(MainWindow *& mw);
+	static QString			_writeUpgradeTestModule(const QString & moduleName, const QByteArray & upgradesQml);
 	static bool				_batchErrorsAreOnlyMissingModules(MainWindow * mw);
 	QQuickItem			*	_findQuickItemByName(const QString & objectName);
 };
