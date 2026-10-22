@@ -53,7 +53,10 @@ Window
 		{
 			if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
 			{
-				Qt.openUrlExternally(request.url);
+				// enterprise lockdown: refuse to open external links from the
+				// generated help pages when externalLinksEnabled is off
+				if(mainWindow.externalLinksEnabled)
+					Qt.openUrlExternally(request.url);
 				request.reject();
 			}
 		}
