@@ -368,6 +368,15 @@ Window
 		id:					chatToggleButton
 		z:					99
 		visible:			preferencesModel.aiEnabled
+		// How many welcome-page footer rows stack below this corner:
+		// "Visit the website" and "Ask a question" (both need external
+		// links allowed — or a PRO build — and the question link also a
+		// non-empty questionsUrl), plus "Enterprise Support" in community
+		// builds. Drives the bottom clearance below.
+		property int footerRows:	((mainWindow.externalLinksEnabled || PRO) ? 1 : 0)
+							+	(((mainWindow.externalLinksEnabled || PRO) && mainWindow.questionsUrl !== "") ? 1 : 0)
+							+	(!PRO ? 1 : 0)
+
 		width:				45 * preferencesModel.uiScale
 		height:				45 * preferencesModel.uiScale
 		opacity:			mainWindow.aiChatVisible && mainWindow.chatWindowActive ? 1.0 : 0.55
@@ -385,7 +394,12 @@ Window
 			right:			parent.right
 			bottom:			parent.bottom
 			rightMargin:	jaspTheme.scrollbarBoxWidthBig + 15 * preferencesModel.uiScale
-			bottomMargin:	mainWindow.welcomePageVisible ?  85 * preferencesModel.uiScale : jaspTheme.scrollbarBoxWidthBig + 3 * preferencesModel.uiScale
+			// 85 clears the multi-row footer of stock builds; when only one
+			// row remains (locked-down clients with empty question/contact
+			// URLs) 45 sits right above it.
+			bottomMargin:	mainWindow.welcomePageVisible
+						? (footerRows > 1 ? 85 : 45) * preferencesModel.uiScale
+						: jaspTheme.scrollbarBoxWidthBig + 3 * preferencesModel.uiScale
 		}
 
 		MouseArea

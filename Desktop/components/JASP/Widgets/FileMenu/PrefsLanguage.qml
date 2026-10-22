@@ -135,9 +135,9 @@ PrefsGroupRect
 		text:				qsTr("Help us translate or improve JASP in your language")
 		color:				jaspTheme.blue
 		font.pixelSize:		Math.round(12 * preferencesModel.uiScale)
-		font.family:		preferencesModel.interfaceFont
+		font.family:			preferencesModel.interfaceFont
 		font.underline:		true
-		visible:			showHelpLink
+		visible:			showHelpLink && mainWindow.externalLinksEnabled
 
 		MouseArea
 		{

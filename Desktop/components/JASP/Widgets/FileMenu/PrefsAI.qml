@@ -32,263 +32,628 @@ PrefsScrollView
 	}
 
 	// ──────────────────────────────────────────────
-	// 1. Provider & Model
+	// 1. Connection — one tab per sign-in method
 	// ──────────────────────────────────────────────
 	PrefsGroupRect
 	{
-		title:				qsTr("Provider & Model")
-		visible:			preferencesModel.aiEnabled
+		title:			qsTr("Connection")
+		visible:		preferencesModel.aiEnabled
 
-		// ── a) Provider / Model dropdowns ──
+		// Two plain buttons as the mode switch. The JASP TabView is an
+		// analysis-form control (R-bound rows, model+roles source, row
+		// reparenting) and its row machinery is where JASP DropDowns stop
+		// working — so the strip is buttons, and the bodies below are ordinary
+		// group children, exactly where the old form's dropdowns worked.
+		// PRO builds only: OIDC sign-in is a PRO feature, so non-PRO builds hide
+		// the switch (and C++ forces authMode to apiKey) — API key is the only form.
 		Row
 		{
-			spacing:		jaspTheme.generalAnchorMargin
-
-			DropDown
-			{
-				id:				providersDropdown
-				label:			qsTr("Provider:")
-				values:			aiConfigModel.providerValues
-				currentIndex:	aiConfigModel.currentProviderIndex
-				onActivated:	function(index) { aiConfigModel.currentProviderIndex = index; aiBridge.clearChat() }
-				focus:			true
-			}
-
-			DropDown
-			{
-				label:			qsTr("Model:")
-				values:			aiConfigModel.modelValues
-				currentIndex:	aiConfigModel.currentModelIndex
-				onActivated:	function(index) { aiConfigModel.currentModelIndex = index; aiBridge.clearChat() }
-			}
-		}
-
-		// ── Warning banner ──
-		Rectangle
-		{
-			visible:			aiConfigModel.currentWarning !== ""
-			width:				parent.width
-			height:				warningLabel.implicitHeight + jaspTheme.contentMargin
-			color:				jaspTheme.red
-			border.color:		jaspTheme.redDarker
-			border.width:		1
-			radius:				4 * jaspTheme.uiScale
-
-			Text
-			{
-				id:				warningLabel
-				text:			aiConfigModel.currentWarning
-				font:			jaspTheme.font
-				color:			jaspTheme.redDarker
-				wrapMode:		Text.WordWrap
-				anchors
-				{
-					left:		parent.left
-					right:		parent.right
-					top:		parent.top
-					margins:	jaspTheme.contentMargin / 2
-				}
-			}
-		}
-
-		// ── b) Connection ──
-		PrefsGroupRect
-		{
-			title:				qsTr("Connection")
-
-			Group
-			{
-				id:			connectionGroup
-				columns:	1
-				width:		parent.width
-
-				TextField
-				{
-					id:					aiEndpointInput
-					label:				qsTr("Endpoint URL:")
-					value:				aiConfigModel.currentEndpoint
-					onEditingFinished:	aiConfigModel.currentEndpoint = displayValue
-					width:				connectionGroup.width
-					fillWidth:			true
-					fieldHeight:		25 * jaspTheme.uiScale
-				}
-
-				TextField
-				{
-					label:				qsTr("API Key:")
-					value:				aiConfigModel.currentApiKey
-					onEditingFinished:	aiConfigModel.currentApiKey = displayValue
-					control.echoMode:	TextInput.Password
-					showEyeInside:		true
-					width:				connectionGroup.width
-					fillWidth:			true
-					fieldHeight:		25 * jaspTheme.uiScale
-				}
-
-				TextField
-				{
-					id:					aiModelInput
-					label:				qsTr("Model:")
-					value:				aiConfigModel.currentModel
-					onEditingFinished:	aiConfigModel.currentModel = displayValue
-					width:				connectionGroup.width
-					fillWidth:			true
-					fieldHeight:		25 * jaspTheme.uiScale
-				}
-			}
-
-			Item
-			{
-				width:			parent.width
-				height:			testButton.height + testResultLabel.height + jaspTheme.generalAnchorMargin
-
-				Button
-				{
-					id:				testButton
-					text:			qsTr("Test Connection")
-					toolTip:		qsTr("Send a minimal request to verify your endpoint and API key.")
-					anchors.left:	parent.left
-					anchors.top:	parent.top
-					anchors.topMargin: jaspTheme.generalAnchorMargin
-
-					onClicked:		{
-						testResultLabel.text = qsTr("Testing…")
-						testResultLabel.color = jaspTheme.textEnabled
-						aiBridge.testConnection()
-					}
-				}
-
-				Text
-				{
-					id:				testResultLabel
-					text:			""
-					font:			jaspTheme.font
-					color:			jaspTheme.textEnabled
-					wrapMode:		Text.WordWrap
-					anchors
-					{
-						left:		testButton.right
-						right:		parent.right
-						verticalCenter: testButton.verticalCenter
-						leftMargin:	jaspTheme.generalAnchorMargin
-					}
-				}
-			}
-		}
-
-		// ── c) Advanced ──
-		Section
-		{
-			title:		qsTr("Advanced")
-			columns:	1
-
-			TextArea
-			{
-				id:					aiSystemPromptPostfixInput
-				title:				qsTr("System Prompt Postfix:")
-				height:				80 * preferencesModel.uiScale
-				text:				aiConfigModel.currentSystemPromptPostfix
-				isBound:			false
-				wrapMode:			TextEdit.Wrap
-				onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentSystemPromptPostfix = text
-				applyScriptInfo:	""
-				useTabAsSpaces:		false
-				nextTabItem:		completeSchemaCheck
-			}
-
-			CheckBox
-			{
-				id:					completeSchemaCheck
-				label:				qsTr("Include full tool schemas in request")
-				checked:			aiConfigModel.currentUseCompleteSchema
-				onClicked:			aiConfigModel.currentUseCompleteSchema = checked
-				toolTip:			qsTr(
-					"When enabled, each tool in the API request includes its full "
-					+ "parameter schema (with JSON such as like integer/boolean). "
-					+ "This helps models that struggle with type-safety in tool "
-					+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
-				)
-			}
-
-			Label
-			{
-				text:			qsTr("Paste a JSON object with extra parameters to include in every API request.\nExamples: { \"max_tokens\": 4096, \"thinking\": { \"type\": \"enabled\" } }\nFields \"model\", \"stream\", \"messages\", \"tools\", and \"text\" are protected and will be ignored.")
-				wrapMode:		Text.WordWrap
-				width:			parent.width
-			}
-
-			TextArea
-			{
-				id:					aiExtraParamsInput
-				text:				aiConfigModel.currentExtraParams
-				height:				100 * preferencesModel.uiScale
-				isBound:			false
-				wrapMode:			TextEdit.Wrap
-				onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentExtraParams = text
-				applyScriptInfo:	""
-				useTabAsSpaces:		false
-				nextTabItem:		chatLimitCheck
-
-			}
-
-			CheckBox
-			{
-				id:					chatLimitCheck
-				label:				qsTr("Single chat token limit:")
-				childrenOnSameRow:	true
-				checked:			aiConfigModel.currentChatLimitActive
-				onClicked:			aiConfigModel.currentChatLimitActive = checked
-
-				IntegerField
-				{
-					value:			aiConfigModel.currentChatLimit
-					onEditingFinished:	aiConfigModel.currentChatLimit = displayValue
-					enabled:		chatLimitCheck.checked
-					fieldWidth:		100 * preferencesModel.uiScale
-					toolTip:		qsTr("~4 characters ≈ 1 token")
-				}
-			}
-
-			Label
-			{
-				text:			qsTr(
-					"Paste a JSON object to merge into every message of the API request.\n"
-					+ "Use this for per-message features like explicit caching: { \"cache_control\": { \"type\": \"ephemeral\" } }\n"
-					+ "Fields \"role\", \"content\", and \"text\" are protected and will be ignored."
-				)
-				wrapMode:		Text.WordWrap
-				width:			parent.width
-			}
-
-			TextArea
-			{
-				id:					aiMessageExtraInput
-				text:				aiConfigModel.currentMessageExtra
-				height:				100 * preferencesModel.uiScale
-				isBound:			false
-				wrapMode:			TextEdit.Wrap
-				placeholderText:	"{ \"cache_control\": { \"type\": \"ephemeral\" } }"
-				onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentMessageExtra = text
-				applyScriptInfo:	""
-				useTabAsSpaces:		false
-				nextTabItem:		personasGroup
-
-			}
-		}
-
-		// ── Reset ──
-		Row
-		{
-			spacing:		jaspTheme.generalAnchorMargin
+			visible:	PRO
+			spacing:	jaspTheme.generalAnchorMargin
 
 			Button
 			{
-				text:		qsTr("Reset Model")
-				toolTip:	qsTr("Reset the currently selected model's extra params, system prompt postfix, and advanced checkboxes back to their shipped defaults.")
-				onClicked:	aiConfigModel.resetCurrentModelToDefaults()
+				text:		qsTr("API key")
+				enabled:	aiConfigModel.authMode !== "apiKey"
+				onClicked:	aiConfigModel.authMode = "apiKey"
+				toolTip:	qsTr("Connect with an API key to a provider of your choice.")
+			}
+
+			Button
+			{
+				text:		qsTr("Sign in")
+				enabled:	aiConfigModel.authMode !== "oidc"
+				onClicked:	aiConfigModel.authMode = "oidc"
+				toolTip:	qsTr("Sign in with your work account (Microsoft Entra ID).")
 			}
 		}
-	}
+
+		// ── API-key body ──
+		Item
+		{
+			id:			apiKeyBody
+			visible:	!PRO || aiConfigModel.authMode === "apiKey"
+			width:		parent.width
+			height:	apiKeyBody.visible ? apiKeyColumn.implicitHeight + jaspTheme.contentMargin : 0
+
+			Column
+			{
+				id:				apiKeyColumn
+				spacing:	jaspTheme.generalAnchorMargin
+				width:		parent.width - 2 * jaspTheme.contentMargin
+
+				Connections
+				{
+					target:			aiBridge
+					function onTestConnectionResult(success, message)
+					{
+						testResultLabel.text = message
+						testResultLabel.color = success ? jaspTheme.jaspGreen : jaspTheme.redDarker
+					}
+				}
+
+				Row
+				{
+					spacing:	jaspTheme.generalAnchorMargin
+
+					DropDown
+					{
+						id:			providersDropdown
+						label:			qsTr("Provider:")
+						values:			aiConfigModel.providerValues
+						currentIndex:	aiConfigModel.currentProviderIndex
+						onActivated:	function(index) { aiConfigModel.currentProviderIndex = index; aiBridge.clearChat() }
+						focus:			true
+					}
+
+					DropDown
+					{
+						label:			qsTr("Model:")
+						values:			aiConfigModel.modelValues
+						currentIndex:	aiConfigModel.currentModelIndex
+						onActivated:	function(index) { aiConfigModel.currentModelIndex = index; aiBridge.clearChat() }
+					}
+				}
+
+				Rectangle
+				{
+					visible:			aiConfigModel.currentWarning !== ""
+					width:				parent.width
+					height:			warningLabel.implicitHeight + jaspTheme.contentMargin
+					color:			jaspTheme.red
+					border.color:	jaspTheme.redDarker
+					border.width:	1
+					radius:			4 * jaspTheme.uiScale
+
+					Text
+					{
+						id:			warningLabel
+						text:			aiConfigModel.currentWarning
+						font:			jaspTheme.font
+						color:			jaspTheme.redDarker
+						wrapMode:	Text.WordWrap
+						anchors
+						{
+							left:		parent.left
+							right:		parent.right
+							top:		parent.top
+							margins:	jaspTheme.contentMargin / 2
+						}
+					}
+				}
+
+				PrefsGroupRect
+				{
+					title:				qsTr("Connection")
+					width:				parent.width
+
+					Group
+					{
+						id:			connectionGroup
+						columns:	1
+						width:		parent.width
+
+						TextField
+						{
+							id:					aiEndpointInput
+							label:				qsTr("Endpoint URL:")
+							value:				aiConfigModel.currentEndpoint
+							onEditingFinished:	aiConfigModel.currentEndpoint = displayValue
+							width:				connectionGroup.width
+							fillWidth:		true
+							fieldHeight:	25 * jaspTheme.uiScale
+						}
+
+						TextField
+						{
+							label:				qsTr("API Key:")
+							value:				aiConfigModel.currentApiKey
+							onEditingFinished:	aiConfigModel.currentApiKey = displayValue
+							control.echoMode:	TextInput.Password
+							showEyeInside:	true
+							width:				connectionGroup.width
+							fillWidth:		true
+							fieldHeight:	25 * jaspTheme.uiScale
+						}
+
+						TextField
+						{
+							id:					aiModelInput
+							label:				qsTr("Model:")
+							value:				aiConfigModel.currentModel
+							onEditingFinished:	aiConfigModel.currentModel = displayValue
+							width:				connectionGroup.width
+							fillWidth:		true
+							fieldHeight:	25 * jaspTheme.uiScale
+						}
+					}
+
+					Item
+					{
+						width:			parent.width
+						height:			testButton.height + testResultLabel.height + jaspTheme.generalAnchorMargin
+
+						Button
+						{
+							id:				testButton
+							text:			qsTr("Test Connection")
+							toolTip:	qsTr("Send a minimal request to verify your endpoint and API key.")
+							anchors.left:	parent.left
+							anchors.top:	parent.top
+							anchors.topMargin: jaspTheme.generalAnchorMargin
+
+							onClicked:		{
+								testResultLabel.text = qsTr("Testing…")
+								testResultLabel.color = jaspTheme.textEnabled
+								aiBridge.testConnection()
+							}
+						}
+
+						Text
+						{
+							id:				testResultLabel
+							text:			""
+							font:			jaspTheme.font
+							color:			jaspTheme.textEnabled
+							wrapMode:	Text.WordWrap
+							anchors
+							{
+								left:		testButton.right
+								right:		parent.right
+								verticalCenter: testButton.verticalCenter
+								leftMargin:	jaspTheme.generalAnchorMargin
+							}
+						}
+					}
+				}
+
+				Section
+				{
+					title:		qsTr("Advanced")
+					columns:	1
+					width:		parent.width
+
+					TextArea
+					{
+						id:						aiSystemPromptPostfixInput
+						title:					qsTr("System Prompt Postfix:")
+						height:					80 * preferencesModel.uiScale
+						text:					aiConfigModel.currentSystemPromptPostfix
+						isBound:				false
+						wrapMode:			TextEdit.Wrap
+						onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentSystemPromptPostfix = text
+						applyScriptInfo:	""
+						useTabAsSpaces:		false
+						nextTabItem:		completeSchemaCheck
+					}
+
+					CheckBox
+					{
+						id:						completeSchemaCheck
+						label:				qsTr("Include full tool schemas in request")
+						checked:			aiConfigModel.currentUseCompleteSchema
+						onClicked:			aiConfigModel.currentUseCompleteSchema = checked
+						toolTip:			qsTr(
+							"When enabled, each tool in the API request includes its full "
+							+ "parameter schema (with JSON such as like integer/boolean). "
+							+ "This helps models that struggle with type-safety in tool "
+							+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
+						)
+					}
+
+					Label
+					{
+						text:			qsTr("Paste a JSON object with extra parameters to include in every API request.\nExamples: { \"max_tokens\": 4096, \"thinking\": { \"type\": \"enabled\" } }\nFields \"model\", \"stream\", \"messages\", \"tools\", and \"text\" are protected and will be ignored.")
+						wrapMode:	Text.WordWrap
+						width:		parent.width
+					}
+
+					TextArea
+					{
+						id:						aiExtraParamsInput
+						text:					aiConfigModel.currentExtraParams
+						height:					100 * preferencesModel.uiScale
+						isBound:				false
+						wrapMode:			TextEdit.Wrap
+						onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentExtraParams = text
+						applyScriptInfo:	""
+						useTabAsSpaces:		false
+						nextTabItem:		chatLimitCheck
+					}
+
+					CheckBox
+					{
+						id:						chatLimitCheck
+						label:				qsTr("Single chat token limit:")
+						childrenOnSameRow:	true
+						checked:			aiConfigModel.currentChatLimitActive
+						onClicked:			aiConfigModel.currentChatLimitActive = checked
+
+						IntegerField
+						{
+							value:				aiConfigModel.currentChatLimit
+							onEditingFinished:	aiConfigModel.currentChatLimit = displayValue
+							enabled:			chatLimitCheck.checked
+							fieldWidth:		100 * preferencesModel.uiScale
+							toolTip:			qsTr("~4 characters ≈ 1 token")
+						}
+					}
+
+					Label
+					{
+						text:			qsTr(
+							"Paste a JSON object to merge into every message of the API request.\n"
+							+ "Use this for per-message features like explicit caching: { \"cache_control\": { \"type\": \"ephemeral\" } }\n"
+							+ "Fields \"role\", \"content\", and \"text\" are protected and will be ignored."
+						)
+						wrapMode:	Text.WordWrap
+						width:		parent.width
+					}
+
+					TextArea
+					{
+						id:						aiMessageExtraInput
+						text:					aiConfigModel.currentMessageExtra
+						height:					100 * preferencesModel.uiScale
+						isBound:				false
+						wrapMode:			TextEdit.Wrap
+						placeholderText:	"{ \"cache_control\": { \"type\": \"ephemeral\" } }"
+						onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentMessageExtra = text
+						applyScriptInfo:	""
+						useTabAsSpaces:		false
+					}
+				}
+
+				Row
+				{
+					spacing:	jaspTheme.generalAnchorMargin
+
+					Button
+					{
+						text:		qsTr("Reset Model")
+						toolTip:	qsTr("Reset the currently selected model's extra params, system prompt postfix, and advanced checkboxes back to their shipped defaults.")
+						onClicked:	aiConfigModel.resetCurrentModelToDefaults()
+					}
+				}
+			}
+		}
+
+		// ── Sign-in body ──
+		Item
+		{
+			id:			signInBody
+			visible:	PRO && aiConfigModel.authMode === "oidc"
+			width:		parent.width
+			height:	signInBody.visible ? signInColumn.implicitHeight + jaspTheme.contentMargin : 0
+
+			Column
+			{
+				id:				signInColumn
+				spacing:	jaspTheme.generalAnchorMargin
+				width:		parent.width - 2 * jaspTheme.contentMargin
+
+				Group
+				{
+					id:			signInConnectionGroup
+					columns:	1
+					width:		parent.width
+
+					TextField
+					{
+						label:				qsTr("Endpoint URL:")
+						value:				aiConfigModel.currentEndpoint
+						onEditingFinished:	aiConfigModel.currentEndpoint = displayValue
+						width:				signInConnectionGroup.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
+
+					TextField
+					{
+						label:				qsTr("Deployment (model):")
+						value:				aiConfigModel.currentModel
+						onEditingFinished:	aiConfigModel.currentModel = displayValue
+						width:				signInConnectionGroup.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
+				}
+
+				Rectangle
+				{
+					id:				signInCard
+					width:			parent.width
+					height:			signInCardColumn.implicitHeight + 2 * jaspTheme.contentMargin
+					color:			jaspTheme.uiBackground
+					border.color:	aiBridge.isSignedIn ? jaspTheme.jaspGreen : jaspTheme.uiBorder
+					border.width:	1
+					radius:			4 * jaspTheme.uiScale
+
+					property bool	awaitingSignIn:	false
+					property string	lastMessage:	""
+
+					Column
+					{
+						id:				signInCardColumn
+						spacing:	jaspTheme.generalAnchorMargin
+						width:		parent.width - 2 * jaspTheme.contentMargin
+						anchors
+						{
+							left:		parent.left
+							top:		parent.top
+							margins:	jaspTheme.contentMargin
+						}
+
+						Text
+						{
+							width:			parent.width
+							wrapMode:	Text.WordWrap
+							font:		jaspTheme.font
+							visible:	!aiBridge.isSignedIn
+							text:	qsTr("Sign in with your organization's account. JASP opens your browser and never sees your password. Your sign-in persists in this machine's credential store.")
+						}
+
+						Button
+						{
+							visible:	!aiBridge.isSignedIn
+							text:	qsTr("Sign in")
+							height:		40 * jaspTheme.uiScale
+							anchors.horizontalCenter:	parent.horizontalCenter
+							toolTip:	qsTr("Opens your browser to sign in with your work account.")
+							onClicked:
+							{
+								signInCard.awaitingSignIn = true
+								signInCard.lastMessage = ""
+								aiBridge.signIn()
+							}
+						}
+
+						Text
+						{
+							visible:		!aiBridge.isSignedIn && signInCard.awaitingSignIn
+							text:			qsTr("Browser opened — finish signing in there.")
+							font:			jaspTheme.font
+							anchors.horizontalCenter:	parent.horizontalCenter
+						}
+
+						Text
+						{
+							visible:	!aiBridge.isSignedIn && signInCard.lastMessage !== ""
+							text:		signInCard.lastMessage
+							color:		jaspTheme.redDarker
+							wrapMode:	Text.WordWrap
+							width:			parent.width
+							font:		jaspTheme.font
+						}
+
+						Text
+						{
+							visible:	aiBridge.isSignedIn
+							text:		qsTr("Signed in as %1").arg(aiBridge.authAccountName === "" ? qsTr("(unknown account)") : aiBridge.authAccountName)
+							font:		jaspTheme.font
+							wrapMode:	Text.WordWrap
+							width:			parent.width
+						}
+
+						Text
+						{
+							visible:	aiBridge.isSignedIn && !isNaN(aiBridge.authExpiresAt.getTime())
+							text:		qsTr("Token valid until %1 — renewed automatically").arg(Qt.formatDateTime(aiBridge.authExpiresAt, "HH:mm"))
+							font:		jaspTheme.font
+						}
+
+						Button
+						{
+							visible:	aiBridge.isSignedIn
+							text:		qsTr("Sign out")
+							onClicked:	aiBridge.signOut()
+						}
+					}
+
+					Connections
+					{
+						target: aiBridge
+						function onAuthStateChanged() { signInCard.awaitingSignIn = false }
+						function onAuthInteractionRequired(message) { signInCard.lastMessage = message }
+						// Doubled "on" is correct: the C++ signal is literally named
+						// onStreamError (ChatWindow.qml relays it via connect() instead).
+						function onOnStreamError(error) { if (!aiBridge.isSignedIn) signInCard.lastMessage = error }
+					}
+				}
+
+				Section
+				{
+					title:		qsTr("Advanced")
+					columns:	1
+					width:		parent.width
+
+					Label
+					{
+						text:	qsTr("Only change these if your organization's setup differs from the JASP defaults. Leave the application ID empty to use JASP's own registration. Custom identity provider? Pick it below, finish the authority field, then press Discover endpoints — the URLs fill in and stay editable.")
+						wrapMode:	Text.WordWrap
+						width:		parent.width
+						QTL.Layout.fillWidth:	true   // Section is a GridLayout: without this the label gets its implicit width and never wraps
+					}
+
+					DropDown
+					{
+						id:			idpPicker
+						label:			qsTr("Identity provider:")
+						values:			[ qsTr("Microsoft Entra ID"), qsTr("Microsoft Entra ID (US Government)"), qsTr("Okta"), qsTr("Auth0"), qsTr("Keycloak"), qsTr("Zitadel"), qsTr("Google"), qsTr("Custom…") ]
+
+						// Authority seeds per entry, parallel to values. "" on Custom = leave
+						// the field as the user typed it. Templates with {placeholders} must
+						// be finished by hand; placeholder-free ones can discover immediately.
+						property var templates: [ "organizations",
+											   "https://login.microsoftonline.us/organizations",
+											   "https://{your-okta-domain}",
+											   "https://{your-tenant}.auth0.com",
+											   "https://{your-keycloak-server}/realms/{realm}",
+											   "https://{your-instance}.zitadel.cloud",
+											   "https://accounts.google.com",
+											   "" ]
+
+						// Empty authority behaves as the Entra default; anything unknown is Custom.
+						currentIndex: {
+							const a = aiConfigModel.currentAuthAuthority;
+							const i = templates.indexOf(a === "" ? "organizations" : a);
+							return i >= 0 ? i : templates.length - 1;
+						}
+
+						onActivated:	function(index) {
+							if (index === idpPicker.templates.length - 1)
+								return;   // Custom: the authority field is the source of truth
+
+							const template = idpPicker.templates[index];
+
+							// A different identity provider invalidates any discovered or
+							// hand-entered endpoints — clear them so derivation is honest again.
+							aiConfigModel.currentAuthAuthorizationUrl = "";
+							aiConfigModel.currentAuthTokenUrl = "";
+							aiConfigModel.currentAuthAuthority = template;
+
+							if (template.indexOf("{") >= 0)
+									aiConfigModel.authDiscoveryMessage = qsTr("Fill in the {placeholders} in the Authority field, then press Discover endpoints.");
+							else if (index <= 1)
+									aiConfigModel.authDiscoveryMessage = qsTr("Entra's endpoints are built in — no discovery needed, leave the URLs empty.");
+							else
+									aiConfigModel.discoverAuthEndpoints();   // placeholder-free foreign issuer
+						}
+
+						toolTip:	qsTr("Seeds the Authority field for common identity providers. Templates with {placeholders} must be completed by hand. Custom leaves the field untouched.")
+					}
+
+					TextField
+					{
+						label:				qsTr("Authority:")
+						value:				aiConfigModel.currentAuthAuthority
+						onEditingFinished:	aiConfigModel.currentAuthAuthority = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
+
+					Button
+					{
+						text:				qsTr("Discover endpoints")
+						onClicked:	aiConfigModel.discoverAuthEndpoints()
+						toolTip:	qsTr("Fetches the identity provider's /.well-known/openid-configuration — the document every OIDC provider publishes — and fills in the authorization and token URLs below. For Microsoft Entra the fixed v2 endpoints are used automatically, so this is mainly for other providers (Okta, Keycloak, Auth0…).")
+					}
+
+					Text
+					{
+						text:				aiConfigModel.authDiscoveryMessage
+						visible:			aiConfigModel.authDiscoveryMessage !== ""
+						wrapMode:	Text.WordWrap
+						font:			jaspTheme.font
+						color:		jaspTheme.textEnabled
+						width:			parent.width
+						QTL.Layout.fillWidth:	true   // Section is a GridLayout — without this, no wrapping
+					}
+
+					TextField
+					{
+						label:				qsTr("Scope:")
+						value:				aiConfigModel.currentAuthScope
+						onEditingFinished:	aiConfigModel.currentAuthScope = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
+
+					TextField
+					{
+						label:				qsTr("Application (client) ID:")
+						value:				aiConfigModel.currentAuthClientId
+						onEditingFinished:	aiConfigModel.currentAuthClientId = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+						}
+
+					TextField
+					{
+						label:				qsTr("Redirect port:")
+						value:				aiConfigModel.currentAuthRedirectPort > 0 ? String(aiConfigModel.currentAuthRedirectPort) : ""
+						onEditingFinished:	{
+							const p = parseInt(displayValue);
+							aiConfigModel.currentAuthRedirectPort = (displayValue.length > 0 && p > 0 && p <= 65535) ? p : 0;
+						}
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
+
+					TextField
+					{
+						label:				qsTr("Authorization URL:")
+						value:				aiConfigModel.currentAuthAuthorizationUrl
+						onEditingFinished:	aiConfigModel.currentAuthAuthorizationUrl = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
+
+					TextField
+					{
+						label:				qsTr("Token URL:")
+						value:				aiConfigModel.currentAuthTokenUrl
+						onEditingFinished:	aiConfigModel.currentAuthTokenUrl = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
+
+					TextField
+					{
+						label:				qsTr("Extra headers (JSON):")
+						value:				aiConfigModel.currentExtraHeaders
+						onEditingFinished:	aiConfigModel.currentExtraHeaders = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+						toolTip:	qsTr("A JSON object of extra HTTP headers sent with every request, e.g. { \"X-Cost-Centre\": \"dept42\" }. Routing and attribution labels only — never API keys or tokens: this is stored as plain configuration (the same rule Claude Desktop applies to its equivalent setting). The Authorization header cannot be overridden.")
+					}
+
+					CheckBox
+					{
+						label:				qsTr("Send the ID token as the bearer token")
+						checked:			aiConfigModel.currentAuthTokenType === "id_token"
+						onCheckedChanged:	aiConfigModel.currentAuthTokenType = checked ? "id_token" : ""
+						toolTip:	qsTr("Checked: JASP sends the ID token, whose audience is the client id itself — gateways (LiteLLM, APIM) can then validate audience = client id, with no published scope and no consent step.\n\nUnchecked (default): JASP sends the access token, as direct Azure OpenAI requires (audience = cognitiveservices.azure.com).")
+					}
+
+					CheckBox
+					{
+						label:				qsTr("Request offline access (persistent sign-in)")
+						checked:			aiConfigModel.currentAuthOfflineAccess !== "off"
+						onCheckedChanged:	aiConfigModel.currentAuthOfflineAccess = checked ? "" : "off"
+						toolTip:	qsTr("Checked (default): JASP requests offline_access, so sign-in persists in this machine's credential store and renews silently.\n\nUnchecked: exactly the configured scopes are sent, for identity providers that reject or specially consent to offline_access. Sign-in will not persist across JASP restarts, and you will be asked to sign in again when the token expires (roughly every hour).")
+					}
+				}
+				}
+			}
+		}
 
 	// ──────────────────────────────────────────────
 	// 2. Personas
@@ -678,8 +1043,7 @@ PrefsScrollView
 		{
 			id:				aiEnableBtn
 			text:			preferencesModel.aiEnabled ? qsTr("Disable") : qsTr("Enable")
-			toolTip:		qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
-			KeyNavigation.tab:	providersDropdown
+			toolTip:			qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
 
 			onClicked: {
 				if (preferencesModel.aiEnabled) {

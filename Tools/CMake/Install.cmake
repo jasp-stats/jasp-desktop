@@ -29,8 +29,9 @@
 #   - The install process configure a few Batch files for performing a few tasks, e.g.,
 #     creating WIX installer. Those files need to be configured using the NATIVE directory
 #     paths. Those `cmake_paths` are doing exactly that.
-#   - CMake doesn't copy JASP Modules, `jasp*`, into the install folder, and therefore there
-#     is no need to remove the junction inside the staged folder
+#   - CMake doesn't copy JASP Modules, `jasp*`, into the install folder. The Windows staged
+#     module tree contains no links at all: module_libs entries are real directory copies and
+#     everything else loads from binary_pkgs micro-libraries
 #
 # ------------------------------------------------------------------------------
 # Notes
@@ -44,13 +45,13 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Install)
 #   - On macOS, gfortran is being installed by CMake, and it's being used during the build,
 #     and here we exclude it.
 set(FILES_EXCLUDE_PATTERN
-    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store|\\.Rhistory|\\.pdb)$"
+    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store|\\.Rhistory|\\.pdb|/MD5)$"
 )
 # Header-only include/ dirs of the binary_pkgs are dead weight in installs:
 # nothing compiles against them at runtime (jaspBase sets
 # install.packages.compile.from.source = "never" and no sourceCpp is used).
 set(FOLDERS_EXCLUDE_PATTERN
- ".*(/doc|/examples|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$|binary_pkgs/[^/]*/include$"
+ ".*(/doc|/examples|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$|binary_pkgs/[^/]*/include$|binary_pkgs/[^/]*/[^/]*/include$|module_libs/[^/]*/include$|module_libs/[^/]*/[^/]*/include$|binary_pkgs/[^/]*/[^/]*/help$|module_libs/[^/]*/[^/]*/help$"
 )
 
 # See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
@@ -314,7 +315,7 @@ if(WIN32)
   # include(InstallRequiredSystemLibraries)
   # install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 
-  install(TARGETS JASP JASPEngine ContainerFilePermissionChecker JunctionTool RUNTIME DESTINATION .)
+  install(TARGETS JASP JASPEngine ContainerFilePermissionChecker RUNTIME DESTINATION .)
 
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -413,8 +414,11 @@ if(WIN32)
 
 
   #modules
+  #module_libs ships real directory copies on Windows now (module package + JASP-module deps for
+  #positional QML imports, written by jaspModuleBundleManager at build time); the engine reads the
+  #install tree directly and nothing recreates entries in appData anymore (jasp-issues #4586).
   install(
-  DIRECTORY ${MODULES_BINARY_PATH}/binary_pkgs ${MODULES_BINARY_PATH}/manifests ${MODULES_BINARY_PATH}/Tools
+  DIRECTORY ${MODULES_BINARY_PATH}/binary_pkgs ${MODULES_BINARY_PATH}/manifests ${MODULES_BINARY_PATH}/module_libs ${MODULES_BINARY_PATH}/Tools
   DESTINATION ${JASP_INSTALL_MODULEDIR}
   REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
   REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)

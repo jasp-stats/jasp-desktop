@@ -51,7 +51,45 @@ Json::Value BoundControlTerms::_adjustBindingValue(const Json::Value &value) con
 {
 	Json::Value adjustedValue = _isValueWithTypes(value) ? value["value"] : value;
 
-	if (!_listView->hasRowComponent() && _listView->containsInteractions() && value.isArray())
+	if (_listView->hasRowComponent())
+	{
+		// Lists with a row component store their value as an array of row objects keyed
+		// by the option key (see Terms::getOptionsWithRelatedValues). Plain values — a
+		// single string, or an array of strings/arrays as sent by R syntax or the AI
+		// analysis_run RPC — are wrapped into row objects so row controls can locate
+		// their parent row (and so AnalysisBase::_getParentBoundValue sees objects).
+		if (adjustedValue.isString())
+		{
+			Json::Value row(Json::objectValue);
+			row[_optionKeyValue()] = adjustedValue;
+			Json::Value rows(Json::arrayValue);
+			rows.append(row);
+			adjustedValue = rows;
+		}
+		else if (adjustedValue.isArray())
+		{
+			Json::Value rows(Json::arrayValue);
+			for (const Json::Value& aValue : adjustedValue)
+			{
+				if (aValue.isObject())
+				{
+					rows.append(aValue);
+					continue;
+				}
+
+				Json::Value row(Json::objectValue);
+				// Strings and arrays of strings (interaction terms) are valid row identifiers.
+				if (aValue.isString() || aValue.isArray())
+					row[_optionKeyValue()] = aValue;
+				else
+					Log::log() << "Wrong Json type when binding " << getName() << ": " << value.toStyledString() << std::endl;
+
+				rows.append(row);
+			}
+			adjustedValue = rows;
+		}
+	}
+	else if (_listView->containsInteractions() && value.isArray())
 	{
 		adjustedValue = Json::Value(Json::arrayValue);
 		for (const Json::Value& aValue : value)
