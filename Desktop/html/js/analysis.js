@@ -338,6 +338,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		var userData = {};
 
+		if (_.isArray(this.displayOrder) && this.displayOrder.length > 0) {
+			userData.displayOrder = this.displayOrder.slice();
+			hasData = true;
+		}
+
 		if (this.viewNotes.firstNoteNoteBox.visible) {
 
 			var firstNoteData = {};
@@ -533,20 +538,50 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			pushHTMLToClipboard(exportContent, exportParams);
 	},
 
-   removeMenuClicked: function () {
-	   this.trigger("analysis:remove", this.model.get('id'));
-   },
+	removeMenuClicked: function () {
+		this.trigger("analysis:remove", this.model.get('id'));
+	},
 
-   duplicateMenuClicked: function () {
-	   this.trigger("analysis:duplicate", this.model.get('id'));
+	duplicateMenuClicked: function () {
+		this.trigger("analysis:duplicate", this.model.get('id'));
    },
 
 	menuName: "Analysis",
 
 	createResultsViewFromMeta: function (results, resultsMeta, $result) {
-		for (let i = 0; i < resultsMeta.length; i++) {
 
-			let meta = resultsMeta[i];
+		//The user can reorder the top-level display items by dragging them around (this.$el.sortable in render()).
+		//That order is persisted in the analysis' userdata as displayOrder: an array of meta names in visual order.
+		//Names are unique here because they are the keys of the results object.
+		let savedOrder = (this.userdata !== null && this.userdata !== undefined && _.isArray(this.userdata.displayOrder)) ? this.userdata.displayOrder : null;
+
+		let orderedMeta = resultsMeta;
+
+		if (savedOrder !== null && savedOrder.length > 0) {
+
+			let nameToIndex = {};
+			for (let o = 0; o < savedOrder.length; o++)
+				nameToIndex[savedOrder[o]] = o;
+
+			//Items known in the saved order keep it; new items (unknown names) are appended in meta order
+			let knownNames = [];
+			let unknownNames = [];
+			for (let i = 0; i < resultsMeta.length; i++) {
+				let meta = resultsMeta[i];
+				if (_.has(results, meta.name) && _.has(nameToIndex, meta.name))
+					knownNames.push(meta);
+				else
+					unknownNames.push(meta);
+			}
+
+			knownNames.sort(function (a, b) { return nameToIndex[a.name] - nameToIndex[b.name]; });
+
+			orderedMeta = knownNames.concat(unknownNames);
+		}
+
+		for (let i = 0; i < orderedMeta.length; i++) {
+
+			let meta = orderedMeta[i];
 			let name = meta.name;
 
 			if (!_.has(results, name))
@@ -565,6 +600,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 			itemView.render();
 			$result.append(itemView.$el);
+			itemView.$el.data("jasp-name", name);
+
+			if (itemView.$el.find("> .jasp-drag-handle").length === 0)
+				itemView.$el.prepend('<div class="jasp-drag-handle do-not-copy"></div>');
 
 		}
 	},
@@ -615,6 +654,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	overwriteUserData: function(userdata) {
 		this.userdata = userdata;
+
+		if (userdata && _.isArray(userdata.displayOrder))
+			this.displayOrder = userdata.displayOrder.slice();
+
 		var firstNote = this.viewNotes.firstNoteNoteBox
 		var lastNote = this.viewNotes.lastNoteNoteBox
 		var newList = []
@@ -647,8 +690,15 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				// setData updates survive the round-trip race
 				$.extend(true, fresh.children, this.userdata.children);
 			}
+
+			if (this.userdata && _.isArray(this.userdata.displayOrder) && !_.isArray(fresh.displayOrder))
+				fresh.displayOrder = this.userdata.displayOrder.slice();
 			this.userdata = fresh;
 		}
+
+		//Refresh displayOrder from userdata: either the persisted order (after a refresh or a load from a .jasp file) or an empty array that will be
+		//filled from the meta order below (first render).
+		this.displayOrder = (this.userdata && _.isArray(this.userdata.displayOrder)) ? this.userdata.displayOrder.slice() : [];
 
 		var results				= this.model.get("results");
 		var titleAnalysis		= this.model.get("title");
@@ -682,8 +732,24 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		if (!results.error) {
 			$innerElement.removeClass("error-state");
 			meta = results[".meta"]
-			if (meta)
+			if (meta) {
 				this.createResultsViewFromMeta(results, meta, $innerElement);
+
+				//Make sure displayOrder actually reflects what is on screen now: createResultsViewFromMeta applies the persisted order, but on a
+				//first render (no saved order) or when meta entries were added or removed we (re)build it from the views that were just created.
+				if (this.views) {
+					var names = [];
+					for (var v = 0; v < this.views.length; v++) {
+						var view = this.views[v];
+						if (view === this.rSyntaxView || view === this.viewNotes.firstNoteNoteBox || view === this.viewNotes.lastNoteNoteBox)
+							continue;
+						if (view.model && view.model.get && view.model.get('name') !== undefined)
+							names.push(view.model.get('name'));
+					}
+					if (names.length > 0)
+						this.displayOrder = names;
+				}
+			}
 		} else {
 			var status = this.model.get("status");
 			var errorMessage = results.errorMessage
@@ -715,6 +781,118 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		if (results.error)
 			this.setHeightErroredAnalysis($innerElement);
+
+		var self = this;
+
+		//While dragging: shrink ALL display items (the dragged one included) into
+		//miniatures of their real content, Restored on drop/cancel.
+		var collapseItem = function ($item) {
+			if ($item.length === 0 || $item.hasClass("jasp-drag-mini"))
+				return;
+
+			//zoom (Chromium/QtWebEngine) re-layouts the content at reduced size:
+			//a true miniature with no cropping and no leftover blank space.
+			var h = $item.outerHeight();
+			$item.css("zoom", Math.min(0.4, 120 / Math.max(h, 1)));
+			$item.addClass("jasp-drag-mini");
+		};
+
+		var collapseSiblings = function (exceptEl) {
+			self.$el.children(".jasp-display-item").each(function () {
+				var $item = $(this);
+				if ($item.get(0) === exceptEl)
+					return;
+
+				collapseItem($item);
+			});
+			self.$el.addClass("jasp-dragging");
+		};
+
+		var expandSiblings = function () {
+			self.$el.children(".jasp-display-item.jasp-drag-mini").each(function () {
+				$(this).css("zoom", "").removeClass("jasp-drag-mini");
+			});
+			self.$el.removeClass("jasp-dragging");
+		};
+
+		this.$el.sortable({
+				items: "> .jasp-display-item",
+				handle: ".jasp-drag-handle",
+				revert: true,
+				tolerance: "pointer",
+				cursor: "move",
+				placeholder: "ui-state-highlight",
+				helper: function (event, $item) {
+					//Screenshot-like thumbnail: a zoomed-down clone of the full item
+					//(DOM + CSS do the "capture", no canvas needed).
+					var $clone = $item.clone(); //deep, without events/data
+					$clone.find(".jasp-drag-handle").remove();
+					$clone.removeClass("jasp-drag-mini");
+
+					var w = $item.outerWidth();
+					var h = $item.outerHeight();
+					var z = Math.min(0.35, 240 / Math.max(w, 1), 160 / Math.max(h, 1));
+					$clone.css({ width: w, zoom: z });
+
+					var $thumb = $("<div class='jasp-drag-thumb'></div>");
+					$thumb.css({
+						width: Math.round(w * z),
+						height: Math.round(h * z)
+					});
+					$thumb.append($clone);
+					return $thumb;
+				},
+				start: function (event, ui) {
+					collapseSiblings(ui.item.get(0));
+					//FIXME: The dragged item is represented by the helper thumbnail above;shrink + hide the in-flow source so sortable's follow-offset math is not applied to a zoomed element.
+					collapseItem(ui.item);
+					ui.item.css("visibility", "hidden");
+
+					var sortable = self.$el.sortable("instance");
+					sortable.refreshPositions(true);
+					sortable.options.placeholder.update(sortable, sortable.placeholder); 	//zoom changed every item's layout AFTER sortable cached their geometry at mousedown; without this refreshPositions/update the placeholder jumps between stale rects for the first few mousemoves.
+				},
+				stop: function (event, ui) {
+					ui.item.css("visibility", "");
+					expandSiblings();
+				},
+				update: function (event, ui) {
+					if (ui.sender)
+						return; // item moved between sortables, not supported here
+
+					var order = [];
+					self.$el.children(".jasp-display-item").each(function () {
+						var name = $(this).data("jasp-name");
+						if (name !== undefined && name !== null)
+							order.push(name);
+					});
+
+					if (order.length > 0 && !_.isEqual(order, self.displayOrder)) {
+						self.displayOrder = order;
+
+						//Keep this.views in sync with the new visual order: the exporter serializes views in array order,so a stale views order would export an unsorted index.html.
+						var byName = {};
+						for (var v = 0; v < self.views.length; v++)
+							byName[self.views[v].model.get('name')] = self.views[v];
+						var reorderedViews = [];
+						for (var o = 0; o < order.length; o++) {
+							var view = byName[order[o]];
+							if (view !== undefined)
+								reorderedViews.push(view);
+						}
+						//Append any views not represented in the DOM order (notes, rsyntax, ...)
+						for (var v = 0; v < self.views.length; v++) {
+							if (reorderedViews.indexOf(self.views[v]) === -1)
+								reorderedViews.push(self.views[v]);
+						}
+						self.views = reorderedViews;
+
+						//analysis:userDataChanged -> window.getAllUserData() -> jasp.setAllUserDataFromJavascript -> Analysis::setUserData
+						self.trigger("analysis:userDataChanged");
+					}
+				}
+			})
+			.disableSelection();
 
 		return this;
 	},
@@ -748,10 +926,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.views = [];
 	},
 
-	// Searches the volatile views tree for an imagePrimitive view whose
-	// model has the given name. "Primitive" refers to the low-level
-	// JASPWidgets.imagePrimitive view nested inside an imageView wrapper —
-	// this is the view that owns the DOM rendering.
+	// JASPWidgets.imagePrimitive view nested inside an imageView wrapper, this is the view that owns the DOM rendering.
 	findImagePrimitive: function(name) {
 		var found = null;
 		var searchViews = function(views) {
