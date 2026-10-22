@@ -135,7 +135,7 @@ void TestParsedArguments::testGetTypeFromFileNameCaseInsensitive()
 
 	// Directory with dots should not match
 	QCOMPARE(Utils::getTypeFromFileName("/home/My.Data/file"),	Utils::FileType::empty);
-	QCOMPARE(Utils::getTypeFromFileName("..jasp"),				Utils::FileType::empty);
+	QCOMPARE(Utils::getTypeFromFileName("..jasp"),				Utils::FileType::jasp); // Only a single leading dot makes a hidden file without extension
 	QCOMPARE(Utils::getTypeFromFileName(".hidden"),				Utils::FileType::empty);
 
 	// No extension

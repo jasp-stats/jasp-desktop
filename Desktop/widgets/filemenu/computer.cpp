@@ -104,7 +104,7 @@ case FileEvent::FileSyncData:
 	case FileEvent::FileSave:
         caption = tr("Save (encrypted) JASP file");
 		filter  = tr("JASP Files") + " (*.jasp);;" + tr("Encrypted JASP Files") + " (*.jasp)";
-		if(!browsePath.endsWith(".jasp"))
+		if(!browsePath.endsWith(".jasp", Qt::CaseInsensitive))
 			browsePath += ".jasp";
 		break;
 

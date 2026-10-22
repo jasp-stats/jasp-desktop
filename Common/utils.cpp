@@ -27,6 +27,7 @@
 #endif
 
 #include <cmath>
+#include <algorithm>
 #include "utilenums.h"
 #include <iomanip>
 #include <chrono>
@@ -43,27 +44,23 @@ using namespace std;
 
 Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 {
-	// If a directory name contains a dot (e.g., `/home/my.data/file`), then `data/file` will be treated as the suffix.
-	const size_t sep		= path.find_last_of("/\\");
-	const size_t nameStart	= sep == std::string::npos ? 0 : sep + 1;
-	const size_t lastPoint	= path.find_last_of('.');
-	
-	// if a extension：has no '.'、'.' or a hide file（such ".bashrc"
-	if (lastPoint == std::string::npos || lastPoint < nameStart || lastPoint == nameStart)
-	return FileType::empty;
-	
-	// extension all to lower case ASCII
-	std::string suffix = path.substr(lastPoint + 1);
-	std::transform(suffix.begin(), suffix.end(), suffix.begin(), 
-										[](unsigned char c){ return std::tolower(c); });
-  
-  for (int i = 0; i < int(FileType::empty); i++)
+	// extension() only looks at the file name: a dot in a folder name (`/home/my.data/file`) or a hidden file (`.bashrc`) gives no extension.
+	const std::string extension = std::filesystem::path(path).extension().string();
+
+	if (extension.empty())
+		return FileType::empty;
+
+	// Skip the '.' and compare case insensitively
+	std::string suffix(extension.begin() + 1, extension.end());
+	std::transform(suffix.begin(), suffix.end(), suffix.begin(), [](unsigned char c){ return std::tolower(c); });
+
+	for (int i = 0; i < int(FileType::empty); i++)
 	{
 		FileType it = static_cast<FileType>(i);
 		if (suffix == FileTypeBaseToString(it))
-		return it;
+			return it;
 	}
-	
+
 	return FileType::unknown;
 }
 
