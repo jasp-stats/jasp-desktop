@@ -1015,6 +1015,36 @@ Analysis* Analyses::_rpcResolveAnalysis(int analysisId, Json::Value& errorRespon
 	return a;
 }
 
+void Analyses::_rpcWaitForFormInitialized(Analysis* a, int timeoutMs)
+{
+	//Pre-check before entering: between here and the connects below no event is processed,
+	//so the state cannot change under us. A form that is already up (or a QML that already
+	//failed) needs no wait at all.
+	if (!a || (a->form() && a->form()->initialized()) || a->qmlError() != "")
+		return;
+
+	JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+		[&](QEventLoop& loop, QTimer&)
+		{
+			auto settle = [&loop, a]()
+			{
+				if ((a->form() && a->form()->initialized()) || a->qmlError() != "")
+					loop.quit();
+			};
+
+			//The form attaches through AnalysisBase::createForm (formItemChanged); initialized()
+			//may flip right there, or later through AnalysisForm::formCompletedHandler - hence
+			//the second connect, wired the moment the form exists.
+			QObject::connect(a, &Analysis::formItemChanged, &loop, [&loop, a, settle]()
+			{
+				settle();
+				if (a->form())
+					QObject::connect(a->form(), &AnalysisForm::initializedChanged, &loop, settle);
+			});
+			QObject::connect(a, &Analysis::qmlErrorChanged, &loop, settle);
+		});
+}
+
 void Analyses::_rpcWriteIdentity(Json::Value& response, Analysis* a)
 {
 	response["analysisId"] = static_cast<int>(a->id());
@@ -1428,6 +1458,13 @@ void Analyses::registerRpcHandlers()
 		// Mark AI-created analyses in the title
 		a->setTitle(a->title() + " (AI)");
 
+		//The form is instantiated by the QML delegate a few event-loop passes from now: wait for
+		//it (bounded) so the identity reports the live multiDataSetAwareness - decided by the
+		//form's selection hosts - and options/meta come from real component state. A QML error
+		//ends the wait immediately, exactly like a timeout would.
+		int timeoutMs = params.isMember("timeoutMs") ? params["timeoutMs"].asInt() : 10000;
+		_rpcWaitForFormInitialized(a, timeoutMs);
+
 		Json::Value response = JaspRpcDispatcher::successResult();
 		_rpcWriteIdentity(response, a);
 		// Status defaults to "success" from successResult()
@@ -1801,6 +1838,7 @@ void Analyses::registerRpcHandlers()
 			dup->setResults(dup->results(), status); // apply status without changing content
 
 		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWaitForFormInitialized(dup, params.isMember("timeoutMs") ? params["timeoutMs"].asInt() : 10000);
 		_rpcWriteIdentity(response, dup);
 		_rpcWriteStatus(response, dup);
 		return response;
@@ -1869,8 +1907,9 @@ void Analyses::registerRpcHandlers()
 					Json::Value a;
 					a["name"]  = entry->function();
 					a["title"] = entry->title();
-					if (entry->multiDataSetAware())
-						a["multiDataSetAware"] = true;	//can be created on / switched to any dataset (filterId)
+					//No multiDataSetAware here: awareness is decided by the analysis' loaded form
+					//(AnalysisBase, via HostFilterSelection), not by the module entry. Live analyses
+					//report it through analyses_list / the identity writers.
 					analyses.append(a);
 				}
 				m["analyses"] = analyses;

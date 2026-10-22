@@ -69,8 +69,9 @@ public:
 	QVariantList		  filterSelectionValues() const;
 
 	///< Host hook: called once the analysis is known. A selection option makes the analysis
-	///  multiDataSetAware (in the bridge nothing else sets the flag) and establishes the default
-	///  selection: the analysis' current filter, followed until an explicit choice is made.
+	///  multiDataSetAware (registration is the only declaration of awareness, in both modes) and
+	///  establishes the default selection: the analysis' current filter, followed until an explicit
+	///  choice is made.
 	void				  analysisBecameKnown();
 
 	///< Host hook: the analysis' own filter changed elsewhere (FilterMenuButton, RPC, ...). While

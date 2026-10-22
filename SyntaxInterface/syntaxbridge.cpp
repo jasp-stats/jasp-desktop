@@ -738,7 +738,7 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath)
 	for (const AnalysisInfo & analysis : description.analyses)
 	{
 		Log::log() << "Analysis " << analysis.analysisName << " with qml file " << analysis.qmlFileName << std::endl;
-		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, analysis.preloadData, analysis.multiDataSetAware))
+		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, analysis.preloadData))
 		{
 			result = "Error when generating wrapper of " + fq(analysis.analysisName);
 			return result.c_str();
@@ -768,7 +768,7 @@ const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, 
 	{
 		if (analysisEntry->isAnalysis() && analysisEntry->function() == analysisNameStr)
 		{
-			if (!generateWrapper(tq(modulePathStr), tq(analysisNameStr), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData(), analysisEntry->multiDataSetAware()))
+			if (!generateWrapper(tq(modulePathStr), tq(analysisNameStr), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData()))
 			{
 				result = "Error when generating wrapper of " + analysisNameStr;
 				return result.c_str();
@@ -819,7 +819,6 @@ const char* STDCALL syntaxBridgeParseDescription(const char* modulePath)
 		jsonAnalysis["title"]		= fq(analysis.analysisTitle);
 		jsonAnalysis["preloadData"]	= analysis.preloadData;
 		jsonAnalysis["hasWrapper"]	= analysis.hasWrapper;
-		jsonAnalysis["multiDataSetAware"]	= analysis.multiDataSetAware;
 
 		analyses.append(jsonAnalysis);
 	}
@@ -1132,7 +1131,7 @@ AnalysisForm* getQmlForm(const QString& qmlFileStr)
 }
 
 
-bool generateWrapper(const QString& modulePath, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware)
+bool generateWrapper(const QString& modulePath, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData)
 {
 	if (analysisName.endsWith("Internal"))
 	{
@@ -1151,7 +1150,16 @@ bool generateWrapper(const QString& modulePath, const QString& analysisName, con
 		return false;
 	}
 
-	QString returnedValue = form->generateWrapper(QDir(modulePath).dirName(), analysisName, qmlFileName, analysisTitle, preloadData, multiDataSetAware);
+	//MultiDataSetAwareness is decided by the loaded form, nowhere else: a control that registers a
+	//dataset selection (HostFilterSelection, through dataSetSelectionOption) flipped the dummy
+	//analysis' flag while the form was set up in getQmlForm. So the wrapper style (datasets vs
+	//data parameter) follows the form too - no Description.qml declaration is involved.
+	const bool multiDataSetAware = form->analysisObj() && form->analysisObj()->multiDataSetAware();
+
+	//An aware analysis always preloads: its datasets ride the same engine read/queue machinery.
+	const bool effectivePreloadData = preloadData || multiDataSetAware;
+
+	QString returnedValue = form->generateWrapper(QDir(modulePath).dirName(), analysisName, qmlFileName, analysisTitle, effectivePreloadData, multiDataSetAware);
 
 	QFile file(modulePath + "/R/" + analysisName + "Wrapper.R");
 	file.resize(0); // Empty the file
@@ -1182,7 +1190,7 @@ ModuleInfo parseDescription(const QString & modulePath)
 	for (Modules::AnalysisEntry * analysisEntry : module->menu())
 	{
 		if (analysisEntry->isAnalysis())
-			moduleInfo.analyses.push_back(AnalysisInfo(tq(analysisEntry->function()), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData(), analysisEntry->hasWrapper(), analysisEntry->multiDataSetAware()));
+			moduleInfo.analyses.push_back(AnalysisInfo(tq(analysisEntry->function()), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData(), analysisEntry->hasWrapper()));
 	}
 
 	return moduleInfo;

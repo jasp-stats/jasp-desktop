@@ -51,7 +51,8 @@ import JASP
     \li \b source (var) - Source for populating the VariablesList. Per default it will be all variables. Can be set to an id or a name (or a combination) of other controls having variables.
     \li \b rowComponent (Component) - QML component for custom row controls. Can be used to add e.g. a CheckBox for each variable in the VariablesList.
     \li \b dataSetSelectionOption (string) - Name of the option carrying this list's dataset/filter selection (a filter id). The list then gets its own FilterSelect dropdown and its own variable-info
-        provider: several lists of one form can select different datasets at the same time. Declaring it marks the analysis multiDataSetAware. Default: "" (no selection; the list
+        provider: several lists of one form can select different datasets at the same time. Declaring it is what makes the analysis multiDataSetAware (the only declaration there is:
+        Description.qml has no multiDataSetAware property any more). Default: "" (no selection; the list
         inherits the namespace of the available list its items come from, else the analysis-wide one).
     \endlist
 

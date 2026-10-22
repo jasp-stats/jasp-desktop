@@ -235,11 +235,6 @@ protected:
 	void					watchQmlForm();
 
 private:
-	///< Push the current _moduleData's awareness into the AnalysisBase property (which NOTIFYs on change).
-	///< Modules::AnalysisEntry is not a QObject and is rebuilt wholesale when a module's Description
-	///< reloads, so we cannot connect to the entry: every _moduleData assignment must call this instead
-	///< (constructors and Analysis::checkAnalysisEntry(), which is the reload path).
-	void					syncMultiDataSetAwareness();
 	void					processResultsForDependenciesToBeShown();
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const	Json::Value & results, const std::string & uniqueName,			Json::Value & editOptions);

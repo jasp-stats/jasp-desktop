@@ -29,10 +29,10 @@ class AnalysisForm;
 struct AnalysisInfo
 {
 	QString		analysisName, qmlFileName, analysisTitle;
-	bool		preloadData = false, hasWrapper = false, multiDataSetAware = false;
+	bool		preloadData = false, hasWrapper = false;
 
-	AnalysisInfo(const QString & _analysisName, const QString & _qmlFileName, const QString & _analysisTitle, bool _preloadData, bool _hasWrapper, bool _multiDataSetAware = false)
-		: analysisName{_analysisName}, qmlFileName{_qmlFileName}, analysisTitle{_analysisTitle}, preloadData{_preloadData}, hasWrapper{_hasWrapper}, multiDataSetAware{_multiDataSetAware} {}
+	AnalysisInfo(const QString & _analysisName, const QString & _qmlFileName, const QString & _analysisTitle, bool _preloadData, bool _hasWrapper)
+		: analysisName{_analysisName}, qmlFileName{_qmlFileName}, analysisTitle{_analysisTitle}, preloadData{_preloadData}, hasWrapper{_hasWrapper} {}
 };
 
 struct ModuleInfo
@@ -55,7 +55,7 @@ void				sendMessage(			const char * msg);
 bool				init(					bool dbInMemory = false);
 void				sendRScriptHandler(		AnalysisForm* form, QString script, QString controlName, bool whiteListedVersion);
 AnalysisForm*		getQmlForm(				const QString & qmlFileStr);
-bool				generateWrapper(		const QString & modulePath, const QString & analysisName, const QString & qmlFileName, const QString & analysisTitle, bool preloadData, bool multiDataSetAware = false);
+bool				generateWrapper(		const QString & modulePath, const QString & analysisName, const QString & qmlFileName, const QString & analysisTitle, bool preloadData);
 ModuleInfo			parseDescription(		const QString & modulePath);
 
 #endif // SYNTAXBRIDGE_H

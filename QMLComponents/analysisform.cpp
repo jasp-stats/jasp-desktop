@@ -1142,6 +1142,7 @@ void AnalysisForm::setAnalysisUp()
 	blockValueChangeSignal(false, false);
 
 	_initialized = true;
+	emit initializedChanged();
 
 	// Don't bind boundValuesChanged before it is initialized: each setup of all controls will generate a boundValuesChanged
 	connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::rSyntaxTextChanged,				Qt::QueuedConnection	);

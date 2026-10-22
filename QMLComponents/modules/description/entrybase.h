@@ -30,7 +30,11 @@ class EntryBase : public DescriptionChildBase
 	Q_PROPERTY(QString		qml				READ qml				WRITE setQml				NOTIFY qmlChanged				)
 	Q_PROPERTY(EntryType	entryType		READ entryType										NOTIFY entryTypeChanged			) //Entry type can only be set in constructor, to keep things manageable
 	Q_PROPERTY(bool			requiresData	READ requiresData		WRITE setRequiresData		NOTIFY requiresDataChanged		)
-	Q_PROPERTY(bool			multiDataSetAware READ multiDataSetAware WRITE setMultiDataSetAware NOTIFY multiDataSetAwareChanged	) //See Description::multiDataSetAware for what it means; unset here means: follow the module default
+	///DEPRECATED and ignored: multiDataSetAwareness is decided by the analysis' loaded form (a control
+	///that registers a dataset selection flips AnalysisBase::multiDataSetAware, see HostFilterSelection).
+	///This write-only dummy only lets Analysis{} entries that still declare it keep loading; the
+	///declaration should be dropped from the qml instead.
+	Q_PROPERTY(bool			multiDataSetAware WRITE setMultiDataSetAwareDummy)
 	Q_PROPERTY(bool			preloadData		READ preloadData		WRITE setPreloadData		NOTIFY preloadDataChanged		)
 	Q_PROPERTY(bool			enabled			READ enabled			WRITE setEnabled			NOTIFY enabledEntryChanged		) //Hmm, this already exists in QQuickItem, maybe a problem?
 	Q_PROPERTY(bool			debug			READ debug				WRITE setDebug				NOTIFY debugChanged				)
@@ -49,7 +53,6 @@ public:
 	EntryType	entryType()			const { return _entryType;			}
 	bool		preloadData()		const;
 	bool		requiresData()		const { return _requiresData;		}
-	bool		multiDataSetAware()	const { return _multiDataSetAware;	}
 	bool		enabled()			const { return _enabled;			}
 	QString		qml()				const { return _qml;				}
 	bool		debug()				const { return _debug;				}
@@ -58,7 +61,7 @@ public:
 	bool		shouldBeAdded()		const;
 
 	///This function is a stopgap and these two classes should probably be merged together later
-	AnalysisEntry * convertToAnalysisEntry(bool requiresDataDefault, bool preloadDataDefault, bool multiDataSetAwareDefault) const;
+	AnalysisEntry * convertToAnalysisEntry(bool requiresDataDefault, bool preloadDataDefault) const;
 	
 public slots:
 	void setMenu(			QString menu);
@@ -69,7 +72,7 @@ public slots:
 	void setDebug(			bool	debug);
 	void setEnabled(		bool	enabled);
 	void setRequiresData(	bool	requiresData);
-	void setMultiDataSetAware(bool	multiDataSetAware);
+	void setMultiDataSetAwareDummy(bool) {}; //DEPRECATED, ignored - see the multiDataSetAware property above
 	void setPreloadData(	bool	newPreloadData);
 	void devModeChanged(	bool	devMode);
 	void setHasWrapper(		bool	hasWrapper);
@@ -81,7 +84,6 @@ signals:
 	void iconChanged();
 	void entryTypeChanged();
 	void requiresDataChanged();
-	void multiDataSetAwareChanged();
 	void enabledEntryChanged();
 	void qmlChanged();
 	void debugChanged();
@@ -97,8 +99,6 @@ private:
 	EntryType		_entryType				= EntryType::unknown;
 	bool			_requiresData			= false,
 					_useDefaultRequiresData = true, //will be set to false whenever a value is set through setRequiresData
-					_multiDataSetAware		= false,
-					_useDefaultMultiDataSetAware = true, //same trick as _useDefaultRequiresData, for setMultiDataSetAware
 					_useDefaultPreloadData	= true,
 					_enabled				= true,
 					_debug					= false,

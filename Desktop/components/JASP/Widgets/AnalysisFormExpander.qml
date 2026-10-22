@@ -432,12 +432,15 @@ DropArea
 						width:				height
 						iconSource:			enabled ? jaspTheme.iconPath + "/filter-button.png" :  jaspTheme.iconPath + "/filter-button-black.png"
 						enabled:			expanderButton.expanded
-						toolTip:			qsTr("Select filter/data to use for this analysis")
+						//For a multi-dataset aware analysis this picks the analysis-wide filter: the selection
+						//every hostless source follows (controls without their own dataSetSelectionOption, and
+						//selection hosts until they pick a filter of their own).
+						toolTip:			formParent.myForm && formParent.myForm.analysis.multiDataSetAware
+											?	qsTr("Select the default data source for this analysis, a filter.")
+											:	qsTr("Select filter/data to use for this analysis")
 						radius:				height
 						opacity:			editButton.opacity
-						//Multi-dataset aware analyses select their dataset/filter inside the form itself
-						//(VariablesForm::dataSetSelection), so this button is for the others only.
-						visible:			formParent.myForm && !formParent.myForm.analysis.multiDataSetAware
+						visible:			formParent.myForm
 						onClicked:			showPopupMenu(filterButton, filterButton.mapToGlobal(0,height))
 						
 						function showPopupMenu(fromItem, globalPos)

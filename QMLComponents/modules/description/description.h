@@ -35,10 +35,11 @@ class Description : public QQuickItem
 	Q_PROPERTY(QString					license			READ license			WRITE setDummy				NOTIFY licenseChanged			)
 	///requiresData should really be called defaultRequiresData or something. Because that is what it does. But it would be a lot of work to change all the qmls...
 	Q_PROPERTY(bool						requiresData	READ requiresDataDef	WRITE setRequiresDataDef	NOTIFY requiresDataDefChanged	)
-	///Module-wide default for multiDataSetAware; individual Analysis{} entries can override it. Only analyses
-	///that are aware may let the user pick another dataset (see VariablesForm::dataSetSelection) and get their
-	///datasets passed as the `datasets` parameter instead of reading them through readDataSet().
-	Q_PROPERTY(bool						multiDataSetAware READ multiDataSetAwareDef WRITE setMultiDataSetAwareDef NOTIFY multiDataSetAwareDefChanged)
+	///DEPRECATED and ignored: multiDataSetAwareness is decided by the analysis' loaded form (a control
+	///that registers a dataset selection flips AnalysisBase::multiDataSetAware, see HostFilterSelection).
+	///This write-only dummy only lets Description.qml files that still declare it keep loading; the
+	///declaration should be dropped from the qml instead.
+	Q_PROPERTY(bool						multiDataSetAware WRITE setMultiDataSetAwareDummy)
 	Q_PROPERTY(bool						preloadData		READ preloadData		WRITE setPreloadData		NOTIFY preloadDataChanged		)
 	Q_PROPERTY(Modules::DynamicModule *	dynMod			READ dynMod				WRITE setDynMod				NOTIFY dynModChanged			)
 	Q_PROPERTY(bool						hasWrappers		READ hasWrappers		WRITE setHasWrappers		NOTIFY hasWrappersChanged		)
@@ -52,6 +53,7 @@ public:
 
 	void			setDummy(QString ) {}; // Temporary placeholder to make existing entries in Description.qml not stop it from loading, can be removed once all modules are updated
 	void			setDummyUrl(QUrl ) {}; // Temporary placeholder to make existing entries in Description.qml not stop it from loading, can be removed once all modules are updated
+	void			setMultiDataSetAwareDummy(bool) {}; //DEPRECATED, ignored - see the multiDataSetAware property above
 	
 	const QString &	name()				const { return _name;						}
 	const QString & title()				const { return _title;						}
@@ -64,7 +66,6 @@ public:
 	const QUrl	  & website()			const { return _website;					}
 	const QString & license()			const { return _license;					}
 	bool			requiresDataDef()	const { return _requiresDataDef;			}
-	bool			multiDataSetAwareDef()	const { return _multiDataSetAwareDef;	}
 	bool			preloadData()		const;
 	DynamicModule * dynMod()			const { return _dynMod;						}
 	bool			hasWrappers()		const { return _hasWrappers;				}
@@ -88,7 +89,6 @@ public slots:
 	void setWebsite(				QUrl						website			);
 	void setLicense(				QString						license			);
 	void setRequiresDataDef(		bool						defRequiresData	);
-	void setMultiDataSetAwareDef(	bool						defMultiDataSetAware);
 	void setPreloadData(			bool						newPreloadData	);
 	void setDynMod(					Modules::DynamicModule	*	dynMod			);
 	void delayedUpdate();
@@ -108,7 +108,6 @@ signals:
 	void licenseChanged(			QString						license			);
 	void nameChanged(				QString						name			);
 	void requiresDataDefChanged(	bool						defRequiresData	);
-	void multiDataSetAwareDefChanged(bool					defMultiDataSetAware);
 	void preloadDataChanged();
 	void hasWrappersChanged(		bool						hasWrappers		);
 	void dynModChanged(				Modules::DynamicModule	*	dynMod			);
@@ -132,7 +131,6 @@ private:
 	QUrl					_website;
 	Version					_version;
 	bool					_requiresDataDef	= true,
-							_multiDataSetAwareDef = false,
 							_hasWrappers		= false,
 							_preloadData		= true,
 							_alwaysSaveState	= false,

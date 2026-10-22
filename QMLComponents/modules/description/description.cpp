@@ -64,7 +64,6 @@ void Description::connectChangesToDelay()
 	connect(this, &Description::licenseChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::nameChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::requiresDataDefChanged,	this, &Description::delayedUpdate);
-	connect(this, &Description::multiDataSetAwareDefChanged, this, &Description::delayedUpdate);
 	connect(this, &Description::dynModChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::childChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::hasWrappersChanged,		this, &Description::delayedUpdate);
@@ -185,15 +184,6 @@ void Description::setRequiresDataDef(bool requiresData)
 	emit requiresDataDefChanged(_requiresDataDef);
 }
 
-void Description::setMultiDataSetAwareDef(bool multiDataSetAware)
-{
-	if (_multiDataSetAwareDef == multiDataSetAware)
-		return;
-
-	_multiDataSetAwareDef = multiDataSetAware;
-	emit multiDataSetAwareDefChanged(_multiDataSetAwareDef);
-}
-
 void Description::setHasWrappers(bool hasWrappers)
 {
 	if (_hasWrappers == hasWrappers)
@@ -225,7 +215,7 @@ std::vector<AnalysisEntry*> Description::menuEntries() const
 	{
 		if(entry->shouldBeAdded())
 		{
-			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef(), preloadData(), multiDataSetAwareDef());
+			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef(), preloadData());
 			if (analysisEntry != nullptr)
 			{
 				if (!useSubMenus() && analysisEntry->isGroupTitle() && previousEntry != nullptr && !previousEntry->isSeparator())

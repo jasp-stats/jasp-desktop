@@ -464,7 +464,8 @@ Item
 		}
 
 		// Declaring a dataSetSelectionOption (on a list) is what makes an analysis multi-dataset
-		// aware (both modes; no separate dataSetSelection flag any more).
+		// aware (both modes) - and the ONLY declaration there is: Description.qml has no
+		// multiDataSetAware property any more, the Analysis finds out from the loaded form.
 		function test_option_marks_analysis_aware()
 		{
 			verify(jaspForm.analysis.multiDataSetAware, "a list declaring dataSetSelectionOption implies multiDataSetAware")

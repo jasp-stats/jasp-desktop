@@ -229,6 +229,11 @@ private:
 
 	// RPC handler helpers
 	static Analysis*	_rpcResolveAnalysis(int analysisId, Json::Value& errorResponse);
+	///< Block (bounded) until the analysis' QML form is attached and initialized, or its QML
+	///< error is set, or the timeout passes. Used by handlers that report identity/options derived
+	///< from the form - awareness (multiDataSetAware) only exists once the form's selection hosts
+	///< registered, and the form is instantiated by the QML delegate a few event-loop passes late.
+	static void			_rpcWaitForFormInitialized(Analysis* a, int timeoutMs);
 	static void			_rpcWriteIdentity(Json::Value& response, Analysis* a);
 	static void			_rpcWriteStatus(Json::Value& response, Analysis* a);
 	static void			_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc);

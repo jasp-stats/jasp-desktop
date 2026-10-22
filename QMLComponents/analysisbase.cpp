@@ -97,6 +97,12 @@ void AnalysisBase::createForm(QQuickItem* parentItem)
 	Log::log() << "Analysis(" << this << ")::createForm() called with parentItem " << parentItem << std::endl;
 
 	setQmlError("");
+
+	//A (re)created form decides awareness: reset here so a reloaded form without selection
+	//hosts downgrades the analysis back to non-aware. The hosts register during setAnalysisUp
+	//(HostFilterSelection::analysisBecameKnown) and flip the flag again when the form declares
+	//dataSetSelectionOptions - no Description.qml declaration is involved.
+	setMultiDataSetAware(false);
 	
 	if(parentItem)
 		_parentItem = parentItem;

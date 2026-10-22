@@ -41,7 +41,7 @@ class AnalysisEntry
 public:
 	AnalysisEntry(std::function<void()> specialFunc, std::string internalTitle, std::function<std::string()> menuTitleF, bool requiresData=true, std::string icon = "");	///< AnalysisEntry with a callbackfunction to JASP, if !specialFunc then a grouptitle
 	AnalysisEntry(std::string menuTitle, std::string icon = "", bool small=false);											///< AnalysisEntry grouptitle
-	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true, bool defaultMultiDataSetAware = false);				///< AnalysisEntry from a modules Description.qml
+	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);				///< AnalysisEntry from a modules Description.qml
 	AnalysisEntry();																										///< AnalysisEntry separator
 
 	std::string		menu()					const { return _menuF ? _menuF() : _menu;		}
@@ -56,12 +56,11 @@ public:
 	bool			hasWrapper()			const { return _hasWrapper;			}
 	bool			smallIcon()				const { return _smallIcon;			}
 	bool			requiresData()			const { return _requiresData;		}
-	///< Analyses that are aware can offer the user a dataset/filter selection (VariablesForm::dataSetSelection)
-	///< and receive their datasets as the `datasets` parameter rather than through readDataSet().
-	bool			multiDataSetAware()		const { return _multiDataSetAware;	}
-	///< Aware analyses always preload: the engine hands their datasets over through the same
-	///< read/queue machinery as preload data, so preloading is not really optional for them.
-	bool			preloadData()			const { return _preloadData || _multiDataSetAware;	}
+	///< An aware analysis always preloads (its datasets ride the queued reads), but that forcing
+	///< is applied where the engine request / wrapper is built - Analysis::createAnalysisRequestJson,
+	///< Analysis::generateWrapper and syntaxbridge generateWrapper - from the live AnalysisBase flag,
+	///< not here: this entry no longer knows about awareness.
+	bool			preloadData()			const { return _preloadData;	}
 	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
 	DynamicModule*	dynamicModule()			const;
@@ -92,7 +91,6 @@ private:
 									_isAnalysis		= false		,
 									_isEnabled		= true		,
 									_requiresData	= true		,
-									_multiDataSetAware	= false	,
 									_preloadData	= true		,
 									_hasWrapper		= false		,
 									_smallIcon		= false		;

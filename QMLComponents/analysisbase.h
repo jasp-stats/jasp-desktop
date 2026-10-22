@@ -61,8 +61,10 @@ class AnalysisBase : public QObject, public VariableInfoProvider
 	Q_PROPERTY(QString	dataSpec	READ dataSpec							NOTIFY dataSpecChanged)
 	///< Multi-dataset aware analyses let the user pick another dataset/filter per selection (see
 	///< VariablesForm::dataSetSelection), and their variable options carry dataSetId/filterId provenance
-	///< in their .meta. Desktop::Analysis derives this from the module entry; the base stores what is
-	///< set here (used by the dummy analysis of R-syntax / unit-test mode).
+	///< in their .meta. Awareness is decided by the attached form: a control that registers a dataset
+	///< selection (HostFilterSelection, through dataSetSelectionOption) flips it on, and
+	///< AnalysisBase::createForm resets it when a (re)created form attaches. Description.qml no longer
+	///< declares it; the base just stores what is set (used by the dummy analysis of R-syntax / unit-test mode).
 	Q_PROPERTY(bool		multiDataSetAware READ multiDataSetAware WRITE setMultiDataSetAware NOTIFY multiDataSetAwareChanged)
 	
 
@@ -274,7 +276,7 @@ protected:
 	QQuickItem	*	_parentItem			= nullptr;
 	QString			_qmlError;
 	bool			_isAnnotated		= false;
-	bool			_multiDataSetAware	= false;	///< See the multiDataSetAware Q_PROPERTY above; Desktop::Analysis pushes its module entry's value in via syncMultiDataSetAwareness()
+	bool			_multiDataSetAware	= false;	///< See the multiDataSetAware Q_PROPERTY above; set by the attached form's selection hosts (HostFilterSelection), reset when a new form attaches
 	//Guarded pointers: a Filter/DataSet is owned by a DataSet/Workspace that may be destroyed (e.g.
 	//multi-dataset teardown) while the analysis lives on; the guard auto-nulls on destruction so the
 	//analysis never dereferences freed memory. _filterDataSet also derives from the (possibly null)

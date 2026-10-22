@@ -110,9 +110,10 @@ void HostFilterSelection::analysisBecameKnown()
 	//late-host case): registration is idempotent, so doing it again here is harmless - and it is what
 	//puts dynamically created selection hosts into the bridge's registry at all.
 	_host->form()->registerDataSetSelectionOption(_option, _host);
-	//A selection option makes this a multi-dataset analysis by definition: the desktop entry
-	//pushes that flag from the module data, but the syntax bridge runs on a dummy analysis that
-	//gets nothing else - so declare it here, before any option binds and .meta gets stamped.
+	//A selection option makes this a multi-dataset analysis by definition: registration IS the
+	//declaration - nothing else sets the flag any more (Description.qml has no multiDataSetAware
+	//property), and this runs before any option binds and .meta gets stamped, in both desktop and
+	//syntax mode (the bridge's dummy analysis gets the flag the same way).
 	AnalysisBase * analysis = _host->form()->analysisObj();
 
 	if (analysis && !analysis->multiDataSetAware())

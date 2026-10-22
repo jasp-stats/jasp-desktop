@@ -42,6 +42,14 @@
 					"schema": {
 						"type": "integer"
 					}
+				},
+				{
+					"name": "timeoutMs",
+					"required": false,
+					"description": "Optional upper bound (milliseconds) for waiting until the analysis' form is initialized before responding, so the identity reports the live multiDataSetAwareness (decided by the form's dataset-selection hosts) and the options come from real component state. Defaults to 10000; 0 skips the wait.",
+					"schema": {
+						"type": "integer"
+					}
 				}
 			],
 			"result": {
@@ -566,10 +574,6 @@
 												"title": {
 													"type": "string",
 													"description": "Human-readable analysis title, e.g. 'Independent Samples T-Test'."
-												},
-												"multiDataSetAware": {
-													"type": "boolean",
-													"description": "Present (true) when the analysis is multi-dataset aware: it can be created on any dataset (analysis_create's filterId) and switched later (analysis_setFilter)."
 												}
 											},
 											"required": ["name", "title"]

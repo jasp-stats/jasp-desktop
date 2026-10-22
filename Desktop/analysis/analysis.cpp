@@ -62,8 +62,6 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	_helpFile						= _dynamicModule ? _dynamicModule->helpFolderPath() + tq(analysisEntry->function()) : "";
 
-	syncMultiDataSetAwareness();
-
 	initAnalysis();
 }
 
@@ -94,8 +92,6 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _rSources(						duplicateMe->_rSources							)
 {
 	_filter = duplicateMe->_filter;
-	
-	syncMultiDataSetAwareness();
 
 	initAnalysis();
 }
@@ -202,14 +198,6 @@ Analysis::~Analysis()
 	}
 }
 
-void Analysis::syncMultiDataSetAwareness()
-{
-	//The AnalysisBase property is the single source of truth (with a working NOTIFY); it mirrors
-	//whatever the currently bound module entry says. See the declaration in analysis.h for why
-	//this is pushed per binding rather than connected to the entry.
-	setMultiDataSetAware(_moduleData && _moduleData->multiDataSetAware());
-}
-
 bool Analysis::checkAnalysisEntry()
 {
 	/*
@@ -235,10 +223,6 @@ bool Analysis::checkAnalysisEntry()
 			Modules::ModuleException("???", "No coded reference stored...");
 
 		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
-
-		//The entry was just (re)bound: it may well be a different one than before (module reload),
-		//so re-push its awareness into the property.
-		syncMultiDataSetAwareness();
 
 		bool updateTitleToDefault = _title == _titleDefault;
 
@@ -266,7 +250,6 @@ bool Analysis::checkAnalysisEntry()
 		Log::log() << "Analysis::checkAnalysisEntry() had a problem: " << e.what() << std::endl;
 
 		_moduleData = nullptr;
-		syncMultiDataSetAwareness();
 
 		if(_QMLFileWatcher.files().size())
 			_QMLFileWatcher.removePaths(_QMLFileWatcher.files());
@@ -1106,7 +1089,10 @@ Json::Value Analysis::createAnalysisRequestJson()
 	json["typeRequest"]			= engineStateToString(engineState::analysis);
 	json["id"]					= int(id());
 	json["perform"]				= performTypeToString(perform);
-	json["preloadData"]			= _moduleData ? _moduleData->preloadData() : true;
+	//An aware analysis always runs preload-style (its datasets ride the queued reads), so the
+	//forced true that used to live in Modules::AnalysisEntry::preloadData() is applied here,
+	//from the live flag (the form is initialized by the time a request is generated).
+	json["preloadData"]			= (_moduleData ? _moduleData->preloadData() : true) || multiDataSetAware();
 	json["revision"]			= revision();
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
@@ -1130,7 +1116,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 		if (multiDataSetAware())
 			json["multiDataSetAware"]	= true;
 
-		if (perform == performType::saveImg || perform == performType::editImg)	
+		if (perform == performType::saveImg || perform == performType::editImg)
 			json["image"]		= imgOptions();
 
 		json["options"]		= createOptionsJson(BoundControl::Engine);
@@ -1158,13 +1144,15 @@ void Analysis::duplicateMe()
 QString Analysis::generateWrapper()
 {
 	if (!_analysisForm || !_moduleData) return QString();
+	//An aware analysis gets the datasets-style wrapper: the live flag decides (the form is
+	//attached here), like the bridge path (syntaxbridge.cpp generateWrapper).
 	return _analysisForm->generateWrapper(
 					tq(_moduleData->dynamicModule()->name()),
 					tq(_name),
 					tq(_qml),
 					tq(_title),
-					_moduleData->preloadData(),
-					multiDataSetAware() // like the bridge path (syntaxbridge.cpp generateWrapper), the live developer-mode button must produce aware wrappers
+					_moduleData->preloadData() || multiDataSetAware(), //aware analyses always preload
+					multiDataSetAware()
 	);
 }
 

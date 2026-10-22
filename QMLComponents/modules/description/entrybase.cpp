@@ -28,7 +28,6 @@ EntryBase::EntryBase(EntryType entryType) : DescriptionChildBase(), _entryType(e
 	connect(this, &EntryBase::qmlChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::debugChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::hasWrapperChanged,	this, &EntryBase::somethingChanged);
-	connect(this, &EntryBase::multiDataSetAwareChanged, this, &EntryBase::somethingChanged);
 }
 
 void EntryBase::devModeChanged(bool)
@@ -122,17 +121,6 @@ void EntryBase::setRequiresData(bool requiresData)
 	emit requiresDataChanged();
 }
 
-void EntryBase::setMultiDataSetAware(bool multiDataSetAware)
-{
-	_useDefaultMultiDataSetAware = false;
-
-	if (_multiDataSetAware == multiDataSetAware)
-		return;
-
-	_multiDataSetAware = multiDataSetAware;
-	emit multiDataSetAwareChanged();
-}
-
 void EntryBase::setEnabled(bool enabled)
 {
 	if (_enabled == enabled)
@@ -172,7 +160,7 @@ void EntryBase::setHasWrapper(bool hasWrapper)
 	emit hasWrapperChanged();
 }
 
-AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool preloadDataDefault, bool multiDataSetAwareDefault) const
+AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool preloadDataDefault) const
 {
 	AnalysisEntry * entry = new AnalysisEntry();
 
@@ -183,7 +171,6 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool
 	entry->_function		= fq(function());
 	entry->_requiresData	= _useDefaultRequiresData 		? requiresDataDefault 		: requiresData();
 	entry->_preloadData		= _useDefaultPreloadData			? preloadDataDefault		: preloadData();
-	entry->_multiDataSetAware = _useDefaultMultiDataSetAware	? multiDataSetAwareDefault	: multiDataSetAware();
 
 	entry->_isEnabled		= _enabled;
 	entry->_isAnalysis		= _entryType == EntryType::analysis;
@@ -200,10 +187,7 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool
 
 bool EntryBase::preloadData() const
 {
-	//Aware analyses always preload (their datasets ride the same engine read/queue machinery); see
-	//Modules::AnalysisEntry::preloadData, which is what the engine actually runs on. Keep the QML
-	//side consistent with that so a module author sees the effective value, not the inert default.
-	return _preloadData || multiDataSetAware();
+	return _preloadData;
 }
 
 void EntryBase::setPreloadData(bool newPreloadData)

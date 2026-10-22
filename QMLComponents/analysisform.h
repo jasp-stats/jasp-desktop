@@ -152,6 +152,10 @@ signals:
 	void					errorsChanged();
 	void					warningsChanged();
 	void					analysisChanged();
+	///< the form is initialized: setAnalysisUp attached + bound the controls (flips
+	///< initialized()). Lets RPC handlers wait for the component state identity/options are
+	///< generated from - the form completes a few event-loop passes after the analysis exists.
+	void					initializedChanged();
 	void					rSourceChanged(const QString& name);
 	void					optionNameConversionChanged();
 	void					titleChanged();
