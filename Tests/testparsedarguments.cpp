@@ -19,6 +19,7 @@
 #include "parsedarguments.h"
 #include "appinfo.h"
 #include "utilenums.h"
+#include "utils.h"
 
 #include <QTemporaryDir>
 #include <QFile>
@@ -111,6 +112,38 @@ void TestParsedArguments::testIsDataFileTypeFromPath()
 	QVERIFY(!ParsedArguments::isDataFileType("output.html"));
 	QVERIFY(!ParsedArguments::isDataFileType("output.pdf"));
 	QVERIFY(!ParsedArguments::isDataFileType("noextension"));
+}
+
+// ── getTypeFromFileName case-insensitive ───────────────────────────────────
+
+void TestParsedArguments::testGetTypeFromFileNameCaseInsensitive()
+{
+	// Lowercase (should already work)
+	QCOMPARE(Utils::getTypeFromFileName("data.csv"),			Utils::FileType::csv);
+	QCOMPARE(Utils::getTypeFromFileName("data.sav"),			Utils::FileType::sav);
+	QCOMPARE(Utils::getTypeFromFileName("data.jasp"),			Utils::FileType::jasp);
+
+	// Uppercase (was broken before the fix)
+	QCOMPARE(Utils::getTypeFromFileName("DATA.CSV"),			Utils::FileType::csv);
+	QCOMPARE(Utils::getTypeFromFileName("DATA.SAV"),			Utils::FileType::sav);
+	QCOMPARE(Utils::getTypeFromFileName("DATA.JASP"),			Utils::FileType::jasp);
+
+	// Mixed case
+	QCOMPARE(Utils::getTypeFromFileName("Data.Csv"),			Utils::FileType::csv);
+	QCOMPARE(Utils::getTypeFromFileName("Data.Sav"),			Utils::FileType::sav);
+	QCOMPARE(Utils::getTypeFromFileName("Data.Jasp"),			Utils::FileType::jasp);
+
+	// Directory with dots should not match
+	QCOMPARE(Utils::getTypeFromFileName("/home/My.Data/file"),	Utils::FileType::empty);
+	QCOMPARE(Utils::getTypeFromFileName("..jasp"),				Utils::FileType::empty);
+	QCOMPARE(Utils::getTypeFromFileName(".hidden"),				Utils::FileType::empty);
+
+	// No extension
+	QCOMPARE(Utils::getTypeFromFileName("noextension"),			Utils::FileType::empty);
+
+	// Unknown extension
+	QCOMPARE(Utils::getTypeFromFileName("file.fakeext"),		Utils::FileType::unknown);
+	QCOMPARE(Utils::getTypeFromFileName("FILE.FAKEEXT"),		Utils::FileType::unknown);
 }
 
 // ── constructor — no arguments ─────────────────────────────────────────────
