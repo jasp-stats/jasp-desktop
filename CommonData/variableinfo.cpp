@@ -3,6 +3,7 @@
 #include "dataset.h"
 #include "column.h"
 #include "QTimer"
+#include <QThread>
 
 VariableInfo::VariableInfo(VariableInfoProvider* providerInfo, QObject * parent) :
 	QObject(parent ? parent : providerInfo && providerInfo->providerModel() ? providerInfo->providerModel() : nullptr)
@@ -65,8 +66,23 @@ DataSet *VariableInfo::dataSet()
 }
 
 VariableInfoProvider::VariableInfoProvider(QObject *parent)
-	: _infoSignaller(new VarInfoSignaller(parent))
 {
+	//The signaller must live in (and be parented from) the same thread as its owner. Providers such as
+	//Filter are constructed on the AsyncLoader thread but their DataSetBaseNode base has already moved
+	//them to the GUI thread, so parenting straight from here would either orphan the signaller on the
+	//worker thread or trip QCoreApplication::sendEvent's cross-thread assert.
+	_infoSignaller = new VarInfoSignaller(nullptr);
+
+	if(parent)
+	{
+		QThread * target = parent->thread();
+
+		if(_infoSignaller->thread() != target)
+			_infoSignaller->moveToThread(target);
+
+		if(QThread::currentThread() == target)
+			_infoSignaller->setParent(parent);
+	}
 	
 }
 
