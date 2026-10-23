@@ -13,9 +13,17 @@ LabelFilterGenerator::LabelFilterGenerator(Filter * filter)
 	connect(_filter->data(),	&DataSet::allFiltersReset,		this,	&LabelFilterGenerator::regenerateGeneratedFilter	);
 	connect(_filter,			&Filter::constructorRChanged,	this,	&LabelFilterGenerator::regenerateGeneratedFilter	);
 	
-	if(!filter->thread()->isCurrentThread())
-		moveToThread(filter->thread());
-	setParent(filter);
+	//Filters are built by the importers on the AsyncLoader thread, but the Filter itself was already
+	//moved to the GUI thread by DataSetBaseNode's ctor (it is a model QML binds to), so our affinity has to follow it before we can be parented to it.
+	QThread * target = filter->thread();
+
+	if(thread() != target)
+		moveToThread(target);
+
+	//setParent() sends a ChildAdded event to the parent and QCoreApplication::sendEvent() asserts (in debug builds) when called from a thread other than the one owning the receiver. 
+	// if the Filter dies before the GUI thread runs this the queued call is dropped and leak - narrow.
+	if(QThread::currentThread() == target)
+		setParent(filter);
 }
 
 std::string LabelFilterGenerator::generateFilter()
