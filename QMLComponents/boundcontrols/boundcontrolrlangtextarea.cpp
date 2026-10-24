@@ -162,12 +162,18 @@ void BoundControlRlangTextArea::checkSyntax()
 			.arg(tq(_checkSyntaxRFunctionName()))
 			.arg(_textEncoded)
 			.arg(encodedColNames);
-		
+
+		Log::log() << "Lavaan checkCode sent to R:\n" << fq(checkCode) << std::endl;
+
 		if(_previouslyUsedTextEncoded != checkCode)
 			_textArea->runRScript(checkCode, false);
-		
+		else
+			Log::log() << "Lavaan checkCode is IDENTICAL to the previous one, so runRScript is NOT called again (rScriptDoneHandler/_setBoundValues will not fire; this can look like 'nothing happens')." << std::endl;
+
 		_previouslyUsedTextEncoded = checkCode;
 	}
+	else
+		Log::log() << "Lavaan textEncoded is EMPTY, checkLavaanModel is NOT called." << std::endl;
 
 }
 
