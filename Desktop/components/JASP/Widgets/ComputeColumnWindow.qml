@@ -110,7 +110,7 @@ FocusScope
 			anchors
 			{
 				top:			parent.top
-				bottom:			computeColumnErrorScroll.top
+				bottom:			computeRefWarning.top
 				left:			parent.left
 				right:			parent.right
 				topMargin:		1
@@ -198,8 +198,43 @@ FocusScope
 
 				showGeneratedRCode:		false
 				KeyNavigation.tab:		applyComputedColumnButton
+
+				// the constructor palette gains outward column sourcing too (this
+				//supersedes the v1 own-dataset palette cut for the constructor only - the
+				//emitted code is visible R, so the full grammar applies). The context is the
+				//column's COMPUTE FILTER - the same filter the run encodes the output name and
+				//reads the slice through, and the same context the R editor's picker
+				//uses.
+				contextFilterId:		columnModel.column
+										? dataSetPackage.workspace.filterIdByName(dataSetPackage.workspace.shownDataSetId(), columnModel.column.computeFilter)
+										: -1
 			}
 
+		}
+
+		// live validation of the qualified references in the R code as typed
+		// (the scanner's first typed error). Non-blocking: it warns, the run itself still
+		// fails loudly at the engine when a reference cannot resolve there.
+		Text
+		{
+			id:					computeRefWarning
+			visible:			isRCode && computeRefValidator.error !== ""
+			height:				visible ? contentHeight + 4 * jaspTheme.uiScale : 0
+
+			anchors
+			{
+				left:			parent.left
+				right:			parent.right
+				bottom:			computeColumnErrorScroll.top
+				leftMargin:		2 * jaspTheme.uiScale
+				rightMargin:	2 * jaspTheme.uiScale
+				bottomMargin:	visible ? 2 * jaspTheme.uiScale : 0
+			}
+
+			wrapMode:	Text.Wrap
+			font:		jaspTheme.fontCode
+			color:		jaspTheme.controlWarningTextColor
+			text:		qsTr("Note: ") + computeRefValidator.error
 		}
 
 		ScrollView
@@ -258,10 +293,26 @@ FocusScope
 		
 			JaspControls.RectangularButton
 			{
+				id:				insertColumnRefButton
+				visible:		isRCode
+				width:			visible ? height : 0
+
+				toolTip:		qsTr("Insert a column reference from another dataset or filter")
+				iconSource:		jaspTheme.iconPath + "round_addition.png"
+
+				anchors.left:	showGeneratedRCode.right
+				anchors.bottom:	parent.bottom
+				anchors.top:	helpButton.top
+
+				onClicked:		computeRefPicker.openForInsertion()
+			}
+
+			JaspControls.RectangularButton
+			{
 				id:					applyComputedColumnButton
 
 				text:				qsTr("Compute column") 
-				anchors.left:		showGeneratedRCode.right
+				anchors.left:		insertColumnRefButton.right
 				anchors.right:		computeFilterDropDown.left
 				centerTextParent:	true
 				anchors.bottom:		parent.bottom
@@ -270,6 +321,13 @@ FocusScope
 				toolTip:			qsTr("Click to compute column")
 			}
 			
+			// the computeFilterDropDown is THE fallback encoder selection for
+			// bare names in this editor (the "computed column | selected input filter" row):
+			// the picker/validator below resolve their context through it, and the
+			// run resolves the same way (EngineSync::computeColumn -> engine ->
+			// compCol->computeFilter()'s view). Switching it applies the CURRENT editor text
+			// first and then re-queues: both sends re-scan their code at queue time, so
+			// this can never run a stale referencedFilterIds sidecar.
 			JaspControls.DropDown
 			{
 				id:					computeFilterDropDown
@@ -298,6 +356,29 @@ FocusScope
 				width:			height
 				buttonPadding:  6 * preferencesModel.uiScale
 			}
+		}
+
+		// outward-reference support for the R code editor (the constructor keeps
+		// its v1 own-dataset palette). The insertion context is the column's COMPUTE FILTER's
+		// id - the same filter the run encodes the output name and reads the slice through
+		// - so the picker's bare candidates are exactly the columns the bare names in
+		// this code resolve to at run time. The validator is debounced and
+		// read-only: it warns, it never triggers a run.
+		JaspControls.QualifiedColumnValidator
+		{
+			id:			computeRefValidator
+			workspace:	dataSetPackage.workspace
+			target:		computeColumnEdit
+		}
+
+		JaspControls.QualifiedColumnPicker
+		{
+			id:					computeRefPicker
+			target:				computeColumnEdit
+			workspace:			dataSetPackage.workspace
+			contextFilterId:	columnModel.column
+								? dataSetPackage.workspace.filterIdByName(dataSetPackage.workspace.shownDataSetId(), columnModel.column.computeFilter)
+								: -1
 		}
 
 		SaveDiscardCancelDialog

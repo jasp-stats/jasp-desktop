@@ -104,9 +104,9 @@ Json::Value FactorLevelListBase::createJson() const
 	return result;
 }
 
-Json::Value FactorLevelListBase::createMeta() const
+Json::Value FactorLevelListBase::createEngineMeta() const
 {
-	Json::Value meta(BoundControlBase::createMeta()); //Work from parent to get everything it defines
+	Json::Value meta(BoundControlBase::createEngineMeta()); //Work from parent to get everything it defines
 		
 	meta["encodeThis"] = Json::arrayValue;
 	for (const QString & factor : factors())
@@ -140,8 +140,16 @@ void FactorLevelListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
+	setBoundValue(createEngineValue());
+}
+
+Json::Value FactorLevelListBase::createEngineValue() const
+{
 	Json::Value boundValue(Json::arrayValue);
-	
+
+	if (!_factorLevelsModel)
+		return boundValue;
+
 	for (const QString &factor : factors())
 	{
 		Json::Value row(Json::objectValue);
@@ -154,6 +162,6 @@ void FactorLevelListBase::termsChangedHandler()
 		row["levels"] = levels;
 		boundValue.append(row);
 	}
-	
-	setBoundValue(boundValue);
+
+	return boundValue;
 }

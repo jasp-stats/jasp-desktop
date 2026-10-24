@@ -28,6 +28,7 @@ class FormulaBase;
 class ListModelAssignedInterface;
 class Terms;
 class ComponentsListBase;
+class AnalysisForm;
 
 class FormulaSource : public QObject
 {
@@ -67,7 +68,13 @@ public:
 
 	static const QString			interceptTerm;
 	static QVector<FormulaSource*>	makeFormulaSources(FormulaBase* formula, const QVariant& var);
-	static QString					generateInteractionTerms(const Terms& terms, const Json::Value& changedTypes);
+	// the emission context - the filter id whose namespace BARE names resolve in
+	// at run time (the self-reference rule): the analysis' own filter, else the shown filter
+	// (the host-bound fallback chain varInfo's provider follows). -1 (no form/filter) keeps every
+	// emission on the legacy unqualified path.
+	static int						contextFilterIdForForm(AnalysisForm * form);
+	static int						contextFilterIdFor(const ListModel* model);
+	static QString					generateInteractionTerms(const Terms& terms, const Json::Value& changedTypes, int contextFilterId = -1);
 
 	const QString&					sourceName()																					const	{ return _sourceName;	}
 	QStringList						modelSources()																					const;
@@ -82,8 +89,8 @@ public:
 protected:
 	void							_addError(const QString& error)																	const;
 	std::string						_controlToOptionName(const QString& name)														const;
-	QString							_generateRandomEffectsTerms(const Terms& terms)													const;
-	QString							_generateSimpleTerms(const Terms& terms, const Json::Value& types)								const;
+	QString							_generateRandomEffectsTerms(const Terms& terms, int contextFilterId)							const;
+	QString							_generateSimpleTerms(const Terms& terms, const Json::Value& types, int contextFilterId)			const;
 	std::pair<Terms, Json::Value>	_onlyTrueTerms(const QString& controlName)														const;
 	bool							_areTermsInOptions(ListModelAssignedInterface* model, const Json::Value& options, Terms& terms)	const;
 	void							_addTermsToOptions(ListModelAssignedInterface* model, Json::Value& options, const Terms& terms)	const;

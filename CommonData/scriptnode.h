@@ -52,6 +52,8 @@ public:
 	/// Store node in the given slot (implementations must setParent() when node != nullptr).
 	virtual void			setSlot(int, ScriptNode *)			{}
 	/// Fresh node of the same type without children (row functions with one trailing empty slot).
+	/// For a column node "same identity" includes its outward source stamp:
+	/// a palette prototype for another dataset's column must spawn nodes that keep carrying it.
 	virtual ScriptNode	*	cloneEmpty()				const	= 0;
 
 	ScriptNode	*	parent() const { return _parent; }
@@ -195,17 +197,29 @@ public:
 	std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const override;
 	stringvec		dragKeys(ScriptConstructorMode mode) const override;
 	bool			isComplete() const override { return true; }
-	ScriptNode	*	cloneEmpty() const override { return new ScriptNodeColumn(_columnName); }
+	ScriptNode	*	cloneEmpty() const override
+	{
+		// the clone must keep the outward source stamp (and the user type that
+		//carries the source column's type) - the palette spawns drag nodes through cloneEmpty.
+		ScriptNodeColumn * clone = new ScriptNodeColumn(_columnName, _columnTypeUser);
+		clone->setDataSetName(_dataSetName);
+		clone->setFilterName(_filterName);
+		return clone;
+	}
 
 	const std::string & columnName() const { return _columnName; }
 	int columnTypeUser() const { return _columnTypeUser; }
 	int columnTypeDrop() const { return _columnTypeDrop; }
 	const std::string & dataSetName() const { return _dataSetName; }
+	///< the source slice's filter NAME for an outward node ("" = the dataset's
+	///  default filter - the v1 dataset-level reference). Serialized alongside dataSetName.
+	const std::string & filterName() const { return _filterName; }
 
 	void setColumnName(const std::string & name) { _columnName = name; }
 	void setColumnTypeUser(int t);
 	void setColumnTypeDrop(int t);
 	void setDataSetName(const std::string & name) { _dataSetName = name; }
+	void setFilterName(const std::string & name) { _filterName = name; }
 
 	int effectiveColumnType(int actualColumnType) const;
 
@@ -213,7 +227,8 @@ private:
 	std::string	_columnName;
 	int			_columnTypeUser = -1,
 				_columnTypeDrop = -1;
-	std::string	_dataSetName;
+	std::string	_dataSetName,
+				_filterName;
 };
 
 class ScriptNodeLiteral : public ScriptNode

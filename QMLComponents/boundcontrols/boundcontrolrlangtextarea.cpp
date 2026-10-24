@@ -25,18 +25,6 @@
 #include "filter.h"
 #include <QQuickTextDocument>
 
-ColumnEncoder * BoundControlRlangTextArea::_encoder() const
-{
-	//Desktop-only: never use the process-global ColumnEncoder (that is only meaningful inside the engine's
-	//request context). Resolve the encoder for the data this control's form is bound to instead.
-	if (VariableInfo * vi = _textArea->form()->varInfo())
-		if (VariableInfoProvider * provider = vi->provider())
-			if (ColumnEncoder * encoder = provider->columnEncoder())
-				return encoder;
-
-	return ColumnEncoder::fallbackEncoder();
-}
-
 BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea, RLangType type)
 	: BoundControlTextArea(textArea), _langType(type)
 {
@@ -45,7 +33,7 @@ BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea, RLa
 	if (textDocumentQQuick)
 	{
 		QTextDocument* doc = textDocumentQQuick->textDocument();
-        _rLangHighlighter = new RSyntaxHighlighter(doc, textArea->form()->varInfo());
+        _rLangHighlighter = new RSyntaxHighlighter(doc, textArea->resolvedVarInfo());
 		
 		//connect(doc, &QTextDocument::contentsChanged, this, &BoundQMLTextArea::contentsChangedHandler);
 	}
@@ -97,7 +85,32 @@ void BoundControlRlangTextArea::checkSyntax()
 
 	// get the column names of the data set
 	_prefixedUsedColumnNames.clear();
-	_textEncoded = tq(_encoder()->encodeRScript(stringUtils::stripRComments(fq(text)), _prefixedUsedColumnNames, _allowedVarPrefixes));
+
+	// resolve the qualified column references BEFORE the
+	//bare-name encode pass - each becomes the referenced slice's token (the rewrite
+	//primitive), so the encoded tokens form under the right namespaces and the surface form
+	//is never mangled into the context namespace nor handed to R's parser. Bare names keep
+	//encoding against the context encoder exactly as before (unchanged).
+	QStringList qualifiedTokens;
+	QString resolvedText;
+	try
+	{
+		resolvedText = encodeQualifiedColumnRefs(tq(stringUtils::stripRComments(fq(text))), &qualifiedTokens);
+	}
+	catch (const std::exception & e)
+	{
+		//Loud and typed, but non-blocking: the message shows in
+		//the text area and the text is left UNencoded - running the bare pass over an
+		//unresolved reference would mangle its components into the context namespace - so
+		//the run fails on the surface form until the reference resolves again.
+		_textArea->setHasScriptError(true);
+		_textArea->setProperty("infoText", QString::fromStdString(e.what()));
+		_textEncoded = text;
+		_setBoundValues();
+		return;
+	}
+
+	_textEncoded = tq(_encoder()->encodeRScript(fq(resolvedText), _prefixedUsedColumnNames, _allowedVarPrefixes));
 
 	if(_prefixedUsedColumnNames.find("") != _prefixedUsedColumnNames.end()) 
 	{
@@ -133,6 +146,16 @@ void BoundControlRlangTextArea::checkSyntax()
 			encodedColNames.append("'" + tq(prefixSet.first) + tq(_encoder()->encode(column)) + "'");
 			firstCol = false;
 		}
+
+	// the qualified references' tokens are already fully encoded (each under its
+	//referenced slice's view) - they join the checker's column list verbatim, never re-encoded
+	//against the context encoder.
+	for (const QString & token : qualifiedTokens)
+	{
+		if (!firstCol) encodedColNames.append(", ");
+		encodedColNames.append("'" + token + "'");
+		firstCol = false;
+	}
 
 	if (_langType == RLangType::MetaSem)
 	{
@@ -182,6 +205,21 @@ QString BoundControlRlangTextArea::rScriptDoneHandler(const QString & result)
 
 void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 {
+	Terms terms;
+	Json::Value boundValue = liveBoundValue(setModel ? &terms : nullptr);
+
+	if (setModel && _textArea->model())
+		_textArea->model()->initTerms(terms);
+
+	setBoundValue(boundValue, !_control->form()->wasUpgraded());
+}
+
+// one builder for every _setBoundValues write: the live textarea text plus the
+//derived members of THIS control (_textEncoded, the used-column sets from the last syntax check),
+//encoded against the host encoder exactly as the last check produced them. The generators read
+//the committed result through BoundControlTextArea::_appliedValue instead (commit-on-apply).
+Json::Value BoundControlRlangTextArea::liveBoundValue(Terms* termsOut) const
+{
 	Json::Value boundValue(Json::objectValue);
 
 	std::string text = _textArea->text().toStdString();
@@ -200,15 +238,13 @@ void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 		value.append(column);
 	}
 
-	if (setModel && _textArea->model())
-		_textArea->model()->initTerms(terms);
 	boundValue["columns"]	= columns;
 	boundValue["value"]		= value;
 	boundValue["types"]		= terms.types();
 	boundValue["optionKey"] = "value";
 
 	Json::Value prefixedColumns(Json::objectValue);
-	for(auto& prefixSet : _prefixedUsedColumnNames) {
+	for(const auto& prefixSet : _prefixedUsedColumnNames) {
 		prefixedColumns[prefixSet.first] = Json::Value(Json::arrayValue);
 		for (const std::string& column : prefixSet.second) {
 			prefixedColumns[prefixSet.first].append(_encoder()->encode(column));
@@ -216,7 +252,10 @@ void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 	}
 	boundValue["prefixedColumns"] = prefixedColumns;
 
-	setBoundValue(boundValue, !_control->form()->wasUpgraded());
+	if (termsOut)
+		*termsOut = terms;
+
+	return boundValue;
 }
 
 const char* BoundControlRlangTextArea::_checkSyntaxRFunctionName()

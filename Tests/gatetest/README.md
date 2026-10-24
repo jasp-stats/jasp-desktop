@@ -181,17 +181,22 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
 - **FIXED** — `jaspMetaAnalysis/BayesianMetaAnalysis` + `FunnelPlot`: a
   caught option-bind exception could leave half-bound option arrays behind;
   the deferred QML path (`RadioButton` destruction → `setBoundValue` →
-  `AnalysisBase::boundValue` → `_getParentBoundValue`) then threw
+  `AnalysisBase::boundValue` → the then-mirror's nested-placement lookup)
+  then threw
   `Json::LogicError` from inside a Qt signal handler → `std::terminate` →
-  SIGABRT. Fixed by requiring objects in `_getParentBoundValue` array
+  SIGABRT. Fixed by requiring objects in the nested-placement walk's array
   elements (analysisbase.cpp) and handling `aborted` acks for removed
   analyses.
-- **Hang (unfixed)** — `jaspLearnBayes/LSgameofchance` and
+- **Hang (unfixed, upstream)** — `jaspLearnBayes/LSgameofchance` and
   `LSgameofskill`: extreme or non-numeric `pointsToWin` (e.g. 1e308 or
   `"not-a-number"`) reaches the R simulation loop, which then runs (nearly)
-  forever. Repro: `fuzztest.py --repro` with the saved `.repro.json`. The
-  QML validators clamp user input; the RPC path bypasses them, so a range
-  clamp at the option layer is the likely fix.
+  forever. (The saved `.repro.json` files were removed as
+  stale artifacts: both date from the 2026-09-09 macOS fuzz run,
+  their embedded csv paths don't resolve off that machine, the hang lives in
+  the module's own R loop, and a final
+  fuzzSmoke run produced no repro files.) The QML validators clamp user
+  input; the RPC path bypasses them, so a range clamp at the option layer is
+  the likely fix.
 - **SIGSEGV in the QML JS GC (flaky, unfixed)** — under heavy churn
   (analysis_remove while a run is in flight + fresh analysis_create re-binding),
   the desktop dies in `QV4::markDrain` (QtQml incremental GC marking) with

@@ -504,3 +504,13 @@ void TextInputBase::_setBoundValue()
 
 }
 
+// exactly what the write path above stores (_value as-is), NOT createJson(): that
+//one substitutes _defaultValue when the text is empty, which is right for a fresh binding but
+//would lie about a field the user just cleared (the mirror holds "" there - the generator IS the
+//state from here on). Formula-typed fields in mid-script state can lag the mirror by one script
+//round-trip; the inversion makes the live value authoritative.
+Json::Value TextInputBase::createEngineValue() const
+{
+	return _getJsonValue(_value);
+}
+

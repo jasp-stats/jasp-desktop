@@ -54,12 +54,10 @@ Json::Value BoundControlMultiTerms::createJson() const
 	return Json::Value(Json::arrayValue);
 }
 
-bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue) const
-{
-	return optionValue.type() == Json::arrayValue || optionValue.type() == Json::objectValue;
-}
-
-void BoundControlMultiTerms::resetBoundValue()
+// the tuples model IS the typed state; resetBoundValue (the write path, fired on
+//every tuple change) and the generators both read this one builder. Wrapped in {value, types}
+//with the list's defaultType exactly like setBoundValue wraps it (the encodeValue contract).
+Json::Value BoundControlMultiTerms::createEngineValue() const
 {
 	const QList<Terms>& tuples = _listModel->tuples();
 	Json::Value boundValue(Json::arrayValue);
@@ -71,39 +69,50 @@ void BoundControlMultiTerms::resetBoundValue()
 		boundValue.append(rowValue);
 	}
 
-	setBoundValue(boundValue);
+	return _control->encodeValue() ? _wrapWithDefaultTypes(boundValue) : boundValue;
+}
+
+Json::Value BoundControlMultiTerms::_wrapWithDefaultTypes(const Json::Value& value) const
+{
+	// Else we are loading from a jasp version before "preloadData" was on or var.types were added to the options
+	Json::Value types(Json::arrayValue);
+	std::string type =  columnTypeToString(_listModel->listView()->defaultType());
+	for (const Json::Value& row : value)
+	{
+		Json::Value rowType(Json::arrayValue);
+		if (row.isString())
+			rowType.append(type);
+		else if (row.isArray())
+		{
+			for (int i = 0; i < row.size(); i++)
+				rowType.append(type);
+		}
+		types.append(rowType);
+	}
+
+	Json::Value newValue(Json::objectValue);
+	newValue["value"] = value;
+	newValue["types"] = types;
+	return newValue;
+}
+
+bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue) const
+{
+	return optionValue.type() == Json::arrayValue || optionValue.type() == Json::objectValue;
+}
+
+void BoundControlMultiTerms::resetBoundValue()
+{
+	setBoundValue(createEngineValue());
 }
 
 void BoundControlMultiTerms::setBoundValue(const Json::Value &value, bool emitChanges)
 {
-	Json::Value newValue;
+	Json::Value newValue = value;
 
-	if (_control->encodeValue())
-	{
-		if (_isValueWithTypes(value))
-			newValue = value;
-		else
-		{
-			// Else we are loading from a jasp version before "preloadData" was on or var.types were added to the options
-			Json::Value types(Json::arrayValue);
-			std::string type =  columnTypeToString(_listModel->listView()->defaultType());
-			for (const Json::Value& row : value)
-			{
-				Json::Value rowType(Json::arrayValue);
-				if (row.isString())
-					rowType.append(type);
-				else if (row.isArray())
-				{
-					for (int i = 0; i < row.size(); i++)
-						rowType.append(type);
-				}
-				types.append(rowType);
-			}
-			newValue["value"] = value;
-			newValue["types"] = types;
-		}
-	}
+	if (_control->encodeValue() && !_isValueWithTypes(value))
+		newValue = _wrapWithDefaultTypes(value);
 
-	BoundControlBase::setBoundValue(newValue.isNull() ? value : newValue, emitChanges);
+	BoundControlBase::setBoundValue(newValue, emitChanges);
 
 }

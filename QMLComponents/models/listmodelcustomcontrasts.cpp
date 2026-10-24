@@ -41,10 +41,10 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : List
 	connect(listView(), SIGNAL(scaleFactorChanged()),					this,		SLOT(scaleFactorChanged()));
 	
 	assert(listView()->form());
-	connect(listView()->form()->varInfo(),	&VariableInfo::labelsChanged,		this,		&ListModelCustomContrasts::sourceLabelsChanged		, Qt::UniqueConnection);
-	connect(listView()->form()->varInfo(),	&VariableInfo::labelsReordered,		this,		&ListModelCustomContrasts::sourceLabelsReordered	, Qt::UniqueConnection);
-	connect(listView()->form()->varInfo(),	&VariableInfo::variablesChanged,	this,		&ListModelCustomContrasts::sourceVariablesChanged	, Qt::UniqueConnection);
-	connect(listView()->form()->varInfo(),	&VariableInfo::refresh,				this,		&ListModelCustomContrasts::sourceTermsReset			, Qt::UniqueConnection);
+	connect(listView()->resolvedVarInfo(),	&VariableInfo::labelsChanged,		this,		&ListModelCustomContrasts::sourceLabelsChanged		, Qt::UniqueConnection);
+	connect(listView()->resolvedVarInfo(),	&VariableInfo::labelsReordered,		this,		&ListModelCustomContrasts::sourceLabelsReordered	, Qt::UniqueConnection);
+	connect(listView()->resolvedVarInfo(),	&VariableInfo::variablesChanged,	this,		&ListModelCustomContrasts::sourceVariablesChanged	, Qt::UniqueConnection);
+	connect(listView()->resolvedVarInfo(),	&VariableInfo::refresh,				this,		&ListModelCustomContrasts::sourceTermsReset			, Qt::UniqueConnection);
 }
 
 

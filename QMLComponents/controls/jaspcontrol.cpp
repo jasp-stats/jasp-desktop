@@ -1,5 +1,7 @@
 #include "jaspcontrol.h"
 #include "jasplistcontrol.h"
+#include "filter.h"
+#include "variableinfo.h"
 #include "log.h"
 #include "analysisform.h"
 #include "jasptheme.h"
@@ -239,6 +241,7 @@ void JASPControl::componentComplete()
 			if (!listViewVar.isNull())
 			{
 				_parentListViewKey = context->contextProperty("rowValue").toString();
+				_parentListViewFilterId = context->contextProperty("rowFilterId").toInt();	// the row's filter identity (twins share a name, never this)
 				connect(parentlistView->model(), &ListModel::keyTermChanged, this, &JASPControl::parentListViewKeyChanged);
 			}
 			else
@@ -251,7 +254,7 @@ void JASPControl::componentComplete()
 
 		// For controls made via row components, wait for all controls to be created before calling the setUp: setUp links the controls together via their sources. So in this case, the rowControls calls the setUp once all the controls are made.
 		if (parentlistView)
-			parentlistView->addRowControl(_parentListViewKey, this);
+			parentlistView->addRowControl(parentRowKey(), this);	// register under the row's FULL identity
 		else
 		{
 			setUp(); // For controls not made via a row components (as in FactorsForm), setUp must be called
@@ -870,7 +873,18 @@ void JASPControl::_addExplicitDependency(const QVariant& depends)
 	if (control)
 		_depends.insert(control);
 	else if (depends.canConvert<QString>())
-		_depends.insert(form()->getControl(depends.toString()));
+	{
+		//A depends name may legitimately target an OPTION that has no control registered in this
+		//form, and an unresolved name carries no ordering constraint, so ignore it - inserting a
+		//null dependency would crash AnalysisForm::sortControls (and everything else that walks
+		//_depends, like dependingControlsAreInitialized) the moment it is dereferenced.
+		//(The dataset selection used to need this: on desktop its dropdown was unnamed. It is a
+		//named, registered FilterSelect now, and its edge is recorded from the varInfo resolution
+		//in sortControls, so a form never has to declare `depends: "<selectionOption>"` itself.)
+		JASPControl* depControl = form() ? form()->getControl(depends.toString()) : nullptr;
+		if (depControl && depControl != this)
+			_depends.insert(depControl);
+	}
 	else if (depends.canConvert<QVariantList>())
 	{
 		QVariantList varDeps = depends.toList();
@@ -926,10 +940,63 @@ void JASPControl::_setInitialized(const Json::Value &value)
 	{
 		if (!_initialized) // If it was already initialized, don't reset its default value: this can be the case when R syntax is re-run
 			bControl->setDefaultBoundValue(bControl->createJson());
-		bControl->bindTo(value == Json::nullValue ? bControl->createJson() : value);
+		// (zoo run 8, boundG): the null-path self-rebind of an already-initialized
+		//control absent from this parse goes through the family's selfRebindFormat (default
+		//Engine = today's builder; the assigned-terms family answers Storage, whose per-term
+		//{name, filterId?, types} objects the applier parses back WITH their provenance - the
+		//Engine builder deliberately omits per-term filterIds, so a round-trip through it
+		//erased the stamps and the intake re-stamped the terms with the control's own host,
+		//silently re-routing a typed copy or a host-restamped term onto the wrong
+		//dataset).
+		bControl->bindTo(value == Json::nullValue
+			? (bControl->selfRebindFormat() == BoundControl::Storage ? bControl->createJson(BoundControl::Storage) : bControl->createJson())
+			: value);
 	}
 
 	_initialized = true;
 	_initializedWithValue = (value != Json::nullValue);
 	emit initializedChanged();
+}
+
+VariableInfo * JASPControl::resolvedVarInfo()
+{
+	// (host-bound): the explicit host of this control serves its namespace
+	//while it holds one; otherwise the analysis-wide VariableInfo does (the analysis filter,
+	//else the shown filter - how every non-aware analysis has always worked). No component-chain
+	//walk any more: resolvedSelectionHost() is a LOCAL resolution (see JASPListControl), and the
+	//form's VariableInfo remains the legitimate analysis-level endpoint.
+	if (JASPControl * host = resolvedSelectionHost())
+		return host->ownedSelectionVarInfo();	//an ACTIVE host by construction, so non-null
+
+	return form() ? form()->varInfo() : nullptr;
+}
+
+JASPControl * JASPControl::selectionDependency()
+{
+	JASPControl * host = resolvedSelectionHost();
+	if (!host || host == this)			//a host's own selection is not a dependency on itself
+		return nullptr;
+
+	const QString option = host->ownedSelectionOptionName();
+	if (option.isEmpty())
+		return nullptr;
+
+	//The FilterSelect dropdown registers itself under the option's name (see FilterSelect.qml), and
+	//binding IT is what pushes the saved filter id into the host; a host hands out its selection
+	//VariableInfo only while its selection (and so its dropdown Loader) is available, so finding no
+	//control here means the option was renamed after the form completed: no constraint, as before.
+	return form() ? form()->getControl(option) : nullptr;
+}
+
+bool JASPControl::dependsOnForTest(const QString & controlName) const
+{
+	JASPControl * other = form() ? form()->getControl(controlName) : nullptr;
+	return other && _depends.count(other) > 0;
+}
+
+int JASPControl::resolvedSelectionFilterIdForTest()
+{
+	VariableInfo * varInfo = resolvedVarInfo();
+	Filter * f = varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
+	return f ? f->id() : -1;
 }

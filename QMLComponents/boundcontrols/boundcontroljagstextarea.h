@@ -35,8 +35,12 @@ public:
 
 	void		checkSyntax()											override;
 
+protected:
+	///< single live-state builder behind checkSyntax's write. The generators read
+	/// the committed result through BoundControlTextArea::_appliedValue (commit-on-apply).
+	Json::Value	liveBoundValue()										const;
+
 private:
-	ColumnEncoder *					_encoder()							const;
 
 	std::set<std::string>		_usedColumnNames;
 	QSet<QString>				_usedParameters;

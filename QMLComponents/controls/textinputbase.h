@@ -45,6 +45,10 @@ public:
 	void		rScriptDoneHandler(const QString& result)			override;
 	bool		encodeValue()								const	override;
 
+protected:
+	Json::Value createEngineValue()						const	override;	///< live _value, no default substitution (see cpp)
+
+public:
 	TextInputType	inputType()										{ return _inputType; }
 	QString			friendlyName() const override;
 	bool			hasScriptError()						const	{ return _hasScriptError;		}

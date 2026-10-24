@@ -37,6 +37,11 @@ class ComboBoxBase : public JASPListControl, public BoundControlBase
 	Q_PROPERTY( QString				currentColumnType			READ currentColumnType											NOTIFY currentColumnTypeChanged		)
 	Q_PROPERTY( QString				currentColumnTypeIcon		READ currentColumnTypeIcon										NOTIFY currentColumnTypeIconChanged	)
 	Q_PROPERTY( QString				longestValue				READ longestValue												NOTIFY longestValueChanged			)
+	///< True while this combo is bound to a value its model cannot serve yet: the combo stays
+	///blank, the option keeps the saved value, and it binds for real as soon as a model update
+	///contains it (see bindTo). FilterSelect uses it to not pull the dropdown to its host over
+	///top of a value that is still waiting.
+	Q_PROPERTY( bool				valueAwaitsModel			READ valueAwaitsModel			NOTIFY currentValueChanged			)
 
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
@@ -59,9 +64,25 @@ public:
 	const QString&		currentColumnTypeIcon()						const				{ return _currentColumnTypeIcon;}
 	int					currentIndex()								const				{ return _currentIndex;			}
 	QString				longestValue()								const				{ return _longestLabel;			}
+	bool				valueAwaitsModel()							const				{ return _valueAwaitsModel;		}
+
+protected:
+	///< while a bound value awaits its model (valueAwaitsModel) the generated
+	/// Engine value is the control's OWN held raw value (the option keeps exactly what
+	/// came in, never a coerced/blank model projection) - the same value the deleted
+	/// analysis-wide mirror stored for a pending combo. Bound normally, the model-derived
+	/// createJson() equals the held value, so this override only matters in the pending state.
+	Json::Value			createEngineValue()							const	override;
+
+public:
 
 	stringvec			usedVariables()								const	override;
 	bool				encodeValue()								const	override	{ return containsVariables();	}
+
+	///< scalar option-level sidecar for the single selected variable: the selected
+	/// model term's filterId when qualified (the model is the typed state), else the host's id
+	/// (the option-level sidecar id of the aware world), null = unqualified. See BoundControlTerms::createFilterIds.
+	Json::Value			createFilterIds()															const	override;
 
 
 signals:
@@ -95,6 +116,10 @@ protected:
 								_currentColumnRealType,
 								_currentColumnTypeIcon;
 	std::string					_unusedInitialValue;
+	///< A combo bound to a value its model cannot serve yet keeps it pending in
+	///_unusedInitialValue and sets this flag: bindTo/termsChangedHandler wait instead of
+	///coercing to entry 0, until the model catches up or a user/host choice supersedes it.
+	bool						_valueAwaitsModel	= false;
 	int							_currentIndex			= -1;
 	QString						_longestLabel;
 

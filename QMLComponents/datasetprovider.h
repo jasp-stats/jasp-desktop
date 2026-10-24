@@ -40,14 +40,25 @@ public:
 	int							columnCount(const QModelIndex & parent = QModelIndex())									const	override;
 	QVariant					data(		const QModelIndex & index, int role = Qt::DisplayRole)						const	override;
 
-	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true);
+	///< With a title: named load for the multi-dataset (syntax-mode) flow - replaces the contents
+	///< of the dataset with that title or adds a new one; every titled dataset gets a real id and
+	///< encoder prefix. Without: legacy behaviour, fill the shown dataset.
+	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true, const QString & title = QString());
+	///< id of the first dataset loaded since the last resetDataSet() (the primary of a syntax-mode
+	///< multi-dataset run, matching the wrapper's datasets[[1]]); -1 when nothing was loaded yet.
+	int							firstLoadedDataSetId() const { return _firstLoadedDataSetId; }
 	void						closeDatabase();
 	void						loadDatabase(const Version & jaspVersion);
+	///< Reopen the current database exactly the way opening a .jasp does: throw the Workspace
+	///< away and dbLoad a fresh one (every dataset and stored filter restored from db rows, ids
+	///< included - see DataSet::dbLoad's eager filter materialisation). loadDatabase() is the
+	///< syntax-bridge flow for a foreign database; this one reopens the database at hand.
+	void						reloadWorkspace();
 
 	QVariant					provideInfo(varInfoType info, const QString& colName = "", int row = 0)		const	override;
 	bool						absorbInfo(	varInfoType info, const QString& name, int row, QVariant value)			override;
 	QAbstractItemModel		*	providerModel()																					override	{ return this;	}
-	ColumnEncoder			*	columnEncoder()																					override	{ DataSet * ds = dataSet(); return ds ? &ds->encoder() : nullptr;	}
+	ColumnEncoder			*	columnEncoder()																					override	{ DataSet * ds = dataSet(); return ds ? ds->shownEncoder() : nullptr;	}
 
 
 
@@ -63,6 +74,7 @@ private:
 	DatabaseInterface		*	_db					= nullptr;
 	Workspace				*	_workspace			= nullptr;
 	bool						_inMemory			= true;
+	int							_firstLoadedDataSetId = -1;
 
 };
 

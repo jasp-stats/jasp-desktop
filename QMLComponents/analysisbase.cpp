@@ -1,6 +1,7 @@
 #include "log.h"
 #include "filter.h"
 #include "workspace.h"
+#include "columnencoder.h"
 #include "analysisbase.h"
 #include "analysisform.h"
 #include "utilities/qmlutils.h"
@@ -10,6 +11,7 @@ const stringvec AnalysisBase::emptyStringVec;
 
 AnalysisBase::AnalysisBase(QObject* parent)
 	: QObject(parent)
+	, VariableInfoProvider(this)
 {
 	// If the parent object is the form, just use it. This is used in R-Syntax mode when the AnalysisForm::parseOptions creates a dummy AnalysisBase
 	_analysisForm = qobject_cast<AnalysisForm*>(parent);
@@ -19,8 +21,19 @@ AnalysisBase::AnalysisBase(QObject* parent)
 
 AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	: QObject(parent)
-	, _boundValues(duplicateMe->boundValues())
+	, VariableInfoProvider(this)
 {
+	// a duplicate is seeded from the source's GENERATED Storage tree (clean typed
+	//state), parked exactly like a file-load and applied once through the controls when the
+	//duplicate's form attaches (setAnalysisUp -> bindTo). The old mirror copy is gone; a source
+	//without an attached form has no component state to duplicate (empty Storage), matching the
+	//old "copy the (empty) mirror" behaviour. The duplicate is "created with options" whenever
+	//the source held any. The Storage tree carries the per-term filterIds inside the
+	//term objects, so provenance survives the duplicate exactly like it survives a save/reload.
+	_pendingOptions			= duplicateMe->createOptionsJson(BoundControl::Storage);
+	_hasPendingOptions		= _pendingOptions.size() > 0;
+	_createdWithOptions		= _hasPendingOptions;
+
 	connectDataSpecChanges();
 }
 
@@ -84,6 +97,12 @@ void AnalysisBase::createForm(QQuickItem* parentItem)
 	Log::log() << "Analysis(" << this << ")::createForm() called with parentItem " << parentItem << std::endl;
 
 	setQmlError("");
+
+	//A (re)created form decides awareness: reset here so a reloaded form without selection
+	//hosts downgrades the analysis back to non-aware. The hosts register during setAnalysisUp
+	//(HostFilterSelection::analysisBecameKnown) and flip the flag again when the form declares
+	//dataSetSelectionOptions - no Description.qml declaration is involved.
+	setMultiDataSetAware(false);
 	
 	if(parentItem)
 		_parentItem = parentItem;
@@ -159,31 +178,34 @@ void AnalysisBase::setIsAnnotated(bool isAnnotated)
 	_analysisForm->setIsAnnotated(isAnnotated);
 }
 
-// This method tries to find the parent keys in _boundValues Json object
-// If found, it sets the path to this reference to parentNames and returns a reference of the sub Json object
-Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, QVector<std::string>& parentNames, bool& found, bool createAnyway)
+
+// the ONE implementation of nested (row-control) option placement, the
+//generators' own walk - it places values at the
+//byte-identical paths the mirror used to - same row-chain semantics, same parentNames bookkeeping.
+//The tree it walks is a parameter (the generated options root).
+//
+// A parentKey has 3 properties: <name>, <key> and <value>: it assumes that the json boundValue is an abject, one of its member is <name>,
+// whom value is an array of json objects. These objects have a member <key>, and one of them has for value <value>.
+// if there are several parentKeys, it repeats this operation
+//
+// {
+//		anOptionName : "one"
+//		...
+//		<name>: [
+//			{
+//				<key>: "anothervalue"
+//				anotherKey: "xxx"
+//			},
+//			{
+//				<key>: "<value>"
+//				anotherKey: "yyy" // parentBoundValue gets a reference to this Json object
+//			}
+//		]
+// }
+Json::Value & AnalysisBase::resolveOptionParent(Json::Value & root, const QVector<JASPControl::ParentKey> & parentKeys, QVector<std::string> & parentNames, bool & found, bool createAnyway)
 {
 	found = (parentKeys.size() == 0);
-	Json::Value* parentBoundValue = &_boundValues;
-
-	// A parentKey has 3 properties: <name>, <key> and <value>: it assumes that the json boundValue is an abject, one of its member is <name>,
-	// whom value is an array of json objects. These objects have a member <key>, and one of them has for value <value>.
-	// if there are several parentKeys, it repeats this operation
-	//
-	// {
-	//		anOptionName : "one"
-	//		...
-	//		<name>: [
-	//			{
-	//				<key>: "anothervalue"
-	//				anotherKey: "xxx"
-	//			},
-	//			{
-	//				<key>: "<value>"
-	//				anotherKey: "yyy" // parentBoundValue gets a reference to this Json object
-	//			}
-	//		]
-	// }
+	Json::Value* parentBoundValue = &root;
 
 	for (const auto& parent : parentKeys)
 	{
@@ -259,69 +281,104 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 	return *parentBoundValue;
 }
 
-std::string AnalysisBase::_displayParentKeys(const QVector<JASPControl::ParentKey> & parentKeys) const
+// the mirror's send-tree placement (was inline in setBoundValue), shared with the
+//generators so `.meta` and `.filterIds` nest by the same rule on both sides.
+void AnalysisBase::placeOptionMeta(Json::Value & metaRoot, const QVector<std::string> & parentNames, const std::string & name, const Json::Value & meta)
 {
-	std::string keys;
-	bool firstKey = true;
-	for (const auto& parentKey : parentKeys)
-	{
-		std::string parentValue;
-		bool firstValue = true;
-		for (const std::string& v : parentKey.value)
-		{
-			if (!firstValue) parentValue += "*";
-			parentValue += v;
-			firstValue = false;
-		}
-
-		if (!firstKey) keys += " - ";
-		keys += ("key: " + parentKey.key + " name: " + parentKey.name + " value: " + parentValue);
-		firstKey = false;
-	}
-
-	return keys;
+	Json::Value* metaBoundValue = &metaRoot;
+	for (const std::string& parent : parentNames)
+		metaBoundValue = &((*metaBoundValue)[parent]);
+	(*metaBoundValue)[name] = meta;
 }
 
-void AnalysisBase::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
+// sidecar placement differs from meta placement in ONE way: a meta node is always
+//an object, so row-child meta merges into the parent option's node freely. A `.filterIds` node
+//is a bare int/array, and a list control with stamped row children would have its positional
+//array sitting exactly where the children's named nodes go - placing through placeOptionMeta
+//would hit jsoncpp's "requires objectValue" assert the moment such an aware form generates
+//(latent in the schema, live from the sidecar flip on: every run generates). On collision the
+//own-node is demoted into the container's reserved "$" member - the spelling
+//ColumnEncoder::sidecarOwnFilterId reads back; non-colliding trees keep the old shape byte-identically.
+void AnalysisBase::placeOptionFilterIds(Json::Value & filterIdsRoot, const QVector<std::string> & parentNames, const std::string & name, const Json::Value & filterIds)
 {
-	bool found = false;
-	QVector<std::string> parents;
-	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, parents, found, true);
+	Json::Value * node = &filterIdsRoot;
 
-	if (found && parentBoundValue.isObject())
+	for(const std::string & parent : parentNames)
 	{
-		parentBoundValue[name] = value;
+		Json::Value & child = (*node)[parent];	//creates a null slot on the way down, placeable
 
-		if ((meta.isObject() || meta.isArray()) && meta.size() > 0)
+		if(child.isArray() || child.isInt())	//an own-node already placed here: demote to "$"
 		{
-			Json::Value* metaBoundValue = &_boundValues[".meta"];
-			for (const std::string& parent : parents)
-				metaBoundValue = &((*metaBoundValue)[parent]);
-			(*metaBoundValue)[name] = meta;
+			Json::Value container(Json::objectValue);
+			container[ColumnEncoder::FILTERIDS_SELF] = child;
+			child = container;
 		}
+
+		node = &child;
 	}
+
+	Json::Value & slot = (*node)[name];
+
+	if(slot.isObject() && !filterIds.isObject())	//named children already in the slot: the own-node rides "$"
+		slot[ColumnEncoder::FILTERIDS_SELF] = filterIds;
 	else
-		Log::log() << "Could not find parent keys " << _displayParentKeys(parentKeys) << " in options: " << _boundValues.toStyledString() << std::endl;
-
-	if (_analysisForm->initialized())
-		emit boundValuesChanged();
+		slot = filterIds;
 }
 
-void AnalysisBase::setBoundValues(const Json::Value &boundValues)
+
+
+
+// the explicit pending-options parking lot. setAnalysisUp consumes it ONCE
+//(takePendingOptions) and routes it through bindTo; run/save/dataSpec never read it. wasCreatedByOptions
+//distinguishes "the analysis arrived with these options" (file/RPC/duplicate) from a later
+//programmatic rebind.
+void AnalysisBase::setPendingOptions(const Json::Value & options, bool wasCreatedByOptions)
 {
-	_boundValues = boundValues;
+	_pendingOptions = options;
+	_hasPendingOptions = true;
+
+	if(wasCreatedByOptions)
+		_createdWithOptions = true;
 }
 
-const Json::Value &AnalysisBase::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)
+Json::Value AnalysisBase::takePendingOptions()
 {
-	bool found = false;
-	QVector<std::string> parentNames;
-	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, parentNames, found);
+	Json::Value options = _pendingOptions;
 
+	_pendingOptions = Json::objectValue;
+	_hasPendingOptions = false;
 
-	if (found && !parentBoundValue.isNull() && parentBoundValue.isObject())	return parentBoundValue[name];
-	else																	return Json::Value::null;
+	return options;
 }
+
+// the transient `.filterIds` sidecar is desktop-internal provenance (consumed by
+//the slice-queue build and request encoding) and never leaves to R, RPC clients, QML options() or
+//generated scripts. Stripping is the one top-level member removal the sidecar flip established.
+void AnalysisBase::stripTransientSidecar(Json::Value & options)
+{
+	options.removeMember(ColumnEncoder::FILTERIDS_MEMBER);
+}
+
+
+// the whole options tree GENERATED from the components (the form walks its
+//registered controls). Since the mirror deletion this is the only tree there is - the equivalence
+//harness that proved generator == mirror during the transition lives on as generator-vs-GOLDEN
+//pins (tst_generatedOptionsJson*.qml). An analysis without a form has no component state to
+//generate from.
+Json::Value AnalysisBase::createOptionsJson(BoundControl::JsonFormat format)
+{
+	return _analysisForm ? _analysisForm->createOptionsJson(format) : Json::Value(Json::objectValue);
+}
+
+QString AnalysisBase::createOptionsJsonAsJson(int format)
+{
+	Json::Value options = createOptionsJson(format == 1 ? BoundControl::Storage : BoundControl::Engine);
+
+	Json::StreamWriterBuilder builder;
+	builder["indentation"] = "";
+	return QString::fromStdString(Json::writeString(builder, options));
+}
+
 
 
 Filter *AnalysisBase::filter() const
@@ -331,8 +388,110 @@ Filter *AnalysisBase::filter() const
 
 bool AnalysisBase::usesDataSet(int dataSetId) const
 {
+	//A multi-dataset aware analysis operates on exactly the datasets its options reference (plus
+	//its own filter's dataset if it has one): the "unbound applies to any dataset" shortcut below
+	//would claim all of them, which is meaningless when each selection names its own dataset.
+	if(multiDataSetAware())
+	{
+		if(_filterDataSet && _filterDataSet->id() == dataSetId)
+			return true;
+
+		return referencedDataSets().count(dataSetId) > 0;
+	}
+
 	//An analysis without an explicit dataset binding applies to any dataset (e.g. reports, unbound analyses).
-	return !_filterDataSet || _filterDataSet->id() == dataSetId;
+	if(!_filterDataSet || _filterDataSet->id() == dataSetId)
+		return true;
+
+	return false;
+}
+
+std::map<int, int> AnalysisBase::referencedDataSets() const
+{
+	// computed ON DEMAND from component state - the typed filterIds the bound
+	//controls generate (the same per-control createFilterIds() output that rides the transient
+	//`.filterIds` sidecar at send time, positional per-term entries included), the filters the
+	//registered selection hosts hold, and the analysis' own filter. No mirror, no meta: the
+	//.meta-stamp walk over the bound-values tree is
+	//dead input since the sidecar flip and retires with the mirror.
+	//
+	//The gate stays: references exist only once the form has attached and its controls
+	//bound - pending JSON is never read for behaviour, and setAnalysisUp re-notifies consumers
+	//through notifyDataSpecChanged() when real component state appears.
+	//
+	//Filter ids imply their dataset; an id that names no live filter contributes nothing
+	//(stale provenance goes raw, it must not keep a dead dataset claimed -
+	//the old map carried dead stamped ids through, but every consumer already resolved them to
+	//no dataset and skipped them). Two filters of one dataset: first seen wins, matching the
+	//old walk's keep-the-first-pair rule; every consumer (dataSpec, usesDataSet, RPC
+	//dataSetIds) additionally dedups against the analysis' own dataset anyway.
+	if(!_analysisForm || !_analysisForm->initialized())
+		return {};
+
+	Workspace * workspace = Workspace::singleton();
+
+	if(!workspace)
+		return {};
+
+	std::map<int, int> dataSetFilterIds;
+
+	auto addFilter = [&workspace, &dataSetFilterIds](int filterId)
+	{
+		if(filterId < 0)
+			return;
+
+		Filter * filter = workspace->filterById(filterId);	//resolves named filters of reopened files too
+
+		if(!filter || !filter->data())
+			return;
+
+		const int dataSetId = filter->data()->id();
+
+		if(dataSetFilterIds.find(dataSetId) == dataSetFilterIds.end())
+			dataSetFilterIds[dataSetId] = filterId;
+	};
+
+	//(a) the values' own typed provenance: per-control createFilterIds generations, including
+	// foreign filterIds a bindTo-copied term carries from another host's selection.
+	std::set<int> valueFilterIds;
+	_analysisForm->collectFilterIds(valueFilterIds);
+	for(int filterId : valueFilterIds)
+		addFilter(filterId);
+
+	//(b) every registered selection host's current filter: a host that serves no values yet still
+	// owns a namespace (the empty-list case the option-level mirror stamp used to cover, and any
+	// host whose dropdown never wrote its option).
+	for(const Filter * filter : selectedSelectionFilters())
+		if(filter)
+			addFilter(filter->id());
+
+	//(c) the analysis' own filter (the FilterMenuButton one) - part of what the analysis runs on;
+	// hostless column-bearing controls already generate it through (a), and every consumer dedups
+	// it, so naming it explicitly changes no report and closes the no-controlled-at-all case.
+	if(_filter)
+		addFilter(_filter->id());
+
+	return dataSetFilterIds;
+}
+
+void AnalysisBase::notifyDataSpecChanged()
+{
+	emit dataSpecChanged();
+}
+
+// the notification tail of the deleted mirror write. boundValuesChanged drives the
+//R-syntax text refresh; for a multi-dataset aware analysis a committed option can change what the
+//analysis runs on (its typed sidecar provenance moved), so dataSpecChanged rides along - exactly
+//the pair the mirror's setBoundValue emitted, gated on the form being initialized as before.
+void AnalysisBase::notifyOptionsChanged()
+{
+	if (_analysisForm && _analysisForm->initialized())
+	{
+		emit boundValuesChanged();
+
+		if (multiDataSetAware())
+			emit dataSpecChanged();
+	}
 }
 
 QString AnalysisBase::filterName() const
@@ -347,6 +506,34 @@ int AnalysisBase::filterId() const
 
 QString AnalysisBase::dataSpec() const
 {
+	//A multi-dataset aware analysis has no single dataset: Desktop::Analysis::dataSet() refuses
+	//to name one (and logs about it), so the old `!data` early return made this always empty for
+	//aware analyses - the results header showed nothing and every call spammed the log. The spec
+	//comes from the datasets the options actually reference instead: own dataset first when it
+	//has one, then the others, " + " joined - deleting any of them has consequences for this
+	//analysis as well.
+	if(multiDataSetAware())
+	{
+		Workspace * workspace = Workspace::singleton();
+
+		if(!workspace)
+			return "";
+
+		const std::map<int, int> referenced = referencedDataSets();
+
+		QStringList titles;
+
+		if(_filterDataSet)
+			titles.append(_filterDataSet->title());
+
+		for(const auto & dataSetFilter : referenced)
+			if(!_filterDataSet || dataSetFilter.first != _filterDataSet->id())
+				if(DataSet * other = workspace->dataSetById(dataSetFilter.first))
+					titles.append(other->title());
+
+		return titles.join(" + ");
+	}
+
 	DataSet * data = dataSet();
 
 	if(!data)
@@ -359,6 +546,15 @@ QString AnalysisBase::dataSpec() const
 		:	showDataSet					?	data->title()
 		:	showFilter					?	_filter->title()
 		:									"";
+}
+
+void AnalysisBase::setMultiDataSetAware(bool multiDataSetAware)
+{
+	if (_multiDataSetAware == multiDataSetAware)
+		return;
+
+	_multiDataSetAware = multiDataSetAware;
+	emit multiDataSetAwareChanged();
 }
 
 void AnalysisBase::setFilterId(int filterId)
@@ -380,4 +576,142 @@ void AnalysisBase::setFilterId(int filterId)
 	emit dataSpecChanged();
 
 	refresh();
+}
+
+// ---- VariableInfoProvider over the selection-host registry -----------------
+// The whole point of this endpoint is that it is DERIVED, never stored: every call re-enumerates
+// the form's live selection hosts (which unregister eagerly) and reads their filter
+// through the virtual - a Filter's encode handle lazy-attaches and dies with the filter,
+// so caching a handle/encoder/filter pointer here would be the first stale namespace in the
+// house. See the class doc in analysisbase.h for the one/many/none semantics and what merged
+// consumers must do.
+
+QList<Filter *> AnalysisBase::selectedSelectionFilters() const
+{
+	QList<Filter *> filters;
+
+	if(!_analysisForm)
+		return filters;
+
+	for(JASPControl * host : _analysisForm->selectionHostControls())
+	{
+		Filter * filter = host ? host->selectedSelectionFilter() : nullptr;	//per-use virtual
+		if(filter && !filters.contains(filter))
+			filters << filter;
+	}
+
+	return filters;
+}
+
+bool AnalysisBase::selectionNamespaceIsMerged() const
+{
+	return selectedSelectionFilters().size() > 1;
+}
+
+QVariantList AnalysisBase::selectionNamespaceFilterIds() const
+{
+	QVariantList ids;
+	for(const Filter * filter : selectedSelectionFilters())
+		ids.append(filter->id());
+	return ids;
+}
+
+QStringList AnalysisBase::selectionNamespaceVariableNames() const
+{
+	return provideInfo(varInfoType::VariableNames).toStringList();
+}
+
+void AnalysisBase::handleSelectionNamespaceMaybeChanged()
+{
+	emit selectionNamespaceChanged();
+
+	//The referenced-dataset view of an aware analysis follows its hosts' selections (their stamps
+	//ride along with the restamp walk, and once Phase 3 computes dataSpec from component state the
+	//namespace IS the data spec): re-emit so title/RPC/queue consumers re-read the live view.
+	if(multiDataSetAware())
+		emit dataSpecChanged();
+}
+
+ColumnEncoder *AnalysisBase::columnEncoder()
+{
+	const QList<Filter *> filters = selectedSelectionFilters();
+
+	if(filters.isEmpty())
+		return _filter ? _filter->columnEncoder() : nullptr;	//no host selection: analysis filter (the host-bound fallback)
+	if(filters.size() > 1)
+		return nullptr;										//merged: no single namespace, say so with nullptr
+
+	return filters.first()->columnEncoder();				//the live Filter resolves its own view handle (never cached)
+}
+
+QAbstractItemModel *AnalysisBase::providerModel()
+{
+	const QList<Filter *> filters = selectedSelectionFilters();
+
+	if(filters.isEmpty())
+		return _filter ? _filter->providerModel() : nullptr;
+	if(filters.size() > 1)
+		return nullptr;										//merged: there is no single model
+
+	return filters.first()->providerModel();
+}
+
+QVariant AnalysisBase::provideInfo(varInfoType info, const QString& name, int row) const
+{
+	const QList<Filter *> filters = selectedSelectionFilters();
+
+	if(filters.isEmpty())
+		return _filter ? _filter->provideInfo(info, name, row) : QVariant();
+	if(filters.size() == 1)
+		return filters.first()->provideInfo(info, name, row);
+
+	//Merged view: the union of the selected filters. Only VariableNames is truly
+	//aggregated - with collisions KEPT (a column that lives behind two selected namespaces is two
+	//entries; the terms' filterId tells them apart downstream). Everything else has no honest
+	//union: per-name requests scan the hosts in registration order for the first hit, dataset-wide
+	//requests answer from the first host. Consumers that need a single namespace must use the
+	//analysis' own filter or a specific host - see the class doc.
+	if(info == varInfoType::VariableNames)
+	{
+		QStringList names;
+		for(Filter * filter : filters)
+			names << filter->provideInfo(varInfoType::VariableNames).toStringList();
+		return names;
+	}
+
+	if(info == varInfoType::DataAvailable)
+	{
+		for(Filter * filter : filters)
+			if(filter->provideInfo(varInfoType::DataAvailable).toBool())
+				return true;
+		return false;
+	}
+
+	for(Filter * filter : filters)
+	{
+		const QVariant value = filter->provideInfo(info, name, row);
+		if(value.isValid())
+			return value;						//first host that has this column (or answers at all)
+	}
+
+	return QVariant();
+}
+
+bool AnalysisBase::absorbInfo(varInfoType info, const QString& name, int row, QVariant value)
+{
+	const QList<Filter *> filters = selectedSelectionFilters();
+
+	if(filters.isEmpty())
+		return _filter ? _filter->absorbInfo(info, name, row, value) : false;
+	if(filters.size() == 1)
+		return filters.first()->absorbInfo(info, name, row, value);
+
+	//Merged: write through the first host that accepts it - same first-hit rule as provideInfo.
+	//Editing through a merged namespace is inherently ambiguous; a caller that knows which slice
+	//it means goes through that host (or the term's filterId) instead.
+	for(Filter * filter : filters)
+		if(filter->absorbInfo(info, name, row, value))
+			return true;
+
+	return false;
 }

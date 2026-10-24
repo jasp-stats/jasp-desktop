@@ -103,7 +103,7 @@ void SourceItem::_setUp()
 	else if (_isDataSetVariables)
 	{
 		if(_targetListControl->form())
-			setVarInfo(_targetListControl->form()->varInfo());
+			setVarInfo(_targetListControl->resolvedVarInfo());
 
 		_sourceNativeModel	= infoProviderModel();
 		_nativeModelRole	= requestInfo(varInfoType::NameRole).toInt();
@@ -116,7 +116,9 @@ void SourceItem::_setUp()
 		{
 			// If no model is found, but we are in a control created dynamically by its parent, the source control might be another control created dynamicatlly by this parent.
 			// If all controls are not yet created, we have to wait for the initialization of the rowControls
-			RowControls* rowControls = _targetListControl->parentListView()->model()->getRowControls(_targetListControl->parentListViewKey());
+			// parentRowKey() - the row's full identity (name + filterId), so a twin
+			//row's nested list finds its OWN row controls, not the first row's.
+			RowControls* rowControls = _targetListControl->parentListView()->model()->getRowControls(_targetListControl->parentRowKey());
 			if (rowControls && !rowControls->initialized())
 			{
 				connect(rowControls, &RowControls::initializedChanged, this, &SourceItem::_findModelAndControl);
@@ -133,7 +135,8 @@ void SourceItem::_findModelAndControl()
 	if (_targetListControl->form() && !_sourceName.isEmpty() && !_sourceListModel && _targetListControl->parentListView())
 	{
 		// Case when we are in a form, we have source name, but not yet the corresponding control. The rowControls should be here initialized
-		RowControls* rowControls = _targetListControl->parentListView()->model()->getRowControls(_targetListControl->parentListViewKey());
+		// exact row identity (see the _findModelAndControl lookup above)
+		RowControls* rowControls = _targetListControl->parentListView()->model()->getRowControls(_targetListControl->parentRowKey());
 		if (rowControls)
 			_sourceListControl = qobject_cast<JASPListControl*>(rowControls->getJASPControl(_sourceName));
 	}
@@ -206,14 +209,14 @@ void SourceItem::connectModels()
 
 	if (_isDataSetVariables)
 	{
-		connect(form->varInfo(),	&VariableInfo::variableNamesChanged,	_targetListControl->model(), &ListModel::sourceVariableNamesChanged );
-		connect(form->varInfo(),	&VariableInfo::variableTypeChanged,		_targetListControl->model(), &ListModel::sourceVariableTypeChanged );
-		connect(form->varInfo(),	&VariableInfo::labelsChanged,			_targetListControl->model(), &ListModel::sourceLabelsChanged );
-		connect(form->varInfo(),	&VariableInfo::labelsReordered,			_targetListControl->model(), &ListModel::sourceLabelsReordered );
-		connect(form->varInfo(),	&VariableInfo::filterChanged,			_targetListControl->model(), &ListModel::filterChanged );
-		connect(form->varInfo(),	&VariableInfo::variablesChanged,		_targetListControl->model(), &ListModel::sourceVariablesChanged );
-		connect(form->varInfo(),	&VariableInfo::dataSetChanged,			_targetListControl->model(), &ListModel::sourceTermsReset );
-		connect(form->varInfo(),	&VariableInfo::refresh,					_targetListControl->model(), &ListModel::refresh );
+		connect(_targetListControl->resolvedVarInfo(),	&VariableInfo::variableNamesChanged,	_targetListControl->model(), &ListModel::sourceVariableNamesChanged );
+		connect(_targetListControl->resolvedVarInfo(),	&VariableInfo::variableTypeChanged,		_targetListControl->model(), &ListModel::sourceVariableTypeChanged );
+		connect(_targetListControl->resolvedVarInfo(),	&VariableInfo::labelsChanged,			_targetListControl->model(), &ListModel::sourceLabelsChanged );
+		connect(_targetListControl->resolvedVarInfo(),	&VariableInfo::labelsReordered,			_targetListControl->model(), &ListModel::sourceLabelsReordered );
+		connect(_targetListControl->resolvedVarInfo(),	&VariableInfo::filterChanged,			_targetListControl->model(), &ListModel::filterChanged );
+		connect(_targetListControl->resolvedVarInfo(),	&VariableInfo::variablesChanged,		_targetListControl->model(), &ListModel::sourceVariablesChanged );
+		connect(_targetListControl->resolvedVarInfo(),	&VariableInfo::dataSetChanged,			_targetListControl->model(), &ListModel::sourceTermsReset );
+		connect(_targetListControl->resolvedVarInfo(),	&VariableInfo::refresh,					_targetListControl->model(), &ListModel::refresh );
 	}
 
 	if (_sourceListModel)
@@ -642,7 +645,7 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 				QJSValue value;
 				for (const Term& originalValue : originalValues)
 				{
-					JASPControl* control = model->getRowControl(originalValue.value(), conditionVariable.controlName);
+					JASPControl* control = model->getRowControl(TermRowKey::ofTerm(originalValue), conditionVariable.controlName);	// exact row identity
 					if (control)
 					{
 						QVariant valueVar = control->property(conditionVariable.propertyName.toStdString().c_str());
@@ -671,7 +674,7 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 
 			for (const Term& originalValue : originalValues)
 			{
-				RowControls* rowControls = model->getRowControls(originalValue.value());
+				RowControls* rowControls = model->getRowControls(TermRowKey::ofTerm(originalValue));	// exact row identity
 				if (!rowControls)
 					continue;
 
@@ -735,7 +738,7 @@ Terms SourceItem::getTerms()
 		{
 			for (const Term& sourceTerm : _sourceListModel->terms())
 			{
-				JASPControl* control = _sourceListModel->getRowControl(sourceTerm.value(), _rowControlName);
+				JASPControl* control = _sourceListModel->getRowControl(TermRowKey::ofTerm(sourceTerm), _rowControlName);	// exact row identity
 				if (control)
 				{
 					QString controlValue = control->property("value").toString();

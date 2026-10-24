@@ -21,13 +21,46 @@
 #include "log.h"
 #include <QQmlContext>
 #include <QRegularExpression>
+#include <QSet>
 #include "formulasource.h"
 #include "controls/jasplistcontrol.h"
 #include "boundcontrols/boundcontrolterms.h"
 #include "controls/comboboxbase.h"
+#include "workspace.h"
 
 QString RSyntax::FunctionOptionIndent	= "          ";
 QString RSyntax::FunctionLineIndent		= "   ";
+
+// A dataset selection option holds a FILTER id on the wire, but the syntax surface
+// (generated wrapper defaults, the call shown in the form) carries human strings only: the bare
+// dataset title for a default filter, "title - filterName" for a named one, "" for no selection.
+// Reverse lookup through the live workspace; a value that already is a surface string (a combo
+// holding its value pending) is kept verbatim - re-parsing resolves it right back.
+// An id that resolves to nothing (dead filter) renders empty: the shown call then fails loudly
+// on re-parse instead of leaking an id into syntax text.
+static QString selectionSurfaceFromBoundValue(const Json::Value &value)
+{
+	const Json::Value * plain = &value;
+	if (plain->isObject() && plain->isMember("value"))
+		plain = &(*plain)["value"];
+
+	QString text;
+	if (plain->isString())			text = tq(plain->asString());
+	else if (plain->isIntegral())	text = QString::number(plain->asInt64());
+	text = text.trimmed();
+
+	Workspace * workspace = Workspace::singleton();
+	if (text.isEmpty() || !workspace)
+		return QString();
+
+	bool isNum = false;
+	const int filterId = text.toInt(&isNum);
+	if (isNum)
+		return workspace->datasetSelectionSurface(filterId);
+
+	const QMap<QString, int> surfaceMap = workspace->datasetSelectionSurfaceMap();
+	return surfaceMap.contains(text) ? text : QString();
+}
 
 
 RSyntax::RSyntax(AnalysisForm *form) : QObject(form), _form(form)
@@ -99,9 +132,17 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 			formulaSources.append(formula->modelSources());
 	}
 
-	const Json::Value& boundValues = _form->boundValues();
+	// script rendering reads the GENERATED Engine tree (component state) with
+	//the transient `.filterIds` sidecar stripped - the bytes the deleted mirror held are pinned by
+	//the golden harness (tst_generatedOptionsJson*.qml); the script surface and its
+	//selection handling are untouched (ScriptConstructorGoldenR known-reds unchanged).
+	//`.meta` stays skipped as before.
+	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(generatedOptions);
+	const Json::Value& optionTree = generatedOptions;
+	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();
 
-	for (const std::string& member : boundValues.getMemberNames())
+	for (const std::string& member : optionTree.getMemberNames())
 	{
 		QString memberQ = tq(member);
 		if (member == ".meta" || formulaSources.contains(memberQ)) continue;
@@ -115,7 +156,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 		}
 
 		const Json::Value& defaultValue = boundControl->defaultBoundValue();
-		const Json::Value& foundValue = boundValues.get(member, Json::Value::null);
+		const Json::Value& foundValue = optionTree.get(member, Json::Value::null);
 		if (showAllOptions || (defaultValue != foundValue))
 		{
 			bool isDifferent = true;
@@ -128,11 +169,20 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 			{
 				result += "," + newLine + indent + getRSyntaxFromControlName(control) + " = ";
 
-				JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
-				if (listControl && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
-					result += _transformInteractionTerms(listControl->model());
+				if (selectionOptions.contains(memberQ))
+					result += transformJsonToR(Json::Value(fq(selectionSurfaceFromBoundValue(foundValue))));   //surface string, never the bound id
 				else
-					result += transformJsonToR(foundValue);
+				{
+					JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
+					// model() may be null - a TextArea host (e.g. an Rcode editor
+					//with its own dataSetSelectionOption) contains variables by declaration now but
+					//only creates a term model for the Source/JAGS/Lavaan-family types.
+					ListModel* listModel = listControl ? listControl->model() : nullptr;
+					if (listModel && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
+						result += _transformInteractionTerms(listModel);
+					else
+						result += transformJsonToR(foundValue);
+				}
 			}
 		}
 	}
@@ -142,7 +192,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 	return result;
 }
 
-QString RSyntax::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData) const
+QString RSyntax::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware) const
 {
 	auto addDoxygenComment = [](const QString& str) -> QString
 	{
@@ -158,7 +208,10 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		return result;
 	};
 
-	const Json::Value& boundValues = _form->boundValues();
+	// generated Engine tree (sidecar stripped), same as generateSyntax.
+	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(generatedOptions);
+	const Json::Value& optionTree = generatedOptions;
 
 	QString result = "\
 #\n\
@@ -188,15 +241,32 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		result += addDoxygenComment(form()->info());
 		result += "#'\n";
 	}
-	for (const std::string& member : boundValues.getMemberNames())
+	for (const std::string& member : optionTree.getMemberNames())
 	{
 		JASPControl* control = _form->getControl(tq(member));
 		if (control)
 			result += addDoxygenComment(control->generateDoxygenHelp());
 	}
 
+	if (multiDataSetAware)
+	{
+		// state the datasets contract on every aware wrapper - the argument is
+		//title-keyed (the same titles the selection options carry), every entry is loaded
+		//standalone, and the analysis receives filter-id-keyed slices (jaspBase contract).
+		result += "#' @param datasets a named list of data.frames keyed by DATASET TITLE - the titles the\n";
+		result += "#'   dataset selection options of this form carry (their defaults below, rendered as the\n";
+		result += "#'   selection surface, e.g. \"Iris\" or \"Iris - myfilter\"). Every entry is loaded standalone\n";
+		result += "#'   into the bridge workspace (runWrappedAnalysis stores them via jaspSyntax::loadDataSets,\n";
+		result += "#'   each under its own name as the dataset title); the analysis itself receives its slices\n";
+		result += "#'   keyed by filter id - the jaspBase datasets contract (see jaspBase::runJaspResults).\n";
+	}
+
 	result += analysisName + " <- function(\n";
-	result += FunctionOptionIndent + "data = NULL,\n";
+	// A multiDataSetAware analysis takes its data as a named list of datasets (names = dataset
+	// TITLES - the title surface the selection options carry; the slices R
+	// receives at run time are keyed by filter id, the jaspBase contract) instead of a single
+	// data frame.
+	result += FunctionOptionIndent + (multiDataSetAware ? "datasets = NULL,\n" : "data = NULL,\n");
 	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
 	for (FormulaBase* formula : _formulas)
 		result += ",\n" + FunctionOptionIndent + formula->name() + " = NULL";
@@ -212,7 +282,16 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	for (FormulaBase* formula : _formulas)
 		optionsWithFormula += formula->extraOptions(true, true);
 
-	for (const std::string& member : boundValues.getMemberNames())
+	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();
+
+	// the aware wrapper's body resolves its primary dataset (the frame the formula
+	//machinery evaluates against) through the selection options' TITLE surface, so the emitted
+	//argument names of the selection options are collected here while the arguments are emitted.
+	QStringList emittedSelectionArgs;
+
+	QSet<QString> wrapperArgs;	//argument names emitted so far, to keep the generated function valid R
+
+	for (const std::string& member : optionTree.getMemberNames())
 	{
 		QString memberQ = tq(member);
 		if (member == ".meta") continue;
@@ -226,11 +305,39 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		}
 
 		const Json::Value& defaultValue = boundControl->defaultBoundValue();
-		result += ",\n" + FunctionOptionIndent + getRSyntaxFromControlName(control) + " = " + transformJsonToR(defaultValue);
+		const QString optionName = getRSyntaxFromControlName(control);
+		if (!isRSyntaxIdentifier(optionName) || optionName == "data" || optionName == "datasets" || optionName == "version" || wrapperArgs.contains(optionName))
+		{
+			//Not a usable R argument (jaspTestModule's testOptionNames has controls named 'data',
+			//'formula' and even '*^&*^&%jkkh'): leave it out rather than emit a broken wrapper.
+			Log::log() << "RSyntax: skipping wrapper argument for control '" << fq(memberQ) << "'" << std::endl;
+			continue;
+		}
+		wrapperArgs.insert(optionName);
+
+		// a selection default enters the wrapper as its surface string (bare
+		//title / "title - filterName", "" when nothing was selected) - never as the bound filter
+		//id, which is internal wire format.
+		const Json::Value renderedDefault = selectionOptions.contains(memberQ)
+				? Json::Value(fq(selectionSurfaceFromBoundValue(defaultValue)))
+				: defaultValue;
+		result += ",\n" + FunctionOptionIndent + optionName + " = " + transformJsonToR(renderedDefault);
 
 		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
 		if (listControl)
-			optionsWithFormula.push_back(getRSyntaxFromControlName(control));
+			optionsWithFormula.push_back(optionName);
+	}
+
+	// reorder to REGISTRATION order (dataSetSelectionOptionNames, the form's own
+	//section order - its first selection is the primary slice), not the alphabetically sorted
+	//json member order the emit loop above walks.
+	emittedSelectionArgs.clear();
+	for (const QString & selectionOption : selectionOptions)
+	{
+		JASPControl* selectionControl = _form->getControl(selectionOption);
+		const QString selectionArg = selectionControl ? getRSyntaxFromControlName(selectionControl) : QString();
+		if (!selectionArg.isEmpty() && wrapperArgs.contains(selectionArg))
+			emittedSelectionArgs.push_back(selectionArg);
 	}
 
 	result += ") {\n\n"
@@ -240,13 +347,62 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	+ FunctionLineIndent + "options <- lapply(options, eval)\n"
 	+ FunctionLineIndent + "defaults <- setdiff(names(defaultArgs), names(options))\n"
 	+ FunctionLineIndent + "options[defaults] <- defaultArgs[defaults]\n"
-	+ FunctionLineIndent + "options[[\"data\"]] <- NULL\n"
+	+ FunctionLineIndent + (multiDataSetAware ? "options[[\"datasets\"]] <- NULL\n" : "options[[\"data\"]] <- NULL\n")
 	+ FunctionLineIndent + "options[[\"version\"]] <- NULL\n\n";
 
-	result += "\n"
-	+ FunctionLineIndent + "if (!jaspBase::jaspResultsCalledFromJasp() && !is.null(data)) {\n"
-	+ FunctionLineIndent + FunctionLineIndent + "jaspBase::storeDataSet(data)\n"
-	+ FunctionLineIndent + "}\n\n";
+	if (multiDataSetAware)
+	{
+		//No store block here on purpose: jaspBase does not export storeDataSets (zero-export
+		//contract) and runWrappedAnalysis already loads the datasets through the bridge itself
+		//(jaspBase::storeDataSets -> jaspSyntax::loadDataSets: every entry is loaded standalone,
+		//under its own name as the dataset title).
+		//
+		// `datasets` must arrive as a named list keyed by DATASET TITLE - the same
+		//title surface the dataset selection options carry (their argument defaults above are
+		//rendered through selectionSurfaceFromBoundValue, never the bound filter id). The
+		//positional `datasets[[1]]` pin is gone: the dataset that plays `data` (the frame the
+		//formula machinery evaluates against) is the first selection option whose effective
+		//value names one of the loaded datasets - resolved at run time from `options`, because
+		//a wrapper file is generated once (empty or session-bound selections) but must run
+		//against any selection the caller passes.
+		QString selectionOptionList;
+		for (const QString & selectionArg : emittedSelectionArgs)
+		{
+			if (!selectionOptionList.isEmpty()) selectionOptionList += ", ";
+			selectionOptionList += "\"" + selectionArg + "\"";
+		}
+
+		result += "\n"
+		+ FunctionLineIndent + "# `datasets` must be a named list of data.frames keyed by DATASET TITLE - the\n"
+		+ FunctionLineIndent + "# titles the dataset selection options of this form carry (e.g. list(Iris = iris, Sleep = sleep)).\n"
+		+ FunctionLineIndent + "# No positional pin: the dataset that plays `data` (the frame the formula machinery evaluates\n"
+		+ FunctionLineIndent + "# against) is the first selection option whose effective value names one of the loaded datasets,\n"
+		+ FunctionLineIndent + "# resolved at run time from `options`. Every entry is loaded standalone by runWrappedAnalysis\n"
+		+ FunctionLineIndent + "# (jaspBase::storeDataSets -> jaspSyntax::loadDataSets, each under its own name as the dataset\n"
+		+ FunctionLineIndent + "# title); the analysis itself receives its slices keyed by filter id (jaspBase datasets contract).\n"
+		+ FunctionLineIndent + "selectionOptions <- c(" + selectionOptionList + ")\n"
+		+ FunctionLineIndent + "data <- NULL\n"
+		+ FunctionLineIndent + "if (!is.null(datasets) && length(datasets)) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + "for (selectionOption in selectionOptions) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "selectionValue <- options[[selectionOption]]\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "if (!is.character(selectionValue) || length(selectionValue) != 1L || is.na(selectionValue) || !nzchar(selectionValue)) next\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "if (selectionValue %in% names(datasets)) { data <- datasets[[selectionValue]]; break }\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "bareTitle <- sub(\" - [^-]*$\", \"\", selectionValue) # 'Title - filterName' surface: bare-title fallback, best effort\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "if (bareTitle %in% names(datasets)) { data <- datasets[[bareTitle]]; break }\n"
+		+ FunctionLineIndent + FunctionLineIndent + "}\n"
+		+ FunctionLineIndent + "if (is.null(data)) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + "if (length(selectionOptions))\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "stop(\"`datasets` must be a named list keyed by dataset title (e.g. list(Iris = iris)): the dataset selection option(s) \", paste(selectionOptions, collapse = \", \"), \" select a title matching none of: \", paste(names(datasets), collapse = \", \"))\n"
+		+ FunctionLineIndent + FunctionLineIndent + "data <- datasets[[1L]] # this form has no dataset selection surface: the first entry is the documented primary (jaspSyntax::loadDataSets)\n"
+		+ FunctionLineIndent + "}\n"
+		+ FunctionLineIndent + "}\n\n";
+	} else
+	{
+		result += "\n"
+		+ FunctionLineIndent + "if (!jaspBase::jaspResultsCalledFromJasp() && !is.null(data)) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + "jaspBase::storeDataSet(data)\n"
+		+ FunctionLineIndent + "}\n\n";
+	}
 
 	for (FormulaBase* formula : _formulas)
 	{
@@ -277,7 +433,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	}
 
 	result += "\n"
-	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + moduleName + "\", \"" + analysisName + "\", \"" + qmlFileName + "\", options, version, " + (preloadData ? "TRUE" : "FALSE") + "))\n"
+	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + moduleName + "\", \"" + analysisName + "\", \"" + qmlFileName + "\", options, version, " + (preloadData ? "TRUE" : "FALSE") + (multiDataSetAware ? ", datasets = datasets" : "") + "))\n"
 	+ "}";
 
 	return result;
@@ -354,7 +510,9 @@ bool RSyntax::parseRSyntaxOptions(Json::Value &options) const
 				FormulaParser::ParsedTerms parsedTerms;
 				QString error;
 
-				if (!FormulaParser::parse(option["rhs"], false, parsedTerms, error, form()->varInfo()->provider()))
+				VariableInfo * rhsVarInfo = form() ? form()->varInfo() : nullptr;
+
+				if (!FormulaParser::parse(option["rhs"], false, parsedTerms, error, rhsVarInfo ? rhsVarInfo->provider() : nullptr))
 				{
 					addError(error);
 					return false;
@@ -404,6 +562,14 @@ QString RSyntax::_transformToRName(const QString &name)
 	return "`" + escaped + "`";
 }
 
+// Used by generateWrapper's argument guard and the empty-name routing in transformJsonToR below
+bool RSyntax::isRSyntaxIdentifier(const QString& name)
+{
+	//R syntactic names: start with a letter or a dot not followed by a digit, then letters, digits, dot, _
+	static const QRegularExpression rName("^[A-Za-z.][A-Za-z0-9._]*$");
+	return !name.isEmpty() && rName.match(name).hasMatch();
+}
+
 QString RSyntax::transformJsonToR(const Json::Value &json)
 {
 	QString result;
@@ -450,6 +616,36 @@ QString RSyntax::transformJsonToR(const Json::Value &json)
 		case Json::objectValue:
 		{
 			bool first = true;
+
+			//Member names must be valid R names to emit list(name = value); a quoted name fixes most
+			//of them, but R rejects even list("" = 1) - so when any name cannot be quoted into
+			//validity the whole object goes through names<- instead.
+			QStringList memberNames;
+			bool needsNamesAssignment = false;
+			for (const std::string& member : json.getMemberNames())
+			{
+				QString memberName = tq(member);
+				memberNames += memberName;
+				if (!isRSyntaxIdentifier(memberName) && memberName.isEmpty())
+					needsNamesAssignment = true;
+			}
+
+			if (needsNamesAssignment)
+			{
+				result = "local({ .l <- list(";
+				QStringList namesR;
+				first = true;
+				for (const std::string& member : json.getMemberNames())
+				{
+					if (!first) result += ", ";
+					result += transformJsonToR(json.get(member, Json::Value::null));
+					namesR += "\"" + tq(member).replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+					first = false;
+				}
+				result += "); names(.l) <- c(" + namesR.join(", ") + "); .l })";
+				return result;
+			}
+
 			result = "list(";
 			for (const std::string& member : json.getMemberNames())
 			{
@@ -485,7 +681,14 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 
 	if (terms.size() == 0)	return "NULL";
 
-	if (_areTermsVariables(model, terms) && model->listView()->mayUseFormula())	return "~ " + FormulaSource::generateInteractionTerms(terms, model->getVariableTypes(true));
+	// the emission context - the analysis' own filter (else the shown-filter
+	//fallback) is the namespace bare names resolve in at run time (the self-reference rule);
+	//terms stamped with another live filter id emit the qualified minimal form, -1/own-filter
+	//terms stay byte-identical.
+	int contextFilterId = FormulaSource::contextFilterIdForForm(_form);
+	Workspace * ws = Workspace::singleton();
+
+	if (_areTermsVariables(model, terms) && model->listView()->mayUseFormula())	return "~ " + FormulaSource::generateInteractionTerms(terms, model->getVariableTypes(true), contextFilterId);
 
 	QString result = "list(";
 	bool first = true;
@@ -495,7 +698,7 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 		first = false;
 		QStringList components = term.components();
 		if (components.length() == 1)
-			result += "\"" + components[0] + "\"";
+			result += "\"" + _rLiteralForTermComponent(term, components[0], contextFilterId, ws) + "\"";
 		else
 		{
 			result += "list(";
@@ -504,7 +707,7 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 			{
 				if (!firstComponent) result += ", ";
 				firstComponent = false;
-				result += "\"" + component + "\"";
+				result += "\"" + _rLiteralForTermComponent(term, component, contextFilterId, ws) + "\"";
 			}
 			result += ")";
 		}
@@ -514,6 +717,34 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 
 
 	return result;
+}
+
+QString RSyntax::_rLiteralForTermComponent(const Term& term, const QString& component, int contextFilterId, Workspace* ws) const
+{
+	// the list() branch has no per-term type info, so the qualified minimal form
+	//is rendered with columnType::unknown (no type segment). A dead slice renders to nothing:
+	//the bare name is kept under a loud log (parseable R resolving through the context
+	//fallback, wrong-slice but never a made-up form), exactly like the formula branch.
+	QString value = component;
+
+	if (contextFilterId >= 0 && term.filterId() >= 0 && term.filterId() != contextFilterId)
+	{
+		QString qualified = ws ? ws->renderQualifiedColumnRef(contextFilterId, term.filterId(), component.toStdString(), columnType::unknown) : QString();
+
+		if (!qualified.isEmpty())	value = qualified;
+		else
+			Log::log() << "RSyntax::_transformInteractionTerms: term component '" << component.toStdString()
+					   << "' is stamped with filter id " << term.filterId()
+					   << " which renders to nothing (dead slice); emitting the bare name under the context namespace" << std::endl;
+	}
+
+	//Only a (re)rendered qualified form is escaped for the R string literal: its grammar puts
+	//double quotes (and possibly backslashes) inside the component. Legacy bare components
+	//keep the historical verbatim wrap (byte-identity).
+	if (value != component)
+		value.replace("\\", "\\\\").replace("\"", "\\\"");
+
+	return value;
 }
 
 QString RSyntax::_analysisFullName() const

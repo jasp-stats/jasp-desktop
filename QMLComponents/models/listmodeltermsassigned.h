@@ -37,7 +37,7 @@ public:
 	virtual void	changeTerm(int index, const Term& term);
 
 public slots:
-	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;
+	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove, int filterIdToUpdate)	override;
 
 };
 

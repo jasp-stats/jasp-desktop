@@ -54,6 +54,10 @@ void RowControls::initValues(int row, const Term& key, const QMap<QString, Json:
 	context->setContextProperty("rowLabel", key.label());
 	context->setContextProperty("rowValue", key.value());
 	context->setContextProperty("rowType", columnTypeToQString(key.type()));
+	// the row's filter identity travels with it: JASPControl composes its
+	//registration key (TermRowKey) from rowValue + rowFilterId, so same-name twin rows register
+	//their controls into their OWN RowControls instead of the first row's.
+	context->setContextProperty("rowFilterId", key.filterId());
 
 
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context)); // The _rowJASPControlMap will be filled during this step
@@ -84,6 +88,7 @@ void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json
 	_context->setContextProperty("rowLabel", key.label());
 	_context->setContextProperty("rowValue", key.value());
 	_context->setContextProperty("rowType", columnTypeToQString(key.type()));
+	_context->setContextProperty("rowFilterId", key.filterId());		// see initValues
 	_context->setContextProperty("isNew", false);
 
 	_setValues(rowValues);
@@ -117,6 +122,13 @@ void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 			BoundControl* boundItem = control->boundControl();
 			if (boundItem)
 				optionValue = boundItem->boundValue();
+
+			// a late selection host's freshly created option control binds the
+			//RESOLVED filter id the form stashed at registration (the successor of the value the
+			//old mirror write placed where this fallback read it - without it the late dropdown
+			//would bind the untranslated surface text).
+			if (optionValue.isNull() && form)
+				optionValue = form->takeResolvedSelectionOptionValue(control->name());
 		}
 
 		control->setInitialized(optionValue);

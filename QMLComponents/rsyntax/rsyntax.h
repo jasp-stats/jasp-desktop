@@ -38,7 +38,7 @@ public:
 	bool							setControlNameToRSyntaxMap(const QVariantList& conv);
 
 	QString							generateSyntax(bool showAllOptions = true, bool useHtml = false)		const;
-	QString							generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData)	const;
+	QString							generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware = false)	const;
 	QString							getRSyntaxFromControlName(JASPControl* control)							const;
 	QString							getRSyntaxFromControlName(const QString& name)							const;
 	QString							getControlNameFromRSyntax(const QString& name)							const;
@@ -52,6 +52,7 @@ public:
 	static QString					FunctionOptionIndent,
 									FunctionLineIndent;
 	static QString					transformJsonToR(const Json::Value& json);
+	static bool						isRSyntaxIdentifier(const QString& name);
 
 signals:
 	void							somethingChanged();
@@ -62,6 +63,10 @@ private:
 	static QString					_transformToRName(const QString& name);
 	QString							_analysisFullName()														const;
 	QString							_transformInteractionTerms(ListModel* model)							const;
+	// the string-literal content for one term component of the list() branch -
+	// qualified minimal form for a foreign-stamped term (escaped for R), legacy verbatim
+	// otherwise.
+	QString							_rLiteralForTermComponent(const Term& term, const QString& component, int contextFilterId, class Workspace* ws) const;
 	bool							_areTermsVariables(ListModel* model, const Terms& terms)				const;
 
 	AnalysisForm*					_form							= nullptr;

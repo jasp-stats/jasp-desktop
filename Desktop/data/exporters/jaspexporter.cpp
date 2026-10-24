@@ -42,7 +42,7 @@
 
 
 time_t JASPExporter::_now;
-const Version JASPExporter::jaspArchiveVersion = Version("6.0.0");
+const Version JASPExporter::jaspArchiveVersion = Version("7.0.0"); // major bump (multi-dataset aware .jasp files store filter-id selections and eager per-file filters; older builds must reject, not misread - see JASPImporter::isCompatible)
 std::queue<std::string> JASPExporter::_snapshotQueue;
 std::mutex JASPExporter::_snapshotMutex;
 

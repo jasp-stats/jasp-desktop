@@ -3,6 +3,7 @@
 
 #include "enginedefinitions.h"
 #include <QString>
+#include <set>
 
 
 ///
@@ -18,6 +19,13 @@ struct RScriptStore
 				dataSetId;
 	bool		whiteListedVersion,
 				returnLog;
+
+	// doctrine: the transient `referencedFilterIds` sidecar - the desktop's
+	//scan of the run's code (Workspace::referencedFilterIdsInCode) that tells the engine which
+	//foreign slices to materialize. Desktop owns provenance, the engine consumes it for slice
+	//materialization and it is stripped before anything reaches R; empty for legacy/unaware
+	//requests (which stay byte-identical).
+	std::set<int>	referencedFilterIds;
 
 };
 
