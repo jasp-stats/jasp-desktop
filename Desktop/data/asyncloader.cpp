@@ -261,7 +261,7 @@ void AsyncLoader::loadPackage(QString id)
 						dotPos		= qpath.lastIndexOf('.');
 
 				if (dotPos != -1 && dotPos > slashPos)
-					extension = qpath.mid(dotPos).toStdString();
+					extension = qpath.mid(dotPos).toLower().toStdString();
 
 				dataNode = _odm->getActionDataNode(id);
 

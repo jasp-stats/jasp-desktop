@@ -27,6 +27,7 @@
 #endif
 
 #include <cmath>
+#include <algorithm>
 #include "utilenums.h"
 #include <iomanip>
 #include <chrono>
@@ -43,26 +44,24 @@ using namespace std;
 
 Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 {
+	// extension() only looks at the file name: a dot in a folder name (`/home/my.data/file`) or a hidden file (`.bashrc`) gives no extension.
+	const std::string extension = std::filesystem::path(path).extension().string();
 
-	size_t lastPoint = path.find_last_of('.');
-	FileType filetype =  lastPoint == string::npos ?  FileType::empty : FileType::unknown;
+	if (extension.empty())
+		return FileType::empty;
 
-	if (lastPoint != string::npos && (lastPoint + 1) < path.length())
+	// Skip the '.' and compare case insensitively
+	std::string suffix(extension.begin() + 1, extension.end());
+	std::transform(suffix.begin(), suffix.end(), suffix.begin(), [](unsigned char c){ return std::tolower(c); });
+
+	for (int i = 0; i < int(FileType::empty); i++)
 	{
-		std::string suffix = path.substr(lastPoint + 1);
-		for (int i = 0; i < int(FileType::empty); i++)
-		{
-			FileType it = static_cast<FileType>(i);
-			if (suffix == FileTypeBaseToString(it))
-			{
-				filetype = it;
-				break;
-			}
-		}
+		FileType it = static_cast<FileType>(i);
+		if (suffix == FileTypeBaseToString(it))
+			return it;
 	}
 
-
-	return filetype;
+	return FileType::unknown;
 }
 
 const string &Utils::currentDateTime()

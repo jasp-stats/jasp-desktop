@@ -1160,7 +1160,7 @@ void MainWindow::showLogFolder() const
 
 bool MainWindow::openURLFile(QString fileURLPath)
 {
-	QUrl fileUrl = fileURLPath.startsWith("file:") ? QUrl(fileURLPath) : QUrl::fromLocalFile(fileURLPath);
+	QUrl fileUrl = fileURLPath.startsWith("file:", Qt::CaseInsensitive) ? QUrl(fileURLPath) : QUrl::fromLocalFile(fileURLPath);
 	if (!fileUrl.isLocalFile())
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("Cannot access file %1").arg(fileURLPath));
@@ -2201,7 +2201,7 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
-		if(!event->path().endsWith(".pdf") && _preferences->currentThemeName() != "lightTheme")
+		if(!event->path().endsWith(".pdf", Qt::CaseInsensitive) && _preferences->currentThemeName() != "lightTheme")
 			_resultsJsInterface->setThemeCss(_preferences->currentThemeName());
 	}
 	//FileSyncData completion is handled solely via AsyncLoader::syncCompleted -> DataSetSyncer::setSyncingResult
@@ -2669,7 +2669,7 @@ void MainWindow::startDataEditor(QString path)
 #endif
 		if (!QDesktopServices::openUrl(QUrl::fromLocalFile(path)))
 		{
-			if (fileInfo.suffix() == "csv")
+			if (fileInfo.suffix().compare("csv", Qt::CaseInsensitive) == 0)
 				MessageForwarder::showWarning(tr("Start Spreadsheet Editor"), tr("No default spreadsheet editor for file %1. Use Preferences to set the right editor.").arg(fileInfo.fileName()));
 			else
 			{
