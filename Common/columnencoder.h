@@ -87,6 +87,9 @@ public:
 			///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
 	static	std::string			encodeAll(const std::string & text) { return replaceAll(text, encodingMap(), originalNames()); }
 
+			///Replace R string literals whose entire content is a columnName (such as in data[["x"]]) by the encoded version. Other strings, comments and code are left untouched.
+	static	std::string			encodeRStringLiterals(std::string text);
+
 			///Replace all occurences of encoded columnNames in a string by their decoded versions, regardless of word boundaries or parentheses.
 	static	std::string			decodeAll(const std::string & text) { columnEncoder(); return replaceAll(text, decodingMap(), encodedNames());  }
 
