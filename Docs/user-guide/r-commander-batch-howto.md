@@ -71,7 +71,86 @@ batchAnalysis(
 )
 ```
 
-or build the formula yourself in a function, as described next.
+You can also create the list from column names using `columnFormula()`, as described next.
+
+
+## Building formulas from column names
+
+`columnFormula()` from `jaspBase` builds an ordinary R formula from column names supplied as
+strings. It handles spaces, hyphens, backticks and backslashes in names automatically, so you
+don't need to add backticks or construct formula text with `paste()`.
+
+```r
+columnFormula("part length")
+# ~ `part length`
+
+columnFormula("temperature", "pressure", dependent = "strength")
+# strength ~ temperature + pressure
+
+columnFormula(c("temperature", "pressure"))
+# ~ temperature + pressure
+
+columnFormula("diameter", intercept = FALSE)
+# ~ 0 + diameter
+```
+
+Omit `dependent` to create a one-sided formula. Every name is treated literally: `"a+b"` refers
+to one column named `a+b`. Arguments are evaluated normally, so you can pass a variable containing
+a name, or an expression such as `measurements[[i]]`. No dataset is needed to build the formula.
+
+Passing several column names to `columnFormula()` creates **one formula containing those
+columns**. To create **one formula per column**, use `lapply()`:
+
+```r
+measurements <- c("diameter", "part length", "surface-roughness")
+
+batchAnalysis(
+  jaspDescriptives::Descriptives,
+  formula = lapply(measurements, columnFormula)
+)
+```
+
+You can pair each measurement with its own settings. For example, this creates three Gauge R&R
+analyses with tolerance values of 1, 2 and 3 respectively:
+
+```r
+measurements <- c("diameter", "part length", "surface-roughness")
+
+batchAnalysis(
+  jaspQualityControl::msaGaugeRR,
+  anovaModelType = "randomEffect",
+  measurementLongFormat = lapply(measurements, columnFormula),
+  partLongFormat = columnFormula("partID"),
+  reportAverageChartByOperator = FALSE,
+  reportMeasurementsByOperatorPlot = FALSE,
+  reportPartByOperatorPlot = FALSE,
+  reportRChartByOperator = FALSE,
+  tolerance = TRUE,
+  toleranceValue = c(1, 2, 3),
+  type3 = TRUE,
+  .override = list(title = paste("Gauge R&R:", measurements))
+)
+```
+
+Replace the names and tolerance values with those for your dataset. As with other batch
+arguments, formulas and settings are matched by position.
+
+### Using values from dataset columns
+
+The current dataset is available as `data`, and the rows included by the filter are available as
+`filteredData`. Column names are highlighted in the editor, but their values are accessed through
+these data frames. For example, to calculate tolerance values from columns named `upperLimit`
+and `lowerLimit`:
+
+```r
+indices <- seq_along(measurements)
+tolerances <- data$upperLimit[indices] - data$lowerLimit[indices]
+```
+
+Then use `toleranceValue = tolerances` in the batch call above. Use `filteredData$upperLimit` and
+`filteredData$lowerLimit` instead to calculate values from the filtered rows.
+`columnFormula("upperLimit")` builds a reference to the column for an analysis;
+`data$upperLimit` reads the column's actual values.
 
 
 ## Using your own function
@@ -82,14 +161,15 @@ analysis with the varying arguments, and should return the result of an analysis
 ```r
 batchAnalysis(
   function(variable) {
-    jaspDescriptives::Descriptives(formula = as.formula(paste("~", variable)))
+    do.call(jaspDescriptives::Descriptives,
+            list(formula = columnFormula(variable)))
   },
   variable = c("contNormal", "contGamma", "contExpon")
 )
 ```
 
-Inside the function you can do whatever you like: compute settings, use `if`, or even call
-analyses from different modules.
+Inside the function you can compute settings, use `if`, or even call analyses from different
+modules. Use `do.call()` as above to pass the computed argument values to the analysis.
 
 
 ## Titles
@@ -167,7 +247,8 @@ problem is shown in that analysis' panel, just as when you use **Add analysis**.
 
   ```r
   lapply(c("contNormal", "contGamma"), function(variable) {
-    jaspDescriptives::Descriptives(formula = as.formula(paste("~", variable)))
+    do.call(jaspDescriptives::Descriptives,
+            list(formula = columnFormula(variable)))
   })
   ```
 
