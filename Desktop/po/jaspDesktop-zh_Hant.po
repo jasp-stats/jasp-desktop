@@ -6,6 +6,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
+"PO-Revision-Date: 2026-10-26 13:51+0000\n"
+"Last-Translator: 陳正昌 <chencc99@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -8285,6 +8291,14 @@ msgid ""
 "You can find out more about JASP Services BV at <a href=\"%4\">our website</"
 "a>."
 msgstr ""
+"<h3>聯絡</h3>\n"
+"以下連結會直接導向您公司自有的問題追蹤系統。\n"
+"<ul><li><a href=\"%1\">功能請求</a>，當您希望 JASP 新增某項功能時使用。</li>"
+"<li><a href=\"%2\">錯誤回報</a>，當 JASP 的某項功能未如預期運作時使用。</li>"
+"<li><a href=\"%3\">當機回報</a>，用於 JASP 不幸當機的情況。</li></ul>\n"
+"您將可在該處直接與 JASP 軟體開發人員聯繫。\n"
+"\n"
+"您可在<a href=\"%4\">我們的網站</a>進一步了解 JASP Services BV。"
 
 msgctxt "AllHelp|"
 msgid ""
@@ -9111,35 +9125,35 @@ msgstr "文字"
 
 msgctxt "DataLibrary|"
 msgid "Click here to open the Online Data Library"
-msgstr ""
+msgstr "按此開啟線上資料庫"
 
 msgctxt "PrefsUI|"
 msgid "Onboarding"
-msgstr ""
+msgstr "新手導引"
 
 msgctxt "PrefsUI|"
 msgid "Show onboarding tour on next start"
-msgstr ""
+msgstr "下次啟動時顯示新手導引導覽"
 
 msgctxt "PrefsUI|"
 msgid "Enable this to see the guided tour again the next time JASP starts."
-msgstr ""
+msgstr "啟用此選項，以便下次 JASP 啟動時再次顯示導引導覽。"
 
 msgctxt "PrefsUI|"
 msgid "Start tutorial"
-msgstr ""
+msgstr "開始教學"
 
 msgctxt "MainWindow|"
 msgid "Data and Analysis Section"
-msgstr ""
+msgstr "資料與分析區段"
 
 msgctxt "MainWindow|"
 msgid "This is the main entry point for the Data and Analysis menu."
-msgstr ""
+msgstr "這是資料與分析選單的主要進入點。"
 
 msgctxt "MainWindow|"
 msgid "File Menu and Preferences"
-msgstr ""
+msgstr "檔案選單與偏好設定"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -9147,10 +9161,12 @@ msgid ""
 "file menu and preferences interface, used to open and save files, and to "
 "configure JASP global preferences."
 msgstr ""
+"點選左上角的漢堡按鈕可開啟 / 關閉此檔案選單與偏好設定介面，用於開啟與儲存檔案"
+"，以及設定 JASP 的全域偏好。"
 
 msgctxt "MainWindow|"
 msgid "Modules Library"
-msgstr ""
+msgstr "模組庫"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -9158,72 +9174,76 @@ msgid ""
 "of this area, you can enable/disable installed modules, and you can also "
 "manage all available modules from the online modules store on the left."
 msgstr ""
+"此處可管理分析模組。在此區域最右側的清單中，您可以啟用 / 停用已安裝的模組；在"
+"左側則可管理線上模組商店中所有可用的模組。"
 
 msgctxt "MainWindow|"
 msgid "AI Assistant"
-msgstr ""
+msgstr "AI 助理"
 
 msgctxt "MainWindow|"
 msgid ""
 "Click the robot icon here or press Ctrl+J to bring up the AI chat panel."
 "Detailed AI settings can be found in the preferences menu."
 msgstr ""
+"點選此處的機器人圖示或按 Ctrl+J 可叫出 AI 對話面板。詳細的 AI 設定可在偏好設"
+"定選單中找到。"
 
 msgctxt "PlotEditor|"
 msgid "Elements"
-msgstr ""
+msgstr "元素"
 
 msgctxt "Tutorial|"
 msgid "Getting Started"
-msgstr ""
+msgstr "開始使用"
 
 msgctxt "Tutorial|"
 msgid "Finish"
-msgstr ""
+msgstr "完成"
 
 msgctxt "Tutorial|"
 msgid "Next"
-msgstr ""
+msgstr "下一步"
 
 msgctxt "Tutorial|"
 msgid "Previous"
-msgstr ""
+msgstr "上一步"
 
 msgctxt "Tutorial|"
 msgid "Skip the Tutorial"
-msgstr ""
+msgstr "略過教學"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Insert element"
-msgstr ""
+msgstr "插入元素"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Remove element"
-msgstr ""
+msgstr "移除元素"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Move element"
-msgstr ""
+msgstr "移動元素"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Change column type"
-msgstr ""
+msgstr "變更欄類型"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Edit number"
-msgstr ""
+msgstr "編輯數值"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Edit logical"
-msgstr ""
+msgstr "編輯邏輯值"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Edit text"
-msgstr ""
+msgstr "編輯文字"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Clear all"
-msgstr ""
+msgstr "全部清除"
 
 #, fuzzy
 msgctxt "ScriptConstructorRegistry|"
@@ -9257,12 +9277,12 @@ msgstr "除"
 
 msgctxt "ScriptConstructorRegistry|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "次方 (2^3 傳回 8)"
 
 #, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "取餘數：傳回相除後的餘數。3%2 傳回 1"
 
 #, fuzzy, qt-format
 msgctxt "ScriptConstructorRegistry|"
@@ -9356,7 +9376,7 @@ msgstr "平均數"
 
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "傳回數值的正負號"
 
 #, fuzzy
 msgctxt "ScriptConstructorRegistry|"
@@ -9662,7 +9682,7 @@ msgstr "列最大值"
 
 msgctxt "ScriptConstructorView|"
 msgid "Filter cleared"
-msgstr ""
+msgstr "篩選器已清除"
 
 #, fuzzy
 msgctxt "ScriptConstructorView|"
@@ -9688,7 +9708,7 @@ msgctxt "ScriptConstructorView|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter."
-msgstr ""
+msgstr "公式未傳回一組邏輯值，因此無法用於篩選。"
 
 #, fuzzy
 msgctxt "ScriptConstructorView|"
@@ -9702,7 +9722,7 @@ msgstr "無用的程式片段放在此處; 滑鼠雙擊以刪除整個內容"
 
 msgctxt "ScriptConstructorView|"
 msgid "Welcome to the drag and drop filter!"
-msgstr ""
+msgstr "歡迎使用拖放篩選功能！"
 
 #, fuzzy
 msgctxt "ScriptConstructorView|"
@@ -9722,7 +9742,7 @@ msgstr "欄說明： "
 #, qt-format
 msgctxt "ScriptNodeItem|"
 msgid "Only %1 allowed in this context."
-msgstr ""
+msgstr "此情境下僅允許 %1。"
 
 msgctxt "ScriptNodeItem|"
 msgid "/"
