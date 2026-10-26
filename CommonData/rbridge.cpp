@@ -116,6 +116,10 @@ const std::string commanderFrameR =
 		#include "commanderFrame.h"
 		;
 
+const std::string batchAnalysisR =
+		#include "batchAnalysis.h"
+		;
+
 void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
@@ -170,7 +174,8 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 			jaspBaseTransformJohnsonR				+ "\n" +
 			jaspBaseTransformYeoJohnsonR			+ "\n" +
 			jaspBaseTransformPowerR					+ "\n" +
-			commanderFrameR;
+			commanderFrameR							+ "\n" +
+			batchAnalysisR;
 	// SyntaxInterface uses insideJasp=false for parse/dataset replay and only
 	// needs the native callbacks; the Engine still receives the full R helpers.
 	const char * initRCodeForMode = insideJasp ? initRCode.c_str() : "";

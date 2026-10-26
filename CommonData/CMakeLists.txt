@@ -20,6 +20,7 @@ make_includable(../Engine/jaspBase/R/transformYeoJohnson.R				jaspBase_transform
 make_includable(../Engine/jaspBase/R/transformPower.R					jaspBase_transformPower.h)
 
 make_includable(R/commanderFrame.R										commanderFrame.h)
+make_includable(R/batchAnalysis.R										batchAnalysis.h)
 
 
 file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")
