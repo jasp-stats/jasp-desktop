@@ -158,29 +158,27 @@ Window
 				]
 		}
 
-		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S", Qt.Key_Save];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.saveAsKeyPressed();					sequences: ["Ctrl+Shift+S", Qt.Key_SaveAs];						context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];							context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S", "Save"];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.saveAsKeyPressed();					sequences: ["Ctrl+Shift+S"];								context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: { ribbon.showFileMenuPressed(); mainWindow.openKeyPressed();}
-																				sequences: ["Ctrl+O"];											context: Qt.ApplicationShortcut; }
-		//This is now redo! Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: ["Ctrl+Y", Qt.Key_Reload];							context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.zoomInKeyPressed();					sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();					sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0", Qt.Key_Zoom];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.refreshKeyPressed();					sequences: ["Ctrl+R", Qt.Key_Refresh];							context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindowRoot.close();							sequences: ["Ctrl+Q", Qt.Key_Close];							context: Qt.ApplicationShortcut; }
+																				sequences: ["Ctrl+O"];										context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: [fileMenuModel.syncShortcut];											context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.zoomInKeyPressed();					sequences: ["Zoom In", "Ctrl+\+", "Ctrl+\="];	context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();					sequences: ["Zoom Out", "Ctrl+\-"];			context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0", "Zoom"];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.refreshKeyPressed();					sequences: ["Ctrl+R", "Refresh"];							context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindowRoot.close();							sequences: ["Ctrl+Q", "Close"];								context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: fileMenuModel.close();							sequences: ["Ctrl+W"];											}
-		Shortcut { onActivated: mainWindow.toggleChat();								sequences: ["Ctrl+J"];									enabled: preferencesModel.aiEnabled }
-		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M", Qt.Key_F11];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindowRoot.changeFocusToFileMenu();			sequences: ["Home",   Qt.Key_Home, Qt.Key_Menu];				}
-		Shortcut { onActivated: mainWindow.setLanguage(0);						sequences: ["Ctrl+1"];											context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.setLanguage(1);						sequences: ["Ctrl+2"];											context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.undo();								sequences: ["Ctrl+Z", Qt.Key_Undo];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.redo();								sequences: ["Ctrl+Shift+Z", "Ctrl-Y", Qt.Key_Redo];				context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.toggleChat();						sequences: ["Ctrl+J"];										enabled: preferencesModel.aiEnabled }
+		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M", "F11"];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindowRoot.changeFocusToFileMenu();			sequences: ["Home", "Menu"];				}
+		Shortcut { onActivated: mainWindow.undo();								sequences: ["Ctrl+Z", "Undo"];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.redo();								sequences: ["Ctrl+Shift+Z", "Ctrl+Y", "Redo"];				context: Qt.ApplicationShortcut; }
 
-        Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(false, true);}  sequences: ["Ctrl+Shift+U"];                     context: Qt.ApplicationShortcut; }
-        Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(true, false);}  sequences: ["Ctrl+Shift+R"];                     context: Qt.ApplicationShortcut; }
-        Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(true, true);}   sequences: ["Ctrl+Shift+D"];                     context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(false, true);}  sequences: ["Ctrl+Shift+U"];						context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(true, false);}  sequences: ["Ctrl+Shift+R"];						context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(true, true);}   sequences: ["Ctrl+Shift+D"];						context: Qt.ApplicationShortcut; }
 
 
 		RibbonBar

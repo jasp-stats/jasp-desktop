@@ -3398,8 +3398,8 @@ msgstr ""
 "Czy kontynuować pomimo tego?"
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "Aby zsynchronizować z plikiem, kliknij na jego nazwę lub użyj "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "Aby zsynchronizować z plikiem, kliknij na jego nazwę lub użyj %1"
 
 msgctxt "OSF|"
 msgid "Unknown error"

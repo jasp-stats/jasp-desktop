@@ -3689,8 +3689,8 @@ msgid "has selected module "
 msgstr "தொகுதியைத் தேர்ந்தெடுத்துள்ளது "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "ஒத்திசைக்க அல்லது பயன்படுத்த கீழே உள்ள கோப்பை சொடுக்கு செய்யவும் "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "ஒத்திசைக்க அல்லது பயன்படுத்த கீழே உள்ள கோப்பை சொடுக்கு செய்யவும் %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"

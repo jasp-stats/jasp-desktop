@@ -3751,8 +3751,8 @@ msgid "has selected module "
 msgstr "modulua hautatuta dauka "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "Egin klik beheko fitxategian sinkronizatzeko edo erabiltzeko "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "Egin klik beheko fitxategian sinkronizatzeko edo erabiltzeko %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"

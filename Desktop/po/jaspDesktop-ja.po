@@ -3480,8 +3480,8 @@ msgid "has selected module "
 msgstr "選択したモジュールがあります "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "下のファイルをクリックして同期または使用 "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "下のファイルをクリックして同期または使用 %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."

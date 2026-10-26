@@ -3891,8 +3891,8 @@ msgstr "ཁ་སྣོན་ཆ་ཤས་བདམས་ཟིན། "
 
 #, fuzzy
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "མཉམ་འགུལ་བྱེད་པའམ་སྤྱོད་པར་གཤམ་གྱི་ཡིག་ཆར་མནན། "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "མཉམ་འགུལ་བྱེད་པའམ་སྤྱོད་པར་གཤམ་གྱི་ཡིག་ཆར་མནན། %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"

@@ -3559,8 +3559,8 @@ msgid "has selected module "
 msgstr "ha seleccionado módulo "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "Haz clic en el archivo de abajo para sincronizar o usar "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "Haz clic en el archivo de abajo para sincronizar o usar %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."

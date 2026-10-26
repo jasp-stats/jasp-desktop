@@ -1,9 +1,10 @@
 #include "currentdatafile.h"
-#include "utilities/qutils.h"
+#include "filemenu.h"
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QFileInfo>
 #include <QDir>
+#include <QKeySequence>
 
 CurrentDataFile::CurrentDataFile(FileMenu *parent): FileMenuObject(parent)
 {	
@@ -43,17 +44,7 @@ QString CurrentDataFile::getCurrentFilePath()
 
 QString CurrentDataFile::getHeaderText()
 {
-	return QString(tr("Click on the file below to synchronize or use ") + getShortCutKey() + "-Y");
-}
-
-
-void CurrentDataFile::syncFile(const QString & path)
-{
-	emit setCheckAutomaticSync(false);
-	FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
-	event->setPath(path);
-
-	event->starts();
+	return tr("Click on the file below to synchronize or use %1").arg(QKeySequence(FileMenu::syncShortcut()).toString(QKeySequence::NativeText));
 }
 
 
@@ -63,7 +54,7 @@ void CurrentDataFile::setListModel(CurrentFileListModel * listModel)
 		return;
 
 	_currentFileListModel = listModel;
-	connect(_currentFileListModel, &CurrentFileListModel::syncCurrentFile, this, &CurrentDataFile::syncFile);
+	connect(_currentFileListModel, &CurrentFileListModel::syncCurrentFile, this, &CurrentDataFile::syncRequested);
 
 	emit listModelChanged(_currentFileListModel);
 }
