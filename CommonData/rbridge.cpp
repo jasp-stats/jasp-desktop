@@ -420,6 +420,14 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	if(rbridge_dataSet == nullptr)
 		return nullptr;
 
+	//The filter vector can be (temporarily) empty when it has not been computed/synced
+	//yet in this engine. That is distinct from a legitimate filter that selects zero rows
+	//(a non-empty, all-false vector): with an *empty* vector dataAsRLevels() returns all
+	//rows while the row-buffers were allocated for filteredRowCount == 0, which crashes
+	//the memcpy below. Fall back to an unfiltered read instead.
+	if (obeyFilter && rbridge_dataSet->rowCount() > 0 && rbridge_dataSet->filter()->filtered().empty())
+		obeyFilter = false;
+
 	const Columns & columns = rbridge_dataSet->columns();
 
 	if (datasetStatic != nullptr)
