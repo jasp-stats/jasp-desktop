@@ -30,6 +30,9 @@ private slots:
 	void cleanup();
 	void scopedContextsDecodeInterleavedAndRestoreLiveState();
 	void malformedContextDoesNotMutateLiveState();
+	void stringLiteralReferencesAreCollectedButNotRewritten();
+	void stringLiteralCollectionIsCommentEscapeAndRawStringAware();
+	void prefixedEncodingCollectsStringLiteralsWithoutRewriting();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

@@ -219,4 +219,67 @@ void TestColumnEncoderContext::malformedContextDoesNotMutateLiveState()
 	QVERIFY2(extraEncoder.currentNames() == liveContext.extra(), "Extra-option context changed after malformed context errors.");
 }
 
+void TestColumnEncoderContext::stringLiteralReferencesAreCollectedButNotRewritten()
+{
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}, {"Operator", columnType::nominal}}));
+
+	const std::string script =
+		"mean(data$LL)\n"
+		"mean(data[[\"LL\"]])\n"
+		"subset(data, select = \"Operator\")\n"
+		"paste(\"the LL column\")\n";
+
+	std::set<std::string> columnsFound;
+	const std::string encoded = ColumnEncoder::columnEncoder()->encodeRScript(script, &columnsFound);
+
+	QVERIFY2(encoded.find("data$JaspColumn_0_Encoded") != std::string::npos, "Bare column reference was not encoded.");
+	QVERIFY2(encoded.find("data[[\"LL\"]]") != std::string::npos, "A whole-string column reference was rewritten, but collection must not rewrite anything.");
+	QVERIFY2(encoded.find("select = \"Operator\"") != std::string::npos, "A whole-string column reference was rewritten, but collection must not rewrite anything.");
+	QVERIFY2(encoded.find("paste(\"the LL column\")") != std::string::npos, "A string that merely contains a column name was rewritten.");
+
+	QVERIFY2(columnsFound.count("LL") == 1, "The whole-string reference to LL was not collected.");
+	QVERIFY2(columnsFound.count("Operator") == 1, "The whole-string reference to Operator was not collected.");
+	QVERIFY2(columnsFound.size() == 2, "Unexpected columns were collected: the bare reference and the two whole-string references are the same columns and \"the LL column\" is not a reference.");
+}
+
+void TestColumnEncoderContext::stringLiteralCollectionIsCommentEscapeAndRawStringAware()
+{
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}, {"Operator", columnType::nominal}}));
+
+	//There are no bare column references in this script, so collect-only means the script must come back unchanged
+	const std::string script =
+		"# a comment mentioning \"LL\" and 'Operator' should not desync the scanner\n"
+		"note <- 'it\\'s fine'\n"
+		"ref  <- data[[\"Operator\"]]\n"
+		"raw  <- r\"(LL)\"\n";
+
+	std::set<std::string> columnsFound;
+	const std::string encoded = ColumnEncoder::columnEncoder()->encodeRScript(script, &columnsFound);
+
+	QVERIFY2(encoded == script, "The script was rewritten even though it contains no bare column references.");
+
+	QVERIFY2(columnsFound.count("Operator") == 1, "The quoted reference after the comment and the escaped quote was missed.");
+	QVERIFY2(columnsFound.count("LL") == 0, "A raw string that is a column name was collected, but raw strings keep meaning data.");
+
+	//An unterminated string stops the scan: nothing after it can be trusted
+	const std::string brokenScript = "good <- data[[\"LL\"]]\nbroken <- 'unterminated\nmore <- data[[\"Operator\"]]\n";
+
+	std::set<std::string> brokenFound;
+	ColumnEncoder::columnEncoder()->encodeRScript(brokenScript, &brokenFound);
+
+	QVERIFY2(brokenFound.count("LL") == 1, "References before the unterminated string should still be collected.");
+	QVERIFY2(brokenFound.count("Operator") == 0, "Nothing after an unterminated string can be trusted, so it is not collected.");
+}
+
+void TestColumnEncoderContext::prefixedEncodingCollectsStringLiteralsWithoutRewriting()
+{
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}}));
+
+	std::map<std::string, std::set<std::string>> prefixedColumnsFound;
+	const std::string encoded = ColumnEncoder::columnEncoder()->encodeRScript("value <- data.[[\"LL\"]]", prefixedColumnsFound, {"data."});
+
+	QVERIFY2(encoded.find("data.[[\"LL\"]]") != std::string::npos, "The whole-string reference was rewritten in prefixed encoding.");
+	QVERIFY2(prefixedColumnsFound[""].count("LL") == 1, "The unprefixed run did not collect the whole-string reference.");
+}
+
 QTEST_MAIN(TestColumnEncoderContext)

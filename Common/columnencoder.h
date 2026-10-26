@@ -110,6 +110,7 @@ private:
 
 	static	void				replaceAll(Json::Value & json, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, bool replaceNames, bool replaceStrict);
 	static	std::vector<size_t>	getPositionsColumnNameMatches(const std::string & text, const std::string & columnName);
+	static	void				collectColumnNamesFromStringLiterals(const std::string & text, const colMap & map, std::set<std::string> & found);
 			void				collectExtraEncodingsFromMetaJson(const Json::Value & in, colTypeMap & namesCollected) const;
 	static	void				sortVectorBigToSmall(std::vector<std::string> & vec);
 	static	const colMap	&	encodingMap();

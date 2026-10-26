@@ -18,6 +18,7 @@
 #include "columnencoder.h"
 #include "stringutils.h"
 #include <regex>
+#include <cctype>
 #ifdef BUILDING_JASP
 #include "log.h"
 #define LOGGER Log::log()
@@ -442,6 +443,12 @@ std::string ColumnEncoder::encodeRScript(std::string text, const std::map<std::s
 	if(columnNamesFound)
 		columnNamesFound->clear();
 
+	//Also collect the column references that appear as whole string literals (data[["x"]], subset(data, select="x"), etc).
+	//Only when no prefix is mandatory: with a mandatoryPrefix an in-string reference cannot carry the prefix anyway.
+	//This is collect-only: strings are deliberately not rewritten here, the R-side frame override resolves them at lookup time.
+	if(columnNamesFound && mandatoryPrefix == "")
+		collectColumnNamesFromStringLiterals(text, map, *columnNamesFound);
+
 	static std::regex nonNameChar("[^\\.A-Za-z0-9_]");
 
 	//Some lambas to test if Column names matches are free and not just a substr of some other expression.
@@ -528,6 +535,57 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 		}
 
 	return positions;
+}
+
+///Collect the columnNames that occur as entire string literals in text (as in data[["x"]]) into found.
+///Nothing is rewritten here: the string literals themselves are left alone so that strings keep meaning data.
+///Instead the R-side frame override (see CommonData/R/commanderFrame.R) resolves such references at lookup time.
+///The scan is comment- and escape-aware and skips backticked symbols (handled by encodeRScript itself) and raw strings.
+void ColumnEncoder::collectColumnNamesFromStringLiterals(const std::string & text, const colMap & map, std::set<std::string> & found)
+{
+	for(size_t pos = 0; pos < text.size(); pos++)
+	{
+		const char c = text[pos];
+
+		if(c == '#') //Comment, skip to the end of the line
+			pos = text.find('\n', pos);
+		else if(c == '`') //Backticked symbols are handled by encodeRScript
+			pos = text.find('`', pos + 1);
+		else if((c == 'r' || c == 'R') && pos + 1 < text.size() && text[pos + 1] == '"'
+				&& (pos == 0 || !(isalnum(static_cast<unsigned char>(text[pos - 1])) || text[pos - 1] == '_' || text[pos - 1] == '.'))) //Raw string r"(...)"/R"(...)", the delimiter between the quotes may contain dashes or other characters
+		{
+			size_t delimEnd = text.find('(', pos + 2);
+
+			if(delimEnd == std::string::npos)
+				break;
+
+			const std::string closing = ")" + text.substr(pos + 2, delimEnd - pos - 2) + "\"";
+			pos = text.find(closing, delimEnd);
+
+			if(pos == std::string::npos) //Unterminated raw string
+				break;
+
+			pos += closing.size() - 1; //Continue scanning after the raw string
+		}
+		else if(c == '"' || c == '\'')
+		{
+			size_t end = pos + 1;
+			while(end < text.size() && text[end] != c)
+				end += text[end] == '\\' ? 2 : 1;
+
+			if(end >= text.size()) //Unterminated string: nothing after this can be trusted
+				break;
+
+			auto foundColumn = map.find(text.substr(pos + 1, end - pos - 1));
+			if(foundColumn != map.end())
+				found.insert(foundColumn->first);
+
+			pos = end;
+		}
+
+		if(pos == std::string::npos)
+			break;
+	}
 }
 
 
