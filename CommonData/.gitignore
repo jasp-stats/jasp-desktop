@@ -1,3 +1,4 @@
 internalDbDefinition.h
 createIndexes.h
 jaspBase_*.h
+commanderFrame.h

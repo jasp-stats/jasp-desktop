@@ -23,8 +23,11 @@
 		if(!is.null(encoded))
 			i <- encoded
 		#else i is either already an encoded colname (passed through unchanged) or not
-		#a column at all: NextMethod then does exactly what R would have done anyway.
+		#a column at all: the lookup then does exactly what R would have done anyway.
 	}
 
-	NextMethod("[[", x, i, ..., exact = exact)
+	#NextMethod cannot be used here: for the [[ primitive it ignores the overridden i and
+	#hands the original one to [[.data.frame. Dropping the class and re-dispatching does work.
+	class(x) <- setdiff(class(x), "jaspEncodedFrame")
+	x[[i, ..., exact = exact]]
 }
