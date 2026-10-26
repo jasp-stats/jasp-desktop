@@ -59,7 +59,6 @@ signals:
 
 private:
 
-	// VariableInfo			*	_varInfo		= nullptr;;
 	QTextDocument			*	_textDocument	= nullptr;
 	
 	QVector<HighlightingRule>	_highlightingRules;
