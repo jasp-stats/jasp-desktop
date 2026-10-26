@@ -84,6 +84,8 @@ extern "C" {
 	void				rbridge_clearDataBridge();
 	void				rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, const char * resultFont, bool insideJasp = true);
 
+	void				rbridge_setCommanderColumnsUsed(const std::set<std::string> & columns);
+
 	void				rbridge_memoryCleaning();
 
 	void				rbridge_setWantedCols(const ColumnEncoder::colsPlusTypes& datasetColsTypes);

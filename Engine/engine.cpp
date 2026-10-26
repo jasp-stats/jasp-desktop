@@ -532,9 +532,16 @@ void Engine::runRCodeCommander(std::string rCode)
 
 	if(thereIsSomeData)
 	{
-		rCode = ColumnEncoder::columnEncoder()->encodeRScript(rCode);
-		jaspRCPP_runScript((rCmdDataName + "<- .readFullDatasetToEnd();").c_str());
-		jaspRCPP_runScript((rCmdFiltered + "<- .readFullFilteredDatasetToEnd();").c_str());
+		std::set<std::string> commanderColumnsUsed;
+		rCode = ColumnEncoder::columnEncoder()->encodeRScript(rCode, &commanderColumnsUsed);
+
+		//Only the columns the code mentions get loaded, also through whole string literals
+		//(data[["LL"]]), and with the type asked for (data$LL.nominal). The frame override from
+		//commanderFrame.R then resolves those string literals at lookup time.
+		rbridge_setCommanderColumnsUsed(commanderColumnsUsed);
+
+		jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readFullDatasetToEnd());").c_str());
+		jaspRCPP_runScript((rCmdFiltered	+ "<- .encodedFrame(.readFullFilteredDatasetToEnd());").c_str());
 	}
 
 	std::string rCodeResult =	jaspRCPP_evalRCodeCommander(rCode.c_str());

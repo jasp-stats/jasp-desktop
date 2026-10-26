@@ -43,6 +43,16 @@ ColumnEncoder				*	extraEncodings			= nullptr;
 ColumnEncoder::colsPlusTypes	datasetWanted;
 std::string						computedColumnFilter	= "";
 
+//The R Commander loads only the columns its code mentions (see rbridge_readFullDataSetHelper),
+//so the desktop hands us that set right before binding data/filteredData.
+static std::set<std::string>	commanderColumnsUsed	= {};
+static bool						rbridge_insideJasp		= true;
+
+void rbridge_setCommanderColumnsUsed(const std::set<std::string> & columns)
+{
+	commanderColumnsUsed = columns;
+}
+
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
 
@@ -102,9 +112,15 @@ const std::string jaspBaseTransformPowerR =
 		#include "jaspBase_transformPower.h"
 		;
 
+const std::string commanderFrameR =
+		#include "commanderFrame.h"
+		;
+
 void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
+
+	rbridge_insideJasp = insideJasp;
 
 	Log::log() << "Setting DataBridge and extraEncodings." << std::endl;
 	rbridge_setDataBridge(dataBridge);
@@ -146,14 +162,15 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 	JASPTIMER_START(jaspRCPP_init);
 
 	static std::string tempDirStatic = TempFiles::createTmpFolder();
-	static std::string initRCode					= 
-			jaspBaseDistributionSamplersR			+ "\n" + 
-			jaspBaseFriendlyConstructorFunctionsR	+ "\n" + 
-			jaspBaseTransformFunctionsR				+ "\n" + 
-			jaspBaseTransformBoxCoxR				+ "\n" + 
-			jaspBaseTransformJohnsonR				+ "\n" + 
-			jaspBaseTransformYeoJohnsonR			+ "\n" + 
-			jaspBaseTransformPowerR;
+	static std::string initRCode					=
+			jaspBaseDistributionSamplersR			+ "\n" +
+			jaspBaseFriendlyConstructorFunctionsR	+ "\n" +
+			jaspBaseTransformFunctionsR				+ "\n" +
+			jaspBaseTransformBoxCoxR				+ "\n" +
+			jaspBaseTransformJohnsonR				+ "\n" +
+			jaspBaseTransformYeoJohnsonR			+ "\n" +
+			jaspBaseTransformPowerR					+ "\n" +
+			commanderFrameR;
 	// SyntaxInterface uses insideJasp=false for parse/dataset replay and only
 	// needs the native callbacks; the Engine still receives the full R helpers.
 	const char * initRCodeForMode = insideJasp ? initRCode.c_str() : "";
@@ -337,12 +354,49 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullFilteredDataSet(size_t * colMa
 	return 	rbridge_readFullDataSetHelper(colMax, true);
 }
 
+///Fill datasetWanted from a set of columnNames as reported by ColumnEncoder::encodeRScript: a plain
+///columnName gets its current type and a "columnName.type" gets that type. Anything else (for instance
+///a levelName that happens to match) is skipped, there is nothing to load for it and R can complain
+///about it being missing at lookup time.
+static void fillDatasetWantedFrom(const std::set<std::string> & columnNames)
+{
+	datasetWanted.clear();
+
+	for(const std::string & colName : columnNames)
+		if(rbridge_dataSet->column(colName))
+			datasetWanted.insert(std::make_pair(colName, rbridge_dataSet->column(colName)->type()));
+		else if(!colName.empty())
+		{
+			//Maybe "colName.type": decoding always goes to the original columnname so:
+			std::string colNameSansType;
+
+			try
+			{
+				colNameSansType = ColumnEncoder::columnEncoder()->decode(ColumnEncoder::columnEncoder()->encode(colName));
+			}
+			catch(...) { continue; } //Not a column at all, leave it to R to complain about it
+
+			if(colName.size() > colNameSansType.size() && colName[colNameSansType.size()] == '.' && columnTypeValidName(colName.substr(colNameSansType.size() + 1)))
+				datasetWanted.insert(std::make_pair(colName, columnTypeFromString(colName.substr(colNameSansType.size() + 1))));
+		}
+}
+
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSetHelper(size_t * colMax, bool obeyFilter)
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
 	if(rbridge_dataSet == nullptr)
 		return nullptr;
+
+	//The R Commander mentions the columns it uses in its code and the desktop tells us which those
+	//are through rbridge_setCommanderColumnsUsed: then only those are loaded (with the type asked for,
+	//so data$LL.nominal also works). When nothing was mentioned we load everything, also so that
+	//positional access (data[, 3]) and nrow(data) keep working.
+	if(!commanderColumnsUsed.empty())
+	{
+		fillDatasetWantedFrom(commanderColumnsUsed);
+		return rbridge_readDataSetRequested(colMax, obeyFilter);
+	}
 
 	const Columns & columns = rbridge_dataSet->columns();
 
@@ -382,27 +436,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFilteringCompCol(size_t 
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
-	const Columns & columns = rbridge_dataSet->columns();
-
-	datasetWanted.clear();
-
-	for(const std::string & colName : filterColumnsUsed)
-		if(rbridge_dataSet->column(colName))
-			datasetWanted.insert(std::make_pair(colName, rbridge_dataSet->column(colName)->type()));
-		else if(!colName.empty())
-		{
-			//It should then be a columnName + '.' + type
-			//And decoding always goes to the original columnname so:
-			std::string colNameSansType = ColumnEncoder::columnEncoder()->decode(	ColumnEncoder::columnEncoder()->encode(colName));
-
-			assert(colName[colNameSansType.size()] == '.'); //Because how??? ;)
-
-			std::string typeStr = colName.substr(colNameSansType.size() + 1);
-
-			assert(columnTypeValidName(typeStr));
-
-			datasetWanted.insert(std::make_pair(colName, columnTypeFromString(typeStr)));
-		}
+	fillDatasetWantedFrom(filterColumnsUsed);
 
 	return rbridge_readDataSetRequested(colMax, obeyFilter);
 }
@@ -790,8 +824,14 @@ void rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::stri
 {
 	static std::string setupFilterEnv;
 
-	setupFilterEnv =	dataname + " <- " + readFunction + ";\n"
-						"attach(" + dataname + ");"																"\n"
+	setupFilterEnv =	dataname + " <- " + readFunction + ";\n";
+
+	//The override for string-literal column references (data[["x"]]) only exists and only makes sense
+	//when the colnames are encoded: in jaspTools the frames have original colnames and no encoder.
+	if(rbridge_insideJasp)
+		setupFilterEnv += dataname + " <- .encodedFrame(" + dataname + ");\n";
+
+	setupFilterEnv +=	"attach(" + dataname + ");"																"\n"
 						"options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);"	"\n";
 
 	jaspRCPP_runScript(setupFilterEnv.c_str());

@@ -19,6 +19,8 @@ make_includable(../Engine/jaspBase/R/transformJohnson.R					jaspBase_transformJo
 make_includable(../Engine/jaspBase/R/transformYeoJohnson.R				jaspBase_transformYeoJohnson.h)
 make_includable(../Engine/jaspBase/R/transformPower.R					jaspBase_transformPower.h)
 
+make_includable(R/commanderFrame.R										commanderFrame.h)
+
 
 file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.cpp")
