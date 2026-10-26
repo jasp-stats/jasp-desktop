@@ -526,17 +526,14 @@ void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteL
 
 void Engine::runRCodeCommander(std::string rCode)
 {
-    bool thereIsSomeData = provideAndUpdateDataSet() && provideAndUpdateDataSet()->rowCount();
-
+	bool thereIsSomeData = provideAndUpdateDataSet() && provideAndUpdateDataSet()->rowCount();
 
 	static const std::string rCmdDataName = "data", rCmdFiltered = "filteredData";
 
-
 	if(thereIsSomeData)
 	{
-		
-		
-		rCode = ColumnEncoder::encodeAll(rCode);
+		// encodeRScript skips strings, so data[["x"]] and the like need the second pass
+		rCode = ColumnEncoder::encodeRStringLiterals(ColumnEncoder::columnEncoder()->encodeRScript(rCode));
 		jaspRCPP_runScript((rCmdDataName + "<- .readFullDatasetToEnd();").c_str());
 		jaspRCPP_runScript((rCmdFiltered + "<- .readFullFilteredDatasetToEnd();").c_str());
 	}
@@ -544,11 +541,7 @@ void Engine::runRCodeCommander(std::string rCode)
 	std::string rCodeResult =	jaspRCPP_evalRCodeCommander(rCode.c_str());
 
 	if(thereIsSomeData)
-	{
-		rbridge_detachRCodeEnv(rCmdFiltered);
-		rbridge_detachRCodeEnv(rCmdDataName);
 		rCodeResult = ColumnEncoder::decodeAll(rCodeResult);
-	}
 
 	sendRCodeResult(-1, rCodeResult);
 
