@@ -3,6 +3,10 @@
 This guide explains how to use the **R in JASP** window to create many analyses in one go, for
 example the same analysis for every variable, or with a range of settings.
 
+Batch creation is part of **JASP Enterprise**. Your code runs in every build and
+`.dryRun = TRUE` works everywhere, but in builds without Enterprise the analyses themselves are
+not added and the output window explains: *Batch analysis creation requires JASP Enterprise.*
+
 
 ## The idea
 
@@ -256,6 +260,8 @@ problem is shown in that analysis' panel, just as when you use **Add analysis**.
   a line containing just `x`.
 - **Use Run code, not Add analysis.** The **Add analysis** button only works for a single analysis
   call.
+- **Batch creation needs JASP Enterprise.** In other builds your code runs and a dry run still
+  shows what would be created, but the analyses are not added and the output window explains why.
 - **`for` loops don't add analyses**, because a loop doesn't return anything. Use `batchAnalysis()`
   or `lapply()` instead.
 - **Plain `lapply()` works too.** Code that ends with a list of analysis calls adds all of them:
