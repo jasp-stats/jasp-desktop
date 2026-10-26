@@ -108,6 +108,10 @@ public:
 	QPoint					selectionMin()						const;
 	QPoint					selectionMax()						const;
 	bool					editing()							const	{ return _editing;					}
+	
+	Q_INVOKABLE void		setColumnWidth(int col, double newWidth);
+	Q_INVOKABLE double		getColumnWidth(int col) const;
+	
 
 	Q_INVOKABLE QQuickItem*	getColumnHeader(int col)					{ return _columnHeaderItems.count(col) 	> 0	? _columnHeaderItems[col]->item : nullptr;	}
 	Q_INVOKABLE QQuickItem*	getRowHeader(	int row)					{ return _rowNumberItems.count(row) 	> 0 ? _rowNumberItems[row]->item	: nullptr;	}
@@ -251,6 +255,7 @@ protected:
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 #endif
 	float extraColumnWidth() { return !_extraColumnItem || expandDataSet() ? 0 : _extraColumnItem->width(); }
+	std::map<int, double> _customColumnWidths;
 
 	QQuickItem *	createTextItem(int row, int col);
 	void			storeTextItem(int row, int col, bool cleanUp = true);
