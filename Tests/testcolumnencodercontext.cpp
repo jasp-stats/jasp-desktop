@@ -282,4 +282,27 @@ void TestColumnEncoderContext::prefixedEncodingCollectsStringLiteralsWithoutRewr
 	QVERIFY2(prefixedColumnsFound[""].count("LL") == 1, "The unprefixed run did not collect the whole-string reference.");
 }
 
+void TestColumnEncoderContext::commentAndEscapeDesyncIsFixed()
+{
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}}));
+
+	//An apostrophe in a comment used to put the scanner in string mode and suppress every match after it
+	const std::string script = "# don't use data$LL here\nmean(data$LL)\n";
+
+	std::set<std::string> columnsFound;
+	const std::string encoded = ColumnEncoder::columnEncoder()->encodeRScript(script, &columnsFound);
+
+	QVERIFY2(encoded.find("mean(data$JaspColumn_0_Encoded)") != std::string::npos, "The bare reference after the comment was suppressed by the apostrophe in the comment.");
+	QVERIFY2(encoded.find("# don't use data$LL here") != std::string::npos, "The comment was not left alone.");
+	QVERIFY2(columnsFound.count("LL") == 1, "LL was not collected.");
+
+	//An escaped quote inside a string used to close it early and reopen string mode at the real end
+	const std::string escapeScript = "note <- 'it\\'s fine'\nmean(data$LL)\n";
+
+	std::set<std::string> escapeFound;
+	const std::string escapeEncoded = ColumnEncoder::columnEncoder()->encodeRScript(escapeScript, &escapeFound);
+
+	QVERIFY2(escapeEncoded.find("mean(data$JaspColumn_0_Encoded)") != std::string::npos, "The bare reference after the escaped quote was suppressed.");
+}
+
 QTEST_MAIN(TestColumnEncoderContext)

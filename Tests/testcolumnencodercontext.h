@@ -33,6 +33,7 @@ private slots:
 	void stringLiteralReferencesAreCollectedButNotRewritten();
 	void stringLiteralCollectionIsCommentEscapeAndRawStringAware();
 	void prefixedEncodingCollectsStringLiteralsWithoutRewriting();
+	void commentAndEscapeDesyncIsFixed();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

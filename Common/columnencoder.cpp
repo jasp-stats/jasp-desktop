@@ -521,18 +521,31 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 	char delim		= '?';
 
 	for (std::string::size_type pos = 0; pos < text.length(); ++pos)
-		if (!inString && text.substr(pos, columnName.length()) == columnName)
-			positions.push_back(int(pos));
-		else if (text[pos] == '"' || text[pos] == '\'') //string starts or ends. This does not take into account escape characters though...
+	{
+		const char c = text[pos];
+
+		if (inString)
 		{
-			if (!inString)
-			{
-				delim		= text[pos];
-				inString	= true;
-			}
-			else if(text[pos] == delim)
+			if (c == '\\') //An escaped character, for instance an escaped quote, does not end the string
+				++pos;
+			else if (c == delim)
 				inString = false;
 		}
+		else if (c == '#') //Comments are inert: quotes and columnNames in them must not affect the scan
+		{
+			pos = text.find('\n', pos);
+
+			if (pos == std::string::npos) //The comment runs to the end of the text
+				break;
+		}
+		else if (text.substr(pos, columnName.length()) == columnName)
+			positions.push_back(int(pos));
+		else if (c == '"' || c == '\'')
+		{
+			delim		= c;
+			inString	= true;
+		}
+	}
 
 	return positions;
 }
