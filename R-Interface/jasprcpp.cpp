@@ -653,7 +653,7 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 		"    options(warn=1);"															"\n"
 		"    valVis <- withVisible(eval(parse(text=.rCode)));"							"\n"
 		"    cat(paste0('@@@JASP_BATCH_RESULT@@@',"										"\n"
-		"               jaspBase:::.normalizeBatchResult(if(valVis$visible) valVis$value else NULL),"	"\n"
+		"               .normalizeBatchResult(if(valVis$visible) valVis$value else NULL),"				"\n"
 		"               '@@@JASP_BATCH_RESULT_END@@@'));"								"\n"
 		"    if(valVis$visible) print(valVis$value);"									"\n"
 		"  },	"																		"\n"
