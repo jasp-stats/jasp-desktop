@@ -2,6 +2,7 @@
 #include "engine/enginesync.h"
 #include "mainwindow.h"
 #include "modules/dynamicmodules.h"
+#include "appinfo.h"
 #include <QPointer>
 #include <json/json.h>
 
@@ -165,7 +166,13 @@ void RCommander::rCodeReturnedLog(const QString & log, bool)
 	appendToOutput(display);
 
 	if (!batchJson.trimmed().isEmpty() && batchJson.trimmed() != "[]")
-		createAnalysesFromBatchJson(batchJson);
+	{
+		//Batch creation is enterprise-only, but community builds must not fail silently
+		if (AppInfo::proMode())
+			createAnalysesFromBatchJson(batchJson);
+		else
+			appendToOutput(tr("Batch analysis creation requires JASP Enterprise."));
+	}
 
 	setRunning(false);
 }
