@@ -43,6 +43,35 @@ list(APPEND SOURCE_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
 
+#On Windows this file is configured as a standalone CMake project (see the comment
+#at the top), where Tools/CMake/Config.cmake - and with it make_includable() - is
+#not loaded. Define it locally if missing; keep in sync with Tools/CMake/Config.cmake.
+if(NOT COMMAND make_includable)
+	function(make_includable input_file output_file)
+		file(READ ${input_file} content)
+		set(delim "for_c++_include")
+		set(content "R\"${delim}(\n${content})${delim}\"")
+		file(WRITE ${output_file} "${content}")
+	endfunction()
+endif()
+
+# Embedded into the binary so the R Commander batch analyses work without
+# waiting for module bundles that ship a jaspBase with batchAnalysis().
+# See jaspRCPP_init_jaspBase() in jasprcpp.cpp for where it is sourced.
+# NB: make_includable's relative paths resolve against CMAKE_CURRENT_SOURCE_DIR,
+# so pass absolute paths to keep the generated header out of the source tree.
+make_includable(
+	${CMAKE_CURRENT_SOURCE_DIR}/../Engine/jaspBase/R/batchAnalysis.R
+	${CMAKE_CURRENT_BINARY_DIR}/jaspBase_batchAnalysis.h)
+list(APPEND HEADER_FILES  "${CMAKE_CURRENT_BINARY_DIR}/jaspBase_batchAnalysis.h")
+
+# columnFormula() builds formulas from column-name strings; it is part of the
+# batch-analysis documentation and equally useful for single calls in the commander.
+make_includable(
+	${CMAKE_CURRENT_SOURCE_DIR}/../Engine/jaspBase/R/columnFormula.R
+	${CMAKE_CURRENT_BINARY_DIR}/jaspBase_columnFormula.h)
+list(APPEND HEADER_FILES  "${CMAKE_CURRENT_BINARY_DIR}/jaspBase_columnFormula.h")
+
 if(WIN32)
 
   set(QT_CREATOR_SKIP_CONAN_SETUP ON)
@@ -148,6 +177,7 @@ if(${R_VERSION} VERSION_GREATER_EQUAL "4.5.0")
 
   set(R_INTERFACE_INCLUDE_DIRS
 		${CMAKE_CURRENT_LIST_DIR}
+		${CMAKE_CURRENT_BINARY_DIR}
         ${PROJECT_SOURCE_DIR}/../Common
 		${R_INCLUDE_PATH}
 		${RCPP_PATH}/include

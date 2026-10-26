@@ -21,6 +21,21 @@
 #include "RInside.h"
 #endif
 
+//R code of jaspBase's batchAnalysis.R, embedded so the R Commander can offer batch
+//analyses without requiring (newly built) module bundles that ship a jaspBase with
+//batchAnalysis(). It is sourced into the global environment by jaspRCPP_init_jaspBase()
+//- after library(jaspBase) - so jsonlite is guaranteed to be loadable at that point.
+static const std::string jaspBaseBatchAnalysisR =
+	#include "jaspBase_batchAnalysis.h"
+	;
+
+//R code of jaspBase's columnFormula.R (see batchAnalysis above). Builds formulas from
+//column-name strings; needed for the documented batch-analysis workflows that refer to
+//columns by name (e.g. columnFormula(variable)) and useful for single calls as well.
+static const std::string jaspBaseColumnFormulaR =
+	#include "jaspBase_columnFormula.h"
+	;
+
 static const	std::string		NullString			= "null";
 static			std::string		lastErrorMessage	= "";
 
@@ -308,6 +323,17 @@ void STDCALL jaspRCPP_init_jaspBase()
 	//Load it
 	jaspRCPP_logString("Initializing jaspBase.\n");
 	jaspRCPP_parseEvalQNT("library(jaspBase)");
+
+	//Add the batch-analysis functions for the R Commander to the global environment.
+	//They cannot be used before some module (and thus its analysis wrappers) is loaded
+	//anyway, and here jsonlite is guaranteed available because library(jaspBase) just
+	//loaded it. Sourcing is idempotent, so doing this for every module load is fine.
+	//This must happen before .initializeDoNotRemoveList() below, because that function
+	//snapshots the global environment to decide what .cleanEngineMemory() may remove;
+	//sourcing after it would get these functions purged again.
+	jaspRCPP_logString("Sourcing batchAnalysis.R into the global environment.\n");
+	jaspRCPP_parseEvalQNT(jaspBaseBatchAnalysisR, false, false);
+	jaspRCPP_parseEvalQNT(jaspBaseColumnFormulaR, false, false);
 
 	jaspRCPP_logString("initializeDoNotRemoveList().\n");
 	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
@@ -651,8 +677,13 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 		"withCallingHandlers("															"\n"
 		"  { "																			"\n"
 		"    options(warn=1);"															"\n"
-		"    valVis <- withVisible(eval(parse(text=.rCode)));"							"\n"
-		"    if(valVis$visible) print(valVis$value);"									"\n"
+		"    valVis <- withVisible(eval(parse(text=.rCode)));"									"\n"
+		"    cat(paste0('@@@JASP_BATCH_RESULT@@@',"									"\n"
+		"               if (exists('.normalizeBatchResult', .GlobalEnv))"					"\n"
+		"                 .normalizeBatchResult(if(valVis$visible) valVis$value else NULL)"	"\n"
+		"               else '[]',"																	"\n"
+		"               '@@@JASP_BATCH_RESULT_END@@@'));"									"\n"
+		"    if(valVis$visible) print(valVis$value);"												"\n"
 		"  },	"																		"\n"
 		"  warning = function(w) { cat(paste0('Warning: ', toString(w$message))) },"	"\n"
 		"  error   = function(e) { cat(paste0('Error: ',   toString(e$message))) }"		"\n"
