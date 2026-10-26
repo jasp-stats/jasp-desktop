@@ -2472,7 +2472,7 @@ void Column::_checkForDependencyLoop(stringset foundNames, std::list<std::string
 		loopSS << "In the definitions of your computed columns the following loop was found:\n";
 		for(const std::string & l : loopList)
 			loopSS << l << " depends on ";
-		loopSS << name() << "..\nThis is not allowed, so change one of the formulas to break the circle.";
+		loopSS << name() << "..\nThese columns will keep recomputing themselves, so change one of the formulas to break the circle.";
 
 		throw std::logic_error(loopSS.str());
 	}

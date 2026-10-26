@@ -1,6 +1,7 @@
 #include "computedcolumnmodel.h"
 #include "jsonutilities.h"
 #include "utilities/qutils.h"
+#include "utilities/messageforwarder.h"
 #include "columnencoder.h"
 #include "analysis/analyses.h"
 #include "variableinfo.h"
@@ -104,33 +105,6 @@ void ComputedColumnModel::selectColumn(Column * column)
 	}
 }
 
-bool ComputedColumnModel::areLoopDependenciesOk(const std::string & columnName)
-{
-
-	return areLoopDependenciesOk(columnName, dataSet()->column(columnName)->analysisId() != -1 ? "" : dataSet()->column(columnName)->rCodeStripped());
-}
-
-bool ComputedColumnModel::areLoopDependenciesOk(const std::string & columnName, const std::string & code)
-{
-	try
-	{
-		dataSet()->column(columnName)->checkForLoopInDependencies(code);
-	}
-	catch(std::logic_error & e)
-	{
-		validate(tq(columnName)); //To stop loading gif
-
-		if(		dataSet()->column(columnName)->setError(e.what())	&&
-				dataSet()->column(columnName) == _selectedColumn	)
-			emit computeColumnErrorChanged();
-
-
-		return false;
-	}
-
-	return true;
-}
-
 void ComputedColumnModel::emitSendComputeCode(Column * column)
 {
 	if(!column)
@@ -140,8 +114,18 @@ void ComputedColumnModel::emitSendComputeCode(Column * column)
 	if(code.empty())
 		return;
 
-	if(areLoopDependenciesOk(column->name(), code))
-		emit sendComputeCode(tq(column->name()), tq(code), column->type());
+	//A loop in the dependencies is not fatal anymore: warn the user that the columns involved will
+	//keep recomputing themselves, but let them be free to do it anyway.
+	try
+	{
+		dataSet()->column(column->name())->checkForLoopInDependencies(code);
+	}
+	catch(std::logic_error & e)
+	{
+		MessageForwarder::showWarning(tr("Loop in computed columns"), tr(e.what()));
+	}
+
+	emit sendComputeCode(tq(column->name()), tq(code), column->type());
 }
 
 
@@ -284,7 +268,7 @@ void ComputedColumnModel::computeColumnFailed(QString columnNameQ, QString error
 	if(!column)
 		return;
 
-	if(areLoopDependenciesOk(columnName) && column->setError(error) && shouldNotifyQML)
+	if(column->setError(error) && shouldNotifyQML)
 		emit computeColumnErrorChanged();
 
 	DataSetPackage::pkg()->columnSetDefaultValues(columnName, columnType::unknown, false);
