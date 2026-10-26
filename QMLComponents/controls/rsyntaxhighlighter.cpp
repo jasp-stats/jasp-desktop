@@ -21,7 +21,7 @@
 #include "workspace.h"
 
 RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent, VariableInfo * varInfo)
-	: QSyntaxHighlighter(parent), VariableInfoConsumer(varInfo), _textDocument(parent)
+	: QSyntaxHighlighter(parent), VariableInfoConsumer(nullptr), _textDocument(parent)
 {
 	if(!varInfo)
 	{
@@ -130,7 +130,7 @@ void RSyntaxHighlighter::highlightBlock(const QString &text)
 		applyRule(text, rule);
 
 	// Then handle column names rules
-	QStringList names = requestInfo(VariableInfo::InfoType::VariableNames).toStringList();
+	QStringList names = requestInfo(varInfoType::VariableNames).toStringList();
 	for (const QString & name : std::as_const(names))
 	{
 		// escape() prevents regular expression corruption caused by column names containing metacharacters such as . * (.).
@@ -178,13 +178,20 @@ void RSyntaxHighlighter::applyRule(const QString & text, const QRegularExpressio
 
 void RSyntaxHighlighter::setVarInfo(VariableInfo *info)
 {
-	_varInfo = info;
+	VariableInfo * current = VariableInfoConsumer::varInfo();
+	if (current == info)
+		return;
 	
-	if(_varInfo)
+	VariableInfoConsumer::setVarInfo(info);
+	
+	if (info)
 	{
-		connect(_varInfo, &VariableInfo::variableNamesChanged,		this, &RSyntaxHighlighter::handleNamesChanged,		Qt::UniqueConnection);
-		connect(_varInfo, &VariableInfo::rowCountChanged,			this, &RSyntaxHighlighter::handleRowCountChanged,	Qt::UniqueConnection);
-	}	
+		connect(info, &VariableInfo::variableNamesChanged,	this,	&RSyntaxHighlighter::handleNamesChanged,		Qt::UniqueConnection);
+		connect(info, &VariableInfo::rowCountChanged,				this,	&RSyntaxHighlighter::handleRowCountChanged,	Qt::UniqueConnection);
+	}
+  
+  rehighlight();
+  emit varInfoChanged();
 }
 
 RSyntaxHighlighterQuick::RSyntaxHighlighterQuick(QQuickItem *parent)

@@ -46,8 +46,8 @@ public:
 	
 	void			applyRule(const QString & text,  const HighlightingRule   & rule)											{ applyRule(text, rule.pattern, rule.format); }
 	void			applyRule(const QString & text,  const QRegularExpression & pattern, const QTextCharFormat & format);
-	
-	VariableInfo *	varInfo() const { return _varInfo; }
+    
+  VariableInfo *	varInfo() const { return VariableInfoConsumer::varInfo(); }
 	void			setVarInfo(VariableInfo * info);
 	
 protected slots:
@@ -59,7 +59,7 @@ signals:
 
 private:
 
-	VariableInfo			*	_varInfo		= nullptr;;
+	// VariableInfo			*	_varInfo		= nullptr;;
 	QTextDocument			*	_textDocument	= nullptr;
 	
 	QVector<HighlightingRule>	_highlightingRules;
