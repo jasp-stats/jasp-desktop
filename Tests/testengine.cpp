@@ -240,6 +240,25 @@ void TestEngine::testBatchAnalysis()
 	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
 	QVERIFY2(!spy.takeFirst()[0].toString().contains("Error", Qt::CaseInsensitive), "length(data$V1) errored in the commander");
 	spy.clear();
+
+	//columnFormula is embedded alongside the batch code: runtime column names must become
+	//formula symbols treated literally, so batch code can build formulas from names(data)
+	//without knowing R's backtick rules (base R's reformulate() cannot do this: it parses
+	//the term labels, so "part length" is a syntax error there).
+	rcmd->runScriptOnProcess("deparse(columnFormula('part length'))");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("`part length`"), "columnFormula did not turn a column name with a space into a symbol");
+	spy.clear();
+
+	rcmd->runScriptOnProcess("deparse(columnFormula('a+b', intercept = FALSE))");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("0 + `a+b`"), "columnFormula did not treat 'a+b' literally as one column or lost the intercept flag");
+	spy.clear();
+
+	rcmd->runScriptOnProcess("deparse(columnFormula('temperature', 'pressure', dependent = 'strength'))");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("strength ~ temperature + pressure"), "columnFormula mishandled dependent or multiple columns");
+	spy.clear();
 }
 
 void TestEngine::testBatchCreationGate()

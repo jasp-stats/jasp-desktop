@@ -3,3 +3,4 @@ createIndexes.h
 jaspBase_*.h
 commanderFrame.h
 batchAnalysis.h
+columnFormula.h
