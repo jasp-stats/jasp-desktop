@@ -152,6 +152,21 @@ Then use `toleranceValue = tolerances` in the batch call above. Use `filteredDat
 `columnFormula("upperLimit")` builds a reference to the column for an analysis;
 `data$upperLimit` reads the column's actual values.
 
+Column names that are not valid R names work everywhere too: use ``data$`part length````, or put
+the name in quotes: `data[["part length"]]`. Quoted names can also ask for a specific measurement
+level with the usual suffix, so `data[["LL.nominal"]]` gives the column `LL` as a nominal factor
+even when the data viewer shows it as scale.
+
+For efficiency `data` and `filteredData` contain only the columns your code mentions, including
+those it mentions inside quotes (`data[["LL"]]`). If your code does not mention any column the
+whole dataset is loaded. Two forms are *not* recognised, so prefer `data$LL` or `data[["LL"]]`
+over them:
+
+- `data[, "LL"]`, quoting inside an index,
+- `subset(data, select = "LL")`, only the unquoted `subset(data, select = LL)` is recognised.
+
+Partial matching (`data[["up", exact = FALSE]]`) does not work either, use the full column name.
+
 
 ## Using your own function
 
