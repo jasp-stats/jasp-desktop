@@ -19,6 +19,8 @@ private slots:
 	void    testFilters();
 	void    initTestCase();
 	void    testComputedColumns();
+	void    testBatchAnalysis();
+	void    testBatchCreationGate();
 
 private:
 	EngineSync				*	_engines	= nullptr;
