@@ -125,7 +125,9 @@ public:
 		ENTERPRISE_SUPPORT_URL,
 		HOW_TO_USE_URL,
 		COMPANY_LOGO_PATH,
-		COMPANY_LOGO_HEIGHT
+		COMPANY_LOGO_HEIGHT,
+		DATABASE_ENABLED,
+		OSF_ENABLED
 	};
 
 	/// Resolution order for value(): highest first —

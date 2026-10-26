@@ -220,7 +220,21 @@ const Settings::Setting Settings::Values[] = {
 	// it with the window (scaler 0.85–2.0), so 35 renders roughly 30–70px.
 	// Clamped to 0–200 when read. Only meaningful together with a non-empty
 	// companyLogoPath.
-	{"companyLogoHeight",		35}
+	{"companyLogoHeight",		35},
+	// Database pane in the file menu (Open / Sync Data): connect to SQL
+	// databases (DB2, MySQL, Oracle, ODBC/SQL Server, PostgreSQL, SQLite)
+	// and import or synchronise query results. Enterprise admins deactivate
+	// it (databaseEnabled) so users cannot reach database servers from JASP.
+	// Dropped from every file operation by ActionButtons::loadButtonData();
+	// a change needs a restart.
+	{"databaseEnabled",			true},
+	// OSF (Open Science Framework) pane in the file menu: browse, open and
+	// save projects on osf.io. Enterprise admins deactivate it (osfEnabled)
+	// to keep users inside the managed deployment. PRO builds compile the
+	// pane out entirely (#ifndef PRO in ResourceButtons), so there the
+	// setting is a no-op. Dropped from every file operation by
+	// ActionButtons::loadButtonData(); a change needs a restart.
+	{"osfEnabled",				true}
 };
 
 // Shipped JSON files beside the application: the per-client MSI layer.
