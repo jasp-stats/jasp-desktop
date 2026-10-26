@@ -532,8 +532,7 @@ void Engine::runRCodeCommander(std::string rCode)
 
 	if(thereIsSomeData)
 	{
-		// encodeRScript skips strings, so data[["x"]] and the like need the second pass
-		rCode = ColumnEncoder::encodeRStringLiterals(ColumnEncoder::columnEncoder()->encodeRScript(rCode));
+		rCode = ColumnEncoder::columnEncoder()->encodeRScript(rCode);
 		jaspRCPP_runScript((rCmdDataName + "<- .readFullDatasetToEnd();").c_str());
 		jaspRCPP_runScript((rCmdFiltered + "<- .readFullFilteredDatasetToEnd();").c_str());
 	}

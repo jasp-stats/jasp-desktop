@@ -405,44 +405,6 @@ std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::stri
 	return text;
 }
 
-std::string ColumnEncoder::encodeRStringLiterals(std::string text)
-{
-	const colMap & map = encodingMap();
-
-	for(size_t pos = 0; pos < text.size(); pos++)
-	{
-		const char c = text[pos];
-
-		if(c == '#') //Comment, skip to the end of the line
-			pos = text.find('\n', pos);
-		else if(c == '`') //Backticked symbols are handled by encodeRScript
-			pos = text.find('`', pos + 1);
-		else if(c == '"' || c == '\'')
-		{
-			size_t end = pos + 1;
-			while(end < text.size() && text[end] != c)
-				end += text[end] == '\\' ? 2 : 1;
-
-			if(end >= text.size()) //Unterminated string
-				break;
-
-			auto found = map.find(text.substr(pos + 1, end - pos - 1));
-			if(found != map.end())
-			{
-				text.replace(pos + 1, end - pos - 1, found->second);
-				end = pos + 1 + found->second.size();
-			}
-
-			pos = end;
-		}
-
-		if(pos == std::string::npos)
-			break;
-	}
-
-	return text;
-}
-
 std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string> * columnNamesFound)
 {
 	return encodeRScript(text, encodingMap(), originalNames(), columnNamesFound);
