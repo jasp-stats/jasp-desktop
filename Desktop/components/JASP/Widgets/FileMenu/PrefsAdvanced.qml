@@ -533,12 +533,12 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					engineSandbox
-			visible:			Qt.platform.os === "windows"
-			enabled:			Qt.platform.os === "windows"
+			visible:			Qt.platform.os === "windows" || Qt.platform.os === "osx"
+			enabled:			Qt.platform.os === "windows" || Qt.platform.os === "osx"
 			label:				qsTr("Sandbox engines")
 			checked:			preferencesModel.engineSandbox
 			onCheckedChanged:	preferencesModel.engineSandbox = checked
-			toolTip:			qsTr("Strengthen security on Windows by isolating Engines running R-code")
+			toolTip:			qsTr("Strengthen security by isolating Engines running R-code from the network (and on Windows also from the rest of the filesystem)")
 
 			KeyNavigation.tab:		showEnginesWindow
 		}

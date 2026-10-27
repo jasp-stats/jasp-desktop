@@ -224,7 +224,7 @@ GET_PREF_FUNC_BOOL(	syncDroppedDatafile,		Settings::SYNC_DROPPED_DATAFILE						)
 
 bool PreferencesModel::engineSandbox() const
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__APPLE__)
 	return Settings::value(Settings::ENGINE_SANDBOX).toBool();
 #else
 	return false;
@@ -707,7 +707,7 @@ void PreferencesModel::setEngineSandbox(bool engineSandbox) {
 	if(engineSandbox != PreferencesModel::engineSandbox()) {
 		Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox);
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__APPLE__)
 		MessageForwarder::showWarning(tr("Engine Sandbox setting changed"), tr("The Engine Sandbox setting has been changed, this will only take full effect after JASP is restarted."));
 #endif
 		emit engineSandboxChanged(engineSandbox);
