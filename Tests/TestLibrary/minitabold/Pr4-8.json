@@ -1,0 +1,45 @@
+{
+	"columns" : 
+	[
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"200",
+				"210",
+				"215",
+				"216",
+				"219",
+				"220",
+				"225",
+				"226"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "Yt",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		}
+	],
+	"customEmptyValues" : 
+	{
+		"custom" : true,
+		"strings" : 
+		[
+			".",
+			"Missing",
+			"NA",
+			"NaN",
+			"nan"
+		]
+	}
+}

@@ -73,7 +73,7 @@ side. Waiting is also the only reason the exit code can say anything about a dat
 ## Which files count as data files
 
 Anything JASP can import: `.csv`, `.txt`, `.tsv`, `.sav`, `.zsav`, `.por`, `.xpt`, `.ods`, `.xls`,
-`.xlsx`, `.dta`, `.sas7bdat`, `.sas7bcat`, `.rdata`, `.rds`, `.mwx` and `.mpx`.
+`.xlsx`, `.dta`, `.sas7bdat`, `.sas7bcat`, `.rdata`, `.rds`, `.mwx`, `.mpx`, `.mtw`, `.mpj` and `.mtp`.
 
 `.jasp`, `.html` and `.pdf` files are not data files, so `--inputDataDir` skips them and you can
 safely point it at a folder that also holds the results of an earlier run.
