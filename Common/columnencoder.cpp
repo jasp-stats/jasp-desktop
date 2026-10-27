@@ -640,6 +640,12 @@ void ColumnEncoder::collectColumnNamesFromStringLiterals(const std::string & tex
 			if(pos == std::string::npos) //Unterminated raw string
 				break;
 
+			//The content is data for the rewriting, but just like a string literal's it can name a
+			//column (data[[r"(LL)"]]): collect it so that column gets loaded.
+			auto foundColumn = map.find(text.substr(delimEnd + 1, pos - delimEnd - 1));
+			if(foundColumn != map.end())
+				found.insert(foundColumn->first);
+
 			pos += closing.size() - 1; //Continue scanning after the raw string
 		}
 		else if(c == '"' || c == '\'')

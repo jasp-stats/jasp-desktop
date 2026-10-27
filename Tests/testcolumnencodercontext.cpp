@@ -259,7 +259,7 @@ void TestColumnEncoderContext::stringLiteralCollectionIsCommentEscapeAndRawStrin
 	QVERIFY2(encoded == script, "The script was rewritten even though it contains no bare column references.");
 
 	QVERIFY2(columnsFound.count("Operator") == 1, "The quoted reference after the comment and the escaped quote was missed.");
-	QVERIFY2(columnsFound.count("LL") == 0, "A raw string that is a column name was collected, but raw strings keep meaning data.");
+	QVERIFY2(columnsFound.count("LL") == 1, "The raw string's content exactly names a column and was not collected, so data[[r\"(LL)\"]] would not be preloaded.");
 
 	//An unterminated string stops the scan: nothing after it can be trusted
 	const std::string brokenScript = "good <- data[[\"LL\"]]\nbroken <- 'unterminated\nmore <- data[[\"Operator\"]]\n";
@@ -367,8 +367,9 @@ void TestColumnEncoderContext::pathologicalNamesRawStringsAndBackticksAreHandled
 	QVERIFY2(quoteNameEncoded.find("z <- data$`JaspColumn_0_Encoded`") != std::string::npos, "The backticked reference to the quote-starting columnname was not rewritten.");
 	QVERIFY2(quoteNameFound.count("\"x") == 1, "The backticked reference to the quote-starting columnname was not collected.");
 
-	//A raw string is data: its content is never rewritten or collected, and the code after a raw
-	//string whose content contains quotes must still be rewritten
+	//A raw string is data for the rewriting: its content is never rewritten, it is only collected
+	//when it exactly names a column, and the code after a raw string whose content contains quotes
+	//must still be rewritten
 	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}}));
 
 	const std::string rawStringScript = "x <- r\"---(say \"LL\" out loud)---\"\n";
@@ -386,6 +387,16 @@ void TestColumnEncoderContext::pathologicalNamesRawStringsAndBackticksAreHandled
 
 	QVERIFY2(rawStringThenCodeEncoded.find("mean(data$JaspColumn_0_Encoded)") != std::string::npos, "The reference after the raw string with embedded quotes was suppressed.");
 	QVERIFY2(rawStringThenCodeFound.count("LL") == 1, "The reference after the raw string was not collected.");
+
+	//A raw string can also carry the reference itself (data[[r"(LL)"]]): its content is checked for
+	//columnnames just like a string literal's, so the column gets loaded
+	const std::string rawReferenceScript = "x <- data[[r\"(LL)\"]]\n";
+
+	std::set<std::string> rawReferenceFound;
+	const std::string rawReferenceEncoded = ColumnEncoder::columnEncoder()->encodeRScript(rawReferenceScript, &rawReferenceFound);
+
+	QVERIFY2(rawReferenceEncoded == rawReferenceScript, "The raw string reference was rewritten even though strings keep meaning data.");
+	QVERIFY2(rawReferenceFound.count("LL") == 1, "The raw string's content was not collected as a column reference.");
 
 	//A backticked symbol is one name: a columnname inside it is not a reference (this used to corrupt
 	//`data$LL` into `data$<encoded>`), while a symbol that is exactly the columnname still matches
