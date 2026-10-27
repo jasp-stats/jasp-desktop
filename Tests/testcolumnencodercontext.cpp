@@ -340,4 +340,73 @@ void TestColumnEncoderContext::newlinesAndTabsInsideStringsStayStringContent()
 	QVERIFY2(eofFound.count("LL") == 1, "The dangling escape corrupted the scan before it.");
 }
 
+void TestColumnEncoderContext::pathologicalNamesRawStringsAndBackticksAreHandled()
+{
+	//An apostrophe inside a backticked symbol is symbol content, not a string start: both references
+	//must be rewritten (the second used to be suppressed by the desync the first one caused)
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"don't", columnType::scale}}));
+
+	const std::string apostropheScript = "x <- data$`don't` + data$`don't`\n";
+
+	std::set<std::string> apostropheFound;
+	const std::string apostropheEncoded = ColumnEncoder::columnEncoder()->encodeRScript(apostropheScript, &apostropheFound);
+
+	QVERIFY2(apostropheEncoded.find("data$`JaspColumn_0_Encoded` + data$`JaspColumn_0_Encoded`") != std::string::npos, "The second backticked reference with an apostrophe was suppressed by the desync.");
+	QVERIFY2(apostropheFound.count("don't") == 1, "The backticked reference with an apostrophe was not collected.");
+
+	//A columnname starting with a quote can only be referenced through backticks: a genuine string
+	//"x" must never be rewritten (the scanner used to match the name at the string start and corrupt it)
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"\"x", columnType::scale}}));
+
+	const std::string quoteNameScript = "y <- \"x\"\nz <- data$`\"x`\n";
+
+	std::set<std::string> quoteNameFound;
+	const std::string quoteNameEncoded = ColumnEncoder::columnEncoder()->encodeRScript(quoteNameScript, &quoteNameFound);
+
+	QVERIFY2(quoteNameEncoded.find("y <- \"x\"") != std::string::npos, "The string was corrupted by a match of the quote-starting columnname at the string start.");
+	QVERIFY2(quoteNameEncoded.find("z <- data$`JaspColumn_0_Encoded`") != std::string::npos, "The backticked reference to the quote-starting columnname was not rewritten.");
+	QVERIFY2(quoteNameFound.count("\"x") == 1, "The backticked reference to the quote-starting columnname was not collected.");
+
+	//A raw string is data: its content is never rewritten or collected, and the code after a raw
+	//string whose content contains quotes must still be rewritten
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}}));
+
+	const std::string rawStringScript = "x <- r\"---(say \"LL\" out loud)---\"\n";
+
+	std::set<std::string> rawStringFound;
+	const std::string rawStringEncoded = ColumnEncoder::columnEncoder()->encodeRScript(rawStringScript, &rawStringFound);
+
+	QVERIFY2(rawStringEncoded == rawStringScript, "The raw string content was rewritten or the scan desynced on its embedded quotes.");
+	QVERIFY2(rawStringFound.count("LL") == 0, "The raw string content was collected even though raw strings keep meaning data.");
+
+	const std::string rawStringThenCodeScript = "x <- r\"---(say \"LL\" out loud)---\"\nmean(data$LL)\n";
+
+	std::set<std::string> rawStringThenCodeFound;
+	const std::string rawStringThenCodeEncoded = ColumnEncoder::columnEncoder()->encodeRScript(rawStringThenCodeScript, &rawStringThenCodeFound);
+
+	QVERIFY2(rawStringThenCodeEncoded.find("mean(data$JaspColumn_0_Encoded)") != std::string::npos, "The reference after the raw string with embedded quotes was suppressed.");
+	QVERIFY2(rawStringThenCodeFound.count("LL") == 1, "The reference after the raw string was not collected.");
+
+	//A backticked symbol is one name: a columnname inside it is not a reference (this used to corrupt
+	//`data$LL` into `data$<encoded>`), while a symbol that is exactly the columnname still matches
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}}));
+
+	const std::string backtickScript = "x <- `data$LL`\nmean(data$`LL`)\n";
+
+	std::set<std::string> backtickFound;
+	const std::string backtickEncoded = ColumnEncoder::columnEncoder()->encodeRScript(backtickScript, &backtickFound);
+
+	QVERIFY2(backtickEncoded.find("`data$LL`") != std::string::npos, "The backticked symbol data$LL was corrupted by a substring match.");
+	QVERIFY2(backtickEncoded.find("mean(data$`JaspColumn_0_Encoded`)") != std::string::npos, "The backticked symbol that is exactly the columnname was not rewritten.");
+	QVERIFY2(backtickFound.count("LL") == 1, "The backticked symbol that is exactly the columnname was not collected.");
+
+	//An unterminated raw string stops the scan: nothing after it can be trusted
+	const std::string unterminatedScript = "x <- r\"(LL\nmean(data$LL)\n";
+
+	std::set<std::string> unterminatedFound;
+	ColumnEncoder::columnEncoder()->encodeRScript(unterminatedScript, &unterminatedFound);
+
+	QVERIFY2(unterminatedFound.count("LL") == 0, "Something after an unterminated raw string was collected anyway.");
+}
+
 QTEST_MAIN(TestColumnEncoderContext)

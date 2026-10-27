@@ -538,13 +538,41 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 			if (pos == std::string::npos) //The comment runs to the end of the text
 				break;
 		}
-		else if (text.substr(pos, columnName.length()) == columnName)
-			positions.push_back(int(pos));
-		else if (c == '"' || c == '\'')
+		else if ((c == 'r' || c == 'R') && pos + 1 < text.length() && text[pos + 1] == '"'
+				&& (pos == 0 || !(isalnum(static_cast<unsigned char>(text[pos - 1])) || text[pos - 1] == '_' || text[pos - 1] == '.'))) //Raw string r"(...)"/R"(...)", the delimiter between the quotes may contain dashes or other characters
+		{
+			const size_t delimEnd = text.find('(', pos + 2);
+
+			if (delimEnd == std::string::npos) //Unterminated raw string: nothing after it can be trusted
+				break;
+
+			const std::string closing = ")" + text.substr(pos + 2, delimEnd - pos - 2) + "\"";
+			pos = text.find(closing, delimEnd);
+
+			if (pos == std::string::npos) //Unterminated raw string: nothing after it can be trusted
+				break;
+
+			pos += closing.size() - 1; //Continue scanning after the raw string
+		}
+		else if (c == '`') //A backticked symbol is a single reference: its entire content is the name, so quotes inside it are symbol content and a match must be the whole content
+		{
+			const size_t close = text.find('`', pos + 1);
+
+			if (close == std::string::npos) //Unterminated backtick: nothing after it can be trusted
+				break;
+
+			if (close - pos - 1 == columnName.length() && text.compare(pos + 1, columnName.length(), columnName) == 0)
+				positions.push_back(int(pos + 1));
+
+			pos = close; //The loop's ++pos moves past the closing backtick
+		}
+		else if (c == '"' || c == '\'') //A string starts here; a columnname that itself starts with a quote can only be referenced through backticks, never here
 		{
 			delim		= c;
 			inString	= true;
 		}
+		else if (text.substr(pos, columnName.length()) == columnName)
+			positions.push_back(int(pos));
 	}
 
 	return positions;
