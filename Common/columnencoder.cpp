@@ -547,66 +547,123 @@ std::string ColumnEncoder::encodeRScript(std::string text, const std::map<std::s
 	return text;
 }
 
-std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::string & text, const std::string & columnName)
+namespace
 {
-	std::vector<size_t> positions;
+///The kinds of tokens an R script is scanned into: everything that is not plain code has special
+///lexical rules that consumers of the scan (rewriting column references and collecting them from
+///string literals) should not have to duplicate.
+enum class RScriptToken { code, string, rawString, backticked, comment };
 
-	bool inString	= false;
-	char delim		= '?';
+///A span of [start, end) pointing at the token's CONTENT: for string/rawString/backticked that is
+///everything between the delimiters, for code and comment the characters themselves.
+struct RScriptTokenSpan
+{
+	RScriptToken	kind;
+	size_t			start	= 0,
+					end		= 0;
+};
 
-	for (std::string::size_type pos = 0; pos < text.length(); ++pos)
+///Walk text once and classify it into code, comments (# to the end of the line), raw strings
+///(r"(...)"/R"(...)"), backticked symbols and string literals (with \ escapes).
+///After an unterminated string, raw string or backtick nothing after it can be trusted, so the scan stops.
+std::vector<RScriptTokenSpan> scanRScript(const std::string & text)
+{
+	std::vector<RScriptTokenSpan>	tokens;
+	size_t							pos			= 0,
+									codeStart	= 0;
+
+	auto flushCode = [&](size_t end)
+	{
+		if(end > codeStart)
+			tokens.push_back({RScriptToken::code, codeStart, end});
+	};
+
+	while(pos < text.size())
 	{
 		const char c = text[pos];
 
-		if (inString)
+		if(c == '#') //Comments are inert: quotes and columnNames in them must not affect the scan
 		{
-			if (c == '\\') //An escaped character, for instance an escaped quote, does not end the string
-				++pos;
-			else if (c == delim)
-				inString = false;
-		}
-		else if (c == '#') //Comments are inert: quotes and columnNames in them must not affect the scan
-		{
-			pos = text.find('\n', pos);
+			size_t commentEnd = text.find('\n', pos);
 
-			if (pos == std::string::npos) //The comment runs to the end of the text
-				break;
+			if(commentEnd == std::string::npos) //The comment runs to the end of the text
+				commentEnd = text.size();
+
+			flushCode(pos);
+			tokens.push_back({RScriptToken::comment, pos, commentEnd});
+			pos = codeStart = commentEnd;
 		}
-		else if ((c == 'r' || c == 'R') && pos + 1 < text.length() && text[pos + 1] == '"'
+		else if((c == 'r' || c == 'R') && pos + 1 < text.size() && text[pos + 1] == '"'
 				&& (pos == 0 || !(isalnum(static_cast<unsigned char>(text[pos - 1])) || text[pos - 1] == '_' || text[pos - 1] == '.'))) //Raw string r"(...)"/R"(...)", the delimiter between the quotes may contain dashes or other characters
 		{
 			const size_t delimEnd = text.find('(', pos + 2);
 
-			if (delimEnd == std::string::npos) //Unterminated raw string: nothing after it can be trusted
+			if(delimEnd == std::string::npos) //Unterminated raw string: nothing after it can be trusted
 				break;
 
-			const std::string closing = ")" + text.substr(pos + 2, delimEnd - pos - 2) + "\"";
-			pos = text.find(closing, delimEnd);
+			const std::string delimiter	= text.substr(pos + 2, delimEnd - pos - 2);
+			const std::string closing	= ")" + delimiter + "\"";
+			const size_t	close		= text.find(closing, delimEnd);
 
-			if (pos == std::string::npos) //Unterminated raw string: nothing after it can be trusted
+			if(close == std::string::npos) //Unterminated raw string: nothing after it can be trusted
 				break;
 
-			pos += closing.size() - 1; //Continue scanning after the raw string
+			flushCode(pos);
+			tokens.push_back({RScriptToken::rawString, delimEnd + 1, close});
+			pos = codeStart = close + closing.size(); //Continue scanning after the raw string
 		}
-		else if (c == '`') //A backticked symbol is a single reference: its entire content is the name, so quotes inside it are symbol content and a match must be the whole content
+		else if(c == '`') //A backticked symbol is a single reference: its entire content is the name, so quotes inside it are symbol content
 		{
 			const size_t close = text.find('`', pos + 1);
 
-			if (close == std::string::npos) //Unterminated backtick: nothing after it can be trusted
+			if(close == std::string::npos) //Unterminated backtick: nothing after it can be trusted
 				break;
 
-			if (close - pos - 1 == columnName.length() && text.compare(pos + 1, columnName.length(), columnName) == 0)
-				positions.push_back(int(pos + 1));
-
-			pos = close; //The loop's ++pos moves past the closing backtick
+			flushCode(pos);
+			tokens.push_back({RScriptToken::backticked, pos + 1, close});
+			pos = codeStart = close + 1;
 		}
-		else if (c == '"' || c == '\'') //A string starts here; a columnname that itself starts with a quote can only be referenced through backticks, never here
+		else if(c == '"' || c == '\'') //A string starts here; a columnname that itself starts with a quote can only be referenced through backticks, never here
 		{
-			delim		= c;
-			inString	= true;
+			size_t end = pos + 1;
+
+			while(end < text.size() && text[end] != c)
+				end += text[end] == '\\' ? 2 : 1; //An escaped character, for instance an escaped quote, does not end the string
+
+			if(end >= text.size()) //Unterminated string: nothing after it can be trusted
+				break;
+
+			flushCode(pos);
+			tokens.push_back({RScriptToken::string, pos + 1, end});
+			pos = codeStart = end + 1;
 		}
-		else if (text.substr(pos, columnName.length()) == columnName)
-			positions.push_back(int(pos));
+		else
+			pos++;
+	}
+
+	flushCode(pos); //On a normal end pos == text.size(); after an unterminated token pos is where the scan stopped and the rest is untrusted
+
+	return tokens;
+}
+}
+
+std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::string & text, const std::string & columnName)
+{
+	std::vector<size_t> positions;
+
+	for(const RScriptTokenSpan & token : scanRScript(text))
+	{
+		if(token.kind == RScriptToken::code) //Bare references can occur anywhere in code, but never inside strings, comments or backticked symbols
+		{
+			for(size_t pos = token.start; pos + columnName.length() <= token.end; pos++)
+				if(text.compare(pos, columnName.length(), columnName) == 0)
+					positions.push_back(pos);
+		}
+		else if(token.kind == RScriptToken::backticked) //A backticked symbol matches only when its entire content is the columnName
+		{
+			if(token.end - token.start == columnName.length() && text.compare(token.start, columnName.length(), columnName) == 0)
+				positions.push_back(token.start);
+		}
 	}
 
 	return positions;
@@ -615,58 +672,16 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 ///Collect the columnNames that occur as entire string literals in text (as in data[["x"]]) into found.
 ///Nothing is rewritten here: the string literals themselves are left alone so that strings keep meaning data.
 ///Instead the R-side frame override (see CommonData/R/jaspEncodedFrame.R) resolves such references at lookup time.
-///The scan is comment- and escape-aware and skips backticked symbols (handled by encodeRScript itself) and raw strings.
 void ColumnEncoder::collectColumnNamesFromStringLiterals(const std::string & text, const colMap & map, std::set<std::string> & found)
 {
-	for(size_t pos = 0; pos < text.size(); pos++)
-	{
-		const char c = text[pos];
-
-		if(c == '#') //Comment, skip to the end of the line
-			pos = text.find('\n', pos);
-		else if(c == '`') //Backticked symbols are handled by encodeRScript
-			pos = text.find('`', pos + 1);
-		else if((c == 'r' || c == 'R') && pos + 1 < text.size() && text[pos + 1] == '"'
-				&& (pos == 0 || !(isalnum(static_cast<unsigned char>(text[pos - 1])) || text[pos - 1] == '_' || text[pos - 1] == '.'))) //Raw string r"(...)"/R"(...)", the delimiter between the quotes may contain dashes or other characters
+	for(const RScriptTokenSpan & token : scanRScript(text))
+		if(token.kind == RScriptToken::string || token.kind == RScriptToken::rawString) //A raw string's content can also name a column (data[[r"(LL)"]])
 		{
-			size_t delimEnd = text.find('(', pos + 2);
+			const auto foundColumn = map.find(text.substr(token.start, token.end - token.start));
 
-			if(delimEnd == std::string::npos)
-				break;
-
-			const std::string closing = ")" + text.substr(pos + 2, delimEnd - pos - 2) + "\"";
-			pos = text.find(closing, delimEnd);
-
-			if(pos == std::string::npos) //Unterminated raw string
-				break;
-
-			//The content is data for the rewriting, but just like a string literal's it can name a
-			//column (data[[r"(LL)"]]): collect it so that column gets loaded.
-			auto foundColumn = map.find(text.substr(delimEnd + 1, pos - delimEnd - 1));
 			if(foundColumn != map.end())
 				found.insert(foundColumn->first);
-
-			pos += closing.size() - 1; //Continue scanning after the raw string
 		}
-		else if(c == '"' || c == '\'')
-		{
-			size_t end = pos + 1;
-			while(end < text.size() && text[end] != c)
-				end += text[end] == '\\' ? 2 : 1;
-
-			if(end >= text.size()) //Unterminated string: nothing after this can be trusted
-				break;
-
-			auto foundColumn = map.find(text.substr(pos + 1, end - pos - 1));
-			if(foundColumn != map.end())
-				found.insert(foundColumn->first);
-
-			pos = end;
-		}
-
-		if(pos == std::string::npos)
-			break;
-	}
 }
 
 
