@@ -35,6 +35,11 @@ class Description : public QQuickItem
 	Q_PROPERTY(QString					license			READ license			WRITE setDummy				NOTIFY licenseChanged			)
 	///requiresData should really be called defaultRequiresData or something. Because that is what it does. But it would be a lot of work to change all the qmls...
 	Q_PROPERTY(bool						requiresData	READ requiresDataDef	WRITE setRequiresDataDef	NOTIFY requiresDataDefChanged	)
+	///DEPRECATED and ignored: multiDataSetAwareness is decided by the analysis' loaded form (a control
+	///that registers a dataset selection flips AnalysisBase::multiDataSetAware, see HostFilterSelection).
+	///This write-only dummy only lets Description.qml files that still declare it keep loading; the
+	///declaration should be dropped from the qml instead.
+	Q_PROPERTY(bool						multiDataSetAware WRITE setMultiDataSetAwareDummy)
 	Q_PROPERTY(bool						preloadData		READ preloadData		WRITE setPreloadData		NOTIFY preloadDataChanged		)
 	Q_PROPERTY(Modules::DynamicModule *	dynMod			READ dynMod				WRITE setDynMod				NOTIFY dynModChanged			)
 	Q_PROPERTY(bool						hasWrappers		READ hasWrappers		WRITE setHasWrappers		NOTIFY hasWrappersChanged		)
@@ -48,6 +53,7 @@ public:
 
 	void			setDummy(QString ) {}; // Temporary placeholder to make existing entries in Description.qml not stop it from loading, can be removed once all modules are updated
 	void			setDummyUrl(QUrl ) {}; // Temporary placeholder to make existing entries in Description.qml not stop it from loading, can be removed once all modules are updated
+	void			setMultiDataSetAwareDummy(bool) {}; //DEPRECATED, ignored - see the multiDataSetAware property above
 	
 	const QString &	name()				const { return _name;						}
 	const QString & title()				const { return _title;						}

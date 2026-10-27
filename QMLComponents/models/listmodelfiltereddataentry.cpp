@@ -19,7 +19,8 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	connect(_tableView,				SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))							);
 
 	static int counter = 0;
-	DataSet * dataSet = _tableView->form()->analysisObj() ? _tableView->form()->analysisObj()->dataSet() : nullptr;
+	VariableInfo * varInfo = _tableView->resolvedVarInfo();
+	DataSet * dataSet = varInfo ? varInfo->dataSet() : nullptr;
 	do
 	{
 		_filterName = "ListModelFilteredDataEntry_" + std::to_string(counter++);
@@ -32,8 +33,8 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 	//form()->filter() being null before the analysis is set up, and (re)connect whenever it changes.
 	auto connectFilterVarInfo = [this, parent]()
 	{
-		if(parent->form()->filter())
-			connect(parent->form()->filter()->varInfo(), &VariableInfo::dataSetChanged, this, &ListModelFilteredDataEntry::dataSetChangedHandler, Qt::UniqueConnection);
+		if(VariableInfo * varInfo = parent->resolvedVarInfo())
+			connect(varInfo, &VariableInfo::dataSetChanged, this, &ListModelFilteredDataEntry::dataSetChangedHandler, Qt::UniqueConnection);
 	};
 
 	connectFilterVarInfo();
@@ -222,12 +223,12 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 		//In that case the existing filter stays valid and recreating it would crash on the assert below.
 		assert(!_filterName.empty()); //the constructor always generates a filterName
 		if(!_filter)
-			_filter = listView()->form()->varInfo()->dataSet()->createFilter(_filterName, true);
+			_filter = listView()->resolvedVarInfo()->dataSet()->createFilter(_filterName, true);
 	}
 	else if(!_filter)
 	{
 		_filterName = fq(terms.filterName);
-        _filter		= listView()->form()->varInfo()->dataSet()->createFilter(_filterName, true);
+        _filter		= listView()->resolvedVarInfo()->dataSet()->createFilter(_filterName, true);
 	}
 
 	if (terms.colName.isEmpty())

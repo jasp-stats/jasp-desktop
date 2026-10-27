@@ -17,6 +17,7 @@
 //
 
 #include "formulabase.h"
+#include "controls/jaspcontrol.h"
 #include "formulasource.h"
 #include "rsyntax.h"
 #include "controls/sourceitem.h"
@@ -156,7 +157,18 @@ bool FormulaBase::parseRSyntaxOptions(Json::Value &options) const
 	FormulaParser::ParsedTerms leftParsedTerms, rightParsedTerms;
 	QString error;
 
-	VariableInfoProvider * provider = form()->variableInfoProvider();
+	//Provider chain: a Formula is not a list and not a selection host, so the
+	//analysis-wide VariableInfo of its form serves it (the deleted walk's parent-chain lookup
+	//of a selecting host ancestor had no live case left: since hosts are lists and text
+	//areas, and formulas sit on the form itself). The provider default mirrors what the form
+	//does at setAnalysisUp (analysis filter, else whatever setProvider already installed).
+	AnalysisForm * analysisForm = form();
+	VariableInfo * varInfo   = analysisForm ? analysisForm->varInfo() : nullptr;
+
+	if (varInfo && !varInfo->provider() && analysisForm->filter())
+		varInfo->setProvider(analysisForm->filter());
+
+	VariableInfoProvider * provider = varInfo ? varInfo->provider() : nullptr;
 
 	if (!FormulaParser::parse(lhs, true, leftParsedTerms, error, provider) || !FormulaParser::parse(rhs, false, rightParsedTerms, error, provider))
 	{

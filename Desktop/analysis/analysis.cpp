@@ -57,7 +57,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 		_optionsFromDifferentVersion = _dynamicModule->version() != optionsVersion;
 
 	if (options)
-		setBoundValues(options); //Same story as other constructor
+		setPendingOptions(options, true); //Same story as other constructor: park the file-load options, created-with-options
 
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	_helpFile						= _dynamicModule ? _dynamicModule->helpFolderPath() + tq(analysisEntry->function()) : "";
@@ -92,7 +92,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _rSources(						duplicateMe->_rSources							)
 {
 	_filter = duplicateMe->_filter;
-	
+
 	initAnalysis();
 }
 
@@ -119,7 +119,9 @@ void Analysis::initAnalysis()
 	connect(this,				&Analysis::createFormWhenYouHaveAMoment,	this,	&Analysis::createForm,				Qt::QueuedConnection);
 
 
-	bool isNewAnalysis = boundValues().size() == 0;
+	// the explicit created-with-options bool (set when the file-load/RPC/duplicate
+	//path parked options into the pending-options parking) replaces the old mirror-shaped heuristic.
+	bool isNewAnalysis = !createdWithOptions();
 
 	if(!_isDuplicate && isNewAnalysis)
 		_status = Empty;
@@ -147,7 +149,24 @@ void Analysis::filterRemoved(Filter * f)
 
 DataSet * Analysis::dataSet() const
 {
+	//A multi-dataset aware analysis has no *single* dataset to hand out: components must go
+	//through their (per-host) VariableInfo provider and the engine through the option
+	//provenance. Returning _filterDataSet here would silently point at one of the many.
+	if (multiDataSetAware())
+	{
+		_noSingleDataSet("dataSet()");
+		return nullptr;
+	}
+
 	return _filterDataSet;
+}
+
+///One-shot complaint for the single-dataset API being used on a multi-dataset aware analysis.
+void Analysis::_noSingleDataSet(const char * what) const
+{
+	Log::log() << "Analysis " << id() << ": " << what
+	           << " was used on a multi-dataset aware analysis: it has no single dataset/filter,"
+	           << " variable info must come through the (per-form) provider chain." << std::endl;
 }
 
 Analysis::~Analysis()
@@ -231,6 +250,7 @@ bool Analysis::checkAnalysisEntry()
 		Log::log() << "Analysis::checkAnalysisEntry() had a problem: " << e.what() << std::endl;
 
 		_moduleData = nullptr;
+
 		if(_QMLFileWatcher.files().size())
 			_QMLFileWatcher.removePaths(_QMLFileWatcher.files());
 		return false;
@@ -783,10 +803,11 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 			if (fileData.size() > 0 && plotlyJson.isNull())
 				Log::log() << "loadPlotlyJsonInResults: parse produced null from non-empty file '" << tempFileRelativePath << "'" << std::endl;
 
-			//Decode against this analysis' own dataset encoder: the process-global encoder is only
-			//populated in the engine, so the static ColumnEncoder::decodeJson would be a no-op here.
-			if(DataSet * ds = dataSet())
-				ds->encoder().decodeJson(plotlyJson);
+			//Decoding is context-free since plot files are written by R with encoded
+			//names and never pass through the engine's sendString, but the desktop's global decode
+			//table holds a block per live filter of every loaded dataset (plus extras), so ONE
+			//sweep resolves them all - aware and non-aware runs alike.
+			ColumnEncoder::decodeJson(plotlyJson);
 
 			return plotlyJson;
 		}
@@ -823,7 +844,7 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 	return results;
 }
 
-Json::Value Analysis::asJSON(bool withRSource) const
+Json::Value Analysis::asJSON(bool withRSource)
 {
 	Json::Value analysisAsJson = Json::objectValue;
 
@@ -843,11 +864,27 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
-	analysisAsJson["options"]		= boundValues();
+	// the saved options are GENERATED from the components in the STORAGE shape
+	//): per-term `{name, filterId?, types}` objects for the term families (filterId omitted
+	//when -1, provenance inside the term, same-name-different-filter twins immune to positional
+	//drift), every other family its value tree - no `.meta` and no sidecar (both are send-time
+	//artifacts). The Engine wire (createAnalysisRequestJson below) keeps the frozen
+	//{value,types} + sidecar contract untouched. bindTo/Terms(json) re-apply this tree verbatim on
+	//reload (the applier accepts both shapes); version STAYS 7.0.0 - the shape never shipped, so
+	//released files (plain names, all-`-1` ⟹ host-bound fallbacks forever) and old bare-prefix result
+	//tokens are handled by the legacy-token decode, no stamp migration.
+	analysisAsJson["options"]		= createOptionsJson(BoundControl::Storage);
 	analysisAsJson["userdata"]		= userData();
 	analysisAsJson["plotEdits"]		= _plotEdits;
 	analysisAsJson["dynamicModule"] = _moduleData ? _moduleData->asJsonForJaspFile() : Json::objectValue;
 	analysisAsJson["saveState"]     = (_dynamicModule && _dynamicModule->descriptionQml()) ? (_dynamicModule->descriptionQml()->alwaysSaveState()  ? "always" : _dynamicModule->descriptionQml()->neverSaveState() ? "never" : "default") : "default";
+
+	//Marker for older JASP versions (and for the file itself) that this analysis depends on the
+	//multi-dataset machinery: its options carry dataSetId/filterId provenance in their .meta.
+	//Those ids are straight from the storage db (which the .jasp restores verbatim), so a reopened
+	//file resolves them again unchanged - no name-based side table or remapping is needed.
+	if (multiDataSetAware())
+		analysisAsJson["multiDataSetAware"] = true;
 	
 
 	if (withRSource)
@@ -958,16 +995,19 @@ void Analysis::boundValueChangedHandler()
 
 void Analysis::requestComputedColumnCreationHandler(const std::string& columnName)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestComputedColumnCreationHandler"); return; }
 	emit requestComputedColumnCreation(columnName, this);
 }
 
 void Analysis::requestColumnCreationHandler(const std::string & columnName, columnType colType)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestColumnCreationHandler"); return; }
 	emit requestColumnCreation(columnName, this, colType);
 }
 
 void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestComputedColumnDestructionHandler"); return; }
 	emit requestComputedColumnDestruction(columnName, this);
 }
 
@@ -1019,6 +1059,17 @@ void Analysis::filterByNameDone(int dataSetId, const QString &name, const QStrin
 		run();
 }
 
+bool Analysis::shouldRun()
+{
+	// the run request is GENERATED from component state
+	//(createAnalysisRequestJson -> AnalysisBase::createOptionsJson), so dispatch requires an
+	//initialized form: before setAnalysisUp has attached and bound it there is no component
+	//state, the pending JSON parks (and must never be read for a run), and staying Empty defers
+	//the dispatch to a later sync pass - by then the form is up. QML load failure means no form
+	//forever: no analysis, no state case.
+	return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && form()->initialized() && !_isReport;
+}
+
 Json::Value Analysis::createAnalysisRequestJson()
 {
 	performType perform = desiredPerformTypeFromAnalysisStatus();
@@ -1038,7 +1089,10 @@ Json::Value Analysis::createAnalysisRequestJson()
 	json["typeRequest"]			= engineStateToString(engineState::analysis);
 	json["id"]					= int(id());
 	json["perform"]				= performTypeToString(perform);
-	json["preloadData"]			= _moduleData ? _moduleData->preloadData() : true;
+	//An aware analysis always runs preload-style (its datasets ride the queued reads), so the
+	//forced true that used to live in Modules::AnalysisEntry::preloadData() is applied here,
+	//from the live flag (the form is initialized by the time a request is generated).
+	json["preloadData"]			= (_moduleData ? _moduleData->preloadData() : true) || multiDataSetAware();
 	json["revision"]			= revision();
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
@@ -1051,10 +1105,21 @@ Json::Value Analysis::createAnalysisRequestJson()
 		json["filter"]			= fq(filterName());
 		json["dataSetId"]		= _filter ? _filter->data()->id() : -1;
 
-		if (perform == performType::saveImg || perform == performType::editImg)	
+		//A multi-dataset aware analysis encodes and loads per option: the transient `.filterIds`
+		//sidecar of the GENERATED Engine json names the filter each option/term was selected
+		//through (DataBridge::prepareMultiDataSetRun consumes it, the engine
+		//strips it before R). The sidecar flip: the run request is no longer read from the
+		//mirror-era read but generated from the components (AnalysisForm::createOptionsJson) -
+		//shouldRun() only dispatches with an initialized form, so there is always component state
+		//to generate from (no pre-attach request can read pending JSON). For non-aware
+		//analyses the generated tree is byte-identical to the mirror (equivalence harness).
+		if (multiDataSetAware())
+			json["multiDataSetAware"]	= true;
+
+		if (perform == performType::saveImg || perform == performType::editImg)
 			json["image"]		= imgOptions();
 
-		json["options"]		= boundValues();
+		json["options"]		= createOptionsJson(BoundControl::Engine);
 	}
 
 	return json;
@@ -1079,12 +1144,15 @@ void Analysis::duplicateMe()
 QString Analysis::generateWrapper()
 {
 	if (!_analysisForm || !_moduleData) return QString();
+	//An aware analysis gets the datasets-style wrapper: the live flag decides (the form is
+	//attached here), like the bridge path (syntaxbridge.cpp generateWrapper).
 	return _analysisForm->generateWrapper(
 					tq(_moduleData->dynamicModule()->name()),
 					tq(_name),
 					tq(_qml),
 					tq(_title),
-					_moduleData->preloadData()
+					_moduleData->preloadData() || multiDataSetAware(), //aware analyses always preload
+					multiDataSetAware()
 	);
 }
 
@@ -1309,6 +1377,8 @@ Json::Value Analysis::rSources() const
 
 bool Analysis::isOwnComputedColumn(const std::string & colName) const
 {
+	if (multiDataSetAware()) { _noSingleDataSet("isOwnComputedColumn"); return false; }
+
 	Column * col = DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->column(colName) : nullptr;
 
 	return col->analysisId() == id();
@@ -1725,6 +1795,9 @@ std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) 
 
 bool Analysis::isColumnFreeOrMine(const QString & columnName) const
 {
+	//Which dataset would "free" even refer to? Refuse rather than answer about the wrong one.
+	if (multiDataSetAware()) { _noSingleDataSet("isColumnFreeOrMine"); return false; }
+
 	//An analysis without a filter/dataset is not "mine": treat every column as free.
 	if(!_filter || !_filter->data())
 		return true;

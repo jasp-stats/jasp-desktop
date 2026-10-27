@@ -109,7 +109,7 @@ void BoundControlTableView::bindTo(const Json::Value &value)
 	_tableView->tableModel()->initTableTerms(tableTerms);
 }
 
-void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListModelTableViewBase::TableTerms &tableTerms)
+void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListModelTableViewBase::TableTerms &tableTerms) const
 {
 	Json::Value levels(Json::arrayValue);
 	for (const QString& rowName : tableTerms.rowNames)
@@ -134,6 +134,15 @@ void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListM
 	}
 }
 
+Json::Value BoundControlTableView::createEngineValue() const
+{
+	//Same builder the write path uses (resetBoundValue): live TableTerms through the virtual
+	//fillBoundValue - see the header.
+	Json::Value boundValue(Json::arrayValue);
+	fillBoundValue(boundValue, _tableView->tableModel()->tableTerms());
+	return boundValue;
+}
+
 Json::Value BoundControlTableView::_defaultValue(int colIndex, int rowIndex) const
 {
 	Json::Value result;
@@ -153,10 +162,5 @@ Json::Value BoundControlTableView::_defaultValue(int colIndex, int rowIndex) con
 
 void BoundControlTableView::resetBoundValue()
 {
-	Json::Value boundValue(Json::arrayValue);
-	const ListModelTableViewBase::TableTerms& tableTerms = _tableView->tableModel()->tableTerms();
-
-	fillBoundValue(boundValue, tableTerms);
-
-	setBoundValue(boundValue);
+	setBoundValue(createEngineValue());
 }

@@ -87,6 +87,9 @@ public:
 	void				rewriteImages();
 	bool				isColumnFreeOrMine(const QString & columnName)				const override;
 	DataSet		*		dataSet()													const override;
+	///< Complaint logged by the single-dataset API when the analysis is multi-dataset aware
+	///  (they refuse rather than answer about one arbitrary dataset - see their implementations).
+	void				_noSingleDataSet(const char * what)							const;
 
 	void				setRFile(const std::string &file)							{ _rfile = file;								}
 	void				setRSources(const Json::Value& rSources);
@@ -127,7 +130,13 @@ public:
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
-			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && !_isReport;	}
+			///< an analysis only dispatches with an INITIALIZED form - the run
+			///< request is generated from component state (Analysis::createAnalysisRequestJson),
+			///< and before the form has attached through setAnalysisUp there is no component state
+			///< to generate from: the pending JSON parks and the run defers (stays Empty, the next
+			///< sync pass dispatches once the form is up). A form-less analysis (QML load failed)
+			///< never runs - "no analysis, no state case", as before.
+			bool				shouldRun();
 			bool				isReport()			const				{ return _isReport;						}
 			void				setReport(bool report)					{ _isReport = report;							}
 			bool				beingTranslated()						{ return _beingTranslated;					};
@@ -139,7 +148,11 @@ public:
 			void				reloadForm()				override;
 			void				exportResults()				override;
 			void				remove();
-			Json::Value			asJSON(bool withRSources = false)	const;
+			// the saved options are the GENERATED Engine tree (component-owned state)
+	//with the transient `.filterIds` sidecar stripped - today's file shape minus the dev-era
+	//provenance stamps (never shipped: no stamp migration). Generation walks the controls, so
+	//this is not a const read any more (the applyToAll/JS callers hold non-const pointers anyway).
+	Json::Value			asJSON(bool withRSources = false);
 			void				checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);
 			void				loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status);
 			Json::Value			createAnalysisRequestJson();

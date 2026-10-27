@@ -17,6 +17,8 @@ class DataSet;
 class EngineRepresentation : public QObject
 {
 	Q_OBJECT
+
+	friend class TestAll; ///< drives checkForComputedColumns (the results decode site) without a live engine
 	Q_PROPERTY(bool			runsAnalysis		READ runsAnalysis		WRITE setRunsAnalysis		NOTIFY runsAnalysisChanged		)
 	Q_PROPERTY(bool			runsUtility			READ runsUtility		WRITE setRunsUtility		NOTIFY runsUtilityChanged		)
 	Q_PROPERTY(bool			runsRCmd			READ runsRCmd			WRITE setRunsRCmd			NOTIFY runsRCmdChanged			)

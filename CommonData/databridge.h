@@ -22,12 +22,42 @@
 #include "workspace.h"
 
 #include <memory>
+#include <vector>
 
 class ColumnEncoder;
+
+/// Ordered handout of the per-dataset slices of a multi-dataset aware analysis run: the Engine fills it,
+/// rbridge_readDataSetRequested() consumes it one read per dataset (see DataBridge::takeMultiDataSetSlice).
+class MultiDataSetSliceQueue
+{
+public:
+	/// One dataset of a multi-dataset aware analysis run: which dataset, which of its filters to
+	/// honour, and the columns+types it requested. The names are the ORIGINAL qualified ones
+	/// ("Name.scale"); rbridge_readDataSetRequested encodes them at the last moment against the
+	/// slice's own dataset encoder (that is where the encoded namespace of options and data meets).
+	struct Slice
+	{
+		int								dataSetId	= -1;
+		int								filterId	= -1;	///< -1: use the dataset's default filter
+		ColumnEncoder::colsPlusTypes	cols;
+	};
+
+	/// Replace the whole queue (an empty vector disables the multi-dataset read-path again); the
+	/// position restarts, so a stale queue can never leak into a next request.
+	void	set(std::vector<Slice> queue)	{ _queue = std::move(queue); _pos = 0; }
+	///< nullptr when no (further) slice is queued, advances the position otherwise.
+	const Slice	*	take()					{ return _pos < _queue.size() ? &(_queue[_pos++]) : nullptr; }
+
+private:
+	std::vector<Slice>	_queue;
+	size_t				_pos = 0;
+};
 
 class DataBridge
 {
 public:
+	using MultiDataSetSlice = MultiDataSetSliceQueue::Slice;
+
 	DataBridge(unsigned long sessionID, bool useMemory = false);
 	~DataBridge();
 	DataBridge(const DataBridge &) = delete;
@@ -53,6 +83,36 @@ public:
 	void 					updateOptionsAccordingToMeta(Json::Value & options);
 	ColumnEncoder		*	extraEncodings()		{ return _extraEncodings.get(); }
 	const ColumnEncoder	*	extraEncodings() const	{ return _extraEncodings.get(); }
+	Workspace			*	workspace()				{ return resolveWorkspace(); }
+
+	/// Load the per-dataset slices for the next analysis run (empty to disable the multi-dataset
+	/// read-path again; every request sets this explicitly so a stale queue can never leak).
+	void					setMultiDataSetQueue(std::vector<MultiDataSetSlice> queue)	{ _multiDataSetQueue.set(std::move(queue)); }
+	const MultiDataSetSlice	*	takeMultiDataSetSlice()										{ return _multiDataSetQueue.take(); }
+
+	/// Outcome of preparing a multi-dataset aware run (see prepareMultiDataSetRun).
+	struct MultiDataSetRunPlan
+	{
+		int								primaryDataSetId	= -1;
+		ColumnEncoder::colsPlusTypes	primaryCols;							///< what to read from the primary dataset (original qualified names)
+		Json::Value						multiDataSetJson;						///< { ids: [...], names: { "<id>": title } } for jaspBase::runJaspResults
+	};
+
+	/// Prepare a multi-dataset aware analysis run: the generated Engine json names the filter every
+	/// option/term was selected through in the transient `.filterIds` sidecar (
+	/// the .meta provenance stamps are retired), so the options are encoded per dataset (each
+	/// filter VIEW mints tokens embedding its ids) and one read slice per involved filter is
+	/// queued for rbridge_readDataSetRequested. Used by both Engine::runAnalysis and the syntax
+	/// bridge, so the two cannot drift apart. The sidecar stays in `options` (consumed here and
+	/// stripped on the way to R, stripTransientProvenanceForR); analysisDataSetId may be -1 (an
+	/// analysis without filter); the shown dataset is the primary then.
+	MultiDataSetRunPlan		prepareMultiDataSetRun(Json::Value & options, int analysisDataSetId, const std::string & analysisFilter, const std::string & logName);
+
+	/// the transient `.filterIds` provenance tree is an engine-side input
+	/// contract only - it must never reach R. Call this at the engine boundary, just before the
+	/// options string is handed to rbridge_runModuleCall (Engine::runAnalysis) or back into the
+	/// syntax-bridge's R caller, after prepareMultiDataSetRun has consumed it.
+	static	void			stripTransientProvenanceForR(Json::Value & options);
 
 protected:
 	bool					isColumnNameOk(const std::string & columnName);
@@ -73,6 +133,7 @@ protected:
 private:
 	static constexpr const char * ExtraOptionsPrefix = "JaspExtraOptions_";
 	std::unique_ptr<ColumnEncoder>	_extraEncodings;
+	MultiDataSetSliceQueue			_multiDataSetQueue;
 };
 
 #endif // DATABRIDGE_H

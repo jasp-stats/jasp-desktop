@@ -75,11 +75,37 @@ void BoundControlMeasuresCells::addFactorModel(ListModelFactorLevels *factorMode
 
 void BoundControlMeasuresCells::resetBoundValue()
 {
+	setBoundValue(createEngineValue());
+}
+
+// the cells terms model IS the typed state - one builder for write + generate.
+Json::Value BoundControlMeasuresCells::createEngineValue() const
+{
 	Json::Value boundValue(Json::arrayValue);
 	const Terms& terms = _measuresCellsModel->terms();
-	
+
 	for (const Term& term : terms)
 		boundValue.append(fq(term.value()));
 
-	setBoundValue(boundValue);
+	return boundValue;
+}
+
+Json::Value BoundControlMeasuresCells::createFilterIds() const
+{
+	if (!_control->encodeValue())
+		return Json::nullValue;
+
+	const int			hostId	= generatedHostFilterId();
+
+	Json::Value ids(Json::arrayValue);
+	bool		any				= false;
+
+	for (const Term& term : _measuresCellsModel->terms())
+	{
+		const int id = term.filterId() >= 0 ? term.filterId() : hostId;
+		any = any || id >= 0;
+		ids.append(id >= 0 ? Json::Value(id) : Json::Value());
+	}
+
+	return any ? ids : Json::nullValue;
 }

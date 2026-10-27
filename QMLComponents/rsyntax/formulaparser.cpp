@@ -2,6 +2,7 @@
 #include "variableinfo.h"
 #include <QRegularExpression>
 #include "log.h"
+#include "workspace.h"
 
 const char FormulaParser::interactionSeparator			= ':';
 const char FormulaParser::allInterationsSeparator		= '*';
@@ -17,12 +18,35 @@ Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 		return output;
 	};
 
+	// split on `separator` OUTSIDE double-quoted segments. A qualified column
+	//reference ("DS"."Filter"."Col"("Type")) may contain any character inside
+	//its quotes - including the interaction separators themselves - and must never be split.
+	auto splitRespectingQuotes = [] (const QString& input, char separator) -> QStringList
+	{
+		QStringList output;
+		QString current;
+		bool inQuotes = false;
+		for (const QChar &ch : input)
+		{
+			if (ch == '"')					inQuotes = !inQuotes;
+			else if (ch == separator && !inQuotes)
+			{
+				output.append(current);
+				current.clear();
+				continue;
+			}
+			current += ch;
+		}
+		output.append(current);
+		return output;
+	};
+
 	auto trimList = [=] (const QString& input, const char& separator) -> QStringList
 	{
 		QStringList output;
 		if (input.contains(separator))
 		{
-			QStringList components = input.split(separator);
+			QStringList components = splitRespectingQuotes(input, separator);
 			for (const QString& component : components)
 				output.append(trim(component));
 		}
@@ -34,6 +58,18 @@ Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 
 	auto readTermWithType = [provider] (const QString& input) -> std::pair<QString, columnType>
 	{
+		// a qualified surface form is kept VERBATIM as the component - it owns
+		//its ("Type") segment, and resolution into typed ids happens once, in the
+		//applier (Term(json) -> resolveQualifiedTermComponent). The bare-name dot-suffix
+		//logic and the provider lookup must not touch the quotes. The R-name guard wraps
+		//non-syntactic names (qualified forms included) in backticks, and - unlike the whole
+		//term string - split components never went through trim(), so strip them here.
+		QString qualifiedCandidate = input.trimmed();
+		if (qualifiedCandidate.startsWith('`'))		qualifiedCandidate = qualifiedCandidate.mid(1);
+		if (qualifiedCandidate.endsWith('`'))		qualifiedCandidate = qualifiedCandidate.chopped(1);
+		if (qualifiedCandidate.startsWith('"'))
+			return std::make_pair(qualifiedCandidate, columnType::unknown);
+
 		QString term = input;
 		columnType type = columnType::unknown;
 		int index = input.lastIndexOf('.');
@@ -55,7 +91,7 @@ Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 
 	auto readTerm = [=] (const QString& input) -> Term
 	{
-		QStringList components = input.split(FormulaParser::interactionSeparator),
+		QStringList components = splitRespectingQuotes(input, FormulaParser::interactionSeparator),
 					parsedComponents;
 		columnTypeVec types;
 		for (const QString& component : components)
@@ -168,7 +204,7 @@ bool FormulaParser::parse(const Json::Value& formula, bool isLhs, ParsedTerms& p
 	return true;
 }
 
-QString FormulaParser::transformToFormulaTerm(const Term &term, const Json::Value& changedType, char join, bool addQuotes)
+QString FormulaParser::transformToFormulaTerm(const Term &term, const Json::Value& changedType, char join, bool addQuotes, int contextFilterId)
 {
 	static QRegularExpression rx("^[a-zA-Z0-9_\\.]+$");
 	QString result;
@@ -178,13 +214,46 @@ QString FormulaParser::transformToFormulaTerm(const Term &term, const Json::Valu
 	for (QString component : components)
 	{
 		std::string compType = (changedType.isArray() && changedType.size() > i ? changedType[i] : changedType).asString();
-		if (columnTypeFromString(compType, columnType::unknown) != columnType::unknown)
+		columnType type = columnTypeFromString(compType, columnType::unknown);
+
+		// a term stamped with a foreign live filter id renders as the qualified
+		//MINIMAL form (bare inside the context, "DS"."Col"/"F"."Col"/full
+		//outside; type segment on demand). The component string itself stays bare (typed
+		//terms carry names + one filterId; qualification is an emission-time act) and the
+		//".type" bare suffix is not appended - the qualified form carries its own ("Type")
+		//segment, and appending the bare spelling would poison the type-wins rule at re-parse.
+		//An empty render (dead slice) cannot be addressed at all: the bare component is kept
+		//and logged loudly - the re-parse then resolves it through the context fallback,
+		//which is wrong-slice data but parseable R; the loud log + the restamp on the next
+		//dataSpec regeneration bound the damage. (Never a made-up form.)
+		if (contextFilterId >= 0 && term.filterId() >= 0 && term.filterId() != contextFilterId)
+		{
+			QString qualified;
+			if (Workspace * ws = Workspace::singleton())
+				qualified = ws->renderQualifiedColumnRef(contextFilterId, term.filterId(), component.toStdString(), type);
+
+			if (!qualified.isEmpty())
+				component = qualified;
+			else
+				Log::log() << "FormulaParser::transformToFormulaTerm: term component '" << component.toStdString()
+						   << "' is stamped with filter id " << term.filterId()
+						   << " which renders to nothing (dead slice); emitting the bare name under the context namespace" << std::endl;
+		}
+		else if (type != columnType::unknown)
 			component.append("." + tq(compType));
 
 		if (i > 0)
 			result += QString(' ') + join + ' ';
 
-		if (addQuotes)						result += '"' + component + '"';
+		if (addQuotes)
+		{
+			//A qualified form contains double quotes: escape them (and any backslash) for the R
+			//string literal. Bare components keep the legacy verbatim wrap (byte-identity).
+			QString literal = component;
+			if (literal.contains('"'))
+				literal.replace("\\", "\\\\").replace("\"", "\\\"");
+			result += '"' + literal + '"';
+		}
 		else if (component.contains(rx))	result += component;
 		else								result += '`' + component + '`';
 		i++;

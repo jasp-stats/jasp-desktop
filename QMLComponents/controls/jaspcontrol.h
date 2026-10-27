@@ -3,12 +3,16 @@
 
 #include <QQuickItem>
 #include <QPropertyAnimation>
+#include <QSet>
 #include "qutils.h"
 #include "columntype.h"
+#include "models/term.h"	// TermRowKey for parentRowKey()
 
 class AnalysisForm;
 class JASPListControl;
 class BoundControl;
+class VariableInfo;
+class Filter;
 
 ///
 /// Basic class for all our qml controls
@@ -143,6 +147,11 @@ public:
 	QQuickItem		*	childControlsArea()			const	{ return _childControlsArea;		}
 	JASPListControl	*	parentListView()			const	{ return _parentListView;			}
 	QString				parentListViewKey()			const	{ return _parentListViewKey;		}
+	///< The FULL identity of the row this control was created under: rowValue +
+	///  the row's filter id (the TermRowKey the model keys its RowControls by - twin rows share a
+	///  name, never a key). For tableview-style rows (context carries only rowIndex) this is the
+	///  index string with filterId -1, i.e. unchanged legacy behavior.
+	TermRowKey			parentRowKey()				const	{ return TermRowKey(_parentListViewKey, _parentListViewFilterId); }
 	QQuickItem		*	innerControl()				const	{ return _innerControl;				}
 	QQuickItem		*	background()				const	{ return _background;				}
 	QQuickItem		*	focusIndicator()			const	{ return _focusIndicator;			}
@@ -165,6 +174,49 @@ public:
 	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item, bool collapseStructuralControls = false);
 
 	virtual void					setUp()										{}
+	/// Dataset/filter selection lives on HOSTS (VariablesListBase, TextAreaBase, ...): a host with
+	/// an active selection hands out its own VariableInfo (provider = the selected Filter) here.
+	/// the old parent-chain resolution walk is DELETED - consumers resolve
+	/// LOCALLY: their own selection (ownedSelectionVarInfo below), the analysis-wide
+	/// form()->varInfo() (legitimate fallback: analysis filter, else shown filter), or a
+	/// term's filterId through Workspace::filterById.
+	virtual VariableInfo			* ownedSelectionVarInfo()						{ return nullptr; }
+	///< Hosts only: the filter currently picked through this host's own selection
+	/// (HostFilterSelection::selectedFilter), nullptr for non-hosts or while nothing is selected.
+	/// Registry consumers - above all (AnalysisBase as VariableInfoProvider over the
+	/// registered selected filters) - enumerate the form's selection hosts and read their filter
+	/// THROUGH THIS. They must never cache a ColumnEncoder*: a Filter's encode handle lazy-attaches
+	/// to the filter's final rowid and is dropped when the filter dies, so only the
+	/// filterId/Filter* re-resolved at use time is safe to hold.
+	virtual Filter					* selectedSelectionFilter() const				{ return nullptr; }
+	///< Hosts only: the NAME of the option carrying the selection whose VariableInfo is handed out
+	/// by ownedSelectionVarInfo() (VariablesListBase::dataSetSelectionOption, TextArea's of the
+	/// same name). The control that reads/writes that option - the FilterSelect dropdown - is registered
+	/// in the form under exactly this name, so getControl(ownedSelectionOptionName()) finds it.
+	/// Note this is a name, not a control; JASPControl::selectionDependency() gives the control.
+	virtual QString					ownedSelectionOptionName() const				{ return QString(); }
+	///< The EXPLICIT selection host this control's variables resolve through (
+	/// the successor of the walk's explicit-host out-param), or nullptr when the analysis-wide
+	/// VariableInfo serves it (no per-component selection - legacy terms stay -1). Base: nullptr
+	/// (non-lists have no local host); JASPListControl follows its relation chain.
+	virtual JASPControl				* resolvedSelectionHost()						{ return nullptr; }
+	///< The VariableInfo serving this control:
+	///  the resolved host's own selection, else form()->varInfo() (the analysis-level namespace).
+	VariableInfo					* resolvedVarInfo();
+	///< The control that must be bound BEFORE this one for that selection to be in effect: the
+	/// FilterSelect carrying the host's option (binding it is what writes the host's selected
+	/// filter id and so restamps the provider this control resolves to). nullptr when there is no
+	/// selection host, or the host names no registered control - which leaves no ordering
+	/// constraint, exactly as before the edge existed. AnalysisForm::sortControls records this edge.
+	JASPControl						* selectionDependency();
+	///< Introspection (QML/tests): the filter id resolvedVarInfo() serves right now, or -1
+	///  when the resolved namespace is not backed by a filter. Lets a test prove which host a
+	///  control's variable namespace actually came from (relation edge vs analysis-level).
+	Q_INVOKABLE int					  resolvedSelectionFilterIdForTest();
+	///< Introspection (QML/tests): whether this control carries a bindTo dependency on the control
+	///  named by `controlName` - explicit (`depends:`), through a source, or derived from the
+	///  dataset selection it resolves through (see AnalysisForm::sortControls).
+	Q_INVOKABLE bool				  dependsOnForTest(const QString & controlName) const;
 	void							setInitialized(const Json::Value& value = Json::nullValue);
 	void							setUnitialized();
 	virtual void					cleanUp();
@@ -294,6 +346,7 @@ protected:
 							_toolTip,
 							_title,
 							_parentListViewKey;
+	int						_parentListViewFilterId	= -1;	///< filter id of the row this control was created under (rowFilterId context property; -1 for tableview-index rows and non-row controls)
 	bool					_isBound					= true,
 							_indent						= false,
 							_initialized				= false,

@@ -1607,9 +1607,14 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 		string utf8 = fq(options);
 		Json::Value root;
 		Json::Reader().parse(utf8, root);
-		
-		root[".meta"] = analysis->optionsMeta();
-		
+
+		// the image request carries the analysis' CURRENT send-time `.meta`,
+		//generated from the components (never held provenance keys; the mirror's were
+		//documented-dead input for the engine since the sidecar flip) instead of the mirror's tree.
+		Json::Value generatedOptions = analysis->createOptionsJson(BoundControl::Engine);
+		if (generatedOptions.isMember(".meta"))
+			root[".meta"] = generatedOptions[".meta"];
+
 		analysis->editImage(root);
 	}
 }
@@ -1645,6 +1650,7 @@ void MainWindow::registerRpcHandlers()
 		}
 
 		info["loaded"]      = true;
+		info["dataSetId"]   = ds->id();
 		info["path"]        = tq(ds->dataFilePath()).toStdString();
 		info["rowCount"]    = static_cast<int>(ds->rowCount());
 
@@ -1668,6 +1674,27 @@ void MainWindow::registerRpcHandlers()
 			columns.append(col);
 		}
 		info["columns"] = columns;
+
+		//Every filter of this dataset, so an RPC client can bind analyses to a specific dataset/filter
+		//("selecting a dataset is selecting one of its filters") via analysis_create's filterId.
+		Json::Value filters(Json::arrayValue);
+
+		auto appendFilter = [&filters](const Filter * filter, bool isDefault)
+		{
+			Json::Value f;
+			f["filterId"] = filter->id();
+			f["name"]     = fq(filter->title());
+			f["isDefault"] = isDefault;
+			filters.append(f);
+		};
+
+		if (ds->defaultFilter())
+			appendFilter(ds->defaultFilter(), true);
+		for (const Filter * f : ds->filters())
+			if (f != ds->defaultFilter())
+				appendFilter(f, false);
+
+		info["filters"] = filters;
 
 		return info;
 	};
@@ -2221,7 +2248,10 @@ void MainWindow::populateUIfromDataSet(bool loadAnalyses)
 	_resultsJsInterface->setScrollAtAll(false);
 
 	if (loadAnalyses)
-		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
+		// hand the file's archive version to the analysis loader (do019Fix-style
+		//threading) - it gates the one-time best-effort decode of legacy bare-prefix result
+		//tokens in stored results trees.
+		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel, _package->archiveVersion());
 
 	if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 		(*_analyses)[0]->expandAnalysis(); //Show options for only analysis
@@ -2457,7 +2487,23 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	Json::Reader parser;
 	parser.parse(utf8, root);
 
-	analysis->setBoundValues(root);
+	// JSON->state goes through the controls, never through a direct mirror write.
+	//Since the sidecar flip the run request is GENERATED from component state, so a bare
+	//setBoundValues here would be written but never read - the downstream change would silently
+	//vanish. parseOptions is the same applier the RPC analysis_run uses (bindTo walks the bound
+	//controls; each write re-stamps and refreshes the mirror on the way). Without a form the
+	//options park as pending JSON: setAnalysisUp applies them exactly once at attach.
+	if (AnalysisForm * form = analysis->form())
+	{
+		Json::Value parsed;
+		std::string errorMsg;
+
+		if (!form->parseOptions(utf8, parsed, errorMsg) && !errorMsg.empty())
+			Log::log() << "MainWindow::analysisChangedDownstreamHandler: options for analysis " << id
+					   << " could not be applied: " << errorMsg << std::endl;
+	}
+	else
+		analysis->setPendingOptions(root);	//pending-options parking only (no form to apply through yet)
 }
 
 bool MainWindow::startDataEditorHandler()

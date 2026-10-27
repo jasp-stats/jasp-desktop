@@ -66,12 +66,20 @@ private:
 	void					absorbSettings(					const Json::Value & json);
 
 	void					runAnalysis();
-	void					runComputeColumn(	int dataSet,		const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);
-	void					runComputeDataSet(	int dataSet,		const std::string & computeCode,			int defaultInputFilterId			);
-	void					runDefaultFilter(	int dataSet,		const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
-	void 					runFilterByName(	const std::string & name, int dataSet, int requestId = -1);
-	void					runRCode(			int dataSet,		const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
-	void					runRCodeCommander(	int dataSet,		std::string   rCode																						);
+	void					runComputeColumn(	int dataSet,	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType,	const std::vector<int> & referencedFilterIds	);
+	void					runComputeDataSet(	int dataSet,	const std::string & computeCode,		int defaultInputFilterId,		const std::vector<int> & referencedFilterIds	);
+	void					runDefaultFilter(	int dataSet,	const std::string & filter,				const std::string & generatedFilter,	int filterRequestId,	const std::vector<int> & referencedFilterIds	);
+	void 					runFilterByName(	const std::string & name, int dataSet, int requestId = -1, const std::vector<int> & referencedFilterIds = {});
+	void					runRCode(			int dataSet,	const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
+	void					runRCodeCommander(	int dataSet,	std::string   rCode																						);
+
+	///< extract the transient `referencedFilterIds` sidecar of a filter/
+	///< compute request - the desktop's scan of the run's code (the grammar helpers). Consumed
+	///< HERE and only for slice materialization: it is never forwarded into anything R
+	///< evaluates (the R-visible code is built by rbridge_prepareSliceRunScript from the code
+	///< text alone), so the sidecar dies with the request json - the strip point for these
+	///< requests, mirroring the last-moment doctrine.
+	static	std::vector<int>	referencedFilterIdsFromRequest(const Json::Value & jsonRequest);
 
 	void					stopEngine();
 	void					pauseEngine(	const Json::Value & jsonRequest);
@@ -113,7 +121,8 @@ private: // Data:
 									_exactPValues			= false,
 									_normalizedNotation		= true,
 									_useThousandSeps		= false,
-									_analysisPreloadData;
+									_analysisPreloadData,
+									_analysisMultiDataSet	= false;	///< The analysis may run on multiple datasets; per-option .meta says which (see runAnalysis)
 	std::string						_analysisName,
 									_analysisTitle,
 									_analysisFilter,
@@ -131,7 +140,6 @@ private: // Data:
 									_analysisOptions		= Json::nullValue,
 									_analysisResults;
 	ColumnEncoder::colsPlusTypes	_analysisColsTypes;
-
 
 };
 

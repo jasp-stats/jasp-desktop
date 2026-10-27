@@ -19,6 +19,9 @@
 #include "controls/jaspcontrol.h"
 #include "controls/jasplistcontrol.h"
 #include "analysisform.h"
+#include "analysisbase.h"
+#include "filter.h"
+#include "dataset.h"
 #include "log.h"
 #include "models/listmodel.h"
 #include "controls/rowcontrols.h"
@@ -28,22 +31,73 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 }
 
 
-//To do: define these fields (isRCode, shouldEncode, etc) somewhere centrally through an enum or something
-Json::Value BoundControlBase::createMeta()  const
-{ 
+// the send-time `.meta` of this option - THE single source since the mirror and
+//its createMeta provenance-stamping era were deleted. It holds everything the engine consumes
+//(shouldEncode gates the encode; isRCode/filterForValues drive the R-code and filter-by-name
+//paths; families add encodeThis/loadFilteredData on top of this via the same virtual) and NEVER a
+//dataSetId/filterId: provenance is in the encoded name (+ the transient `.filterIds` sidecar,
+//createFilterIds below, which the slice-queue build and the request encoding consume and the
+//engine strips before R). The host resolution that used to feed the mirror's stamp keys
+//(generatedHostFilter) now serves the sidecar only.
+Json::Value BoundControlBase::createEngineMeta()  const
+{
 	Json::Value meta(Json::objectValue);
-	
-	if (_control->encodeValue())	
+
+	if (_control->encodeValue())
 		meta["shouldEncode"] = true;
-	
+
 	for(const std::string & key : _isRCode)
 		if(key.empty())		meta	 ["isRCode"] = true;
 		else				meta[key]["isRCode"] = true;
-	
+
 	if(!_filterForValues.empty()) //Then the control should load a filter by this name and give it as "values" in the options it passes to the analysis
 		meta["filterForValues"] = _filterForValues;
 
 	return meta;
+}
+
+Json::Value BoundControlBase::createJson(JsonFormat format) const
+{
+	return format == Engine ? createEngineValue() : createStorageValue();
+}
+
+Filter *BoundControlBase::generatedHostFilter() const
+{
+	AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
+
+	if (!analysis || !analysis->multiDataSetAware())
+		return nullptr;
+
+	// LOCAL resolution (JASPControl::resolvedVarInfo - own host via the relation
+	//chain, else the analysis-level VariableInfo) replaced the deleted walk; the provider of
+	//whatever VariableInfo serves the control IS the provenance this option belongs to: the
+	//selected Filter of an explicit host, or the analysis'/shown filter at analysis level
+	//(the host-bound fallback - dynamic_cast, not selectedSelectionFilter(): the analysis-level
+	//provider is a Filter too and the sidecar must name it as well). Re-read per call, never
+	//cached).
+	VariableInfo * varInfo = _control->resolvedVarInfo();
+	Filter * stampFilter = varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
+	return stampFilter && stampFilter->data() ? stampFilter : nullptr;
+}
+
+int BoundControlBase::generatedHostFilterId() const
+{
+	Filter * host = generatedHostFilter();
+	return host ? host->id() : -1;
+}
+
+Json::Value BoundControlBase::createFilterIds() const
+{
+	//Default transient provenance node: the option-level host filter - exactly the
+	//id createMeta stamps as filterId today, at exactly the same gate (encodeValue + aware analysis
+	//+ resolvable host). Term-bearing families override this with the positional per-term array
+	//(BoundControlTerms::createFilterIds); values that were never stamped (non-aware, released
+	//files, hostless legacy runs) generate NO node at all, matching today's stampless meta.
+	if (!_control->encodeValue())
+		return Json::nullValue;
+
+	const int hostId = generatedHostFilterId();
+	return hostId >= 0 ? Json::Value(hostId) : Json::nullValue;
 }
 
 
@@ -77,7 +131,23 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 	if (!form || !_control->isBound() || value == boundValue()) return;
 
 	handleComputedColumn(value);
-	form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
+	writeCurrentValue(value, emitChange);
+}
+
+// Every value the control commits goes through HERE. The value lands
+//in the component-owned `_boundValue` (the generators' home) and the change propagates as
+//pure notification: AnalysisBase::notifyOptionsChanged() re-emits boundValuesChanged + the aware
+//dataSpecChanged (the tail the mirror's setBoundValue used to carry, gated exactly as before),
+//and boundValueChanged drives control -> form -> analysis (the run trigger). Nothing is pushed
+//into an option tree any more; bindTo, resetBoundValue and the per-family write paths all reach
+//this through setBoundValue.
+void BoundControlBase::writeCurrentValue(const Json::Value &value, bool emitChange)
+{
+	_boundValue = value;
+
+	if (AnalysisForm * form = _control->form())
+		if (AnalysisBase * analysis = form->analysisObj())
+			analysis->notifyOptionsChanged();
 
 	if (emitChange)
 		emit _control->boundValueChanged(_control);
@@ -91,14 +161,6 @@ void BoundControlBase::setIsRCode(std::string key)
 void BoundControlBase::setFilterForValues(const std::string &filterName)
 {
 	_filterForValues = filterName;
-}
-
-const Json::Value & BoundControlBase::boundValue() const
-{
-	AnalysisForm * form = _control->form();
-
-	if (form)	return form->boundValue(getName(), _control->getParentKeys());
-	else		return Json::Value::null;
 }
 
 void BoundControlBase::setIsColumn(bool isComputed, columnType type)

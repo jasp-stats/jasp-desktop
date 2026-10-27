@@ -25,6 +25,7 @@
 #include "qutils.h"
 #include "databaseinterface.h"
 #include "r_functionwhitelist.h"
+#include <algorithm>
 
 void SendFunctionForJaspresults(const char * msg) 
 {
@@ -306,7 +307,7 @@ void Engine::receiveFilterMessage(const Json::Value & jsonRequest)
 	int filterRequestId			= jsonRequest.get("requestId", -1).asInt();
 	int dataSetId				= jsonRequest.get("dataSetId", -1).asInt();
 
-	runDefaultFilter(dataSetId, filter, generatedFilter, filterRequestId);
+	runDefaultFilter(dataSetId, filter, generatedFilter, filterRequestId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
 void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
@@ -319,10 +320,10 @@ void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
 	int dataSetId				= jsonRequest.get("dataSetId",	-1).asInt();
 	int requestId				= jsonRequest.get("requestId",	-1).asInt();
 
-	runFilterByName(name, dataSetId, requestId);
+	runFilterByName(name, dataSetId, requestId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
-void Engine::runFilterByName(const std::string & name, int dataSetId, int requestId)
+void Engine::runFilterByName(const std::string & name, int dataSetId, int requestId, const std::vector<int> & referencedFilterIds)
 {
 	provideAndUpdateDataSet(dataSetId);
 	
@@ -340,7 +341,10 @@ void Engine::runFilterByName(const std::string & name, int dataSetId, int reques
 	std::string RPossibleWarning;
 	try
 	{
-		filterResult		= rbridge_applyFilter(strippedFilter, localFilter->generatedFilter());
+		// the run's slice context is the filter being run - its own view encodes
+		//the code (fixed for filter expressions), and the request's referencedFilterIds
+		//sidecar drives the materialization of any referenced foreign slices.
+		filterResult		= rbridge_applyFilter(strippedFilter, localFilter->generatedFilter(), localFilter, referencedFilterIds);
 		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 	}
 	catch(filterException & e)
@@ -366,7 +370,7 @@ void Engine::runFilterByName(const std::string & name, int dataSetId, int reques
 	_engineState = engineState::idle;
 }
 
-void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const std::string & generatedFilter, int filterRequestId)
+void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const std::string & generatedFilter, int filterRequestId, const std::vector<int> & referencedFilterIds)
 {
 	DataSet		*	dataSet				= provideAndUpdateDataSet(dataSetId);
 
@@ -380,7 +384,9 @@ void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const s
 	try
 	{		
 		std::string		strippedFilter		= stringUtils::stripRComments(filter);
-		boolvec			filterResult		= rbridge_applyFilter(strippedFilter, generatedFilter);
+		// the run's slice context is the DEFAULT filter being run (its own view
+		//encodes the code) plus the request's referencedFilterIds sidecar.
+		boolvec			filterResult		= rbridge_applyFilter(strippedFilter, generatedFilter, dataSet->defaultFilter(), referencedFilterIds);
 		std::string		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
         Log::log() << "Engine::runDefaultFilter ran:\n\t" << strippedFilter << "\n\tRPossibleWarning='" << RPossibleWarning << "'\n\t\tfor revision " << dataSet->defaultFilter()->revision() << std::endl;
@@ -448,6 +454,26 @@ void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const
 	sendString(filterResponse);
 }
 
+std::vector<int> Engine::referencedFilterIdsFromRequest(const Json::Value & jsonRequest)
+{
+	// the transient `referencedFilterIds` sidecar of a filter/compute
+	//request - the desktop's scan of the run's code (the grammar helpers).
+	//This extraction IS the strip point for these requests (mirroring the last-moment
+	//doctrine): the ids are consumed for slice materialization only and are never forwarded
+	//into anything R evaluates - the R-visible code is built by rbridge_prepareSliceRunScript
+	//from the code text alone, and the sidecar member dies with the request json here.
+	std::vector<int> ids;
+
+	const Json::Value & sidecar = jsonRequest.get("referencedFilterIds", Json::Value::null);
+
+	if(sidecar.isArray())
+		for(const Json::Value & id : sidecar)
+			if(id.isInt() || id.isUInt())
+				ids.push_back(id.asInt());
+
+	return ids;
+}
+
 void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 {
 	if(_engineState != engineState::idle)
@@ -504,7 +530,7 @@ void Engine::runRCodeCommander(int dataSetId, std::string rCode)
 	{
 		rbridge_detachRCodeEnv(rCmdFiltered);
 		rbridge_detachRCodeEnv(rCmdDataName);
-		rCodeResult = ColumnEncoder::columnEncoder()->decodeAll(rCodeResult);
+		rCodeResult = ColumnEncoder::decodeAll(rCodeResult);
 	}
 
 	sendRCodeResult(-1, rCodeResult);
@@ -554,7 +580,7 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 	int			dataSetId		  =						 jsonRequest.get("dataSetId",	-1).asInt();
 
-	runComputeColumn(dataSetId, computeColumnName, computeColumnCode, computeColumnType);
+	runComputeColumn(dataSetId, computeColumnName, computeColumnCode, computeColumnType, referencedFilterIdsFromRequest(jsonRequest));
 }
 
 void Engine::receiveComputeDataSetMessage(const Json::Value & jsonRequest)
@@ -568,10 +594,10 @@ void Engine::receiveComputeDataSetMessage(const Json::Value & jsonRequest)
 	int			dataSetId				= jsonRequest.get("dataSetId", -1).asInt();
 	int			defaultInputFilterId	= jsonRequest.get("defaultInputFilterId", -1).asInt();
 
-	runComputeDataSet(dataSetId, computeCode, defaultInputFilterId);
+	runComputeDataSet(dataSetId, computeCode, defaultInputFilterId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
-void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType)
+void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType, const std::vector<int> & referencedFilterIds)
 {
 	Log::log() << "Engine::runComputeColumn()" << std::endl;
 
@@ -590,15 +616,26 @@ void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnNa
 	{
 		try
 		{
-			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
-			
 			Column * compCol = compDataSet->column(computeColumnName);
 			
-			std::string useThisFilter				= compCol ? compCol->computeFilter() : "",
-						computeColumnResultStr		= rbridge_evalRComputedColumn(
+			const std::string useThisFilter = compCol ? compCol->computeFilter() : "";
+			
+			// The run's slice context is the COMPUTE
+			//FILTER's view - the same view the data frame R reads inside
+			//rbridge_evalRComputedColumn, and the namespace bare names in the code fall back
+			//to. The output-name encode uses that same explicit handle; the process-global
+			//current encoder is no longer consulted here. ""/unknown falls back to the default
+			//filter - the same fallback showFilter applies.
+			Filter * computeFilter = compDataSet->filter(useThisFilter.empty() ? DEFAULT_FILTER_NAME : useThisFilter);
+			ColumnEncoder * runView = computeFilter ? computeFilter->columnEncoder() : nullptr;
+			std::string computeColumnNameEnc = runView ? runView->encode(computeColumnName) : ColumnEncoder::columnEncoder()->encode(computeColumnName);
+			
+			std::string computeColumnResultStr		= rbridge_evalRComputedColumn(
 							computeColumnCode, 
 							"toString("+ setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', .calcedVals, 1))",
-							useThisFilter);
+							useThisFilter,
+							computeFilter,
+							referencedFilterIds);
 	
 			computeColumnResponse["result"]			= computeColumnResultStr;
 			computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
@@ -620,7 +657,7 @@ void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnNa
 	_engineState = engineState::idle;
 }
 
-void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, int defaultInputFilterId)
+void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, int defaultInputFilterId, const std::vector<int> & referencedFilterIds)
 {
 	Log::log() << "Engine::runComputeDataSet()" << std::endl;
 
@@ -661,7 +698,7 @@ void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, i
 				throw std::runtime_error("Computed dataset (id " + std::to_string(dataSetId) + ") not found in engine's workspace; aborting compute. The output dataset must be synced before it can be filled.");
 			std::string	outputName	= output->name().toStdString();
 
-			std::string computeDataSetResult = rbridge_evalRComputedDataSet(computeCode, outputName, inputFilter->name());
+			std::string computeDataSetResult = rbridge_evalRComputedDataSet(computeCode, outputName, inputFilter->name(), inputFilter, referencedFilterIds);
 
 			computeDataSetResponse["result"]	= computeDataSetResult;
 			computeDataSetResponse["error"]		= jaspRCPP_getLastErrorMsg();
@@ -792,7 +829,11 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
 		_resultFont				= jsonRequest.get("resultFont",			"").asString();
 		_analysisPreloadData	= jsonRequest.get("preloadData",		false).asBool();
+		_analysisMultiDataSet	= jsonRequest.get("multiDataSetAware",	false).asBool();
 		_engineState			= engineState::analysis;
+
+		//Never let a queue from a previous run leak into this one:
+		setMultiDataSetQueue({});
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
 		
@@ -812,7 +853,14 @@ void Engine::sendString(Json::Value message)
 	
 	if(message.isObject()) //If everything is converted to jaspResults maybe we can do this there?
 	{
-		ColumnEncoder::columnEncoder()->decodeJsonSafeHtml(message); // decode all columnnames as far as you can
+		//Every results payload goes through the one global strict decode table:
+		//a block per live filter of every loaded dataset plus the extras block, membership-only,
+		//unknown tokens staying raw. Aware and non-aware runs are not different here - a non-aware
+		//analysis may still live in a workspace with other datasets, and over-sweeping is harmless.
+		//safeHtml is just a parameter of the sweep (the old currentEncoder-flip variant is gone);
+		//desktop renders HTML, so safeHtml = true.
+		ColumnEncoder::decodeJson(message, /*replaceNames=*/true, /*safeHtml=*/true);
+
 		msgStr = message.toStyledString();
 	}
 	else if(message.isString())
@@ -853,16 +901,42 @@ void Engine::runAnalysis()
 	
 	updateOptionsAccordingToMeta(encodedAnalysisOptions);
 
-	_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
+	std::string multiDataSetJson;
+
+	//Check multiAware before preload: an aware analysis always runs preload-style (the datasets are
+	//handed over through the queued reads), and preloadData is forced true for aware entries anyway
+	//(Modules::AnalysisEntry::preloadData), so the flag must not gate this branch.
+	if(_analysisMultiDataSet)
+	{
+		//Encoding and slice queueing happen per dataset from the .meta provenance the controls
+		//stamped; shared with the syntax bridge through DataBridge so the two cannot drift apart.
+		MultiDataSetRunPlan plan = prepareMultiDataSetRun(encodedAnalysisOptions, _analysisDataSetId, _analysisFilter, _analysisTitle);
+
+		if(DataSet * primary = plan.primaryDataSetId >= 0 ? resolveWorkspace()->dataSetById(plan.primaryDataSetId) : nullptr)
+			dataset = primary;
+
+		_analysisColsTypes = plan.primaryCols;
+		multiDataSetJson	= plan.multiDataSetJson.toStyledString();
+	}
+	else
+	{
+		//Non-aware: the classic single (shown) dataset path, encoded against the current encoder.
+		_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
+	}
 
 	if(dataset && !_analysisFilter.empty() && dataset->filter(_analysisFilter))
 		dataset->showFilter(_analysisFilter); //Only show a filter that actually exists: showFilter(name)
 		                                        //creates a new filter for an unknown name, which would
 		                                        //silently fabricate one from a stale analysis request.
-	
+
+	// strip the transient `.filterIds` provenance from the ENCODED copy at the
+	//very last moment before R sees it (prepareMultiDataSetRun consumed it above; the unencoded
+	//_analysisOptions keeps the sidecar so a Status::changed re-run can consume it again).
+	stripTransientProvenanceForR(encodedAnalysisOptions);
+
 	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
 								encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, 
-								_developerMode, _analysisColsTypes, _analysisPreloadData);
+								_developerMode, _analysisColsTypes, _analysisPreloadData, multiDataSetJson);
 
 	switch(_analysisStatus)
 	{

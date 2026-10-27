@@ -1,5 +1,8 @@
 #include "scriptnode.h"
 #include "columntype.h"
+#include "qutils.h"
+#include "workspace.h"
+#include "filter.h"
 #include "log.h"
 #include "timers.h"
 #include <cmath>
@@ -198,6 +201,10 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 
 		if(json.isMember("dataSetName"))
 			static_cast<ScriptNodeColumn*>(result)->setDataSetName(jsonStr(json, "dataSetName"));
+
+		// the outward reference's filter name (absent = the dataset's default filter).
+		if(json.isMember("filterName"))
+			static_cast<ScriptNodeColumn*>(result)->setFilterName(jsonStr(json, "filterName"));
 		break;
 	}
 	case ScriptNodeType::Number:
@@ -545,6 +552,11 @@ Json::Value ScriptNodeColumn::toJson() const
 	if(!_dataSetName.empty())
 		json["dataSetName"] = _dataSetName;
 
+	// the source slice's filter name rides along when the outward reference
+	//names a filter ("" = the dataset's default filter, the v1 dataset-level reference).
+	if(!_filterName.empty())
+		json["filterName"] = _filterName;
+
 	if(!_toolTip.empty())
 		json["toolTipText"] = _toolTip;
 
@@ -553,10 +565,64 @@ Json::Value ScriptNodeColumn::toJson() const
 
 std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider) const
 {
-	int actualType = typeProvider ? typeProvider->columnType(_columnName) : 1;
-	int effective = effectiveColumnType(actualType);
+	int			effective	= -1;
+	std::string	baseStr;
 
-	std::string baseStr = _columnName + "." + columnTypeToString(static_cast<columnType>(effective));
+	if(!_dataSetName.empty())
+	{
+		// an OUTWARD reference - the node carries the source slice's dataset
+		//(and optionally its filter) - is emitted as the FULL qualified surface form
+		//("Dataset"."Filter"."Column"("Type")). The
+		//constructor's output is visible R code, so every outward reference uses the full
+		//surface grammar (picker cut != output cut). The form is COMPOSED from the resolved
+		//slice (Workspace::fullQualifiedColumnRef), never by re-parsing text. The type
+		//provider only knows the own dataset's columns, so it is deliberately not consulted
+		//here: the source type comes from the user override the palette stamps at drag time,
+		//else live from the referenced dataset's column.
+		columnType sourceType = columnType::unknown;
+
+		if(_columnTypeUser > 0)
+			sourceType = static_cast<columnType>(_columnTypeUser);
+		else if(Workspace * ws = Workspace::singleton())
+			if(DataSet * dataSet = ws->dataSetByTitle(tq(_dataSetName)))
+				if(Column * column = dataSet->column(_columnName))
+					sourceType = column->type();
+
+		effective = effectiveColumnType(int(sourceType));
+
+		//The type segment reflects the SOURCE type (what the reference points at); when even
+		//that cannot be resolved (stale slice, no user override) the segment is omitted
+		//(optional) and the reference still fails the run loudly. The
+		//unknown type must not pick up the as.character default wrap: an unresolvable
+		//reference wraps as nothing meaningful, so it emits unwrapped.
+		const int segmentType = effective;
+		if(effective <= 0)	//columnType::unknown is 0: no resolvable source type
+			effective = int(columnType::scale);
+
+		if(Workspace * ws = Workspace::singleton())
+			baseStr = fq(ws->fullQualifiedColumnRef(tq(_dataSetName), tq(_filterName), _columnName,
+													segmentType > 0 ? static_cast<columnType>(segmentType) : columnType::unknown));
+		else
+		{
+			//No workspace in this process (ad-hoc unit context): compose the full form from
+			//the stored names verbatim - the grammar accepts the DEFAULT_FILTER spelling,
+			//and an unresolvable name fails the run loudly.
+			QualifiedColumnRef ref;
+			ref.dataSetName	= tq(_dataSetName);
+			ref.filterName	= tq(_filterName.empty() ? DEFAULT_FILTER_NAME : _filterName);
+			ref.columnName	= tq(_columnName);
+			if(segmentType > 0)
+				ref.typeName = tq(columnTypeToString(static_cast<columnType>(segmentType)));
+			baseStr = fq(ref.render());
+		}
+	}
+	else
+	{
+		int actualType = typeProvider ? typeProvider->columnType(_columnName) : 1;
+		effective = effectiveColumnType(actualType);
+
+		baseStr = _columnName + "." + columnTypeToString(static_cast<columnType>(effective));
+	}
 	
 	// Its very hard to compare different levels with each other. 
 	switch(effective)

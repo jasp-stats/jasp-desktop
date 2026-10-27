@@ -56,7 +56,11 @@ public:
 	bool			hasWrapper()			const { return _hasWrapper;			}
 	bool			smallIcon()				const { return _smallIcon;			}
 	bool			requiresData()			const { return _requiresData;		}
-	bool			preloadData()			const { return _preloadData;		}
+	///< An aware analysis always preloads (its datasets ride the queued reads), but that forcing
+	///< is applied where the engine request / wrapper is built - Analysis::createAnalysisRequestJson,
+	///< Analysis::generateWrapper and syntaxbridge generateWrapper - from the live AnalysisBase flag,
+	///< not here: this entry no longer knows about awareness.
+	bool			preloadData()			const { return _preloadData;	}
 	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
 	DynamicModule*	dynamicModule()			const;

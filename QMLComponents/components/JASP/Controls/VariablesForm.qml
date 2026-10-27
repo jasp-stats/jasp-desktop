@@ -39,6 +39,11 @@ import JASP.Controls
     \li \b removeInvisibles (bool) - Remove invisible controls from the layout. Default: false.
     \endlist
 
+    \note Dataset/filter selection is a property of the LISTS, not of the form:
+    a VariablesList or AvailableVariablesList that declares \c dataSetSelectionOption gets its own
+    FilterSelect dropdown and its own variable-info provider, so several lists of one form can
+    select different datasets at the same time.
+
     \section1 Example
 
     \qml

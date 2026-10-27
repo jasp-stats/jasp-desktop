@@ -105,7 +105,10 @@ public:
 
 
 				JASPControl*		getRowControl(const QString& key, const QString& name)				const	override;
-				bool				addRowControl(const QString& key, JASPControl* control)						override;
+				///< tableview rows are keyed by their row-index string, so the exact
+				///< identity overload just forwards the name part (behaviour unchanged).
+				JASPControl*		getRowControl(const TermRowKey& key, const QString& name)			const	override;
+				bool				addRowControl(const TermRowKey& key, JASPControl* control)						override;
 
 signals:
 	void columnCountChanged();
