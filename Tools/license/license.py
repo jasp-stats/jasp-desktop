@@ -127,10 +127,6 @@ def cmd_keygen(_args) -> None:
 /// matching private key is NOT in this repo: it lives in the JASP vault and
 /// only Tools/license/license.py mint ever sees it.
 {c_array("jaspLicensePK", pk, crypto_sign_PUBLICKEYBYTES)}
-/// Secretbox key lifting the obfuscation curtain: it hides the expiry dates
-/// from people reading forced.json or the registry. It ships in every binary
-/// by design and protects nothing cryptographically — authenticity comes
-/// from the signature above. Be honest about what that is.
 {c_array("jaspLicenseKObf", k_obf, crypto_secretbox_KEYBYTES)}
 #endif // LICENSEKEYS_H
 """
