@@ -237,7 +237,11 @@ const Settings::Setting Settings::Values[] = {
 	{"osfEnabled",				true}
 };
 
-// Shipped JSON files beside the application: the per-client MSI layer.
+// Shipped JSON files beside the application: the per-client installer layer
+// (MSI on Windows; on macOS the DMG layer stages them in the bundle's
+// Resources folder — and /Library/Application Support/JASP/ serves the same
+// role, because everything inside the bundle is sealed by the code
+// signature).
 //
 //   defaults.json : soft defaults — policy, the user's own settings and the
 //                   legacy registry all override them.
@@ -264,10 +268,23 @@ static const QJsonObject& shippedSettings(bool forced)
 		return shipped[idx];		// too early: applicationDirPath() is empty; retry on a later call
 
 	const QString fileName = forced ? "forced.json" : "defaults.json";
-	const QStringList candidates = {
+	QStringList candidates = {
 		QCoreApplication::applicationDirPath() + "/" + fileName,
 		QCoreApplication::applicationDirPath() + "/Resources/" + fileName
 	};
+#ifdef __APPLE__
+	// applicationDirPath() is JASP.app/Contents/MacOS here, so the bundle's
+	// Resources folder is a sibling — the per-client DMG layer stages the
+	// files there (Contents/Resources, the idiomatic spot) rather than next
+	// to the binary.
+	candidates += QCoreApplication::applicationDirPath() + "/../Resources/" + fileName;
+	// Admin-owned and outside the (signature-sealed) bundle: IT can drop or
+	// update the file there — e.g. through an MDM-installed package — without
+	// re-signing or re-notarizing JASP. Checked first so a value IT pushes
+	// beats whatever the installer shipped, the way group policy outranks
+	// forced.json on Windows.
+	candidates.prepend("/Library/Application Support/JASP/" + fileName);
+#endif
 	for (const QString& path : candidates)
 	{
 		QFile f(path);
