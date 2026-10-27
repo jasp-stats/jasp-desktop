@@ -536,9 +536,10 @@ void Engine::runRCodeCommander(std::string rCode)
 		rCode = ColumnEncoder::columnEncoder()->encodeRScript(rCode, &commanderColumnsUsed);
 
 		//Only the columns the code mentions get loaded, also through whole string literals
-		//(data[["LL"]]), and with the type asked for (data$LL.nominal). The frame override from
-		//jaspEncodedFrame.R then resolves those string literals at lookup time.
-		rbridge_setCommanderColumnsUsed(commanderColumnsUsed);
+		//(data[["LL"]]), and with the type asked for (data$LL.nominal). colsPlusTypesFor resolves
+		//which columns and types the references ask for, and the frame override from
+		//jaspEncodedFrame.R then resolves the string literals at lookup time.
+		rbridge_setCommanderColumnsUsed(ColumnEncoder::columnEncoder()->colsPlusTypesFor(commanderColumnsUsed));
 
 		jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readFullDatasetToEnd());").c_str());
 		jaspRCPP_runScript((rCmdFiltered	+ "<- .encodedFrame(.readFullFilteredDatasetToEnd());").c_str());

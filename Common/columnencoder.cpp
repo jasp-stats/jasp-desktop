@@ -139,6 +139,40 @@ columnType ColumnEncoder::columnTypeFromEncoded(const std::string &in)
 	return decodingTypes().at(in);
 }
 
+ColumnEncoder::colsPlusTypes ColumnEncoder::colsPlusTypesFor(const std::set<std::string> & columnNames)
+{
+	colsPlusTypes requested;
+
+	for(const std::string & colName : columnNames)
+	{
+		//An exact columnname asks for that column with its current type
+		const auto nameType = _dataSetTypes.find(colName);
+		if(nameType != _dataSetTypes.end())
+		{
+			requested.insert(std::make_pair(colName, nameType->second));
+			continue;
+		}
+
+		//Maybe it is a "colName.type" reference (data$LL.nominal): decoding always goes to the original
+		//columnname, so what decode lands on tells us the basecolumn and where the dot sits.
+		if(colName.empty())
+			continue;
+
+		std::string colNameSansType;
+
+		try
+		{
+			colNameSansType = decode(encode(colName));
+		}
+		catch(...) { continue; } //Not a column at all, leave it to R to complain about it
+
+		if(colName.size() > colNameSansType.size() && colName[colNameSansType.size()] == '.' && columnTypeValidName(colName.substr(colNameSansType.size() + 1)))
+			requested.insert(std::make_pair(colName, columnTypeFromString(colName.substr(colNameSansType.size() + 1))));
+	}
+
+	return requested;
+}
+
 void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding)
 {
 	//This will not give the desired result for data from the dataset, but setCurrentColumnTypePerName will fix it!

@@ -409,4 +409,17 @@ void TestColumnEncoderContext::pathologicalNamesRawStringsAndBackticksAreHandled
 	QVERIFY2(unterminatedFound.count("LL") == 0, "Something after an unterminated raw string was collected anyway.");
 }
 
+void TestColumnEncoderContext::colsPlusTypesForResolvesColumnsAndTypes()
+{
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}, {"part length", columnType::ordinal}}));
+
+	const ColumnEncoder::colsPlusTypes requested = ColumnEncoder::columnEncoder()->colsPlusTypesFor(
+		{"LL", "LL.nominal", "part length.ordinal", "notAColumn", "LL.notAType"});
+
+	QVERIFY2(requested.count({"LL",						columnType::scale})		== 1, "An exact columnname did not get its current type.");
+	QVERIFY2(requested.count({"LL.nominal",				columnType::nominal})	== 1, "A typed reference did not keep its name and get the asked type.");
+	QVERIFY2(requested.count({"part length.ordinal",	columnType::ordinal})	== 1, "A typed reference to a non-syntactic columnname was not resolved.");
+	QVERIFY2(requested.size() == 3, "colsPlusTypesFor resolved something that is not a column (reference).");
+}
+
 QTEST_MAIN(TestColumnEncoderContext)

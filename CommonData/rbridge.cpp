@@ -44,11 +44,11 @@ ColumnEncoder::colsPlusTypes	datasetWanted;
 std::string						computedColumnFilter	= "";
 
 //The R Commander loads only the columns its code mentions (see rbridge_readFullDataSetHelper),
-//so the desktop hands us that set right before binding data/filteredData.
-static std::set<std::string>	commanderColumnsUsed	= {};
-static bool						rbridge_insideJasp		= true;
+//so the desktop hands us those columns and their types right before binding data/filteredData.
+static ColumnEncoder::colsPlusTypes	commanderColumnsUsed	= {};
+static bool							rbridge_insideJasp		= true;
 
-void rbridge_setCommanderColumnsUsed(const std::set<std::string> & columns)
+void rbridge_setCommanderColumnsUsed(const ColumnEncoder::colsPlusTypes & columns)
 {
 	commanderColumnsUsed = columns;
 }
@@ -364,33 +364,6 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullFilteredDataSet(size_t * colMa
 	return 	rbridge_readFullDataSetHelper(colMax, true);
 }
 
-///Fill datasetWanted from a set of columnNames as reported by ColumnEncoder::encodeRScript: a plain
-///columnName gets its current type and a "columnName.type" gets that type. Anything else (for instance
-///a levelName that happens to match) is skipped, there is nothing to load for it and R can complain
-///about it being missing at lookup time.
-static void fillDatasetWantedFrom(const std::set<std::string> & columnNames)
-{
-	datasetWanted.clear();
-
-	for(const std::string & colName : columnNames)
-		if(rbridge_dataSet->column(colName))
-			datasetWanted.insert(std::make_pair(colName, rbridge_dataSet->column(colName)->type()));
-		else if(!colName.empty())
-		{
-			//Maybe "colName.type": decoding always goes to the original columnname so:
-			std::string colNameSansType;
-
-			try
-			{
-				colNameSansType = ColumnEncoder::columnEncoder()->decode(ColumnEncoder::columnEncoder()->encode(colName));
-			}
-			catch(...) { continue; } //Not a column at all, leave it to R to complain about it
-
-			if(colName.size() > colNameSansType.size() && colName[colNameSansType.size()] == '.' && columnTypeValidName(colName.substr(colNameSansType.size() + 1)))
-				datasetWanted.insert(std::make_pair(colName, columnTypeFromString(colName.substr(colNameSansType.size() + 1))));
-		}
-}
-
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSetHelper(size_t * colMax, bool obeyFilter)
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
@@ -404,7 +377,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSetHelper(size_t * colMax,
 	//positional access (data[, 3]) and nrow(data) keep working.
 	if(!commanderColumnsUsed.empty())
 	{
-		fillDatasetWantedFrom(commanderColumnsUsed);
+		datasetWanted = commanderColumnsUsed;
 		return rbridge_readDataSetRequested(colMax, obeyFilter);
 	}
 
@@ -446,7 +419,9 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFilteringCompCol(size_t 
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
-	fillDatasetWantedFrom(filterColumnsUsed);
+	//The filter and computed-column code mentions the columns it uses through encodeRScript; only
+	//those are loaded, resolved to the columns and types they ask for.
+	datasetWanted = ColumnEncoder::columnEncoder()->colsPlusTypesFor(filterColumnsUsed);
 
 	return rbridge_readDataSetRequested(colMax, obeyFilter);
 }
