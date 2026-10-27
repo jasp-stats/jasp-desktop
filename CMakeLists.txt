@@ -132,6 +132,13 @@ include(Libraries)
 # Preparing irregular dependencies, e.g., ReadStat
 include(Dependencies)
 
+# mtw-ffi library for the MinitabOldImporter, built from the Libraries/MTW-FFI
+# submodule (see MTW_IMPORT_NOTES.md). Not needed for the syntax-interface-only
+# configure, which would otherwise require a Rust toolchain for nothing.
+if(NOT JASP_SYNTAX_INTERFACE_ONLY)
+	include(MtwFFI)
+endif()
+
 # Setting JASP's parameters, e.g., JASP_VERSION
 include(JASP)
 

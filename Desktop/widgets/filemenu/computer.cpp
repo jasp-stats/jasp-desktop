@@ -21,6 +21,7 @@
 #include "utilities/messageforwarder.h"
 #include "utilities/desktopcommunicator.h"
 #include "log.h"
+#include "appinfo.h"
 #include "data/jaspencryptiondata.h"
 #include "data/datasetpackage.h"
 
@@ -42,7 +43,11 @@ FileEvent *Computer::browseOpen(const QString &path)
 	else
 		browsePath = path;
 
-	QString filter = tr("All Data Sets %1").arg("(*.jasp *.csv *.txt *.tsv *.sav *.zsav  *.ods *.xls *.xlsx *.dta *.por *.sas7bdat *.sas7bcat *.xpt *.rdata *.rds *.mwx *.mpx);;")
+	//The classic Minitab types (.mtw/.mpj/.mtp) are an Enterprise (PRO) feature: AppInfo::proMode()
+	//decides whether the file dialog offers them at all (DataSetLoader::getImporter gates the same way).
+	const QString mtwExts = AppInfo::proMode() ? " *.mtw *.mpj *.mtp" : "";
+
+	QString filter = tr("All Data Sets %1").arg("(*.jasp *.csv *.txt *.tsv *.sav *.zsav  *.ods *.xls *.xlsx *.dta *.por *.sas7bdat *.sas7bcat *.xpt *.rdata *.rds *.mwx *.mpx" + mtwExts + ");;")
 					+ tr("JASP Files %1").arg("(*.jasp);;")
 					+ tr("CSV Text Files %1").arg("(*.csv *.txt *.tsv);;")
 					+ tr("Spreadsheet Files %1").arg("(*.ods *.xls *.xlsx);;")
@@ -50,7 +55,8 @@ FileEvent *Computer::browseOpen(const QString &path)
 					+ tr("Stata Files %1").arg("(*.dta);;")
 					+ tr("SAS Files %1").arg("(*.sas7bdat *.sas7bcat *.xpt);;")
 					+ tr("R Data files %1").arg("(*.rdata *.rds);;")
-					+ tr("Minitab Workbook files %1").arg("(*.mwx *.mpx)");
+					+ tr("Minitab Workbook files %1").arg("(*.mwx *.mpx)")
+					+ (AppInfo::proMode() ? ";;" + tr("Minitab Files %1").arg("(*.mtw *.mpj *.mtp)") : "");
 	if (mode() == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx)";
 	Log::log() << "Now calling MessageForwarder::browseOpenFile(\"Open\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;

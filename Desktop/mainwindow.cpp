@@ -2546,7 +2546,8 @@ bool MainWindow::startDataEditorHandler()
 		else
 		{
 			QString caption = "Find Data File";
-			QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx *.rdata *.rds *.mwx *.mpx)";
+			//.mtw/.mpj/.mtp only show up in Enterprise (PRO) mode, like DataSetLoader::getImporter
+			QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx *.rdata *.rds *.mwx *.mpx" + QString(AppInfo::proMode() ? " *.mtw *.mpj *.mtp" : "") + ")";
 
 			dataFilePath = MessageForwarder::browseOpenFile(caption, "", filter);
 			if (dataFilePath == "")

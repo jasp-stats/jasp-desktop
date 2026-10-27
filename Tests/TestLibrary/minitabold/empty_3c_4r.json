@@ -1,0 +1,89 @@
+{
+	"columns" : 
+	[
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"0",
+				"0",
+				"0",
+				"0"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "A",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"0",
+				"0",
+				"0",
+				"0"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "B",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"0",
+				"0",
+				"0",
+				"0"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "C",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		}
+	],
+	"customEmptyValues" : 
+	{
+		"custom" : true,
+		"strings" : 
+		[
+			".",
+			"Missing",
+			"NA",
+			"NaN",
+			"nan"
+		]
+	}
+}
