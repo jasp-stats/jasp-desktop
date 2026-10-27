@@ -3790,8 +3790,8 @@ msgid "has selected module "
 msgstr "је изабрао модул "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "Кликните на фајл испод за синхронизацију или користите "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "Кликните на фајл испод за синхронизацију или користите %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"

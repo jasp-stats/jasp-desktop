@@ -42,12 +42,11 @@ public:
 public slots:
 	QString getCurrentFilePath();
 	QString getHeaderText();
-	void syncFile(const QString& path);
 	
 	void setListModel(CurrentFileListModel * listModel);
 signals:
 	void listModelChanged(CurrentFileListModel * listModel);
-	void setCheckAutomaticSync(bool set);
+	void syncRequested(const QString& path);
 
 
 private:

@@ -46,7 +46,7 @@ FileMenu::FileMenu(QObject *parent) : FileEventRouter(parent)
 	connect(_actionButtons,		&ActionButtons::buttonClicked,				this,			&FileMenu::actionButtonClicked		);
 	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this,			&FileMenu::setFileoperation			);
 	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this,			&FileMenu::resourceButtonClicked	);
-	connect(_currentDataFile,	&CurrentDataFile::setCheckAutomaticSync,	_mainWindow,	&MainWindow::setCheckAutomaticSync	);
+	connect(_currentDataFile,	&CurrentDataFile::syncRequested,			this,			[this](const QString & path) { _mainWindow->setCheckAutomaticSync(false); setSyncRequest(path); });
 
 	_actionButtons->setEnabled(ActionButtons::New,				true);
 	_actionButtons->setEnabled(ActionButtons::Open,				true);
