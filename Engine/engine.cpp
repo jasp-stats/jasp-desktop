@@ -532,17 +532,29 @@ void Engine::runRCodeCommander(std::string rCode)
 
 	if(thereIsSomeData)
 	{
-		std::set<std::string> commanderColumnsUsed;
-		rCode = ColumnEncoder::columnEncoder()->encodeRScript(rCode, &commanderColumnsUsed);
+		std::set<std::string> columnsMentioned;
+		rCode = ColumnEncoder::columnEncoder()->encodeRScript(rCode, &columnsMentioned);
 
 		//Only the columns the code mentions get loaded, also through whole string literals
-		//(data[["LL"]]), and with the type asked for (data$LL.nominal). colsPlusTypesFor resolves
-		//which columns and types the references ask for, and the frame override from
-		//jaspEncodedFrame.R then resolves the string literals at lookup time.
-		rbridge_setCommanderColumnsUsed(ColumnEncoder::columnEncoder()->colsPlusTypesFor(commanderColumnsUsed));
+		//(data[["LL"]]), and with the type asked for (data$LL.nominal). When nothing is mentioned the
+		//full datasets are read instead, so that positional access (data[, 3]) and nrow(data) keep working.
+		const ColumnEncoder::colsPlusTypes wanted = ColumnEncoder::columnEncoder()->colsPlusTypesFor(columnsMentioned);
 
-		jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readFullDatasetToEnd());").c_str());
-		jaspRCPP_runScript((rCmdFiltered	+ "<- .encodedFrame(.readFullFilteredDatasetToEnd());").c_str());
+		if(wanted.empty())
+		{
+			jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readFullDatasetToEnd());").c_str());
+			jaspRCPP_runScript((rCmdFiltered	+ "<- .encodedFrame(.readFullFilteredDatasetToEnd());").c_str());
+		}
+		else
+		{
+			//The same requested read that analyses and filters use: datasetWanted says which columns
+			//and types to load, and the frame override from jaspEncodedFrame.R resolves the string
+			//literals at lookup time.
+			rbridge_setWantedCols(wanted);
+
+			jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readDataSetRequestedNativeUnfiltered());").c_str());
+			jaspRCPP_runScript((rCmdFiltered	+ "<- .encodedFrame(.readDataSetRequestedNative());").c_str());
+		}
 	}
 
 	std::string rCodeResult =	jaspRCPP_evalRCodeCommander(rCode.c_str());

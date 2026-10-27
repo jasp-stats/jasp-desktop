@@ -213,6 +213,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rEnvironment[".requestTempFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
 	rEnvironment[".requestTempRootNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
 	rEnvironment[".readDataSetRequestedNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetRequested);
+	rEnvironment[".readDataSetRequestedNativeUnfiltered"]	= Rcpp::InternalFunction(&jaspRCPP_readDataSetRequestedUnfiltered);
 	rEnvironment[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
 	rEnvironment[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rEnvironment[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
@@ -659,7 +660,10 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 		"  },	"																		"\n"
 		"  warning = function(w) { cat(paste0('Warning: ', toString(w$message))) },"	"\n"
 		"  error   = function(e) { cat(paste0('Error: ',   toString(e$message))) }"		"\n"
-		");"
+		");"																			"\n"
+		//The data/filteredData binding from rbridge_setupRCodeEnvReadData is only meant for this piece of
+		//code: detach it again so it does not pile up on the search path or clobber analyses.
+		"for(nm in c('data', 'filteredData')) if(nm %in% search()) try(detach(nm, character.only=TRUE), silent=TRUE);"
 		);
 
 	jaspRCPP_parseEvalQNT(rCodeTryCatch, false, false);
@@ -1103,6 +1107,16 @@ Rcpp::DataFrame jaspRCPP_readDataSetRequested()
 {
 	size_t				colMax				= 0;
 	RBridgeColumn	  * colResults			= readDataSetRequestedCB(&colMax, true);
+
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+}
+
+///Same as jaspRCPP_readDataSetRequested but ignoring the filter: the R Commander binds its
+///unfiltered data and filteredData through datasetWanted, which analyses and filters also use.
+Rcpp::DataFrame jaspRCPP_readDataSetRequestedUnfiltered()
+{
+	size_t				colMax				= 0;
+	RBridgeColumn	  * colResults			= readDataSetRequestedCB(&colMax, false);
 
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }

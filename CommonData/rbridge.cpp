@@ -43,16 +43,6 @@ ColumnEncoder				*	extraEncodings			= nullptr;
 ColumnEncoder::colsPlusTypes	datasetWanted;
 std::string						computedColumnFilter	= "";
 
-//The R Commander loads only the columns its code mentions (see rbridge_readFullDataSetHelper),
-//so the desktop hands us those columns and their types right before binding data/filteredData.
-static ColumnEncoder::colsPlusTypes	commanderColumnsUsed	= {};
-static bool							rbridge_insideJasp		= true;
-
-void rbridge_setCommanderColumnsUsed(const ColumnEncoder::colsPlusTypes & columns)
-{
-	commanderColumnsUsed = columns;
-}
-
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
 
@@ -127,8 +117,6 @@ const std::string batchAnalysisR =
 void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
-
-	rbridge_insideJasp = insideJasp;
 
 	Log::log() << "Setting DataBridge and extraEncodings." << std::endl;
 	rbridge_setDataBridge(dataBridge);
@@ -370,16 +358,6 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSetHelper(size_t * colMax,
 
 	if(rbridge_dataSet == nullptr)
 		return nullptr;
-
-	//The R Commander mentions the columns it uses in its code and the desktop tells us which those
-	//are through rbridge_setCommanderColumnsUsed: then only those are loaded (with the type asked for,
-	//so data$LL.nominal also works). When nothing was mentioned we load everything, also so that
-	//positional access (data[, 3]) and nrow(data) keep working.
-	if(!commanderColumnsUsed.empty())
-	{
-		datasetWanted = commanderColumnsUsed;
-		return rbridge_readDataSetRequested(colMax, obeyFilter);
-	}
 
 	const Columns & columns = rbridge_dataSet->columns();
 
@@ -809,24 +787,13 @@ void rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::stri
 {
 	static std::string setupFilterEnv;
 
-	setupFilterEnv =	dataname + " <- " + readFunction + ";\n";
-
-	//The override for string-literal column references (data[["x"]]) only exists and only makes sense
-	//when the colnames are encoded: in jaspTools the frames have original colnames and no encoder.
-	if(rbridge_insideJasp)
-		setupFilterEnv += dataname + " <- .encodedFrame(" + dataname + ");\n";
-
-	setupFilterEnv +=	"attach(" + dataname + ");"																"\n"
+	//The frame gets the jaspEncodedFrame class so that string-literal column references (data[["x"]])
+	//are resolved to columns at lookup time by the [[ override (see CommonData/R/jaspEncodedFrame.R).
+	setupFilterEnv =	dataname + " <- .encodedFrame(" + readFunction + ");\n"
+						"attach(" + dataname + ");"																"\n"
 						"options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);"	"\n";
 
 	jaspRCPP_runScript(setupFilterEnv.c_str());
-}
-
-void rbridge_detachRCodeEnv(const std::string & dataname)
-{
-	static std::string detacher;
-	detacher = "detach("+dataname+")";
-	jaspRCPP_runScript(detacher.c_str());	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 }
 
 std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std::string & generatedFilterCode)
@@ -852,7 +819,8 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	rbridge_setupRCodeFilterEnv(rowCount);
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
-	rbridge_detachRCodeEnv();
+	//and afterwards we make sure the data is detached again to avoid superfluous messages and possible clobbering of analyses
+	jaspRCPP_runScript("detach(data);");
 
 	if(arrayLength < 0)
 	{

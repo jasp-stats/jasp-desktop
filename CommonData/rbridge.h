@@ -84,8 +84,6 @@ extern "C" {
 	void				rbridge_clearDataBridge();
 	void				rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, const char * resultFont, bool insideJasp = true);
 
-	void				rbridge_setCommanderColumnsUsed(const ColumnEncoder::colsPlusTypes & columns);
-
 	void				rbridge_memoryCleaning();
 
 	void				rbridge_setWantedCols(const ColumnEncoder::colsPlusTypes& datasetColsTypes);
@@ -94,7 +92,6 @@ extern "C" {
 	void				rbridge_setupRCodeEnvReadData(				const std::string & dataname, const std::string & readFunction);
 	void				rbridge_setupRCodeEnv(		int rowCount,	const std::string & dataname = "data");
 	void				rbridge_setupRCodeFilterEnv(int rowCount,	const std::string & dataname = "data");
-	void				rbridge_detachRCodeEnv(						const std::string & dataname = "data");
 
 	void				freeRBridgeColumns();
 	void				freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
