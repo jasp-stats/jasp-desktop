@@ -552,7 +552,7 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 
 ///Collect the columnNames that occur as entire string literals in text (as in data[["x"]]) into found.
 ///Nothing is rewritten here: the string literals themselves are left alone so that strings keep meaning data.
-///Instead the R-side frame override (see CommonData/R/commanderFrame.R) resolves such references at lookup time.
+///Instead the R-side frame override (see CommonData/R/jaspEncodedFrame.R) resolves such references at lookup time.
 ///The scan is comment- and escape-aware and skips backticked symbols (handled by encodeRScript itself) and raw strings.
 void ColumnEncoder::collectColumnNamesFromStringLiterals(const std::string & text, const colMap & map, std::set<std::string> & found)
 {

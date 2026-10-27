@@ -537,7 +537,7 @@ void Engine::runRCodeCommander(std::string rCode)
 
 		//Only the columns the code mentions get loaded, also through whole string literals
 		//(data[["LL"]]), and with the type asked for (data$LL.nominal). The frame override from
-		//commanderFrame.R then resolves those string literals at lookup time.
+		//jaspEncodedFrame.R then resolves those string literals at lookup time.
 		rbridge_setCommanderColumnsUsed(commanderColumnsUsed);
 
 		jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readFullDatasetToEnd());").c_str());

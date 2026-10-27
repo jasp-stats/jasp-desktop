@@ -20,7 +20,7 @@ make_includable(../Engine/jaspBase/R/transformYeoJohnson.R				jaspBase_transform
 make_includable(../Engine/jaspBase/R/transformPower.R					jaspBase_transformPower.h)
 make_includable(../Engine/jaspBase/R/columnFormula.R					jaspBase_columnFormula.h)
 
-make_includable(R/commanderFrame.R										commanderFrame.h)
+make_includable(R/jaspEncodedFrame.R									jaspEncodedFrame.h)
 make_includable(R/batchAnalysis.R										batchAnalysis.h)
 
 
