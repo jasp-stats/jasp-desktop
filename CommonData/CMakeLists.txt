@@ -18,6 +18,10 @@ make_includable(../Engine/jaspBase/R/transformBoxCox.R					jaspBase_transformBox
 make_includable(../Engine/jaspBase/R/transformJohnson.R					jaspBase_transformJohnson.h)
 make_includable(../Engine/jaspBase/R/transformYeoJohnson.R				jaspBase_transformYeoJohnson.h)
 make_includable(../Engine/jaspBase/R/transformPower.R					jaspBase_transformPower.h)
+make_includable(../Engine/jaspBase/R/columnFormula.R					jaspBase_columnFormula.h)
+
+make_includable(R/jaspEncodedFrame.R									jaspEncodedFrame.h)
+make_includable(R/batchAnalysis.R										batchAnalysis.h)
 
 
 file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")

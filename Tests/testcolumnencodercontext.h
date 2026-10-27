@@ -30,6 +30,13 @@ private slots:
 	void cleanup();
 	void scopedContextsDecodeInterleavedAndRestoreLiveState();
 	void malformedContextDoesNotMutateLiveState();
+	void stringLiteralReferencesAreCollectedButNotRewritten();
+	void stringLiteralCollectionIsCommentEscapeAndRawStringAware();
+	void prefixedEncodingCollectsStringLiteralsWithoutRewriting();
+	void commentAndEscapeDesyncIsFixed();
+	void newlinesAndTabsInsideStringsStayStringContent();
+	void pathologicalNamesRawStringsAndBackticksAreHandled();
+	void colsPlusTypesForResolvesColumnsAndTypes();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

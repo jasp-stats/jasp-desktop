@@ -48,9 +48,6 @@ public:
 				Column			*	createComputedColumn(const std::string & name, int columnType, computedColumnType computeType, Analysis * analysis = nullptr);
 	Q_INVOKABLE void				createComputedColumn(const QString     & name, int columnType, bool jsonPlease);
 
-				bool				areLoopDependenciesOk(const std::string & columnName);
-				bool				areLoopDependenciesOk(const std::string & columnName, const std::string & code);
-
 	Q_INVOKABLE bool				showAnalysisFormForColumn(const QString & columnName);
 
                                 static		ComputedColumnModel * singleton()		{ return _singleton; }

@@ -84,6 +84,12 @@ public:
 			std::string			encodeRScript(std::string text, std::map<std::string, std::set<std::string>>& prefixedColumnsFound, const std::set<std::string>& allowedPrefixes);
 			std::string			encodeRScript(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, std::set<std::string> * columnNamesFound = nullptr, const std::string& acceptedPrefix = "");
 
+			///Resolve a set of column references as collected by encodeRScript to the columns and types
+			///they ask for: an exact columnname gets its current type and a "columnName.type" reference
+			///that type. Anything else (a levelName that happens to match, for instance) is skipped:
+			///there is nothing to load for it and R can complain about it being missing at lookup time.
+			colsPlusTypes		colsPlusTypesFor(const std::set<std::string> & columnNames);
+
 			///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
 	static	std::string			encodeAll(const std::string & text) { return replaceAll(text, encodingMap(), originalNames()); }
 
@@ -110,6 +116,7 @@ private:
 
 	static	void				replaceAll(Json::Value & json, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, bool replaceNames, bool replaceStrict);
 	static	std::vector<size_t>	getPositionsColumnNameMatches(const std::string & text, const std::string & columnName);
+	static	void				collectColumnNamesFromStringLiterals(const std::string & text, const colMap & map, std::set<std::string> & found);
 			void				collectExtraEncodingsFromMetaJson(const Json::Value & in, colTypeMap & namesCollected) const;
 	static	void				sortVectorBigToSmall(std::vector<std::string> & vec);
 	static	const colMap	&	encodingMap();

@@ -11,6 +11,8 @@
 #include "data/datasetpackage.h"
 #include "data/importers/csvimporter.h"
 #include "engine/enginerepresentation.h"
+#include "appinfo.h"
+#include "qquick/rcommander.h"
 
 void TestEngine::initTestCase()
 {
@@ -156,6 +158,139 @@ void TestEngine::testComputedColumns()
 	QVERIFY2(jsonContCor1["data"]   == jsonV1["data"],   "Data is not the same");
 	QVERIFY2(jsonContCor1["labels"] == jsonV1["labels"], "Labels are not the same");
 
+}
+
+void TestEngine::testBatchAnalysis()
+{
+	QVERIFY2(_data,			"No dataset!");
+	QVERIFY2(_engines,		"No EngineSync!");
+
+	EngineRepresentation * rcmd = _engines->createRCmdEngine();
+	_engines->startStoppedEngine(rcmd);
+
+	//A fresh engine boots in "initializing" and *silently drops* every request that is not a
+	//resume message until it has been resumed (Engine::receiveMessages), so wait for the
+	//resume/settings handshake to finish before sending anything.
+	QTRY_VERIFY_WITH_TIMEOUT(rcmd->idle(), 60000);
+
+	QSignalSpy spy(rcmd, SIGNAL(rCodeReturnedLog(const QString &, bool)));
+	QVERIFY2(spy.isValid(), "Spy is broken!");
+
+	//Regression: before the batch R code was embedded in jasp-desktop, every plain Run errored
+	//out whenever the loaded jaspBase did not know .normalizeBatchResult.
+	rcmd->runScriptOnProcess("1 + 1");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+
+	const QString plainLog = spy.takeFirst()[0].toString();
+	spy.clear();
+
+	QVERIFY2(!plainLog.contains("Error", Qt::CaseInsensitive),											"Plain code errored in the commander");
+	QVERIFY2(plainLog.contains("@@@JASP_BATCH_RESULT@@@[]@@@JASP_BATCH_RESULT_END@@@"),					"No empty batch result around a non-batch result");
+
+	//A batch result: the desktop reads module/analysis/title as JSON strings, so length-1 values
+	//must be scalars (auto_unbox), computed doubles must keep their precision (digits = NA,
+	//jsonlite's default of 4 decimals would round 0.123456789012346 down to 0.1235) and NULL must
+	//stay null instead of becoming an empty object (null = "null").
+	const QString mockWrapper =
+		"mockWrapper <- function(x, precise, aNull)\n"
+		"{\n"
+		"	list(module = 'testModule', analysis = 'FakeAnalysis',\n"
+		"		 options = list(x = x, precise = precise, aNull = aNull))\n"
+		"}\n";
+
+	rcmd->runScriptOnProcess(mockWrapper + "batchAnalysis(mockWrapper, x = c(1, 2), precise = 0.123456789012345678, aNull = NULL)");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+
+	const QString batchLog = spy.takeFirst()[0].toString();
+	spy.clear();
+
+	QVERIFY2(batchLog.contains("@@@JASP_BATCH_RESULT@@@"),						"Batch result was not transported");
+	QVERIFY2(batchLog.contains("\"module\":\"testModule\""),					"module did not serialize as a scalar");
+	QVERIFY2(!batchLog.contains("\"module\":[\"testModule\""),					"module serialized as an array");
+	QVERIFY2(batchLog.contains("\"precise\":0.123456789012346"),				"Precision was lost, digits = NA expected");
+	QVERIFY2(batchLog.contains("\"aNull\":null"),								"NULL did not serialize as JSON null");
+	QVERIFY2(batchLog.contains("\"title\":\"FakeAnalysis: x=1\""),				"Automatic titles are missing");
+
+	//A dry run must not create anything
+	rcmd->runScriptOnProcess(mockWrapper + "batchAnalysis(mockWrapper, x = 1, precise = 1, aNull = NULL, .dryRun = TRUE)");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("@@@JASP_BATCH_RESULT@@@[]@@@JASP_BATCH_RESULT_END@@@"), "A dry run produced analyses");
+	spy.clear();
+
+	//Wrapper JSON strings (the plain lapply style) pass through unchanged
+	rcmd->runScriptOnProcess("list('{\"module\":\"testModule\",\"analysis\":\"FakeAnalysis\",\"options\":{}}')");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("\"module\":\"testModule\",\"analysis\":\"FakeAnalysis\",\"options\":{}"), "Wrapper JSON strings were not passed through");
+	spy.clear();
+
+	//Ordinary R values stay batch-free
+	rcmd->runScriptOnProcess("data.frame(x = 1:2)");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("@@@JASP_BATCH_RESULT@@@[]@@@JASP_BATCH_RESULT_END@@@"), "A data.frame was treated as a batch result");
+	spy.clear();
+
+	//Smoke: the selective column load and the frame override work in the commander engine
+	rcmd->runScriptOnProcess("nrow(data)");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	const QString dataLog = spy.takeFirst()[0].toString();
+	spy.clear();
+	QVERIFY2(!dataLog.contains("Error", Qt::CaseInsensitive), "nrow(data) errored in the commander");
+
+	rcmd->runScriptOnProcess("length(data$V1)");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(!spy.takeFirst()[0].toString().contains("Error", Qt::CaseInsensitive), "length(data$V1) errored in the commander");
+	spy.clear();
+
+	//columnFormula is embedded alongside the batch code: runtime column names must become
+	//formula symbols treated literally, so batch code can build formulas from names(data)
+	//without knowing R's backtick rules (base R's reformulate() cannot do this: it parses
+	//the term labels, so "part length" is a syntax error there).
+	rcmd->runScriptOnProcess("deparse(columnFormula('part length'))");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("`part length`"), "columnFormula did not turn a column name with a space into a symbol");
+	spy.clear();
+
+	rcmd->runScriptOnProcess("deparse(columnFormula('a+b', intercept = FALSE))");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("0 + `a+b`"), "columnFormula did not treat 'a+b' literally as one column or lost the intercept flag");
+	spy.clear();
+
+	rcmd->runScriptOnProcess("deparse(columnFormula('temperature', 'pressure', dependent = 'strength'))");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("strength ~ temperature + pressure"), "columnFormula mishandled dependent or multiple columns");
+	spy.clear();
+}
+
+void TestEngine::testBatchCreationGate()
+{
+	QVERIFY2(_engines, "No EngineSync!");
+
+	const bool wasPro = AppInfo::proMode();
+	AppInfo::setProMode(false);
+
+	//RCommander is a QQuickItem but constructible without a QML scene: it creates its own
+	//commander engine through EngineSync::singleton(), which is the test's _engines. That engine
+	//also boots in "initializing" and runCode refuses to send until it is idle, so wake it up here
+	//first and wait for the handshake (RCommander's createRCmdEngine call reuses this engine).
+	EngineRepresentation * rcmd = _engines->createRCmdEngine();
+	_engines->startStoppedEngine(rcmd);
+	QTRY_VERIFY_WITH_TIMEOUT(rcmd->idle(), 60000);
+
+	RCommander commander;
+
+	const QString batchCode =
+		"mockWrapper <- function(x) list(module = 'testModule', analysis = 'FakeAnalysis', options = list(x = x))\n"
+		"batchAnalysis(mockWrapper, x = c(1, 2))\n";
+
+	QVERIFY2(commander.runCode(batchCode), "runCode refused to run");
+
+	for (int i = 0; i < 300 && !commander.output().contains("requires JASP Enterprise"); ++i)
+		QTest::qWait(100);
+
+	QVERIFY2(commander.output().contains("requires JASP Enterprise"),	"Community build stayed silent about batch creation being enterprise-only");
+	QVERIFY2(!commander.output().contains("Added "),					"Analyses were created in a community build");
+
+	AppInfo::setProMode(wasPro);
 }
 
 void TestEngine::testFilters()

@@ -102,6 +102,18 @@ const std::string jaspBaseTransformPowerR =
 		#include "jaspBase_transformPower.h"
 		;
 
+const std::string jaspBaseColumnFormulaR =
+		#include "jaspBase_columnFormula.h"
+		;
+
+const std::string jaspEncodedFrameR =
+		#include "jaspEncodedFrame.h"
+		;
+
+const std::string batchAnalysisR =
+		#include "batchAnalysis.h"
+		;
+
 void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
@@ -146,14 +158,17 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 	JASPTIMER_START(jaspRCPP_init);
 
 	static std::string tempDirStatic = TempFiles::createTmpFolder();
-	static std::string initRCode					= 
-			jaspBaseDistributionSamplersR			+ "\n" + 
-			jaspBaseFriendlyConstructorFunctionsR	+ "\n" + 
-			jaspBaseTransformFunctionsR				+ "\n" + 
-			jaspBaseTransformBoxCoxR				+ "\n" + 
-			jaspBaseTransformJohnsonR				+ "\n" + 
-			jaspBaseTransformYeoJohnsonR			+ "\n" + 
-			jaspBaseTransformPowerR;
+	static std::string initRCode					=
+			jaspBaseDistributionSamplersR			+ "\n" +
+			jaspBaseFriendlyConstructorFunctionsR	+ "\n" +
+			jaspBaseTransformFunctionsR				+ "\n" +
+			jaspBaseTransformBoxCoxR				+ "\n" +
+			jaspBaseTransformJohnsonR				+ "\n" +
+			jaspBaseTransformYeoJohnsonR			+ "\n" +
+			jaspBaseTransformPowerR					+ "\n" +
+			jaspBaseColumnFormulaR					+ "\n" +
+			jaspEncodedFrameR						+ "\n" +
+			batchAnalysisR;
 	// SyntaxInterface uses insideJasp=false for parse/dataset replay and only
 	// needs the native callbacks; the Engine still receives the full R helpers.
 	const char * initRCodeForMode = insideJasp ? initRCode.c_str() : "";
@@ -382,27 +397,9 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFilteringCompCol(size_t 
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
-	const Columns & columns = rbridge_dataSet->columns();
-
-	datasetWanted.clear();
-
-	for(const std::string & colName : filterColumnsUsed)
-		if(rbridge_dataSet->column(colName))
-			datasetWanted.insert(std::make_pair(colName, rbridge_dataSet->column(colName)->type()));
-		else if(!colName.empty())
-		{
-			//It should then be a columnName + '.' + type
-			//And decoding always goes to the original columnname so:
-			std::string colNameSansType = ColumnEncoder::columnEncoder()->decode(	ColumnEncoder::columnEncoder()->encode(colName));
-
-			assert(colName[colNameSansType.size()] == '.'); //Because how??? ;)
-
-			std::string typeStr = colName.substr(colNameSansType.size() + 1);
-
-			assert(columnTypeValidName(typeStr));
-
-			datasetWanted.insert(std::make_pair(colName, columnTypeFromString(typeStr)));
-		}
+	//The filter and computed-column code mentions the columns it uses through encodeRScript; only
+	//those are loaded, resolved to the columns and types they ask for.
+	datasetWanted = ColumnEncoder::columnEncoder()->colsPlusTypesFor(filterColumnsUsed);
 
 	return rbridge_readDataSetRequested(colMax, obeyFilter);
 }
@@ -790,18 +787,13 @@ void rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::stri
 {
 	static std::string setupFilterEnv;
 
-	setupFilterEnv =	dataname + " <- " + readFunction + ";\n"
+	//The frame gets the jaspEncodedFrame class so that string-literal column references (data[["x"]])
+	//are resolved to columns at lookup time by the [[ override (see CommonData/R/jaspEncodedFrame.R).
+	setupFilterEnv =	dataname + " <- .encodedFrame(" + readFunction + ");\n"
 						"attach(" + dataname + ");"																"\n"
 						"options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);"	"\n";
 
 	jaspRCPP_runScript(setupFilterEnv.c_str());
-}
-
-void rbridge_detachRCodeEnv(const std::string & dataname)
-{
-	static std::string detacher;
-	detacher = "detach("+dataname+")";
-	jaspRCPP_runScript(detacher.c_str());	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 }
 
 std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std::string & generatedFilterCode)
@@ -827,7 +819,8 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	rbridge_setupRCodeFilterEnv(rowCount);
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
-	rbridge_detachRCodeEnv();
+	//and afterwards we make sure the data is detached again to avoid superfluous messages and possible clobbering of analyses
+	jaspRCPP_runScript("detach(data);");
 
 	if(arrayLength < 0)
 	{

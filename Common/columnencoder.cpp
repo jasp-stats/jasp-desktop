@@ -18,6 +18,7 @@
 #include "columnencoder.h"
 #include "stringutils.h"
 #include <regex>
+#include <cctype>
 #ifdef BUILDING_JASP
 #include "log.h"
 #define LOGGER Log::log()
@@ -136,6 +137,40 @@ columnType ColumnEncoder::columnTypeFromEncoded(const std::string &in)
 		return columnType::unknown;
 	
 	return decodingTypes().at(in);
+}
+
+ColumnEncoder::colsPlusTypes ColumnEncoder::colsPlusTypesFor(const std::set<std::string> & columnNames)
+{
+	colsPlusTypes requested;
+
+	for(const std::string & colName : columnNames)
+	{
+		//An exact columnname asks for that column with its current type
+		const auto nameType = _dataSetTypes.find(colName);
+		if(nameType != _dataSetTypes.end())
+		{
+			requested.insert(std::make_pair(colName, nameType->second));
+			continue;
+		}
+
+		//Maybe it is a "colName.type" reference (data$LL.nominal): decoding always goes to the original
+		//columnname, so what decode lands on tells us the basecolumn and where the dot sits.
+		if(colName.empty())
+			continue;
+
+		std::string colNameSansType;
+
+		try
+		{
+			colNameSansType = decode(encode(colName));
+		}
+		catch(...) { continue; } //Not a column at all, leave it to R to complain about it
+
+		if(colName.size() > colNameSansType.size() && colName[colNameSansType.size()] == '.' && columnTypeValidName(colName.substr(colNameSansType.size() + 1)))
+			requested.insert(std::make_pair(colName, columnTypeFromString(colName.substr(colNameSansType.size() + 1))));
+	}
+
+	return requested;
 }
 
 void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding)
@@ -442,6 +477,12 @@ std::string ColumnEncoder::encodeRScript(std::string text, const std::map<std::s
 	if(columnNamesFound)
 		columnNamesFound->clear();
 
+	//Also collect the column references that appear as whole string literals (data[["x"]], subset(data, select="x"), etc).
+	//Only when no prefix is mandatory: with a mandatoryPrefix an in-string reference cannot carry the prefix anyway.
+	//This is collect-only: strings are deliberately not rewritten here, the R-side frame override resolves them at lookup time.
+	if(columnNamesFound && mandatoryPrefix == "")
+		collectColumnNamesFromStringLiterals(text, map, *columnNamesFound);
+
 	static std::regex nonNameChar("[^\\.A-Za-z0-9_]");
 
 	//Some lambas to test if Column names matches are free and not just a substr of some other expression.
@@ -506,28 +547,141 @@ std::string ColumnEncoder::encodeRScript(std::string text, const std::map<std::s
 	return text;
 }
 
+namespace
+{
+///The kinds of tokens an R script is scanned into: everything that is not plain code has special
+///lexical rules that consumers of the scan (rewriting column references and collecting them from
+///string literals) should not have to duplicate.
+enum class RScriptToken { code, string, rawString, backticked, comment };
+
+///A span of [start, end) pointing at the token's CONTENT: for string/rawString/backticked that is
+///everything between the delimiters, for code and comment the characters themselves.
+struct RScriptTokenSpan
+{
+	RScriptToken	kind;
+	size_t			start	= 0,
+					end		= 0;
+};
+
+///Walk text once and classify it into code, comments (# to the end of the line), raw strings
+///(r"(...)"/R"(...)"), backticked symbols and string literals (with \ escapes).
+///After an unterminated string, raw string or backtick nothing after it can be trusted, so the scan stops.
+std::vector<RScriptTokenSpan> scanRScript(const std::string & text)
+{
+	std::vector<RScriptTokenSpan>	tokens;
+	size_t							pos			= 0,
+									codeStart	= 0;
+
+	auto flushCode = [&](size_t end)
+	{
+		if(end > codeStart)
+			tokens.push_back({RScriptToken::code, codeStart, end});
+	};
+
+	while(pos < text.size())
+	{
+		const char c = text[pos];
+
+		if(c == '#') //Comments are inert: quotes and columnNames in them must not affect the scan
+		{
+			size_t commentEnd = text.find('\n', pos);
+
+			if(commentEnd == std::string::npos) //The comment runs to the end of the text
+				commentEnd = text.size();
+
+			flushCode(pos);
+			tokens.push_back({RScriptToken::comment, pos, commentEnd});
+			pos = codeStart = commentEnd;
+		}
+		else if((c == 'r' || c == 'R') && pos + 1 < text.size() && text[pos + 1] == '"'
+				&& (pos == 0 || !(isalnum(static_cast<unsigned char>(text[pos - 1])) || text[pos - 1] == '_' || text[pos - 1] == '.'))) //Raw string r"(...)"/R"(...)", the delimiter between the quotes may contain dashes or other characters
+		{
+			const size_t delimEnd = text.find('(', pos + 2);
+
+			if(delimEnd == std::string::npos) //Unterminated raw string: nothing after it can be trusted
+				break;
+
+			const std::string delimiter	= text.substr(pos + 2, delimEnd - pos - 2);
+			const std::string closing	= ")" + delimiter + "\"";
+			const size_t	close		= text.find(closing, delimEnd);
+
+			if(close == std::string::npos) //Unterminated raw string: nothing after it can be trusted
+				break;
+
+			flushCode(pos);
+			tokens.push_back({RScriptToken::rawString, delimEnd + 1, close});
+			pos = codeStart = close + closing.size(); //Continue scanning after the raw string
+		}
+		else if(c == '`') //A backticked symbol is a single reference: its entire content is the name, so quotes inside it are symbol content
+		{
+			const size_t close = text.find('`', pos + 1);
+
+			if(close == std::string::npos) //Unterminated backtick: nothing after it can be trusted
+				break;
+
+			flushCode(pos);
+			tokens.push_back({RScriptToken::backticked, pos + 1, close});
+			pos = codeStart = close + 1;
+		}
+		else if(c == '"' || c == '\'') //A string starts here; a columnname that itself starts with a quote can only be referenced through backticks, never here
+		{
+			size_t end = pos + 1;
+
+			while(end < text.size() && text[end] != c)
+				end += text[end] == '\\' ? 2 : 1; //An escaped character, for instance an escaped quote, does not end the string
+
+			if(end >= text.size()) //Unterminated string: nothing after it can be trusted
+				break;
+
+			flushCode(pos);
+			tokens.push_back({RScriptToken::string, pos + 1, end});
+			pos = codeStart = end + 1;
+		}
+		else
+			pos++;
+	}
+
+	flushCode(pos); //On a normal end pos == text.size(); after an unterminated token pos is where the scan stopped and the rest is untrusted
+
+	return tokens;
+}
+}
+
 std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::string & text, const std::string & columnName)
 {
 	std::vector<size_t> positions;
 
-	bool inString	= false;
-	char delim		= '?';
-
-	for (std::string::size_type pos = 0; pos < text.length(); ++pos)
-		if (!inString && text.substr(pos, columnName.length()) == columnName)
-			positions.push_back(int(pos));
-		else if (text[pos] == '"' || text[pos] == '\'') //string starts or ends. This does not take into account escape characters though...
+	for(const RScriptTokenSpan & token : scanRScript(text))
+	{
+		if(token.kind == RScriptToken::code) //Bare references can occur anywhere in code, but never inside strings, comments or backticked symbols
 		{
-			if (!inString)
-			{
-				delim		= text[pos];
-				inString	= true;
-			}
-			else if(text[pos] == delim)
-				inString = false;
+			for(size_t pos = token.start; pos + columnName.length() <= token.end; pos++)
+				if(text.compare(pos, columnName.length(), columnName) == 0)
+					positions.push_back(pos);
 		}
+		else if(token.kind == RScriptToken::backticked) //A backticked symbol matches only when its entire content is the columnName
+		{
+			if(token.end - token.start == columnName.length() && text.compare(token.start, columnName.length(), columnName) == 0)
+				positions.push_back(token.start);
+		}
+	}
 
 	return positions;
+}
+
+///Collect the columnNames that occur as entire string literals in text (as in data[["x"]]) into found.
+///Nothing is rewritten here: the string literals themselves are left alone so that strings keep meaning data.
+///Instead the R-side frame override (see CommonData/R/jaspEncodedFrame.R) resolves such references at lookup time.
+void ColumnEncoder::collectColumnNamesFromStringLiterals(const std::string & text, const colMap & map, std::set<std::string> & found)
+{
+	for(const RScriptTokenSpan & token : scanRScript(text))
+		if(token.kind == RScriptToken::string || token.kind == RScriptToken::rawString) //A raw string's content can also name a column (data[[r"(LL)"]])
+		{
+			const auto foundColumn = map.find(text.substr(token.start, token.end - token.start));
+
+			if(foundColumn != map.end())
+				found.insert(foundColumn->first);
+		}
 }
 
 
