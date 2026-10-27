@@ -173,8 +173,9 @@ public:
 	const QString		enterpriseSupportUrl()	const;
 	const QString		howToUseUrl()			const;
 	/// Resolved `companyLogoPath` setting: a file:// URL to the company logo
-	/// (absolute path as-is; relative beside the exe / in Resources/), or ""
-	/// when unset or the file is missing. Read once per launch.
+	/// (absolute path as-is; relative beside the exe / in Resources/, on macOS
+	/// also in the bundle's ../Resources/), or "" when unset or the file is
+	/// missing. Read once per launch.
 	QString				companyLogoUrl()	const;
 	/// `companyLogoHeight` setting (default 35), clamped to 0–200: base
 	/// height of the welcome-page logo, scaled with the page.

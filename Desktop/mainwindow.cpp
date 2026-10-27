@@ -446,9 +446,11 @@ QString MainWindow::companyLogoUrl() const
 	// Settings name `companyLogoPath` — see contactUrlFeatures() for the tier
 	// chain. Empty means "no logo". A relative path is resolved beside the
 	// executable and in its Resources/ subfolder (mirroring how forced.json
-	// and defaults.json are found); an absolute path is taken as-is. A
-	// configured-but-missing file logs a warning and yields "" so the UI
-	// hides the logo instead of showing a broken image.
+	// and defaults.json are found; on macOS also in the bundle's Resources
+	// folder, where the per-client DMG layer stages CustomAssets/); an
+	// absolute path is taken as-is. A configured-but-missing file logs a
+	// warning and yields "" so the UI hides the logo instead of showing a
+	// broken image.
 	const QString raw = Settings::value(Settings::COMPANY_LOGO_PATH).toString();
 	if (raw.isEmpty())
 		return "";
@@ -462,10 +464,23 @@ QString MainWindow::companyLogoUrl() const
 	else
 	{
 		const QString appDir = QCoreApplication::applicationDirPath();
-		if (QFile::exists(appDir + "/" + raw))
-			found = appDir + "/" + raw;
-		else if (QFile::exists(appDir + "/Resources/" + raw))
-			found = appDir + "/Resources/" + raw;
+		QStringList candidates = {
+			appDir + "/" + raw,
+			appDir + "/Resources/" + raw
+		};
+#ifdef __APPLE__
+		// applicationDirPath() is JASP.app/Contents/MacOS here, so the bundle's
+		// Resources folder is a sibling — the per-client DMG layer stages
+		// CustomAssets/ there, next to forced.json and defaults.json (same
+		// extra candidate as shippedSettings()).
+		candidates += appDir + "/../Resources/" + raw;
+#endif
+		for (const QString& candidate : candidates)
+			if (QFile::exists(candidate))
+			{
+				found = candidate;
+				break;
+			}
 	}
 
 	if (found.isEmpty())
