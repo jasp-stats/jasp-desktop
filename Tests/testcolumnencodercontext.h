@@ -34,6 +34,7 @@ private slots:
 	void stringLiteralCollectionIsCommentEscapeAndRawStringAware();
 	void prefixedEncodingCollectsStringLiteralsWithoutRewriting();
 	void commentAndEscapeDesyncIsFixed();
+	void newlinesAndTabsInsideStringsStayStringContent();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

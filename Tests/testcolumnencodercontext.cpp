@@ -305,4 +305,39 @@ void TestColumnEncoderContext::commentAndEscapeDesyncIsFixed()
 	QVERIFY2(escapeEncoded.find("mean(data$JaspColumn_0_Encoded)") != std::string::npos, "The bare reference after the escaped quote was suppressed.");
 }
 
+void TestColumnEncoderContext::newlinesAndTabsInsideStringsStayStringContent()
+{
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"LL", columnType::scale}}));
+
+	//R string literals may contain raw newlines and tabs: only the unescaped delimiter ends
+	//the string, so the scanner must sail over both and still trust the code after the string.
+	const std::string rawScript =
+		"text <- \"line1\nline2\tend\"\n"
+		"mean(data$LL)\n";
+
+	std::set<std::string> rawFound;
+	const std::string rawEncoded = ColumnEncoder::columnEncoder()->encodeRScript(rawScript, &rawFound);
+
+	QVERIFY2(rawFound.count("LL") == 1, "The raw newline and tab inside the string desynced the scan.");
+	QVERIFY2(rawEncoded.find("\"line1\nline2\tend\"") != std::string::npos, "The string content was rewritten even though it is not a column reference.");
+	QVERIFY2(rawEncoded.find("mean(data$JaspColumn_0_Encoded)") != std::string::npos, "The reference after the multi-line string was not rewritten.");
+
+	//The two-character escape sequences \n and \t must not end the string either
+	const std::string escapeScript = "note <- \"a\\nb\\tc\"\nmean(data$LL)\n";
+
+	std::set<std::string> escapeFound;
+	const std::string escapeEncoded = ColumnEncoder::columnEncoder()->encodeRScript(escapeScript, &escapeFound);
+
+	QVERIFY2(escapeFound.count("LL") == 1, "The \\n and \\t escape sequences desynced the scan.");
+	QVERIFY2(escapeEncoded.find("mean(data$JaspColumn_0_Encoded)") != std::string::npos, "The reference after the escape sequences was not rewritten.");
+
+	//A lone backslash at the very end of the text must not walk the scanner out of bounds
+	const std::string eofBackslash = "mean(data$LL)\nnot <- \"dangling\\";
+
+	std::set<std::string> eofFound;
+	const std::string eofEncoded = ColumnEncoder::columnEncoder()->encodeRScript(eofBackslash, &eofFound);
+
+	QVERIFY2(eofFound.count("LL") == 1, "The dangling escape corrupted the scan before it.");
+}
+
 QTEST_MAIN(TestColumnEncoderContext)
