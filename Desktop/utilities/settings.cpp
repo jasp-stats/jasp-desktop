@@ -136,7 +136,7 @@ const Settings::Setting Settings::Values[] = {
 	{"directLibpathFolder",			""		},
 	{"directDevModName",			""		},
 	{"ribbonBarHeightScale",		1.0		},
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     {"engineSandbox",				true	},
 #else
     {"engineSandbox",				false	},
@@ -210,10 +210,11 @@ const Settings::Setting Settings::Values[] = {
 	{"howToUseUrl",					""},
 	// Company logo on the welcome page (bottom centre). Empty — the default —
 	// shows nothing. A relative path is resolved beside the executable and in
-	// its Resources/ subfolder (the MSI layer stages client logos in
-	// CustomAssets/, so clients ship "CustomAssets/logo.png"); an absolute
-	// path is used as-is (QA machines, network shares, UNC). A
-	// configured-but-missing file logs a warning and hides the logo. Bound by
+	// its Resources/ subfolder (on macOS also in the bundle's Resources
+	// folder); the MSI and DMG layers stage client logos in CustomAssets/, so
+	// clients ship "CustomAssets/logo.png". An absolute path is used as-is
+	// (QA machines, network shares, UNC). A configured-but-missing file logs a
+	// warning and hides the logo. Bound by
 	// MainWindow::companyLogoUrl() and WelcomePage.qml; needs a restart.
 	{"companyLogoPath",			""},
 	// Base height of the company logo in welcome-page units — the page scales
