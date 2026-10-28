@@ -21,6 +21,8 @@
 #include "RInside.h"
 #endif
 
+#include "columnencoder.h"
+
 static const	std::string		NullString			= "null";
 static			std::string		lastErrorMessage	= "";
 
@@ -199,6 +201,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rEnvironment[".decodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
 	rEnvironment[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnNameRcpp);
 	rEnvironment[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnNameRcpp);
+	rEnvironment[".suggestColumnNames"]				= Rcpp::InternalFunction(&jaspRCPP_suggestColumnNames);
 	rEnvironment[".setColumnDataAsScale"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rEnvironment[".readFullDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
 	rEnvironment[".allColumnNamesDataset"]			= Rcpp::InternalFunction(&jaspRCPP_allColumnNamesDataset);
@@ -1422,6 +1425,18 @@ Rcpp::String jaspRCPP_encodeAllColumnNames(const Rcpp::String & in)
 Rcpp::String jaspRCPP_decodeAllColumnNames(const Rcpp::String & in)
 {
 	return decodeAllColumnNames(std::string(in).c_str());
+}
+
+Rcpp::CharacterVector jaspRCPP_suggestColumnNames(const Rcpp::String & in)
+{
+	const ColumnEncoder::colVec suggestions = ColumnEncoder::suggestColumnNames(std::string(in));
+
+	Rcpp::CharacterVector out(suggestions.size());
+
+	for(size_t i = 0; i < suggestions.size(); i++)
+		out[i] = suggestions[i];
+
+	return out;
 }
 
 bool jaspRCPP_shouldEncodeColumnName(std::string in)

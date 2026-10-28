@@ -102,6 +102,19 @@ Omit `dependent` to create a one-sided formula. Every name is treated literally:
 to one column named `a+b`. Arguments are evaluated normally, so you can pass a variable containing
 a name, or an expression such as `measurements[[i]]`. No dataset is needed to build the formula.
 
+When the current dataset is available (as it is in the R Commander), `columnFormula()` warns about
+names that are no columns in it and suggests close matches, so a typo is caught immediately:
+
+```r
+columnFormula("Part length")
+# Warning: No column named "Part length" in the dataset. Did you mean "part length"?
+# ~ `Part length`
+```
+
+The formula is still built, so the warning is guidance rather than an error. Pass
+`checkColumns = FALSE` to skip the check, e.g. when the columns come from a dataset other than
+`data` or `filteredData`.
+
 Passing several column names to `columnFormula()` creates **one formula containing those
 columns**. To create **one formula per column**, use `lapply()`:
 

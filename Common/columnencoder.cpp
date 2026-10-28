@@ -27,6 +27,31 @@
 #define LOGGER Rcpp::Rcout
 #endif
 
+namespace
+{
+///Smallest number of single-character insertions, deletions or substitutions needed to turn `from` into `to`.
+size_t levenshteinDistance(const std::string & from, const std::string & to)
+{
+	std::vector<size_t> previousRow(to.size() + 1), currentRow(to.size() + 1);
+
+	for(size_t j = 0; j <= to.size(); j++)
+		previousRow[j] = j;
+
+	for(size_t i = 1; i <= from.size(); i++)
+	{
+		currentRow[0] = i;
+
+		for(size_t j = 1; j <= to.size(); j++)
+			currentRow[j] = std::min(std::min(previousRow[j] + 1, currentRow[j - 1] + 1),
+									 previousRow[j - 1] + (from[i - 1] == to[j - 1] ? 0 : 1));
+
+		std::swap(previousRow, currentRow);
+	}
+
+	return previousRow[to.size()];
+}
+}
+
 
 
 ColumnEncoder				*	ColumnEncoder::_columnEncoder				= nullptr;
@@ -822,6 +847,60 @@ ColumnEncoder::colVec ColumnEncoder::columnNames()
 ColumnEncoder::colVec ColumnEncoder::columnNamesEncoded()
 {
 	return _columnEncoder ? _columnEncoder->_encodedNames : colVec();
+}
+
+ColumnEncoder::colVec ColumnEncoder::suggestColumnNames(const std::string & name, size_t maxSuggestions)
+{
+	colVec suggestions;
+
+	if(name.empty() || maxSuggestions == 0)
+		return suggestions;
+
+	const std::string	needle	= stringUtils::toLower(name);
+	const colVec	&	names	= originalNames();
+
+	//score decides the order, lower is a better match: 0 identical up to case, 1 prefix of each other,
+	//2 one contains the other, 3+ a small edit distance (3 + distance). Ties keep their original order.
+	std::vector<std::pair<int, std::string>>	ranked;
+	std::set<std::string>						seenLowercase;
+
+	for(const std::string & candidate : names)
+	{
+		if(candidate.empty() || !seenLowercase.insert(stringUtils::toLower(candidate)).second)
+			continue;
+
+		const std::string hay = stringUtils::toLower(candidate);
+		int score = -1;
+
+		if(hay == needle)
+			score = 0;
+		else if(hay.rfind(needle, 0) == 0 || needle.rfind(hay, 0) == 0)
+			score = 1;
+		else if(hay.find(needle) != std::string::npos || needle.find(hay) != std::string::npos)
+			score = 2;
+		else
+		{
+			const size_t distance = levenshteinDistance(hay, needle);
+			if(distance <= 2)
+				score = 3 + int(distance);
+		}
+
+		if(score >= 0)
+			ranked.emplace_back(score, candidate);
+	}
+
+	std::stable_sort(ranked.begin(), ranked.end(),
+		[](const std::pair<int, std::string> & left, const std::pair<int, std::string> & right)
+		{
+			if(left.first != right.first)
+				return left.first < right.first;
+			return left.second.size() < right.second.size();	//prefer plain columnNames over their ".scale"-style variants
+		});
+
+	for(size_t i = 0; i < ranked.size() && suggestions.size() < maxSuggestions; i++)
+		suggestions.push_back(ranked[i].second);
+
+	return suggestions;
 }
 
 void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const std::string& optionName, colsPlusTypes& colTypes)

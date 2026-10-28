@@ -64,6 +64,11 @@ public:
 	static	colVec				columnNames();
 	static	colVec				columnNamesEncoded();
 
+	///Find decoded columnNames close to `name`: identical up to case, one being a prefix or substring
+	///of the other, or a small edit distance. Returns at most `maxSuggestions`, best match first.
+	///Meant for "did you mean"-feedback when something refers to a column that does not exist.
+	static	colVec				suggestColumnNames(const std::string & name, size_t maxSuggestions = 3);
+
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);
 			void				setCurrentNames(const colTypeMap & names);

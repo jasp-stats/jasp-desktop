@@ -37,6 +37,7 @@ private slots:
 	void newlinesAndTabsInsideStringsStayStringContent();
 	void pathologicalNamesRawStringsAndBackticksAreHandled();
 	void colsPlusTypesForResolvesColumnsAndTypes();
+	void suggestColumnNamesRanksCloseMatchesFirst();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

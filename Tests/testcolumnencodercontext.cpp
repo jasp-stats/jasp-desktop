@@ -433,4 +433,45 @@ void TestColumnEncoderContext::colsPlusTypesForResolvesColumnsAndTypes()
 	QVERIFY2(requested.size() == 3, "colsPlusTypesFor resolved something that is not a column (reference).");
 }
 
+void TestColumnEncoderContext::suggestColumnNamesRanksCloseMatchesFirst()
+{
+	//setCurrentNames also generates the ".scale"/".ordinal"/".nominal" variants of every column,
+	//so the suggestions have to rank the plain columnNames above those.
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({
+		{"part length",		columnType::scale},
+		{"temperature",		columnType::scale},
+		{"temperature high", columnType::nominal},
+		{"pressure",		columnType::ordinal}
+	}));
+
+	//Identical up to case beats everything else
+	ColumnEncoder::colVec suggestions = ColumnEncoder::suggestColumnNames("PART LENGTH", 1);
+	QCOMPARE(suggestions.size(), size_t(1));
+	QCOMPARE(QString::fromStdString(suggestions[0]), QString("part length"));
+
+	//A prefix matches, and the plain columnname comes before its typed variants
+	suggestions = ColumnEncoder::suggestColumnNames("temp", 3);
+	QCOMPARE(suggestions.size(), size_t(3));
+	QCOMPARE(QString::fromStdString(suggestions[0]), QString("temperature"));
+	QCOMPARE(QString::fromStdString(suggestions[1]), QString("temperature high"));
+
+	//A small edit distance matches
+	suggestions = ColumnEncoder::suggestColumnNames("pressur", 2);
+	QCOMPARE(suggestions.size(), size_t(2));
+	QCOMPARE(QString::fromStdString(suggestions[0]), QString("pressure"));
+
+	//A substring matches
+	suggestions = ColumnEncoder::suggestColumnNames("ature", 2);
+	QCOMPARE(QString::fromStdString(suggestions[0]), QString("temperature"));
+
+	//A mistyped type-suffix can be suggested as well
+	suggestions = ColumnEncoder::suggestColumnNames("partlength.nomnal", 1);
+	QCOMPARE(QString::fromStdString(suggestions[0]), QString("part length.nominal"));
+
+	//Nothing close, an empty query or no room for suggestions all give nothing
+	QVERIFY(ColumnEncoder::suggestColumnNames("zzzzzz", 5).empty());
+	QVERIFY(ColumnEncoder::suggestColumnNames("", 5).empty());
+	QVERIFY(ColumnEncoder::suggestColumnNames("temp", 0).empty());
+}
+
 QTEST_MAIN(TestColumnEncoderContext)
