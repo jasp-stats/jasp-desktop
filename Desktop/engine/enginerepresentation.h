@@ -43,7 +43,7 @@ public:
 	void			runAnalysisOnProcess(	Analysis			* analysis);
 	void			runScriptOnProcess(		RFilterStore		* filterStore);
 	void			runScriptOnProcess(		RScriptStore		* scriptStore);
-	void			runScriptOnProcess(		const QString		& rCmdCode);
+	void			runScriptOnProcess(		const QString		& rCmdCode, bool columnsByName = false);
 	void			runScriptOnProcess(		RFilterByNameStore	* filterStore);
 	void			runScriptOnProcess(		RComputeColumnStore * computeColumnStore);
 	void			runScriptOnProcess(		RComputeDataSetStore * computeDataSetStore);

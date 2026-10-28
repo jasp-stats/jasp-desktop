@@ -34,6 +34,7 @@
 #include "gui/preferencesmodel.h"
 #include "utilities/processhelper.h"
 #include "utilities/wincontainermanager.h"
+#include "utilities/macsandboxmanager.h"
 
 using namespace boost::interprocess;
 
@@ -1233,6 +1234,9 @@ QProcess * EngineSync::startSlaveProcess(int channel, bool privileged)
 #ifdef _WIN32
     if(privileged || !WinContainerManager::launchSandboxedEngine(slave, engineExe, args))
 		slave->start(engineExe, args);
+#elif defined(__APPLE__)
+	if(privileged || !MacSandboxManager::launchSandboxedEngine(slave, engineExe, args))
+		slave->start(engineExe, args);
 #else
 	slave->start(engineExe, args);
 #endif
@@ -1586,7 +1590,7 @@ EngineRepresentation *	EngineSync::createRCmdEngine()
 		const size_t rCmdChannelNumber = 12345; //Shouldnt ever crash with _channels
 
 		_rCmderChannel	= new IPCChannel(_memoryName, rCmdChannelNumber);
-        _rCmder			= createNewEngine(false, rCmdChannelNumber, true);
+        		_rCmder			= createNewEngine(false, rCmdChannelNumber, true);
 
 		_rCmder->setRunsAnalysis(	true);
 		_rCmder->setRunsUtility(	false);

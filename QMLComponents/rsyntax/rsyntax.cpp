@@ -341,12 +341,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	}
 
 	result += ") {\n\n"
-	+ FunctionLineIndent + "defaultArgCalls <- formals(" + moduleName + "::" + analysisName + ")\n"
-	+ FunctionLineIndent + "defaultArgs <- lapply(defaultArgCalls, eval)\n"
-	+ FunctionLineIndent + "options <- as.list(match.call())[-1L]\n"
-	+ FunctionLineIndent + "options <- lapply(options, eval)\n"
-	+ FunctionLineIndent + "defaults <- setdiff(names(defaultArgs), names(options))\n"
-	+ FunctionLineIndent + "options[defaults] <- defaultArgs[defaults]\n"
+	+ FunctionLineIndent + "options <- mget(names(formals(sys.function())), envir = environment(), inherits = FALSE)\n"
 	+ FunctionLineIndent + (multiDataSetAware ? "options[[\"datasets\"]] <- NULL\n" : "options[[\"data\"]] <- NULL\n")
 	+ FunctionLineIndent + "options[[\"version\"]] <- NULL\n\n";
 

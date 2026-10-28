@@ -104,8 +104,10 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		contactUrlFeatures	READ contactUrlFeatures										CONSTANT							)
 	Q_PROPERTY(QString		contactUrlBugs		READ contactUrlBugs											CONSTANT							)
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
-	Q_PROPERTY(QString		questionsUrl		READ questionsUrl																	CONSTANT							)
-	Q_PROPERTY(QString		companyLogoUrl		READ companyLogoUrl																	CONSTANT							)
+	Q_PROPERTY(QString		questionsUrl			READ questionsUrl			CONSTANT								)
+	Q_PROPERTY(QString		enterpriseSupportUrl	READ enterpriseSupportUrl	CONSTANT								)
+	Q_PROPERTY(QString		howToUseUrl			READ howToUseUrl			CONSTANT								)
+	Q_PROPERTY(QString		companyLogoUrl		READ companyLogoUrl			CONSTANT								)
 	Q_PROPERTY(int			companyLogoHeight	READ companyLogoHeight																	CONSTANT							)
 	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
 	Q_PROPERTY(bool			startedForBatch		READ startedForBatch										CONSTANT							)
@@ -158,9 +160,15 @@ public:
 	/// 'Ask a question' link target — settings-driven (`questionsUrl`),
 	/// overridable per client through forced.json / group policy.
 	const QString		questionsUrl()			const;
+	/// Enterprise Support follows externalLinksEnabled and hides when its URL
+	/// is ""; the How to Use link is exempt from the switch and shows only
+	/// when its URL is set.
+	const QString		enterpriseSupportUrl()	const;
+	const QString		howToUseUrl()			const;
 	/// Resolved `companyLogoPath` setting: a file:// URL to the company logo
-	/// (absolute path as-is; relative beside the exe / in Resources/), or ""
-	/// when unset or the file is missing. Read once per launch.
+	/// (absolute path as-is; relative beside the exe / in Resources/, on macOS
+	/// also in the bundle's ../Resources/), or "" when unset or the file is
+	/// missing. Read once per launch.
 	QString				companyLogoUrl()	const;
 	/// `companyLogoHeight` setting (default 35), clamped to 0–200: base
 	/// height of the welcome-page logo, scaled with the page.

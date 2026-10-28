@@ -61,6 +61,21 @@ void ActionButtons::loadButtonData()
 #endif
 		}), _data.end());
 	
+	// Enterprise lockdown: with the database or OSF settings off we drop
+	// those panes from every file operation (Open, Save As, Export, Sync
+	// Data, ...) so the sections never show in the file menu — the resource
+	// buttons are the only way in. PRO builds compile the OSF pane out
+	// entirely (#ifndef PRO in ResourceButtons), making the OSF setting a
+	// no-op there.
+	const bool databaseEnabled =	Settings::value(Settings::DATABASE_ENABLED).toBool();
+	const bool osfEnabled =		Settings::value(Settings::OSF_ENABLED).toBool();
+	if (!databaseEnabled || !osfEnabled)
+		for (DataRow & row : _data)
+		{
+			if (!databaseEnabled)	row.resourceButtons.erase(ResourceButtons::Database);
+			if (!osfEnabled)		row.resourceButtons.erase(ResourceButtons::OSF);
+		}
+	
 	
 	if(JaspTheme::currentTheme())
 	{

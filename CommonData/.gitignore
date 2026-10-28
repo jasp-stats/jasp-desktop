@@ -1,3 +1,5 @@
 internalDbDefinition.h
 createIndexes.h
 jaspBase_*.h
+jaspEncodedFrame.h
+batchAnalysis.h

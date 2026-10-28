@@ -71,9 +71,9 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 		else if(arg == newDataArg)								newData						= true;
 		else if(AppInfo::proMode() && arg == keepJASPOpenArg)	keepJASPOpenAfterExporting	= true;
 		else if(AppInfo::proMode() && arg == keepMissingColsWhenSyncingArg)	keepMissingColsWhenSyncing	= true;
-#ifdef _WIN32
-		else if(arg == sandboxArg)			{				containerSettingForced	= true;		container = true; }
-		else if(arg == noSandboxArg)		{				containerSettingForced	= true;		container = false; }
+#if defined(_WIN32) || defined(__APPLE__)
+		else if(arg == sandboxArg)		{			containerSettingForced	= true;		container = true; }
+		else if(arg == noSandboxArg)		{			containerSettingForced	= true;		container = false; }
 #endif
 		else if(arg == unitTestRecursiveArg)
 		{
@@ -261,8 +261,8 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled, this will be saved to your settings.\n"
 					<< "If --rpcPort is specified then JASP will enable its RPC server (aka the MCP server) on the given port for this session only - nothing is written to your settings - this is useful for automation such as the gate test in Tests/gatetest.\n"
 					<< "If --report is specified then JASP will be started in reporting mode, which requires a path to where you would like to store the results. This is usually used in conjunction with a service/daemon and in that case it might make sense to also pass --hide. Don't forget to also pass a jasp filename otherwise it won't have anything to run...\n"
-#ifdef _WIN32
-					<< "In case one really wants the engines to be sandboxed specify --sandbox, otherwise use --noSandbox."
+#if defined(_WIN32) || defined(__APPLE__)
+						<< "In case one really wants the engines to be sandboxed specify --sandbox, otherwise use --noSandbox."
 #endif
 					<< "This text will be shown when either --help or -h is specified or something else that JASP does not understand is given as argument.\n"
 					<< std::flush;

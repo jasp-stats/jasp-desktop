@@ -48,6 +48,14 @@ private slots:
 	void destroyingViewOrCanonicalErasesBlocks();
 	void independentCanonicalsFromIdenticalMapsProduceIdenticalBlocks();
 	void extrasStyleInstanceFeedsTheGlobalTable();
+	void stringLiteralReferencesAreCollectedButNotRewritten();
+	void stringLiteralCollectionIsCommentEscapeAndRawStringAware();
+	void prefixedEncodingCollectsStringLiteralsWithoutRewriting();
+	void commentAndEscapeDesyncIsFixed();
+	void newlinesAndTabsInsideStringsStayStringContent();
+	void pathologicalNamesRawStringsAndBackticksAreHandled();
+	void colsPlusTypesForResolvesColumnsAndTypes();
+	void suggestColumnNamesRanksCloseMatchesFirst();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H
