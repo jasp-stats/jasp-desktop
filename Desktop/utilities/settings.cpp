@@ -138,7 +138,7 @@ const Settings::Setting Settings::Values[] = {
 	{"directLibpathFolder",			""		},
 	{"directDevModName",			""		},
 	{"ribbonBarHeightScale",		1.0		},
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     {"engineSandbox",				true	},
 #else
     {"engineSandbox",				false	},
@@ -179,12 +179,13 @@ const Settings::Setting Settings::Values[] = {
 	// Outward-facing links and windows in community builds: the About-window
 	// links (sources, download, BibTeX, open-source components), the
 	// welcome-page community links (logo, version, request-feature,
-	// ask-a-question, website), the File-menu Contact/Community entries, the
+	// ask-a-question, website, enterprise support), the File-menu Contact/Community entries, the
 	// help-window external navigation and the translation link. Enterprise
 	// admins deactivate them (externalLinksEnabled) to keep users inside the
-	// managed deployment. JASP Services links (Enterprise Support; the PRO
-	// website/contact/question links and the PRO Contact window) are
-	// intentionally exempt so the enterprise-support channel stays reachable.
+	// managed deployment. The PRO website/contact/question links, the PRO
+	// Contact window and the optional How to Use link are intentionally
+	// exempt; How to Use hides by forcing its own URL setting (below) to ""
+	// instead of following this switch.
 	// Bound by MainWindow and the QML files above; a change needs a restart.
 	{"externalLinksEnabled",		true},
 	// Support-channel URLs — one binary, per-client configuration: community
@@ -198,22 +199,48 @@ const Settings::Setting Settings::Values[] = {
 	{"contactUrlBugs",			"https://jasp-stats.org/report-bug"},
 	{"contactUrlCrashReport",	"https://jasp-stats.org/report-bug"},
 	{"questionsUrl",				"https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"},
+	// Welcome-page footer rows: Enterprise Support follows externalLinksEnabled
+	// and additionally hides when its URL is blank; the optional How to Use link
+	// is exempt from the switch and shows only when its URL is set. howToUseUrl
+	// ships empty (hidden) so deployments opt in,
+	// e.g. "https://jasp-stats.org/how-to-use-jasp/".
+	{"enterpriseSupportUrl",		"https://www.jasp-services.com"},
+	{"howToUseUrl",					""},
 	// Company logo on the welcome page (bottom centre). Empty — the default —
 	// shows nothing. A relative path is resolved beside the executable and in
-	// its Resources/ subfolder (the MSI layer stages client logos in
-	// CustomAssets/, so clients ship "CustomAssets/logo.png"); an absolute
-	// path is used as-is (QA machines, network shares, UNC). A
-	// configured-but-missing file logs a warning and hides the logo. Bound by
+	// its Resources/ subfolder (on macOS also in the bundle's Resources
+	// folder); the MSI and DMG layers stage client logos in CustomAssets/, so
+	// clients ship "CustomAssets/logo.png". An absolute path is used as-is
+	// (QA machines, network shares, UNC). A configured-but-missing file logs a
+	// warning and hides the logo. Bound by
 	// MainWindow::companyLogoUrl() and WelcomePage.qml; needs a restart.
 	{"companyLogoPath",			""},
 	// Base height of the company logo in welcome-page units — the page scales
 	// it with the window (scaler 0.85–2.0), so 35 renders roughly 30–70px.
 	// Clamped to 0–200 when read. Only meaningful together with a non-empty
 	// companyLogoPath.
-	{"companyLogoHeight",		35}
+	{"companyLogoHeight",		35},
+	// Database pane in the file menu (Open / Sync Data): connect to SQL
+	// databases (DB2, MySQL, Oracle, ODBC/SQL Server, PostgreSQL, SQLite)
+	// and import or synchronise query results. Enterprise admins deactivate
+	// it (databaseEnabled) so users cannot reach database servers from JASP.
+	// Dropped from every file operation by ActionButtons::loadButtonData();
+	// a change needs a restart.
+	{"databaseEnabled",			true},
+	// OSF (Open Science Framework) pane in the file menu: browse, open and
+	// save projects on osf.io. Enterprise admins deactivate it (osfEnabled)
+	// to keep users inside the managed deployment. PRO builds compile the
+	// pane out entirely (#ifndef PRO in ResourceButtons), so there the
+	// setting is a no-op. Dropped from every file operation by
+	// ActionButtons::loadButtonData(); a change needs a restart.
+	{"osfEnabled",				true}
 };
 
-// Shipped JSON files beside the application: the per-client MSI layer.
+// Shipped JSON files beside the application: the per-client installer layer
+// (MSI on Windows; on macOS the DMG layer stages them in the bundle's
+// Resources folder — and /Library/Application Support/JASP/ serves the same
+// role, because everything inside the bundle is sealed by the code
+// signature).
 //
 //   defaults.json : soft defaults — policy, the user's own settings and the
 //                   legacy registry all override them.
@@ -240,10 +267,23 @@ static const QJsonObject& shippedSettings(bool forced)
 		return shipped[idx];		// too early: applicationDirPath() is empty; retry on a later call
 
 	const QString fileName = forced ? "forced.json" : "defaults.json";
-	const QStringList candidates = {
+	QStringList candidates = {
 		QCoreApplication::applicationDirPath() + "/" + fileName,
 		QCoreApplication::applicationDirPath() + "/Resources/" + fileName
 	};
+#ifdef __APPLE__
+	// applicationDirPath() is JASP.app/Contents/MacOS here, so the bundle's
+	// Resources folder is a sibling — the per-client DMG layer stages the
+	// files there (Contents/Resources, the idiomatic spot) rather than next
+	// to the binary.
+	candidates += QCoreApplication::applicationDirPath() + "/../Resources/" + fileName;
+	// Admin-owned and outside the (signature-sealed) bundle: IT can drop or
+	// update the file there — e.g. through an MDM-installed package — without
+	// re-signing or re-notarizing JASP. Checked first so a value IT pushes
+	// beats whatever the installer shipped, the way group policy outranks
+	// forced.json on Windows.
+	candidates.prepend("/Library/Application Support/JASP/" + fileName);
+#endif
 	for (const QString& path : candidates)
 	{
 		QFile f(path);

@@ -131,6 +131,7 @@ struct RBridgeCallBacks {
 	//New callbacks MUST be appended here (at the END): this struct is shared across the engine and
 	//the R-Interface DLL and read by offset, so inserting anywhere else breaks mismatched halves.
 	SetDataSet						dataSetSetDataSet;
+	EnDecodeDef						suggestColumnNames;	///< "did you mean" columnNames, joined by '\x1f'
 };
 
 typedef void			(*sendFuncDef)			(const char *);

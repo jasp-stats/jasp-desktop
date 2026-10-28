@@ -10,15 +10,16 @@
 /// Base class for storing requests to run some R-script in an engine
 struct RScriptStore
 {
-	RScriptStore(int dataSetId, int requestId, QString script, QString module, engineState typeScript = engineState::rCode, bool whiteListedVersion = true, bool returnLog = false)
-		: typeScript(typeScript), script(script), module(module), requestId(requestId), dataSetId(dataSetId), whiteListedVersion(whiteListedVersion), returnLog(returnLog) {}
+	RScriptStore(int dataSetId, int requestId, QString script, QString module, engineState typeScript = engineState::rCode, bool whiteListedVersion = true, bool returnLog = false, bool columnsByName = false)
+		: typeScript(typeScript), script(script), module(module), requestId(requestId), dataSetId(dataSetId), whiteListedVersion(whiteListedVersion), returnLog(returnLog), columnsByName(columnsByName) {}
 
 	engineState typeScript; //should be filter/rcode/etc
 	QString		script, module;
 	int			requestId,
 				dataSetId;
 	bool		whiteListedVersion,
-				returnLog;
+				returnLog,
+				columnsByName; //Only meaningful for the R Commander: whether data/filteredData should hold only the columns named in the code
 
 	// doctrine: the transient `referencedFilterIds` sidecar - the desktop's
 	//scan of the run's code (Workspace::referencedFilterIdsInCode) that tells the engine which

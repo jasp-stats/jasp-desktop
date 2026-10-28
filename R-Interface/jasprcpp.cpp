@@ -17,6 +17,7 @@
 
 #include "jasprcpp.h"
 #include <Rinternals.h>
+#include <sstream>
 #ifndef JASP_NO_RINSIDE
 #include "RInside.h"
 #endif
@@ -51,7 +52,8 @@ GetColumnAnalysisId				dataSetGetColumnAnalysisId,
 EnDecodeDef						encodeColumnName,
 								decodeColumnName,
 								encodeAllColumnNames,
-								decodeAllColumnNames;
+								decodeAllColumnNames,
+								suggestColumnNamesCB;
 DecodeTypeDef					decodeColumnType;
 
 ShouldEnDecodeDef				shouldEncodeColumnName,
@@ -182,6 +184,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	decodeColumnType							= callbacks->decodeType;
 	encodeColumnName							= callbacks->encoder;
 	decodeColumnName							= callbacks->decoder;
+	suggestColumnNamesCB						= callbacks->suggestColumnNames;
 
 	// TODO: none of this should pollute the global environment.
 	rEnvironment[".setLog"]							= Rcpp::InternalFunction(&jaspRCPP_setLog);
@@ -201,6 +204,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rEnvironment[".decodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
 	rEnvironment[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnNameRcpp);
 	rEnvironment[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnNameRcpp);
+	rEnvironment[".suggestColumnNames"]				= Rcpp::InternalFunction(&jaspRCPP_suggestColumnNames);
 	rEnvironment[".setColumnDataAsScale"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rEnvironment[".setDataSet"]						= Rcpp::InternalFunction(&jaspRCPP_setDataSet);
 	rEnvironment[".readFullDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
@@ -216,6 +220,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rEnvironment[".requestTempFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
 	rEnvironment[".requestTempRootNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
 	rEnvironment[".readDataSetRequestedNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetRequested);
+	rEnvironment[".readDataSetRequestedNativeUnfiltered"]	= Rcpp::InternalFunction(&jaspRCPP_readDataSetRequestedUnfiltered);
 	rEnvironment[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
 	rEnvironment[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rEnvironment[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
@@ -672,11 +677,17 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 		"  { "																			"\n"
 		"    options(warn=1);"															"\n"
 		"    valVis <- withVisible(eval(parse(text=.rCode)));"							"\n"
+		"    cat(paste0('@@@JASP_BATCH_RESULT@@@',"										"\n"
+		"               .normalizeBatchResult(if(valVis$visible) valVis$value else NULL),"				"\n"
+		"               '@@@JASP_BATCH_RESULT_END@@@'));"								"\n"
 		"    if(valVis$visible) print(valVis$value);"									"\n"
 		"  },	"																		"\n"
 		"  warning = function(w) { cat(paste0('Warning: ', toString(w$message))) },"	"\n"
 		"  error   = function(e) { cat(paste0('Error: ',   toString(e$message))) }"		"\n"
-		");"
+		");"																			"\n"
+		//The data/filteredData binding from rbridge_setupRCodeEnvReadData is only meant for this piece of
+		//code: detach it again so it does not pile up on the search path or clobber analyses.
+		"for(nm in c('data', 'filteredData')) if(nm %in% search()) try(detach(nm, character.only=TRUE), silent=TRUE);"
 		);
 
 	jaspRCPP_parseEvalQNT(rCodeTryCatch, false, false);
@@ -1252,6 +1263,16 @@ Rcpp::DataFrame jaspRCPP_readDataSetRequested()
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
+///Same as jaspRCPP_readDataSetRequested but ignoring the filter: the R Commander binds its
+///unfiltered data and filteredData through datasetWanted, which analyses and filters also use.
+Rcpp::DataFrame jaspRCPP_readDataSetRequestedUnfiltered()
+{
+	size_t				colMax				= 0;
+	RBridgeColumn	  * colResults			= readDataSetRequestedCB(&colMax, false);
+
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+}
+
 Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax)
 {
 	Rcpp::DataFrame dataFrame = Rcpp::DataFrame();
@@ -1553,6 +1574,27 @@ Rcpp::String jaspRCPP_encodeAllColumnNames(const Rcpp::String & in)
 Rcpp::String jaspRCPP_decodeAllColumnNames(const Rcpp::String & in)
 {
 	return decodeAllColumnNames(std::string(in).c_str());
+}
+
+Rcpp::CharacterVector jaspRCPP_suggestColumnNames(const Rcpp::String & in)
+{
+	std::vector<std::string> suggestions;
+
+	if(suggestColumnNamesCB)
+	{
+		std::stringstream joined(suggestColumnNamesCB(std::string(in).c_str()));
+		std::string suggestion;
+
+		while(std::getline(joined, suggestion, '\x1f'))
+			suggestions.push_back(suggestion);
+	}
+
+	Rcpp::CharacterVector out(suggestions.size());
+
+	for(size_t i = 0; i < suggestions.size(); i++)
+		out[i] = suggestions[i];
+
+	return out;
 }
 
 bool jaspRCPP_shouldEncodeColumnName(std::string in)

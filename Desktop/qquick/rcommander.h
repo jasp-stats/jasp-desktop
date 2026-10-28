@@ -5,6 +5,7 @@
 #include <QFileInfo>
 
 class EngineRepresentation;
+class Analysis;
 
 ///
 /// Interface for the R-commander. Keeps a log, and handles communication with the engine that belongs to it.
@@ -15,6 +16,7 @@ class RCommander : public QQuickItem
 	Q_PROPERTY(bool		running			READ running			WRITE setRunning	NOTIFY runningChanged			)
 	Q_PROPERTY(bool		isAnalysisCode	READ isAnalysisCode							NOTIFY isAnalysisCodeChanged	)
 	Q_PROPERTY(QString	lastCmd			READ lastCmd			WRITE setLastCmd	NOTIFY lastCmdChanged			)
+	Q_PROPERTY(bool		columnsByName	READ columnsByName		WRITE setColumnsByName	NOTIFY columnsByNameChanged	)
 
 public:
 	RCommander();
@@ -24,6 +26,7 @@ public:
 	bool	running()			const { return _running;		}
 	QString lastCmd()			const { return _lastCmd;		}
 	bool	isAnalysisCode()	const { return _isAnalysisCode; }
+	bool	columnsByName()		const { return _columnsByName;	}
 
 	static	bool opened()		{ return _lastCommander; }
 	static	void makeActive();
@@ -40,6 +43,7 @@ public slots:
 	void appendToOutput(const QString & toAppend, QString separator = "\n") { setOutput(output() + separator + toAppend); }
 	void setRunning(bool running);
 	void setLastCmd(QString lastCmd);
+	void setColumnsByName(bool columnsByName);
 	void countDownToScroll();
 	void processEngineChanges();
 
@@ -48,6 +52,7 @@ signals:
 	void runningChanged(bool running);
 	void isAnalysisCodeChanged(bool changed);
 	void lastCmdChanged(QString lastCmd);
+	void columnsByNameChanged(bool columnsByName);
 	void scrollDown();
 	void closeWindow();
 	void activated();
@@ -55,6 +60,8 @@ signals:
 private:
 	bool parseAnalysisCode(const QString& code, QString& moduleName, QString& analysisName) const;
 	void setIsAnalysisCode(bool isAnalysisCode);
+	void createAnalysesFromBatchJson(const QString & json);
+	void applyBatchEntryToAnalysis(Analysis * analysis, const QString & optionsJson);
 
 	static RCommander		*	_lastCommander;
 	QString						_output			= "", //Set in qml to have it be translatable
@@ -62,7 +69,8 @@ private:
 	EngineRepresentation	*	_engine			= nullptr;
 	bool						_running		= false,
 								_isAnalysisCode = false,
-								_wdWasSet		= false;
+								_wdWasSet		= false,
+								_columnsByName	= false;
 	QTimer					*	_scrollTimer	= nullptr;
 };
 

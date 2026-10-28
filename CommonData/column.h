@@ -308,7 +308,6 @@ protected:
 			doublevec				valuesNumericOrdered();			
 			std::map<Label*,size_t> valuesAlphabeticalOffsets();
 			
-			bool					areLoopDependenciesOk(const std::string &code);
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
 			void					_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease = false);		///< Sets the order of the _labels to label.order and in DB
 			intintmap				_updateNonEmptyIndexesAndLabelOrder();

@@ -129,20 +129,39 @@ void RSyntaxHighlighter::highlightBlock(const QString &text)
 	for (const HighlightingRule & rule : _highlightingRules)
 		applyRule(text, rule);
 
-	// Then handle column names rules
-	QStringList names = requestInfo(varInfoType::VariableNames).toStringList();
-	for (const QString & name : std::as_const(names))
-	{
-		// escape() prevents regular expression corruption caused by column names containing metacharacters such as . * (.).
-		QString escaped = QRegularExpression::escape(name);
-		applyRule(text, 
-				QRegularExpression(QString(R"(\b%1(\.(scale|ordinal|nominal))?\b)").arg(escaped)),
-				_columnFormat);
-	}
-
 	setStringsFormat(text, '"');
 	setStringsFormat(text, '\'');
 	setStringsFormat(text, '`');
+
+	// Match complete R symbols, skipping strings and comments. Column names are
+	// literal names, so regex metacharacters in them must not affect matching.
+	const QStringList names = requestInfo(varInfoType::VariableNames).toStringList();
+	static const QRegularExpression tokens(R"(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|(`(?:\\.|[^`\\])*`(?:\.(?:scale|ordinal|nominal))?)|([\p{L}_.][\p{L}\p{N}_.]*))");
+	static const QRegularExpression typeSuffix(R"(\.(?:scale|ordinal|nominal)$)");
+	auto matches = tokens.globalMatch(text);
+	while (matches.hasNext())
+	{
+		const auto match = matches.next();
+		QString name = match.captured(1).isEmpty() ? match.captured(2) : match.captured(1);
+		if (name.isEmpty())
+			continue;
+
+		auto columnName = [](QString symbol)
+		{
+			if (symbol.startsWith('`') && symbol.endsWith('`'))
+				symbol = symbol.mid(1, symbol.size() - 2);
+			return symbol;
+		};
+
+		bool isColumn = names.contains(columnName(name));
+		if (!isColumn)
+		{
+			name.remove(typeSuffix);
+			isColumn = names.contains(columnName(name));
+		}
+		if (isColumn)
+			setFormat(match.capturedStart(), match.capturedLength(), _columnFormat);
+	}
 
 	applyRule(text, _commentRule);
 }

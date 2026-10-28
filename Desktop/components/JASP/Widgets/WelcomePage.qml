@@ -532,9 +532,14 @@ FocusScope
 			anchors
 			{
 				right:				parent.right
-				bottom:				jaspUrl.top
-				rightMargin:		10 * welcomeRoot.scaler
-				bottomMargin:		4 * welcomeRoot.scaler
+				// collapse past hidden rows — an invisible item still occupies its
+				// anchored geometry — and stack on the topmost visible one
+				bottom:				jaspUrl.visible ? jaspUrl.top
+								: jaspUrlHowToUse.visible ? jaspUrlHowToUse.top
+								: jaspUrlBv.visible ? jaspUrlBv.top
+								: parent.bottom
+				rightMargin:			10 * welcomeRoot.scaler
+				bottomMargin:		(jaspUrl.visible || jaspUrlHowToUse.visible || jaspUrlBv.visible ? 4 : 10) * welcomeRoot.scaler
 			}
 			
 			JASPMouseAreaToolTipped
@@ -565,9 +570,13 @@ FocusScope
 			anchors
 			{
 				right:				parent.right
-				bottom:				PRO ? parent.bottom : jaspUrlBv.top
+				// stack on the topmost visible footer row below us (How to Use
+				// and/or Enterprise Support); only pin to the page bottom when
+				// neither is visible
+				bottom:				jaspUrlHowToUse.visible ? jaspUrlHowToUse.top
+								: (jaspUrlBv.visible ? jaspUrlBv.top : parent.bottom)
 				margins:			10 * welcomeRoot.scaler
-				bottomMargin:		(PRO ? 10 : 4) * welcomeRoot.scaler
+				bottomMargin:		(jaspUrlHowToUse.visible || jaspUrlBv.visible ? 4 : 10) * welcomeRoot.scaler
 			}
 			
 			JASPMouseAreaToolTipped
@@ -594,7 +603,7 @@ FocusScope
 			renderType:				Text.QtRendering
 			textFormat:				Text.StyledText
 			horizontalAlignment:	Text.AlignRight
-			visible:				!PRO	
+			visible:				!PRO && mainWindow.externalLinksEnabled && mainWindow.enterpriseSupportUrl !== ""
 
 			anchors
 			{
@@ -607,12 +616,47 @@ FocusScope
 			{
 				id:						jaspStatsMouseArea2
 				hoverEnabled:			true
-				property url websiteUrl:	"https://www.jasp-services.com"
+				property url websiteUrl:	mainWindow.enterpriseSupportUrl
 				onClicked:				Qt.openUrlExternally(websiteUrl);
 				anchors.fill:			parent
 				cursorShape:			Qt.PointingHandCursor
 				toolTipText:			websiteUrl
-				visible:			!PRO
+				visible:			!PRO && mainWindow.externalLinksEnabled && mainWindow.enterpriseSupportUrl !== ""
+			}
+		}
+		
+		Text
+		{
+			id:						jaspUrlHowToUse
+			text:					qsTr("How to Use")
+			color:					jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			14 * welcomeRoot.scaler
+			font.weight:			Font.Normal
+			font.underline:			jaspHowToUseMouseArea.containsMouse
+			renderType:				Text.QtRendering
+			textFormat:				Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+			visible:				mainWindow.howToUseUrl !== ""
+
+			anchors
+			{
+				right:				parent.right
+				bottom:				jaspUrlBv.visible ? jaspUrlBv.top : parent.bottom
+				margins:			10 * welcomeRoot.scaler
+				bottomMargin:		(jaspUrlBv.visible ? 4 : 10) * welcomeRoot.scaler
+			}
+			
+			JASPMouseAreaToolTipped
+			{
+				id:						jaspHowToUseMouseArea
+				hoverEnabled:			true
+				property url websiteUrl:	mainWindow.howToUseUrl
+				onClicked:				Qt.openUrlExternally(websiteUrl);
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			websiteUrl
+				visible:			mainWindow.howToUseUrl !== ""
 			}
 		}
 		

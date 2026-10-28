@@ -71,7 +71,7 @@ private:
 	void					runDefaultFilter(	int dataSet,	const std::string & filter,				const std::string & generatedFilter,	int filterRequestId,	const std::vector<int> & referencedFilterIds	);
 	void 					runFilterByName(	const std::string & name, int dataSet, int requestId = -1, const std::vector<int> & referencedFilterIds = {});
 	void					runRCode(			int dataSet,	const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
-	void					runRCodeCommander(	int dataSet,	std::string   rCode																						);
+	void					runRCodeCommander(	int dataSet,	std::string   rCode,				bool columnsByName														);
 
 	///< extract the transient `referencedFilterIds` sidecar of a filter/
 	///< compute request - the desktop's scan of the run's code (the grammar helpers). Consumed
