@@ -231,7 +231,7 @@ Window
 						id:				runButton
 						text:			qsTr("Run code")
 						onClicked:		runCode()
-						width:			(parent.width - 3 * parent.spacing) * 0.25
+						width:			(parent.width - 4 * parent.spacing) * 0.22
 						height:			parent.height
 						enabled:		codeEntry.text != "" && !rCmd.running && !rCmd.isAnalysisCode
 						toolTip:		qsTr("Pressing Ctrl+Enter or F5 will also run the code")
@@ -261,12 +261,12 @@ Window
 
 					JC.RectangularButton
 					{
-						id:					addAnalysisItem
-						text:				qsTr("Add analysis")
-						onClicked:			addAnalysis()
-						width:				runButton.width
-						height:				parent.height
-						enabled:			rCmd.isAnalysisCode && !rCmd.running
+						id:				addAnalysisItem
+						text:			qsTr("Add analysis")
+						onClicked:		addAnalysis()
+						width:			runButton.width
+						height:			parent.height
+						enabled:		rCmd.isAnalysisCode && !rCmd.running
 
 						function addAnalysis() {
 							if(addAnalysisItem.enabled && rCmd.addAnalysis(codeEntry.text))
@@ -283,11 +283,22 @@ Window
 						height:				parent.height
 					}
 
+					JC.CheckBox
+					{
+						id:					columnsByNameBox
+						isBound:			false
+						label:				qsTr("Columns by name")
+						checked:			rCmd.columnsByName
+						onClicked:			rCmd.columnsByName = checked
+						y:					(parent.height - height) / 2
+						toolTip:			qsTr("If enabled, data and filteredData contain only the columns your code mentions by name (with the requested types), and nothing at all when no columns are mentioned. If disabled the full dataset is loaded, just as before.")
+					}
+
 					JC.DropDown
 					{
 						id:					selectModule
 						values:				dynamicModules.loadedModulesTitles
-						control.width:		Math.max(runButton.width, runButton.width)
+						control.width:		parent.width - 3 * runButton.width - columnsByNameBox.width - 4 * parent.spacing
 						onValueChanged:		rCmd.loadModule(dynamicModules.loadedModules[currentIndex])
 						control.height:		runButton.height
 					}

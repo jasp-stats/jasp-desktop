@@ -57,10 +57,10 @@ bool RCommander::runCode(const QString & code)
 		QFileInfo currentFile(DataSetPackage::pkg()->currentFile());
 		
 		QString path = !currentFile.isFile() ? "~" : currentFile.dir().absolutePath();
-		_engine->runScriptOnProcess("setwd('"+path+"');\n" + code);
+		_engine->runScriptOnProcess("setwd('"+path+"');\n" + code, columnsByName());
 	}
 	else
-		_engine->runScriptOnProcess(code);
+		_engine->runScriptOnProcess(code, columnsByName());
 
 	setLastCmd(code);
 
@@ -260,6 +260,15 @@ void RCommander::setRunning(bool running)
 
 	_running = running;
 	emit runningChanged(_running);
+}
+
+void RCommander::setColumnsByName(bool columnsByName)
+{
+	if (_columnsByName == columnsByName)
+		return;
+
+	_columnsByName = columnsByName;
+	emit columnsByNameChanged(_columnsByName);
 }
 
 void RCommander::setLastCmd(QString lastCmd)

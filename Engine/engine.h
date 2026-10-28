@@ -70,7 +70,7 @@ private:
 	void					runFilter(			const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
 	void 					runFilterByName(	const std::string & name);
 	void					runRCode(			const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
-	void					runRCodeCommander(		  std::string   rCode																						);
+	void					runRCodeCommander(		  std::string   rCode,					bool columnsByName														);
 
 	void					stopEngine();
 	void					pauseEngine(	const Json::Value & jsonRequest);

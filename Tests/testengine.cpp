@@ -241,6 +241,19 @@ void TestEngine::testBatchAnalysis()
 	QVERIFY2(!spy.takeFirst()[0].toString().contains("Error", Qt::CaseInsensitive), "length(data$V1) errored in the commander");
 	spy.clear();
 
+	//"Columns by name": with the flag there is no fallback to the full dataset, so code that
+	//names no columns gets an empty frame (rows kept, columns not).
+	rcmd->runScriptOnProcess("paste(ncol(data), nrow(data) > 0)", true);
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("0 TRUE"), "Columns by name loaded the full dataset although no columns were named");
+	spy.clear();
+
+	//A column that *is* named does get loaded through the requested read (and only that one)
+	rcmd->runScriptOnProcess("invisible(data$contNormal); paste(ncol(data), nrow(data) > 0)", true);
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("1 TRUE"), "Named-column read did not load exactly that one column");
+	spy.clear();
+
 	//columnFormula is embedded alongside the batch code: runtime column names must become
 	//formula symbols treated literally, so batch code can build formulas from names(data)
 	//without knowing R's backtick rules (base R's reformulate() cannot do this: it parses

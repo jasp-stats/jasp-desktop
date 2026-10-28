@@ -502,9 +502,10 @@ void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 	std::string rCode			= jsonRequest.get("rCode",			"").asString();
 	int			rCodeRequestId	= jsonRequest.get("requestId",		-1).asInt();
 	bool		whiteListed		= jsonRequest.get("whiteListed",	true).asBool(),
-				returnLog		= jsonRequest.get("returnLog",		false).asBool();
+				returnLog		= jsonRequest.get("returnLog",		false).asBool(),
+				columnsByName	= jsonRequest.get("columnsByName",	false).asBool();
 
-	if(returnLog)	runRCodeCommander(rCode);
+	if(returnLog)	runRCodeCommander(rCode, columnsByName);
 	else			runRCode(rCode, rCodeRequestId, whiteListed);
 }
 
@@ -524,7 +525,7 @@ void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteL
 }
 
 
-void Engine::runRCodeCommander(std::string rCode)
+void Engine::runRCodeCommander(std::string rCode, bool columnsByName)
 {
 	bool thereIsSomeData = provideAndUpdateDataSet() && provideAndUpdateDataSet()->rowCount();
 
@@ -536,12 +537,14 @@ void Engine::runRCodeCommander(std::string rCode)
 		rCode = ColumnEncoder::columnEncoder()->encodeRScript(rCode, &columnsMentioned);
 
 		//Only the columns the code mentions get loaded, also through whole string literals
-		//(data[["LL"]]), and with the type asked for (data$LL.nominal). When nothing is mentioned the
-		//full datasets are read instead, so that positional access (data[, 3]) and nrow(data) keep working.
+		//(data[["LL"]]), and with the type asked for (data$LL.nominal). This selective read is only
+		//done when the commander asks for "columns by name", otherwise the full datasets are read
+		//below, so that positional access (data[, 3]) and nrow(data) keep working as they always did.
 		const ColumnEncoder::colsPlusTypes wanted = ColumnEncoder::columnEncoder()->colsPlusTypesFor(columnsMentioned);
 
-		if(wanted.empty())
+		if(!columnsByName)
 		{
+			//The old behaviour: always hand the commander the full datasets, with the types as shown.
 			jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readFullDatasetToEnd());").c_str());
 			jaspRCPP_runScript((rCmdFiltered	+ "<- .encodedFrame(.readFullFilteredDatasetToEnd());").c_str());
 		}
@@ -549,7 +552,8 @@ void Engine::runRCodeCommander(std::string rCode)
 		{
 			//The same requested read that analyses and filters use: datasetWanted says which columns
 			//and types to load, and the frame override from jaspEncodedFrame.R resolves the string
-			//literals at lookup time.
+			//literals at lookup time. There is no fallback to the full dataset here: code that names
+			//no columns simply gets an empty frame (rows are kept, columns are not).
 			rbridge_setWantedCols(wanted);
 
 			jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readDataSetRequestedNativeUnfiltered());").c_str());
