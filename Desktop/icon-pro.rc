@@ -1,0 +1,4 @@
+// Embedded icon for PRO/enterprise builds — selected by Desktop/CMakeLists.txt
+// when the PRO cache flag is on, so the executable's icon always matches the
+// build flavor without anyone hand-swapping Desktop/icon.ico again.
+IDI_ICON1               ICON    DISCARDABLE     "icon-pro.ico"

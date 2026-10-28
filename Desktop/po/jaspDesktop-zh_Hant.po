@@ -2784,8 +2784,8 @@ msgid "has selected module "
 msgstr "已選擇模組 "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "按下下面的檔案進行同步或使用 "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "按下下面的檔案進行同步或使用 %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."

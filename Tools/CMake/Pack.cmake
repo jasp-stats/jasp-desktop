@@ -4,10 +4,6 @@
 #   - We have two bundler, WIX and ZIP; and they can be called by their target name
 #       - `cmake --build . --target wix`
 #       - `cmake --build . --target zip`
-#   - In addition, there are two targets for collecting and recreating junctions that
-#     are being called automatically before the creation of WIX,
-#       - `cmake --build . --target recreate-junctions`
-#       - `cmake --build . --target collect-junctions`
 #
 # On macOS,
 #   - We are using the `create-dmg` script to create and design the DMG. You need to
@@ -42,18 +38,25 @@ set(CPACK_PACKAGE_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 
+# Uploads from pro-builds go into their own pro/ subdirectory on the nightlies-server
+if(PRO)
+  set(NIGHTLIES_PRO_SUBDIR "pro/")
+else()
+  set(NIGHTLIES_PRO_SUBDIR "")
+endif()
+
 if(WIN32)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/Upload.cmd.in
                  ${CMAKE_BINARY_DIR}/Upload.cmd @ONLY)
 
-  add_custom_target(
-    collect-junctions
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    BYPRODUCTS "${CMAKE_BINARY_DIR}/junctions_map.txt"
-    COMMAND cmd.exe /C JunctionTool.exe -s Modules
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/")
+  # BuildBotScript.cmd checks for this file to decide whether the msix-artifacts
+  # should be built, don't rely on the spelling of PRO in CMakeCache.txt there.
+  if(PRO)
+    file(TOUCH ${CMAKE_BINARY_DIR}/pro-build)
+  else()
+    file(REMOVE ${CMAKE_BINARY_DIR}/pro-build)
+  endif()
 
   add_custom_target(
     zip
@@ -61,17 +64,13 @@ if(WIN32)
     BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP.zip"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_SOURCE_DIR}/Tools/windows/zip/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
+            "${CMAKE_SOURCE_DIR}/Tools/windows/zip/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C ZIP.cmd)
 
   add_custom_target(
     msix
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_SOURCE_DIR}/Tools/windows/msix/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C msix.cmd)
