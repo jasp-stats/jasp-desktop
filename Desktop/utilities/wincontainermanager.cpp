@@ -89,32 +89,78 @@ bool grantAccessToExeDir() {
 	return res;
 }
 
-bool checkIfAccessible(STARTUPINFOEX si, const std::vector<QDir>& paths)
+enum class ProbeMode { ReadOnly, ReadWrite };
+
+//Decodes the packed exit code of ContainerFilePermissionChecker (stage<<24 | pathIndex<<16 | winError)
+//into something readable for the log. Stage ids must match the checker source.
+static QString describeProbeFailure(int exitCode, const std::vector<QDir>& paths)
+{
+	static const char* stageNames[] = {
+		"",
+		"enumerate directory",
+		"open existing file",
+		"read existing file",
+		"create probe file",
+		"write probe file",
+		"reopen probe file",
+		"read back probe file",
+		"delete probe file"
+	};
+
+	if (exitCode == -1)	return QStringLiteral("checker usage error (wrong arguments)");
+
+	const int	stage		= (exitCode >> 24) & 0xFF,
+				pathIndex	= (exitCode >> 16) & 0xFF,
+				winError	= exitCode & 0xFFFF;
+	const QString			path		= pathIndex >= 0 && pathIndex < static_cast<int>(paths.size()) ? paths[pathIndex].absolutePath() : QStringLiteral("?");
+	const QString			stageName	= stage > 0 && stage < 9 ? QString::fromLatin1(stageNames[stage]) : QStringLiteral("unknown stage");
+
+	return QStringLiteral("stage='%1' path='%2' winError=%3").arg(stageName, path).arg(winError);
+}
+
+bool checkIfAccessible(STARTUPINFOEX si, const std::vector<QDir>& paths, ProbeMode mode)
 {
 	QDir programDir					= AppDirs::programDir();
-	QString checkerExecutable		= programDir.absoluteFilePath("ContainerFilePermissionChecker");
-	QProcess* checkProc				= new QProcess();
-	QProcessEnvironment env			= QProcessEnvironment::systemEnvironment();
+	QString checkerExecutable	= programDir.absoluteFilePath("ContainerFilePermissionChecker");
+	QProcess checkProc;
+	QProcessEnvironment env		= QProcessEnvironment::systemEnvironment();
 	ProcessHelper::fixPATHForWindows(env);
-	checkProc->setProcessEnvironment(env);
+	checkProc.setProcessEnvironment(env);
 
 	QStringList args;
+	args << (mode == ProbeMode::ReadWrite ? "-rw" : "-r");
 	for(const QDir & path : paths)
 		args << path.absolutePath();
 
-	checkProc->setCreateProcessArgumentsModifier([si] (QProcess::CreateProcessArguments *args)
+	checkProc.setCreateProcessArgumentsModifier([si] (QProcess::CreateProcessArguments *args)
 	{
 		args->inheritHandles = false;
 		args->flags = args->flags | EXTENDED_STARTUPINFO_PRESENT;
 		args->startupInfo = (LPSTARTUPINFO)&si;
 	});
 
-	checkProc->start(checkerExecutable, args);
-	checkProc->waitForFinished(1000);
-	int result = checkProc->exitCode() == 0;
-	if(!result)
-		Log::log() << "Container is currently missing file permisson, we will have to grant them" << std::endl;
-	return result;
+	checkProc.start(checkerExecutable, args);
+
+	//A checker that has not finished in time is a failure, not a pass: exitCode() defaults to 0 while running.
+	if (!checkProc.waitForFinished(5000))
+	{
+		checkProc.kill();
+		checkProc.waitForFinished(1000);
+		Log::log() << "Container is currently missing file permission: permission checker timed out on " << args.join(QStringLiteral(", ")).toStdString() << std::endl;
+		return false;
+	}
+
+	if (checkProc.exitStatus() != QProcess::NormalExit)
+	{
+		Log::log() << "Container is currently missing file permission: permission checker crashed (exit code " << checkProc.exitCode() << ")" << std::endl;
+		return false;
+	}
+
+	const int exitCode = checkProc.exitCode();
+	if (exitCode != 0)
+		Log::log() << "Container is currently missing file permission (" << describeProbeFailure(exitCode, paths).toStdString() << "), we will have to grant them" << std::endl;
+
+	return exitCode == 0;
 }
 
 
@@ -166,7 +212,24 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 			_fullAccessList.push_back(env.value("QTDIR") + "/bin");
 	}
 
-	if(!checkIfAccessible(si, _fullAccessList)) {
+	//EFS self-report: ACL grants cannot fix EFS (it is keys, not access lists), so if any path the engine needs is
+	//EFS-encrypted the engine will fail there no matter what we grant. Log it loudly at every launch: this is the
+	//telemetry that decides between the hypotheses in the Windows sandbox/EFS analysis (jasp-issues#4566, #3562).
+	//Unencrypted paths stay silent to keep the log readable across engine restarts.
+	{
+		std::vector<QDir> efsCheckPaths = _fullAccessList;
+		efsCheckPaths.push_back(AppDirs::programDir());
+		for (const QDir & dir : efsCheckPaths)
+		{
+			const DWORD attributes = GetFileAttributesW(dir.absolutePath().toStdWString().c_str());
+			if (attributes == INVALID_FILE_ATTRIBUTES)
+				Log::log() << "EFS check: could not read attributes of '" << dir.absolutePath().toStdString() << "'" << std::endl;
+			else if (attributes & FILE_ATTRIBUTE_ENCRYPTED)
+				Log::log() << "EFS check: '" << dir.absolutePath().toStdString() << "' is EFS-ENCRYPTED, file permissions cannot fix this and the engine will likely fail there!" << std::endl;
+		}
+	}
+
+	if(!checkIfAccessible(si, _fullAccessList, ProbeMode::ReadWrite)) {
 		for(auto& dir : _fullAccessList) {
 			Log::log() << "Attempting to grant access to: " << dir.absolutePath().toStdString() << std::endl;
 			AllowNamedObjectAccess(appContainerSid, dir.absolutePath().toStdWString().data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
@@ -174,7 +237,7 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 	}
 
 	//give access to exedir if needed
-	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath()})) {
+	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath()}, ProbeMode::ReadOnly)) {
 		QMessageBox* box = MessageForwarder::getInfoBox(QString("Intializing JASP security sandbox"), QString("Intializing JASP security sandbox"));
 		box->show();
 		grantAccessToExeDir();
@@ -182,7 +245,7 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 	}
 
 	//Show popup and disable the sandbox if it is really not working somehow
-	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath()}) || !checkIfAccessible(si, {AppDirs::appData(false)})) {
+	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath()}, ProbeMode::ReadOnly) || !checkIfAccessible(si, {AppDirs::appData(false)}, ProbeMode::ReadWrite)) {
 		bool disable = MessageForwarder::showYesNo(QObject::tr("Security Sandbox Failure"), QObject::tr("Failed to activate Security Sandbox. Your system does not allow security sandboxing. Do you wish to continue without it? (probably fine)"), QObject::tr("Continue"), QObject::tr("Exit"));
 		if(disable) {
 			Log::log() << "Disabling Sandbox" << std::endl;

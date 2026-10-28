@@ -3278,8 +3278,8 @@ msgid "has selected module "
 msgstr "ماژول انتخاب‌شده دارد "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "برای همگام‌سازی روی فایل زیر کلیک کنید یا از "
+msgid "Click on the file below to synchronize or use %1"
+msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."

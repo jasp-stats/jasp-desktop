@@ -3565,7 +3565,7 @@ msgid "has selected module "
 msgstr ""
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
+msgid "Click on the file below to synchronize or use %1"
 msgstr ""
 
 #, qt-format

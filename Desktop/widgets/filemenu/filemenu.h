@@ -64,6 +64,7 @@ class FileMenu : public FileEventRouter
 	Q_PROPERTY(ResourceButtons			*	resourceButtons			READ resourceButtons												CONSTANT						)
 	Q_PROPERTY(ResourceButtonsVisible	*	resourceButtonsVisible	READ resourceButtonsVisible											CONSTANT						)
 	Q_PROPERTY(bool							visible					READ visible					WRITE setVisible					NOTIFY visibleChanged			)
+	Q_PROPERTY(QString						syncShortcut			READ syncShortcut													CONSTANT						)
 
 public:
 
@@ -83,6 +84,7 @@ public:
 	FileEvent *	save();
 	FileEvent *	saveAs();
 	void		sync();
+	static QString	syncShortcut()	{ return "F9"; } ///< Shared by the Shortcut in MainWindow.qml and the hint in CurrentDataFile
 
 	void			setCurrentDataFile(const QString		& path);
 	void			setDataFileWatcher(bool watch);

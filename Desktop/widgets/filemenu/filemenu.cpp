@@ -46,7 +46,7 @@ FileMenu::FileMenu(QObject *parent) : FileEventRouter(parent)
 	connect(_actionButtons,		&ActionButtons::buttonClicked,				this,			&FileMenu::actionButtonClicked		);
 	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this,			&FileMenu::setFileoperation			);
 	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this,			&FileMenu::resourceButtonClicked	);
-	connect(_currentDataFile,	&CurrentDataFile::setCheckAutomaticSync,	_mainWindow,	&MainWindow::setCheckAutomaticSync	);
+	connect(_currentDataFile,	&CurrentDataFile::syncRequested,			this,			[this](const QString & path) { _mainWindow->setCheckAutomaticSync(false); setSyncRequest(path); });
 
 	_actionButtons->setEnabled(ActionButtons::New,				true);
 	_actionButtons->setEnabled(ActionButtons::Open,				true);
@@ -57,8 +57,8 @@ FileMenu::FileMenu(QObject *parent) : FileEventRouter(parent)
 	_actionButtons->setEnabled(ActionButtons::SyncData,			false);
 	_actionButtons->setEnabled(ActionButtons::Close,			false);
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
-	_actionButtons->setEnabled(ActionButtons::Contact,			true);
-	_actionButtons->setEnabled(ActionButtons::Community,		true);
+	// Contact/Community: no setEnabled here — the rows are dropped entirely
+	// by ActionButtons::loadButtonData() when externalLinksEnabled is off.
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
 	setResourceButtonsVisibleFor(_fileoperation);

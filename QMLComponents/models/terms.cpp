@@ -183,6 +183,14 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 
 		for (const Json::Value& row : valuesPart)
 		{
+			//Only strings and objects are valid term rows; anything else (numbers,
+			//bools, nulls from malformed input) is skipped instead of throwing.
+			if (!row.isString() && !row.isObject())
+			{
+				termId++;
+				continue;
+			}
+
 			columnTypeVec types;
 			if (typesPart.size() > termId)
 			{

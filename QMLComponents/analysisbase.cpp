@@ -228,7 +228,10 @@ Json::Value & AnalysisBase::resolveOptionParent(Json::Value & root, const QVecto
 					if (!boundValue.isObject())
 						continue;
 
-					if (boundValue.isMember(parent.key))
+					// Only objects can match a parent key. Entries may also be plain
+					// strings/arrays (e.g. options set from R syntax or the AI analysis_run
+					// RPC), and isMember() throws on non-objects — so guard explicitly.
+					if (boundValue.isObject() && boundValue.isMember(parent.key))
 					{
 						Json::Value* keyValue = &(boundValue[parent.key]);
 						if (keyValue->isObject() && keyValue->isMember("value") && keyValue->isMember("types"))

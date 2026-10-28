@@ -954,7 +954,7 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 	{
 		Json::Value jsonType		= typeList.size() > i ? typeList[i] : Json::nullValue,
 					jsonValueOrg	= valueList[i],
-					jsonValue		= (optionKey.empty() || keepOriginalOption || !jsonValueOrg.isMember(optionKey)) ? jsonValueOrg : jsonValueOrg[optionKey];
+					jsonValue		= (optionKey.empty() || keepOriginalOption || !jsonValueOrg.isObject() || !jsonValueOrg.isMember(optionKey)) ? jsonValueOrg : jsonValueOrg[optionKey];
 
 		// resolve THIS term's namespace from the sidecar before touching the
 		//encoder - a positional entry gives the term its own filter's VIEW (and that filter's
@@ -990,6 +990,8 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				newOption.append(columnNameWithType);
 			else if (keepOriginalOption)
 				newOption[optionKey].append(columnNameWithType);
+			else if (!jsonValueOrg.isObject()) // plain string/array entry (R syntax form): no object to reuse
+				newOption.append(columnNameWithType);
 			else
 			{
 				// Reuse original jsonValue in order to get the other members of the object
@@ -1040,6 +1042,8 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				newOption.append(newColumnNames);
 			else if (keepOriginalOption)
 				newOption[optionKey].append(newColumnNames);
+			else if (!jsonValueOrg.isObject()) // plain string/array entry (R syntax form): no object to reuse
+				newOption.append(newColumnNames);
 			else
 			{
 				jsonValueOrg[optionKey] = newColumnNames;
