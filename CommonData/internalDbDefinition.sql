@@ -24,6 +24,13 @@ CREATE TABLE DataSets (
 	defaultInputFilter	INT NULL
 );
 
+CREATE TABLE IF NOT EXISTS DataChunks (
+	columnId	INTEGER,
+	chunkId		INTEGER,
+	data		BLOB,
+	PRIMARY KEY (columnId, chunkId)
+) WITHOUT ROWID;
+
 CREATE TABLE Filters ( 
 	id				INTEGER PRIMARY KEY, 
 	dataSet			INT, 
