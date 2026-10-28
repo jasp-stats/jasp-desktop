@@ -22,7 +22,6 @@
 FileMenuObject::FileMenuObject(FileMenu * parent) : QObject(parent)
 {
 	_filemenu = parent;
-	connect(this, &FileMenuObject::dataSetIORequest, parent, &FileMenu::dataSetIORequestHandler);
 }
 
 FileEvent::FileMode FileMenuObject::mode() 
@@ -33,4 +32,11 @@ FileEvent::FileMode FileMenuObject::mode()
 void FileMenuObject::setMode(FileEvent::FileMode mode)
 {
 	_filemenu->_mode = mode;	
+}
+
+void FileMenuObject::openFile(const QString & path)
+{
+	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
+	event->setPath(path);
+	event->starts();
 }

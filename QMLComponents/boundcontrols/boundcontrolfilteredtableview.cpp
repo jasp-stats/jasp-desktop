@@ -40,11 +40,11 @@ Json::Value BoundControlFilteredTableView::createJson() const
 	return result;
 }
 
-Json::Value BoundControlFilteredTableView::createMeta() const
+Json::Value BoundControlFilteredTableView::createEngineMeta() const
 {
 	ListModelFilteredDataEntry* filteredModel = qobject_cast<ListModelFilteredDataEntry*>(_tableView->tableModel());
 	
-	Json::Value meta = BoundControlTableView::createMeta(),
+	Json::Value meta = BoundControlTableView::createEngineMeta(),
 				load = Json::objectValue;
 	
 	load["filter"] = filteredModel->filterName();
@@ -61,6 +61,11 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 	{
 		const Json::Value& firstRow = value[Json::UInt(0)];
 
+		//const operator[] throws on non-objects (fuzzed garbage in the options array):
+		//treat a malformed first row as "no row" and keep the defaults.
+		if (!firstRow.isObject())
+			return;
+
 		tableTerms.filter		= tq(firstRow["filter"].asString());
 		tableTerms.filterName	= firstRow.isMember("filterName") ? tq(firstRow["filterName"].asString()) : "";
 		tableTerms.colName		= tq(firstRow["colName"].asString());
@@ -76,7 +81,7 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 	}
 }
 
-void BoundControlFilteredTableView::fillBoundValue(Json::Value &value, const ListModelTableViewBase::TableTerms &tableTerms)
+void BoundControlFilteredTableView::fillBoundValue(Json::Value &value, const ListModelTableViewBase::TableTerms &tableTerms) const
 {
 	ListModelFilteredDataEntry* filteredModel = qobject_cast<ListModelFilteredDataEntry*>(_tableView->tableModel());
 

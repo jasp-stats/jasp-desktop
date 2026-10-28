@@ -264,8 +264,22 @@ XmlDatatype ODSXmlContentsHandler::_setLastTypeGetValue(QString &value, const QX
 	case odsType_float:
 	case odsType_currency:
 	case odsType_percent:
+	{
 			value = atts.value(_attValue).toString();
+
+			//office:value is written the way C writes numbers whatever the locale of the spreadsheet, while a cell is read like text typed
+			//in the locale of the interface (ODSSheetCell::valueAsString), so it is handed on written that way. Not in the first row though,
+			//that one holds the names of the columns.
+			if(_row > 0)
+			{
+				bool	isNumber	= false;
+				double	number		= QLocale::c().toDouble(value, &isNumber);
+
+				if(isNumber)
+					value = QColumnUtils::doubleToString(number, false);
+			}
 			break;
+	}
 	case odsType_boolean:
 			value = atts.value(_attBoolValue).toString();
 			break;

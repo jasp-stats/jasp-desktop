@@ -84,8 +84,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var progressbarModel = new JASPWidgets.Progressbar({analysis: this});
 		this.progressbar = new JASPWidgets.ProgressbarView({ model: progressbarModel });
 
-		this.imageBeingEdited = null;
-
 
 		this.userdata = this.model.get('userdata');
 		if (this.userdata === undefined || this.userdata === null)
@@ -98,10 +96,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.toolbar.setParent(this);
 
-		this.model.on("analysis:resizeStarted",		function (image)			{ this.imageBeingEdited = image	},																					this);
 		this.model.on("CustomOptions:changed",		function (options)			{											this.trigger("optionschanged",		this.model.get("id"), options)	},	this);
 		this.model.on("SaveImage:clicked",			function (options)			{											this.trigger("saveimage",			this.model.get("id"), options)	},	this);
-		this.model.on("EditImage:clicked",			function (image, options)	{ this.imageBeingEdited = image;			this.trigger("editimage",			this.model.get("id"), options)	},	this);
+		this.model.on("EditImage:clicked",			function (image, options)	{											this.trigger("editimage",			this.model.get("id"), options)	},	this);
 		this.model.on("InteractiveImage:clicked",	function (options)			{											this.trigger("interactiveImage",	this.model.get("id"), options)	},	this);
 		this.model.on("ShowDependencies:clicked",	function (optName)			{											this.trigger("showDependencies",	this.model.get("id"), optName)	},	this);
 
@@ -148,21 +145,42 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		'mouseleave': '_hoveringEnd',
 	},
 
-	undoImageResize: function() {
-		if (this.imageBeingEdited !== null)
-			this.imageBeingEdited.restoreSize();
+	// Locate the image by name rather than storing a JS reference
+	// (this.imageBeingEdited). Object references go stale after re-renders
+	// because views are destroyed and recreated from meta.
+	undoImageResize: function(name) {
+		var targetImage = this.findImagePrimitive(name);
+		if (targetImage !== null)
+			targetImage.restoreSize();
 	},
 
+	// Applies the engine's image edit response to the corresponding image view.
+	// Fields updated:
+	//   revision — cache-busting, forces browser to reload the image
+	//   interactiveJsonData — plotly JSON for non-static plots
+	//   data — base64-encoded image PNG (the visible plot)
+	//   width/height — new dimensions from resize
 	insertNewImage: function(imageEditResults) {
-		if (this.imageBeingEdited !== null) {
+		var targetImage = null;
+		if (imageEditResults && imageEditResults.name) {
+			targetImage = this.findImagePrimitive(imageEditResults.name);
+		}
+		if (targetImage !== null) {
+			jasp.jsLog("insertNewImage: '" + imageEditResults.name + "' w=" + imageEditResults.width + " h=" + imageEditResults.height + " hasData=" + (!!imageEditResults.data) + " hasInteractive=" + (!!imageEditResults.interactiveJsonData));
+			var model = targetImage.model;
 			if ("revision" in imageEditResults)
-				this.imageBeingEdited.setRevision(imageEditResults["revision"]);
-
-			// Update the interactive plotly data so toggling to the interactive view shows the edited plot
+				targetImage.setRevision(imageEditResults["revision"]);
 			if ("interactiveJsonData" in imageEditResults && imageEditResults["interactiveJsonData"] !== null)
-				this.imageBeingEdited.model.set("interactiveJsonData", imageEditResults["interactiveJsonData"]);
-
-			this.imageBeingEdited.reRender();
+				model.set("interactiveJsonData", imageEditResults["interactiveJsonData"]);
+			if (imageEditResults.data)
+				model.set("data", imageEditResults.data);
+			if (imageEditResults.width)
+				model.set("width", imageEditResults.width);
+			if (imageEditResults.height)
+				model.set("height", imageEditResults.height);
+			targetImage.reRender();
+		} else {
+			jasp.jsLog("insertNewImage: SKIPPED — not found for '" + (imageEditResults ? imageEditResults.name : "null") + "'");
 		}
 	},
 
@@ -610,10 +628,31 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	render: function () {
 
+		// Refresh userdata from the model while preserving in-flight local
+		// changes (e.g., a plot's interactive/static toggle) that may not
+		// have reached the C++ side yet via the async QWebChannel call.
+		//
+		// When the user toggles interactive/static, image.interactiveImageClicked:
+		//   1. Sets model properties (interactive, userInteractive)
+		//   2. Triggers "changed:userData" event -> onUserDataChanged -> setData
+		//   3. setData calls jasp.setUserData() via QWebChannel (async)
+		// If render() fires before the QWebChannel roundtrip completes, the
+		// model's userdata still has the old toggle state. $.extend(true, ...)
+		// overlays this.userdata.children (which has the correct in-flight local
+		// state) onto the fresh model data, so the toggle survives the race.
+		var fresh = this.model.get('userdata');
+		if (fresh) {
+			if (this.userdata && this.userdata.children && fresh.children) {
+				// Overlay local changes onto the model's fresh data so
+				// setData updates survive the round-trip race
+				$.extend(true, fresh.children, this.userdata.children);
+			}
+			this.userdata = fresh;
+		}
+
 		var results				= this.model.get("results");
 		var titleAnalysis		= this.model.get("title");
 		var dataSpecAnalysis	= this.model.get("dataSpec");
-		
 
 		if (results === "" || results === null) {
 			progress = this.model.get("progress");
@@ -622,8 +661,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				this.updateProgressbarInResults();
 			return this;
 		}
-
-		this.imageBeingEdited = null;
 
 		this.toolbar.$el.detach();
 		this.detachNotes();
@@ -709,6 +746,28 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.volatileViews = [];
 		this.views = [];
+	},
+
+	// Searches the volatile views tree for an imagePrimitive view whose
+	// model has the given name. "Primitive" refers to the low-level
+	// JASPWidgets.imagePrimitive view nested inside an imageView wrapper —
+	// this is the view that owns the DOM rendering.
+	findImagePrimitive: function(name) {
+		var found = null;
+		var searchViews = function(views) {
+			for (var i = 0; i < views.length && found === null; i++) {
+				var view = views[i];
+				if (!view) continue;
+				if (view.myView && view.model && view.model.get("name") === name) {
+					found = view.myView;
+					return;
+				}
+				if (view.views) searchViews(view.views);
+				if (view.localViews) searchViews(view.localViews);
+			}
+		};
+		searchViews(this.volatileViews);
+		return found;
 	},
 
 	onClose: function () {

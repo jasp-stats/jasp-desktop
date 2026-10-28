@@ -4,6 +4,7 @@
 #include "timers.h"
 #include "qutils.h"
 #include "dataset.h"
+#include "workspace.h"	// the Filter::nameChanged -> Workspace::filterNameChanged relay
 #include "dataenums.h"
 #include "filtereddata.h"
 #include "columnencoder.h"
@@ -60,6 +61,14 @@ void Filter::connectionCreation()
 	connect(this,	&Filter::refreshAllCompCols,	_data,	&DataSet::refreshAllCompCols);
 	connect(_data,	&DataSet::datasetChanged,		this,	&Filter::datasetChanged		);
 	connect(this,	&Filter::nameChanged,			_data,	[&](){_data->incRevision();});
+
+	// relay named-filter renames to the workspace so editors holding qualified
+	//references to this filter BY NAME can revalidate (the invalidation is loud, no edit
+	//needed on the editor side). The default filter's name never changes.
+	connect(this,	&Filter::nameChanged,			_data,	[this](){
+		if(_data->workspace() && _name != DEFAULT_FILTER_NAME)
+			emit _data->workspace()->filterNameChanged(_data->id());
+	});
 		
 	_data->registerFilter(this);
 	
@@ -89,6 +98,49 @@ void Filter::dbCreate()
 {
 	assert(_id == -1);
 	_id = db().filterInsert(_data->id(), _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
+	ensureColumnView();	//the rowid is final from here on, so the namespace view can be minted
+}
+
+void Filter::setId(int id)
+{
+	if(_id == id)
+		return;
+
+	_id = id;
+
+	if(_columnView)	//the (re)assigned rowid changes the namespace: reforge the view (DatabaseInterface::dataSetBatchedValuesLoad path)
+	{
+		dropColumnView();
+		ensureColumnView();
+	}
+}
+
+void Filter::ensureColumnView()
+{
+	if(_id == -1 || !_data)
+		return;
+
+	const std::string prefix = "JASPColumn_D" + std::to_string(_data->id()) + "_F" + std::to_string(_id) + "_";
+
+	if(_columnView && _columnView->encodePrefix() == prefix)
+		return;	//already live under this exact namespace (dbLoad re-entry)
+
+	dropColumnView();
+	_columnView = ColumnEncoder::createView(&_data->encoder(), prefix);
+}
+
+void Filter::dropColumnView()
+{
+	delete _columnView;	//~ColumnEncoder erases the block: this filter's tokens go raw
+	_columnView = nullptr;
+}
+
+Filter::~Filter()
+{
+	//The namespace view is the only thing the global decode table knows about this filter; with the
+	//block erased its tokens go raw. The rest of the members keep their pre-Phase-1
+	//lifetimes (QObject-parented where applicable).
+	dropColumnView();
 }
 
 void Filter::dbUpdate(bool writeFiltered)
@@ -100,8 +152,8 @@ void Filter::dbUpdate(bool writeFiltered)
 	if(!_data->writeBatchedToDB())
 	{
 		db().transactionWriteBegin();
-		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
-		
+		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name, _invalidated);
+
 		if(writeFiltered)
 			db().filterWrite(_id, _filtered);
 
@@ -127,13 +179,15 @@ void Filter::dbUpdateErrorMsg()
 	}
 }
 
-void Filter::dbLoad()
+bool Filter::dbLoad()
 {
 	if(_id == -1)
 		_id = _name == "" ? db().filterGetId(_data->id()) : db().filterGetId(_data->id(),_name);
 
 	if(_id == -1)
-		return;
+		return false;
+
+	ensureColumnView();	//rowid is final, mint/keep this filter's namespace view
 
 	db().transactionReadBegin();
 	
@@ -146,14 +200,22 @@ void Filter::dbLoad()
 
 	rescanForColumns();
 
-	if(oldRFilter			!= _rFilter)			emit rFilterChanged();
-	if(oldGeneratedFilter	!= _generatedFilter)	emit generatedFilterChanged();
-	if(oldConstructorJson	!= _constructorJson)	emit constructorJsonChanged();
-	if(oldConstructorR		!= _constructorR)		emit constructorRChanged();
+	bool changed = false;
+
+	if(oldRFilter			!= _rFilter)		{ emit rFilterChanged();			changed = true; }
+	if(oldGeneratedFilter	!= _generatedFilter){ emit generatedFilterChanged();	changed = true; }
+	if(oldConstructorJson	!= _constructorJson){ emit constructorJsonChanged();	changed = true; }
+	if(oldConstructorR		!= _constructorR)	{ emit constructorRChanged();		changed = true; }
 	
-	dbLoadResultAndError();
+	//If the results (or their error) also changed, the filter genuinely changed.
+	//Syncing our own cache with a recompute we just triggered ourselves is NOT a
+	//change: treat identical results as no-change so callers do not see this as
+	//a dataset update (which would re-trigger the filter and loop forever).
+	changed = dbLoadResultAndError() || changed;
 
 	db().transactionReadEnd();
+
+	return changed;
 }
 
 bool Filter::setFilterVector(const boolvec & filterResult)
@@ -263,8 +325,12 @@ bool Filter::checkForUpdates()
 
 	if(_data->id() != -1 && _id != -1)
 	{
-		dbLoad();
-		return true;
+		//Only report an actual change. Returning true here merely because the engine
+		//bumped the revision (e.g. as the direct result of our own filterByName request)
+		//used to make DataSet::checkForUpdates emit datasetChanged for every reply,
+		//which re-triggered the filter in ListModelFilteredDataEntry and caused an
+		//infinite filterByName loop for named filters such as the audit data-entry.
+		return dbLoad();
 	}
 	else
 		return false;
@@ -376,7 +442,19 @@ void Filter::setInvalidated(bool invalidated)
 
 	if(wasChange)
 		emit invalidatedChanged();
-	
+
+	//Re-queue a run whenever a filter is (re)invalidated. Since DataSet::filterByNameDone
+	//now clears the flag when a reply for the latest request is consumed, this flag is
+	//truthful and this emit is no longer load-bearing-with-weird-semantics: it simply
+	//ensures a run gets queued for the current inputs. Gating this on wasChange is
+	//tempting but WRONG: an input change while a request is already in flight would be
+	//suppressed, and the in-flight reply (computed from the older inputs) would then
+	//mark the filter fresh with outdated results. Duplicates are harmless: the newer
+	//request computes the newer inputs and EngineRepresentation drops the older reply.
+	//The historical infinite loop came from feedback paths that re-invalidated a filter
+	//on every reply; those are closed now (Filter::checkForUpdates reports only actual
+	//changes, initTableTerms skips no-op rebinds, runFilters is column-aware and the
+	//empty-result retry is bounded).
 	if(_invalidated)
 		emit _data->sendFilterByName(data()->id(), nameQ(), "*");
 }
@@ -468,6 +546,19 @@ VarInfoModelProxy *Filter::rowFilteredVarInfo() const
 QAbstractItemModel *Filter::providerModel()
 {
 	return rowFilteredVarInfo();
+}
+
+ColumnEncoder *Filter::columnEncoder()
+{
+	//This filter is its own namespace: whoever en-/decodes through this provider
+	//(host dataset selection) uses this filter's view - canonical mint indices composed with this
+	//filter's prefix - never the process-global current one (which only means something inside an
+	//engine request). Lazy so a filter whose dbLoad attached no view yet still answers; nullptr
+	//only while no final rowid exists.
+	if(!_columnView)
+		ensureColumnView();
+
+	return _columnView;
 }
 
 
@@ -563,7 +654,7 @@ void Filter::datasetChanged(int, QStringList changedColumns, QStringList missing
 
 	if(!invalidateMe)
 		for(const QString & changed : changedColumns)
-			if(_columnsUsedInRFilter.count(fq(changed)) > 0 || _columnsInConstructorJson.count(fq(changed)) > 0)
+			if(columnUsed(changed))
 			{
 				invalidateMe = true;
 				break;
@@ -710,7 +801,14 @@ QString Filter::constructorJsonQ() const
 
 bool Filter::columnUsed(const QString &name) const
 {
-	return _columnsInConstructorJson.count(fq(name)) || _columnsUsedInRFilter.count(fq(name));
+	if(_columnsInConstructorJson.count(fq(name)) || _columnsUsedInRFilter.count(fq(name)))
+		return true;
+
+	//The default filter's generated (label) filter also depends on every column that has
+	//active label filtering (see LabelFilterGenerator::generateFilter): a value edit can
+	//move a row between levels without changing the generated code itself, so the filter
+	//still has to be re-run. Named filters have no label filter generator.
+	return _labelGen && data()->column(name) && data()->column(name)->hasLabelFilter();
 }
 
 const QString & Filter::defaultRFilter()

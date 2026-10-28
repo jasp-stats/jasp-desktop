@@ -87,7 +87,7 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 
 		runJavaScript("window.setAppVersion('" + version + "')");
 #ifdef INTERACTIVE_PLOTS
-		runJavaScript("window.setInteractivePlots(true)");
+		runJavaScript("window.setUseInteractivePlots(true)");
 #endif
 
 		setGlobalJsValues();
@@ -172,6 +172,7 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 {
 	Json::Value imgJson = analysis->imgResults();
+
 	QString	results = tq(imgJson.toStyledString());
 	results = escapeJavascriptString(results);
 	results = "window.refreshEditedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
@@ -180,9 +181,9 @@ void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 	return;
 }
 
-void ResultsJsInterface::cancelImageEdit(int id)
+void ResultsJsInterface::cancelImageEdit(int id, const QString &name)
 {
-	runJavaScript("window.cancelImageEdit(" + QString::number(id) + ");");
+	runJavaScript("window.cancelImageEdit(" + QString::number(id) + ", '" + escapeJavascriptString(name) + "');");
 }
 
 void ResultsJsInterface::menuHiding()
@@ -462,6 +463,11 @@ void ResultsJsInterface::setFontFamily()
 		QString font = PreferencesModel::prefs()->resultFont(true);
 		runJavaScript("window.setFontFamily(\"" + escapeJavascriptString(font) + "\");");
 	}
+}
+
+void ResultsJsInterface::jsLog(QString msg)
+{
+	Log::log() << "JS: " << msg.toStdString() << std::endl;
 }
 
 void ResultsJsInterface::setLocale(QString localeId, bool thousandSeps)

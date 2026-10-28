@@ -109,6 +109,10 @@ private:
 	bool						_replaceLineEndings;
 	bool						_rowFinished;
 	bool						_skipNextLF;
+	//Where the quoted part of the field being parsed begins and ends, so the padding around it can be
+	//trimmed without touching the quoted content itself. npos while the field has seen no quotes (yet).
+	size_t						_quotedBegin;
+	size_t						_quotedEnd;
 
 	/// Finish current field (add to row, reset field)
 	void finishField();
@@ -118,6 +122,9 @@ private:
 
 	/// Apply line ending replacement to a field
 	void replaceLineEndings(std::string& field) const;
+
+	/// Drop the whitespace around the current field, but never from its quoted part
+	void trimUnquotedPadding();
 };
 
 #endif // CSVPARSER_H

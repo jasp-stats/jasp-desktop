@@ -35,10 +35,19 @@ include(HelpGenerator)
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
-list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/junctionTool/main.cpp")
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/main.cpp")
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
+
+# The embedded executable icon must follow the PRO flag, otherwise the
+# enterprise build carries the community logo in the taskbar (the loose
+# icon.ico next to the executable is already swapped by Install.cmake —
+# this covers the resource compiled into JASP.exe itself).
+if(PRO)
+  set(JASP_ICON_RC icon-pro.rc)
+else()
+  set(JASP_ICON_RC icon.rc)
+endif()
 
 qt_add_library(
   JASPDesktopLib
@@ -52,7 +61,7 @@ qt_add_executable(
   ${SYSTEM_TYPE}
   ${BUNDLE_RESOURCES}
   ${CMAKE_SOURCE_DIR}/Desktop/main.cpp
-  $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/${JASP_ICON_RC}>
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
 )
@@ -90,10 +99,6 @@ if(WINDOWS)
   message(STATUS "We will build the windows app container permission checker")
   add_executable(ContainerFilePermissionChecker "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
   add_dependencies(JASP ContainerFilePermissionChecker)
-
-  message(STATUS "We will build the windows junctionTool")
-  add_executable(JunctionTool "${CMAKE_CURRENT_LIST_DIR}/junction_tool/main.cpp")
-  add_dependencies(JASP JunctionTool)
 
   set_target_properties(JASP PROPERTIES OUTPUT_NAME "JASPDesktop") # https://github.com/jasp-stats/jasp-issues/issues/1030
 endif()
@@ -153,14 +158,17 @@ target_link_libraries(
     Qt::WebChannelQuick
     Qt::Svg
     Qt::Network
+    Qt::NetworkAuth
     Qt6::HttpServer
 	#? Qt::PrintSupport
     Qt::Xml
     Qt::Sql
     Qt::Quick
+    Qt::QuickPrivate
     Qt::QuickLayouts
     Qt::QuickControls2
     Qt::QuickControls2Impl
+    Qt::QuickTemplates2Private
     Qt::QuickWidgets
     Qt::QuickTemplates2
     Qt::DBus
@@ -196,12 +204,53 @@ target_link_libraries(
     JASPDesktopLib
   )
 
+if(APPLE)
+  # Keychain backend in Desktop/auth/secretvault.cpp (SecItemAdd et al.)
+  target_link_libraries(JASPDesktopLib PUBLIC "-framework Security")
+endif()
+
+if(APPLE)
+  # Re-sign the freshly linked JASP binary with a stable identity so the
+  # Keychain (SecretVault) recognises it across rebuilds — the linker's ad-hoc
+  # signature changes on every build, re-prompting for the login password.
+  # SignJasp.cmake resolves the best available identity at build time and
+  # falls back to ad-hoc when none is available, so this never breaks a build.
+  add_custom_command(TARGET JASP POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+            -DFILE=$<TARGET_FILE:JASP>
+            -DIDENTITY=${APPLE_CODESIGN_IDENTITY}
+            -P ${CMAKE_SOURCE_DIR}/Tools/CMake/SignJasp.cmake
+    VERBATIM
+    COMMENT "------ Signing JASP")
+
+  # POST_BUILD only runs when the target relinks — a binary last signed by an
+  # environment without the identity (CI, a sandboxed terminal) keeps its
+  # ad-hoc signature through every subsequent no-op build. This always-run
+  # target re-signs on every default ("all") build, so a machine that does
+  # hold the identity repairs a stale ad-hoc signature on the first build.
+  add_custom_target(JaspResign ALL
+    DEPENDS JASP
+    COMMAND ${CMAKE_COMMAND}
+            -DFILE=$<TARGET_FILE:JASP>
+            -DIDENTITY=${APPLE_CODESIGN_IDENTITY}
+            -P ${CMAKE_SOURCE_DIR}/Tools/CMake/SignJasp.cmake
+    VERBATIM
+    COMMENT "------ Signing JASP (always)")
+endif()
+
 target_compile_definitions(JASPDesktopLib PUBLIC JASP_USES_QT_HERE)
 target_compile_definitions(JASP           PUBLIC JASP_USES_QT_HERE)
 
 if(INTERACTIVE_PLOTS)
 target_compile_definitions(JASPDesktopLib PUBLIC INTERACTIVE_PLOTS)
 target_compile_definitions(JASP           PUBLIC INTERACTIVE_PLOTS)
+endif()
+
+# Test hooks (e.g. the ScriptTrashItem debug counters) change class layout, so the define must
+# be identical for JASPDesktopLib itself and every consumer: set it PUBLIC here (only when
+# tests are built) rather than on individual test executables.
+if(BUILD_TESTS)
+target_compile_definitions(JASPDesktopLib PUBLIC JASP_TESTHOOKS)
 endif()
 
 if(NOT WINDOWS)

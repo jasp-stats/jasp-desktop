@@ -400,6 +400,45 @@ Item
 					runJavaScript(`window.sendUrlWhitelist(${JSON.stringify(urlWhitelist)})`); //sent urlWhitelist to js side
 			}
 
+			//Show the tooltips of the results ourselves, because the one webengine falls back on waits a
+			//full second before it appears, which is a long time to hover over a button in a plot toolbar
+			//just to find out what it does. Accepting the request is what keeps that default away.
+			onTooltipRequested: (request) =>
+			{
+				if(request.type === TooltipRequest.Show)
+				{
+					resultsToolTip.text = request.text;
+
+					//Place it ourselves and keep it inside the results. Qt slides a popup that does not fit
+					//back in on its own, and because a tooltip may be as wide as jaspTheme.tooltipMaxWidth
+					//that slide throws it far away from the cursor when hovering near the right hand side.
+					let tipWidth	= resultsToolTip.implicitWidth,
+						tipHeight	= resultsToolTip.implicitHeight,
+						margin		= 6,
+						below		= request.y + 20; //next to the cursor instead of underneath it
+
+					resultsToolTip.x = Math.max(margin, Math.min(request.x, resultsView.width - tipWidth - margin));
+
+					//And above the cursor when there is no room for it below
+					resultsToolTip.y = below + tipHeight + margin <= resultsView.height
+									 ? below
+									 : Math.max(margin, request.y - tipHeight - margin);
+
+					resultsToolTip.visible = true;
+				}
+				else
+					resultsToolTip.visible = false;
+
+				request.accepted = true;
+			}
+
+			ToolTip
+			{
+				id:			resultsToolTip
+				delay:		100
+				timeout:	5000
+			}
+
 
 
 			Connections
@@ -478,6 +517,7 @@ Item
 				// It would be much better to have resultsJsInterface be passed directly though..
 				// It also gives you an overview of the functions used in results html
 
+				function jsLog(msg)									{ resultsJsInterface.jsLog(msg)									}
 				function openFileTab()								{ resultsJsInterface.openFileTab()                              }
 				function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)             }
 				function analysisUnselected()						{ resultsJsInterface.analysisUnselected()                       }

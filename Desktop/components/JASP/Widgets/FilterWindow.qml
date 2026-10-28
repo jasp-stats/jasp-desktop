@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import JASP.Controls	as JaspControls
-import "FilterConstructor"
 import JASP
 
 import QtQuick.Layouts
@@ -35,6 +34,14 @@ FocusScope
 			filterEditRectangle.askIfChanged(closeFunc) 
 	}
 
+	// Close through the usual apply/discard/cancel route (stays open on Cancel).
+	// Used by the Filter/Variables exclusivity logic; the in-window close buttons
+	// already invoke askIfChanged directly.
+	function requestClose()
+	{
+		askIfChanged(function() { close() })
+	}
+
 	Rectangle
 	{
 		anchors.fill:	parent
@@ -62,6 +69,7 @@ FocusScope
 		
 		Flickable
 		{
+			id:				filtersScroller
 			anchors
 			{
 				top:			backgroundFiltersTabs.top
@@ -80,13 +88,7 @@ FocusScope
 			{
 				id:		filtersTabs
 				z:		2
-				anchors
-				{
-					top:			backgroundFiltersTabs.top
-					left:			backgroundFiltersTabs.left
-					right:			backgroundFiltersTabs.right
-					margins:		jaspTheme.generalAnchorMargin
-				}
+				width:	Math.max(implicitWidth, filtersScroller.width)
 				
 				Repeater
 				{
@@ -168,11 +170,20 @@ FocusScope
 			visible:			filterModel.showEasyFilter
 
 
-			FilterConstructor
+			ScriptConstructor
 			{
-				id:				easyFilterConstructor
-				onRCodeChanged: filterContainer.rCodeChanged(rScript)
-				clip:			true
+				id:					easyFilterConstructor
+				mode:				ScriptConstructorMode.Filter
+				constructorJson:	filterModel.filter.constructorJson
+				filterErrorMsg:		filterModel.filter.filterErrorMsg
+				clip:				true
+
+				// the column palette gains outward column sourcing - the picker
+				//catalog (every column of every other loaded slice) joins the own dataset's
+				//columns; dropping one stamps the node with its source slice and the generated
+				//R carries the full qualified surface form. The context is the EDITED filter
+				//(the same bare-name fallback namespace the R editor's picker uses).
+				contextFilterId:	filterModel.currentFilterId
 
 				anchors
 				{
@@ -182,38 +193,13 @@ FocusScope
 					top:	parent.top
 				}
 
-
-				functionModel: ListModel
+				onApplyRequested: function(json, rCode)
 				{
-
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Abs");					*/ functionName: "abs";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("absolute value") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Standard deviation");	*/ functionName: "sd";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("standard deviation") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Variance");			*/ functionName: "var";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("variance") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Sum");					*/ functionName: "sum";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("summation") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Product");				*/ functionName: "prod";		functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("product of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("ZScores");				*/ functionName: "zScores";		functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("Standardizes the variable") }
-
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise mean") ;				*/	functionName: "rowMean";		toolTip: qsTr("Rowwise mean") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise sum") ;				*/	functionName: "rowSum";			toolTip: qsTr("Rowwise sum") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise standard deviation");	*/	functionName: "rowSD";			toolTip: qsTr("Rowwise standard deviation") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise variance") ;			*/	functionName: "rowVariance";	toolTip: qsTr("Rowwise variance") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise median") ;				*/	functionName: "rowMedian";		toolTip: qsTr("Rowwise median") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise minimum") ;			*/	functionName: "rowMin";			toolTip: qsTr("Rowwise minimum") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise maximum") ;			*/	functionName: "rowMax";			toolTip: qsTr("Rowwise maximum") }
-					
-					
-
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Min");			*/	functionName: "min";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("returns minimum of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Max");			*/	functionName: "max";			functionParameters: "values";			functionParamTypes: "number";							toolTip: qsTr("returns maximum of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Mean");			*/	functionName: "mean";			functionParameters: "values";			functionParamTypes: "number";								toolTip: qsTr("mean") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Sign");			*/	functionName: "sign";			functionParameters: "values";			functionParamTypes: "number";									toolTip: qsTr("returns the sign of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Round");		*/		functionName: "round";			functionParameters: "y,n";				functionParamTypes: "number,number";								toolTip: qsTr("rounds y to n decimals") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Length");		*/		functionName: "length";			functionParameters: "y";				functionParamTypes: "string:number";									toolTip: qsTr("returns number of elements in y") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Median");		*/		functionName: "median";			functionParameters: "values";			functionParamTypes: "number";												toolTip: qsTr("median") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("IfElse");		*/		functionName: "ifelse";			functionParameters: "test,then,else";	functionParamTypes: "boolean,boolean:string:number,boolean:string:number";		toolTip: qsTr("if-else statement") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("HasSubstring");	*/	functionName: "hasSubstring";	functionParameters: "string,substring";	functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Is.NA");		*/		functionName: "is.na";			functionParameters: "y";				functionParamTypes: "string:number:boolean";									toolTip: qsTr("Combine with not-operator to filter out rows with missing values (NA) for a column.") }
+					filterModel.applyConstructorJson(json)
+					filterModel.filter.constructorR = rCode
 				}
+
+				onRCodeChanged: filterContainer.rCodeChanged(rScript)
 
 				function askIfChanged(closeFunc)
 				{
@@ -235,7 +221,7 @@ FocusScope
 
 					property var closeFunc: undefined
 
-					onSave:		if(easyFilterConstructor.checkAndApplyFilter()) closeFunc();
+					onSave:		if(easyFilterConstructor.checkAndApply()) closeFunc();
 					onDiscard:	{ easyFilterConstructor.initializeFromJSON(); closeFunc(); }
 				}
 			}
@@ -304,12 +290,12 @@ FocusScope
 
 			JaspControls.RectangularButton
 			{
-				property bool showApplyNotApplied: easyFilterConstructor.somethingChanged || easyFilterConstructor.showStartupMsg
+				property bool showApplyNotApplied: easyFilterConstructor.somethingChanged
 
 				id:				applyEasyFilter
 				text:			showApplyNotApplied ? qsTr("Apply pass-through filter") : qsTr("Filter applied")
 				enabled:		easyFilterConstructor.somethingChanged
-				onClicked:		easyFilterConstructor.checkAndApplyFilter()
+				onClicked:		easyFilterConstructor.checkAndApply()
 				toolTip:		showApplyNotApplied ? qsTr("Click to apply filter") : qsTr("Filter is already applied")
 				anchors
 				{
@@ -342,7 +328,7 @@ FocusScope
 				anchors
 				{
 					top:		parent.top
-					bottom:		filterErrorScroll.top
+					bottom:		filterRefWarning.top
 					left:		parent.left
 					right:		parent.right
 				}
@@ -412,10 +398,10 @@ FocusScope
 						JaspControls.RectangularButton
 						{
 							id:						resetAllGeneratedFilters
-							width:					(workspace.shownDataSet && workspace.shownDataSet.columnsLabelFilteredCount > 0) ? height : 0
+							width:					(dataSetModel.columnsLabelFilteredCount > 0) ? height : 0
 							height:					filterGeneratedBox.height
 							iconSource:				jaspTheme.iconPath + "eraser_all.png"
-							visible:				workspace.shownDataSet && workspace.shownDataSet.columnsLabelFilteredCount > 0
+							visible:				dataSetModel.columnsLabelFilteredCount > 0
 							toolTip:				qsTr("Reset all checkmarks on all labels")
 							onClicked:				dataSetModel.resetAllFilters()
 
@@ -465,6 +451,7 @@ FocusScope
 															keyEvent.accepted = false
 													}
 
+
 							anchors
 							{
 								top:	parent.top
@@ -503,6 +490,38 @@ FocusScope
 						closeFunc();
 					}
 				}
+			}
+
+			// the edited filter's own DataSet is the bare-name fallback BY
+			// DEFINITION - there is deliberately no fallback/dataset-selection UI here.
+			// What the R editor gains is the outward surface: insertion of qualified references
+			// from the other loaded slices (the picker; insertion = the verbatim
+			// renderQualifiedColumnRef output with context = the edited filter's id) and live
+			// validation of what the user typed (non-blocking warning; the run still fails
+			// loudly at the engine). The easy constructor below stays v1: its
+			// palette offers only the own dataset's columns (the v1 scope cut), so its JSON
+			// column references stay as today for own-dataset picks.
+			Text
+			{
+				id:					filterRefWarning
+				visible:			filterRefValidator.error !== ""
+				height:				visible ? contentHeight + 4 * jaspTheme.uiScale : 0
+
+				anchors
+				{
+					left:			parent.left
+					right:			parent.right
+					bottom:			filterErrorScroll.top
+					leftMargin:		2 * jaspTheme.uiScale
+					rightMargin:	2 * jaspTheme.uiScale
+					bottomMargin:	visible ? 2 * jaspTheme.uiScale : 0
+				}
+
+				wrapMode:	Text.Wrap
+				font.family:	jaspTheme.fontCode.family
+				font.pixelSize:	baseFontSize * preferencesModel.uiScale
+				color:		jaspTheme.controlWarningTextColor
+				text:		qsTr("Note: ") + filterRefValidator.error
 			}
 
 			ScrollView
@@ -608,12 +627,28 @@ FocusScope
 
 				JaspControls.RectangularButton
 				{
+					id:			insertColumnRefButton
+					iconSource:	jaspTheme.iconPath + "round_addition.png"
+					width:		height
+					toolTip:	qsTr("Insert a column reference from another dataset or filter")
+					onClicked:	filterRefPicker.openForInsertion()
+
+					anchors
+					{
+						left:	clearRectangularButton.right
+						bottom:	parent.bottom
+						top:	closeRectangularButton.top
+					}
+				}
+
+				JaspControls.RectangularButton
+				{
 					id: applyFilter
 
 					property bool filterIsDefault: filterEdit.text === filterModel.filter.defaultRFilter
 
 					text:			qsTr("Apply pass-through filter")
-					anchors.left:	clearRectangularButton.right
+					anchors.left:	insertColumnRefButton.right
 					anchors.right:	helpButton.left
 					anchors.bottom:	parent.bottom
 					anchors.top:	closeRectangularButton.top
@@ -648,6 +683,27 @@ FocusScope
 					onClicked:		filterEditRectangle.askIfChanged(function (){ filterWindow.close() })
 					toolTip:		qsTr("Hide filter")
 				}
+			}
+
+			// outward-reference support for the R filter editor. The insertion
+			// context is the EDITED filter's id (filterModel.currentFilterId): its own dataset's
+			// columns come out of the picker as the bare names (the host-bound fallback), everything
+			// else as the minimal qualified surface form. The validator is debounced and
+			// read-only: it warns, it never triggers a run (the re-trigger belongs to the
+			// apply paths, which always re-scan fresh code at queue time).
+			JaspControls.QualifiedColumnValidator
+			{
+				id:			filterRefValidator
+				workspace:	dataSetPackage.workspace
+				target:		filterEdit
+			}
+
+			JaspControls.QualifiedColumnPicker
+			{
+				id:					filterRefPicker
+				target:				filterEdit
+				contextFilterId:	filterModel.currentFilterId
+				workspace:			dataSetPackage.workspace
 			}
 		}
 	}

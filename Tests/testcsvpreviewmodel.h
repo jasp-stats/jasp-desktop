@@ -18,16 +18,30 @@
 #include <QtTest>
 #include <QDebug>
 
+class LanguageModel;
 
 class TestCsvPreviewModel : public QObject
 {
     Q_OBJECT
 	
 private slots:
+	void initTestCase();
     void testCsvParsing();
     void testDifferentDelimiters();
     void testComplexCsvParsing();
     void testNoTrailingNewline();
     void testCRLFLineEndings();
     void testCRLineEndings(); 
+	void testImportLocale();
+	void testImportLocaleIsHandedToTheImporter();
+	void testLocaleFallsBackOnTheInterface();
+	void testMoreLanguagesWidensTheLanguageList();
+	void testChosenLocaleIsNotOverruledByTheInterface();
+	void testRegionalLanguageNames();
+	void testParseExampleIsWrittenLikeTheInterface();
+	void testNumbersInEveryLanguage_data();
+	void testNumbersInEveryLanguage();
+
+private:
+	LanguageModel * _languageModel = nullptr;	///< CsvPreviewModel gets its languages and territories from here
 };

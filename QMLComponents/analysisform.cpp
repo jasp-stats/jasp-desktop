@@ -17,6 +17,7 @@
 //
 
 #include "analysisform.h"
+#include "controls/textareabase.h"
 #include "knownissues.h"
 #include <cmath>
 #include "boundcontrols/boundcontrol.h"
@@ -28,6 +29,7 @@
 #include "controls/comboboxbase.h"
 #include "controls/textinputbase.h"
 #include "controls/componentslistbase.h"
+#include "controls/variablesformbase.h"
 #include "controls/rowcontrols.h"
 #include "log.h"
 #include "controls/jaspcontrol.h"
@@ -40,6 +42,7 @@
 #include <QTimer>
 #include "preferencesmodelbase.h"
 #include "workspace.h"
+#include "columnencoder.h"	// FILTERIDS_SELF for the collision-tolerant sidecar placement
 
 using namespace std;
 
@@ -66,6 +69,12 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showAllROptionsChanged,	this,		&AnalysisForm::showAllROptionsChanged,	Qt::QueuedConnection);
 	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::developerModeChanged,	this,		&AnalysisForm::helpMDChanged,			Qt::QueuedConnection);
 	connect(this,									&AnalysisForm::analysisChanged,					this,		&AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);
+	// the wrapper call shown in the form is *rendered* text - dataset/filter
+	//strings resolved through the live workspace map. The map itself always self-syncs, but an
+	//already-shown call does not until it is re-rendered, so a language change (which may swap
+	//any translatable fragment that ever entered the render) re-emits it. Analyses::
+	//languageChangedHandler emits this signal on every form.
+	connect(this,									&AnalysisForm::languageChanged,					this,		&AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);
 }
 
 AnalysisForm::~AnalysisForm()
@@ -101,9 +110,9 @@ void AnalysisForm::refreshAnalysis()
 	_analysis->refresh();
 }
 
-QString AnalysisForm::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData)
+QString AnalysisForm::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware)
 {
-	return _rSyntax->generateWrapper(moduleName, analysisName, qmlFileName, analysisTitle, preloadData);
+	return _rSyntax->generateWrapper(moduleName, analysisName, qmlFileName, analysisTitle, preloadData, multiDataSetAware);
 }
 
 QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue) const
@@ -122,12 +131,20 @@ QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue, QString m
 
 QVariant AnalysisForm::options() const
 {
-	return jsonToQVariant(_analysis->boundValues());
+	// the QML-visible options are the GENERATED Engine tree (component state)
+	//with the transient `.filterIds` sidecar stripped - the same view the RPC hands out, and what
+	//the old mirror returned (modulo the provenance keys that were already documented-dead).
+	if(!_analysis)
+		return jsonToQVariant(Json::Value(Json::objectValue));
+
+	Json::Value options = _analysis->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(options);
+	return jsonToQVariant(options);
 }
 
 void AnalysisForm::setOptions(const QVariantMap &options)
 {
-	_analysis->setBoundValues(qvariantToJson(options));
+	_analysis->setPendingOptions(qvariantToJson(options));
 	setAnalysisUp();
 }
 
@@ -173,7 +190,6 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 			if (_rSyntax->parseRSyntaxOptions(options))
 			{
 				blockValueChangeSignal(true);
-				_analysis->clearBoundValues();
 				bindTo(Json::nullValue);
 				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
 				// For this, bind all controls to null and wait for the controls to be completely destroyed.
@@ -214,6 +230,18 @@ void AnalysisForm::filterByNameDone(int dataSetID, const QString & name, const Q
 
 void AnalysisForm::addControl(JASPControl *control)
 {
+	// componentComplete registers every static-branch control here, but nothing used
+	//to unregister - a control created after form setup and destroyed later (the late
+	//ComponentsList/QML createObject case) left raw pointers in _controls and _dependsOrderedCtrls
+	//and the next pass over them (setAnalysisUp/_setUpModels/bindTo/filterByNameDone/
+	//clearFormErrors/...) dereferenced freed memory: SEGV. Prune at the same
+	//chokepoint registration happens: the destroyed signal fires from ~QObject, so the dying
+	//control is only ever used as a pointer VALUE below - it must never be dereferenced here.
+	//(QObject's own rule covers the teardown race: when the form dies first its signal machinery
+	//is gone before children are deleted, so this callback never runs on a half-dead form - and
+	//the context object disconnects it anyway.)
+	connect(control, &QObject::destroyed, this, [this, control](QObject *) { _unregisterDeadControl(control); });
+
 	const QString & name = control->name();
 
 	if (_analysis && control->isBound())
@@ -244,6 +272,25 @@ void AnalysisForm::addControl(JASPControl *control)
 		control->setUp();
 		control->setInitialized();
 	}
+}
+
+void AnalysisForm::_unregisterDeadControl(JASPControl * deadControl)
+{
+	for (auto it = _controls.begin(); it != _controls.end();)
+		if (it.value() == deadControl)
+			it = _controls.erase(it);
+		else
+			++it;
+
+	_dependsOrderedCtrls.removeAll(deadControl);
+
+	//The ControlErrorMessage items keep a raw pointer to their control (that is how hasError()/
+	//getError()/clearAllErrors() find it again); with the control gone the reference would dangle
+	//and the next clearAllErrors() would dereference it - clear it exactly like clearControlError
+	//does for a living control, making the dead one's error drop out of hasError() as well.
+	for (QQuickItem * messageItem : _controlErrorMessageCache)
+		if (messageItem->property("control").value<JASPControl*>() == deadControl)
+			messageItem->setProperty("control", QVariant());
 }
 
 void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
@@ -277,6 +324,20 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 	for (JASPControl* control : controls)
 	{
 		control->addExplicitDependency();
+
+		//The dataset/filter selection a control's variables resolve through is a dependency too,
+		//and it is not declared anywhere: it falls out of the LOCAL namespace resolution (
+		//JASPControl::selectionDependency over JASPListControl::resolvedSelectionHost,
+		//the successor of the deleted walk's derivation). Recording it here - before the
+		//transitive closure below snapshots the set - is what makes a host's FilterSelect bind
+		//before every control it serves: binding the dropdown writes the saved filter id into the
+		//host and so restamps the provider that createFilterIds() provenances values through (the
+		//term filterIds the generated sidecar reads). Without the edge, an unchanged value loaded
+		//from a file would get restamped with whatever filter happened to be current (and the
+		//deferred init in JASPControl::setInitialized would not wait for the selection either).
+		if (JASPControl* selectionControl = control->selectionDependency())
+			control->addDependency(selectionControl);		//guards self and already-known edges
+
 		JASPControls depends(control->depends().begin(), control->depends().end());
 
 		// By adding at the end of the vector new dependencies, this makes sure that these dependencies of these new dependencies are
@@ -285,9 +346,15 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		// Afterwards, if a control depends (directly or indirectly) of another control, the number of elements in its 'depends' set is then
 		// automatically strictly bigger than the 'depends' set of all controls it depends on.
 		// We have then simply to use the size of their 'depends' set, to sort the controls.
+		// (the closure is a single pass in list order, so a set that grows later can leave two
+		// controls tied rather than ordered; stable_sort keeps such ties deterministic across runs,
+		// and JASPControl::setInitialized deferring on its uninitialized dependencies is what makes
+		// a residual tie bind in the right order regardless.)
 		for (size_t index = 0; index < depends.size(); index++)
 		{
 			JASPControl					* depend		= depends[index];
+			if (!depend)	//_depends should never hold nulls (see JASPControl::_addExplicitDependency), but never dereference one here either
+				continue;
 			const std::set<JASPControl*>	& dependdepends = depend->depends();
 
 			for (JASPControl* dependdepend : dependdepends)
@@ -298,7 +365,7 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		}
 	}
 
-	std::sort(controls.begin(), controls.end(),
+	std::stable_sort(controls.begin(), controls.end(),
 		[](JASPControl* a, JASPControl* b) {
 			return a->depends().size() < b->depends().size();
 		});
@@ -335,15 +402,40 @@ void AnalysisForm::clearAllErrors()
 bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg)
 {
 	Json::Reader jsonReader;
-	
+
 	jsonReader.parse(rawOptions, parsedOptions, false);
 
 	clearAllErrors(); // Remove old error in case
 
-	if (_rSyntax->parseRSyntaxOptions(parsedOptions))
+	try
 	{
-		bindTo(parsedOptions);
-		parsedOptions = _analysis->boundValues();
+		if (_rSyntax->parseRSyntaxOptions(parsedOptions))
+		{
+			bindTo(parsedOptions);
+			// report the options as GENERATED from the now-bound components
+			//(Engine shape: values + send-time .meta minus provenance + the transient
+			//`.filterIds` sidecar), not from a stored mirror. The syntax bridge feeds
+			//this tree through prepareMultiDataSetRun and back to R, so it must carry the
+			//sidecar the engine-side walk consumes (the mirror's meta stamps are dead input
+			//from the flip on). For a form whose controls are all bound this is what the
+			//mirror used to hold, modulo the provenance keys (equivalence harness pins it).
+			parsedOptions = _analysis->createOptionsJson(BoundControl::Engine);
+		}
+	}
+	catch (const Json::Exception & e)
+	{
+		//Malformed option values (e.g. numbers far out of range, or non-objects where
+		//objects are expected) used to escape as raw Json::LogicErrors, which the RPC
+		//dispatcher turned into -32603 "Internal error". They are just invalid input.
+		errorMsg = std::string("Option values could not be parsed: ") + e.what();
+		addFormError(tq(errorMsg));
+		return false;
+	}
+	catch (const std::exception & e)
+	{
+		errorMsg = std::string("Option values could not be applied: ") + e.what();
+		addFormError(tq(errorMsg));
+		return false;
 	}
 
 	if (hasError())
@@ -458,14 +550,37 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 	{
 		BoundControl* boundControl = control->boundControl();
 		Json::Value optionValue = Json::nullValue;
+		std::string name = control->name().toStdString();
+
 		if (boundControl)
 		{
-			std::string name = control->name().toStdString();
+			//A stored/generated value can still be structurally wrong in ways isJsonValid
+			//does not check (out-of-range numbers, non-object rows in arrays, ...). Do not
+			//let one bad option abort the whole bind: bindTo also runs from setAnalysisUp/
+			//file load/R-syntax rebinding, i.e. outside the RPC dispatcher where an escaping
+			//exception would terminate the process instead of surfacing as an error.
+			try
+			{
+				if (defaultOptions.isObject() && defaultOptions.isMember(name))
+					optionValue = defaultOptions[name];
 
-			if (defaultOptions.isMember(name))
-				optionValue = defaultOptions[name];
+				// a late selection host stashed the resolved filter id for this
+				//option at registration (successor of the direct mirror write); if the control
+				//now binds and the tree carries nothing for it, the stash is its value. The
+				//stash is request-scoped (cleared by setPendingDataSetSelectionRawValues), so a
+				//following parse - where this host is registered and the bridge translates its
+				//option properly - is never affected by it.
+				if (optionValue == Json::nullValue && !name.empty())
+					optionValue = takeResolvedSelectionOptionValue(tq(name));
 
-			if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
+				if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
+				{
+					optionValue = Json::nullValue;
+					control->setHasWarning(true);
+					controlsJsonWrong.insert(name);
+				}
+			}
+			catch (const Json::Exception &)
 			{
 				optionValue = Json::nullValue;
 				control->setHasWarning(true);
@@ -473,7 +588,18 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 			}
 		}
 
-		control->setInitialized(optionValue);
+		try
+		{
+			control->setInitialized(optionValue);
+		}
+		catch (const Json::Exception &)
+		{
+			//Reset this one control to its defaults (setInitialized(null) uses createJson)
+			//so the form stays coherent, and flag it like any other wrong-valued option.
+			control->setInitialized(Json::nullValue);
+			control->setHasWarning(true);
+			controlsJsonWrong.insert(name);
+		}
 	}
 
 	_addLoadingError(tql(controlsJsonWrong));
@@ -493,6 +619,73 @@ void AnalysisForm::addFormError(const QString & error)
 {
 	_formErrors.append(error);
 	emit errorsChanged();
+}
+
+// see the header for the contract. This IS the options tree now (the
+//the mirror-era equality proof is history (the mirror is deleted; the golden harness
+//tst_generatedOptionsJson*.qml keeps the shape pinned). Two rules define it:
+//  * placement: AnalysisBase::resolveOptionParent / placeOptionMeta / placeOptionFilterIds are
+//    the ONE path implementation (the mirror's former code, now the generators' alone; the
+//    filterIds variant adds the "$"-container collision demotion for provenanced row
+//    children), and the walk order is bindTo's _dependsOrderedCtrls, so a nested row value lands
+//    exactly where its parent row is;
+//  * content: each control generates through the same builder its write path uses
+//    (BoundControlBase::createEngineValue and the per-family overrides), and the Engine `.meta`
+//    is createEngineMeta() (never dataSetId/filterId), so family meta additions (encodeThis,
+//    loadFilteredData, isRCode, filterForValues) cannot drift out of the generated tree.
+Json::Value AnalysisForm::createOptionsJson(BoundControl::JsonFormat format)
+{
+	Json::Value options		(Json::objectValue),
+				metaRoot	(Json::objectValue),
+				filterIdsRoot(Json::objectValue);
+
+	for (JASPControl* control : _dependsOrderedCtrls)
+	{
+		if (!control || !control->isBound())
+			continue;
+
+		BoundControl* boundControl = control->boundControl();
+		const std::string name		= control->name().toStdString();
+
+		if (!boundControl || name.empty())
+			continue;
+
+		QVector<std::string> parentNames;
+		bool				 found	= false;
+		Json::Value &		 parent	= AnalysisBase::resolveOptionParent(options, control->getParentKeys(), parentNames, found, true);
+
+		parent[name] = boundControl->createJson(format);
+
+		if (format == BoundControl::Engine)
+		{
+			Json::Value optionMeta = boundControl->createEngineMeta();
+			if ((optionMeta.isObject() || optionMeta.isArray()) && optionMeta.size() > 0)
+				AnalysisBase::placeOptionMeta(metaRoot, parentNames, name, optionMeta);
+
+			Json::Value optionFilterIds = boundControl->createFilterIds();
+			if (!optionFilterIds.isNull())
+				AnalysisBase::placeOptionFilterIds(filterIdsRoot, parentNames, name, optionFilterIds);
+		}
+	}
+
+	if (format == BoundControl::Engine)
+	{
+		if (metaRoot.size() > 0)
+			options[".meta"]		= metaRoot;
+		if (filterIdsRoot.size() > 0)
+			options[".filterIds"]	= filterIdsRoot;
+	}
+
+	return options;
+}
+
+QString AnalysisForm::createOptionsJsonAsJson(int format)
+{
+	Json::Value options = createOptionsJson(format == 1 ? BoundControl::Storage : BoundControl::Engine);
+
+	Json::StreamWriterBuilder builder;
+	builder["indentation"] = "";
+	return QString::fromStdString(Json::writeString(builder, options));
 }
 
 void AnalysisForm::addFormWarning(const QString & warning)
@@ -565,6 +758,219 @@ void AnalysisForm::addControlError(JASPControl* control, QString message, bool t
 
 	if (warning)	control->setHasWarning(true);
 	else			control->setHasError(true);
+}
+
+QStringList AnalysisForm::dataSetSelectionOptionNames() const
+{
+	QStringList names;
+
+	//Registry instead of a findChildren scan: hosts register when
+	//their dataSetSelectionOption is set (or when the form becomes known to them after that),
+	//so dynamically instantiated hosts are in here too. Dead hosts drop out at read time.
+	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
+	{
+		if(!it->host)
+		{
+			it = _dataSetSelectionHosts.erase(it);
+			continue;
+		}
+
+		if(!it->option.isEmpty() && !names.contains(it->option))
+			names << it->option;
+
+		++it;
+	}
+
+	return names;
+}
+
+void AnalysisForm::registerDataSetSelectionOption(const QString &option, JASPControl *host)
+{
+	if(option.isEmpty() || !host)
+		return;
+
+	for(const DataSetSelectionRegistration &registration : _dataSetSelectionHosts)
+		if(registration.host == host && registration.option == option)
+			return;   //already registered
+
+	_dataSetSelectionHosts.append({QPointer<JASPControl>(host), option});
+
+	// unregistering is eager - the registry is the introspection surface the VariableInfoProvider
+	//aggregates over, so a dying host drops out on destruction, not only at the next read
+	//(read-time pruning of null QPointers stays as the belt).
+	connect(host, &QObject::destroyed, this, &AnalysisForm::handleSelectionHostDestroyed, Qt::UniqueConnection);
+
+	// the provider aggregate (AnalysisBase over the registry) just grew a host.
+	emit selectionHostsChanged();
+
+	//Late host (ComponentsList async instantiation while a bridge parse left raw options
+	//pending): resolve and apply its own option right now, before its DropDown binds.
+	_applyPendingDataSetSelectionValue(option);
+}
+
+void AnalysisForm::handleSelectionHostDestroyed(QObject * host)
+{
+	bool removed = false;
+
+	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
+	{
+		//inside destroyed() the host pointer is still the identity to match, while the QPointer
+		//may or may not have been nulled yet - accept either signal, never dereference it here.
+		if(it->host.isNull() || it->host.data() == host)
+		{
+			it = _dataSetSelectionHosts.erase(it);
+			removed = true;
+		}
+		else
+			++it;
+	}
+
+	if(removed)							// the provider aggregate just shrank
+		emit selectionHostsChanged();
+}
+
+QList<JASPControl *> AnalysisForm::selectionHostControls() const
+{
+	QList<JASPControl *> hosts;
+
+	//Live hosts in registration order; dead entries prune exactly like the names accessor does.
+	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
+	{
+		if(!it->host)
+		{
+			it = _dataSetSelectionHosts.erase(it);
+			continue;
+		}
+
+		if(!hosts.contains(it->host))
+			hosts << it->host;
+
+		++it;
+	}
+
+	return hosts;
+}
+
+// the controls' typed filterIds collected on demand - every bound control answers
+//through the same createFilterIds() that places its `.filterIds` sidecar
+//node, and the sidecar's leaf grammar (int | positional array) is exactly what
+//ColumnEncoder::collectFilterIdsFromSidecar sweeps. Nothing is stored or cached: this is a
+//generation, not a read, and it sees bindTo-copied foreign term provenance
+//that no host selection would imply.
+void AnalysisForm::collectFilterIds(std::set<int> & filterIds) const
+{
+	for (JASPControl* control : _dependsOrderedCtrls)
+	{
+		if (!control || !control->isBound())
+			continue;
+
+		if (const BoundControl* boundControl = control->boundControl())
+			ColumnEncoder::collectFilterIdsFromSidecar(boundControl->createFilterIds(), filterIds);
+	}
+}
+
+int AnalysisForm::selectionHostCount() const
+{
+	return int(selectionHostControls().size());
+}
+
+QVariantList AnalysisForm::selectionHosts() const
+{
+	QVariantList result;
+
+	for(JASPControl * host : selectionHostControls())
+		result << QVariant::fromValue(host);
+
+	return result;
+}
+
+void AnalysisForm::unregisterDataSetSelectionOption(const QString &option, JASPControl *host)
+{
+	if(option.isEmpty() || !host)
+		return;
+
+	bool removed = false;
+
+	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
+	{
+		if(it->host == host && it->option == option)
+		{
+			it = _dataSetSelectionHosts.erase(it);
+			removed = true;
+		}
+		else
+			++it;
+	}
+
+	if(removed)							// provider aggregate shrank (option rename path)
+		emit selectionHostsChanged();
+}
+
+void AnalysisForm::setPendingDataSetSelectionRawValues(const Json::Value &rawOptions)
+{
+	_pendingSelectionRawOptions = rawOptions.isObject() ? rawOptions : Json::Value(Json::objectValue);
+	_resolvedSelectionOptionValues = Json::Value(Json::objectValue);	// same request boundary for the resolved stash
+}
+
+Json::Value AnalysisForm::takeResolvedSelectionOptionValue(const QString & option)
+{
+	const std::string key = option.toStdString();
+
+	Json::Value value = _resolvedSelectionOptionValues.get(key, Json::Value::null);
+	_resolvedSelectionOptionValues.removeMember(key);
+	return value;
+}
+
+Json::Value AnalysisForm::resolvedSelectionOptionValue(const QString & option) const
+{
+	return _resolvedSelectionOptionValues.get(option.toStdString(), Json::Value::null);
+}
+
+void AnalysisForm::_applyPendingDataSetSelectionValue(const QString &option)
+{
+	if(!_pendingSelectionRawOptions.isMember(option.toStdString()) || !_analysis)
+		return;
+
+	Workspace * workspace = Workspace::singleton();
+	if(!workspace)
+		return;
+
+	int		   filterId = -1;
+	QString    error;
+
+	if(!workspace->resolveDataSetSelectionValue(option, _pendingSelectionRawOptions[option.toStdString()], filterId, error))
+	{
+		//Same contract as the bridge, but the parse itself already answered: all that is left
+		//to do is leave the value untouched (the combo will hold it pending) and log.
+		Log::log() << "AnalysisForm: late selection host for option '" << fq(option) << "' could not resolve its pending value: "
+		           << fq(error) << std::endl;
+		return;
+	}
+
+	//The resolved filter id waits in the form's stash (the successor of the direct
+	//mirror write - the mirror is gone, and pending handoffs live on the form). The option's own
+	//DropDown consumes it at its first bind (RowControls::_setValues falls back to the stash), so
+	//a late control binds to the id, not the surface text; the dropdown then drives the host and
+	//owns the value like every normal write. Selection options carry no .meta,
+	//which the dropdown's own writes already honour.
+	_resolvedSelectionOptionValues[option.toStdString()] = Json::Value(std::to_string(filterId));
+
+	_pendingSelectionRawOptions.removeMember(option.toStdString());
+}
+
+QString AnalysisForm::resolveDataSetSelectionText(const QString &surfaceText) const
+{
+	Workspace * workspace = Workspace::singleton();
+
+	int		   filterId = -1;
+	QString    error;
+
+	const Json::Value query(surfaceText.trimmed().toStdString());
+
+	if(!workspace || !workspace->resolveDataSetSelectionValue("query", query, filterId, error))
+		return QString();
+
+	return QString::number(filterId);
 }
 
 bool AnalysisForm::hasError()
@@ -644,7 +1050,22 @@ void AnalysisForm::setAnalysis(AnalysisBase * analysis)
 
 	Log::log() << "AnalysisForm " << this << " sets Analysis " << _analysis << " on itself" << std::endl;
 
+	connectSelectionNamespaceSignals(_analysis);
+
 	setAnalysisUp();
+}
+
+void AnalysisForm::connectSelectionNamespaceSignals(AnalysisBase * analysis)
+{
+	if(!analysis)
+		return;
+
+	// the analysis' VariableInfoProvider aggregates over THIS registry, so it
+	//has to hear about registry changes (host joins/leaves) and host filter switches (after the
+	//HostFilterSelection restamp walk has settled the namespace, see notifySelectionHostFilterChanged).
+	//Unique: both pairing points (here and the dummy in setAnalysisUp) may run on the same pair.
+	connect(this, &AnalysisForm::selectionHostsChanged,			analysis, &AnalysisBase::handleSelectionNamespaceMaybeChanged, Qt::UniqueConnection);
+	connect(this, &AnalysisForm::selectionHostFilterChanged,	analysis, &AnalysisBase::handleSelectionNamespaceMaybeChanged, Qt::UniqueConnection);
 }
 
 void AnalysisForm::boundValueChangedHandler(JASPControl *)
@@ -683,7 +1104,10 @@ void AnalysisForm::setAnalysisUp()
 	if (!_analysis)
 	{
 		if (qmlEngine(this)->rootContext()->contextProperty("NO_DESKTOP_MODE").toBool())
+		{
 			_analysis = new AnalysisBase(this); // Make dummy analysis: needed for Unit TestCases or R Syntax mode
+			connectSelectionNamespaceSignals(_analysis);	// this path bypasses setAnalysis
+		}
 		else
 			return;
 	}
@@ -700,25 +1124,38 @@ void AnalysisForm::setAnalysisUp()
 
 	blockValueChangeSignal(true);
 
-	// When reading from JASP file or when reloading the QML file, the boundValues are set to the analysis.
-	// Keep these values before the controls are set up (they might set default values), and then bind each control to its initial value
-	Json::Value initialOptions	= _analysis->boundValues();
+	// When reading from a JASP file or reloading the QML file, the options have been PARKED as
+	// pending JSON: take them once here - the parking is now empty and no
+	// later path can read it - and bind each control to its initial value. The controls own the
+	// state from here; the run/save/dataSpec paths generate from them, never from this tree.
+	Json::Value initialOptions	= _analysis->takePendingOptions();
 
 	_setUpControls();
 
-	_analysis->clearBoundValues(); // The boundValues will be reset by the bindTo method. Clear the boundValues to prevent existing options from interferring when resetting values.
+	// The controls own their values: bindTo(initialOptions) resets each one to its
+	// initial value (createJson() when the option is absent), so there is no stored tree left over
+	// to clear - nothing is parked here once the form attached.
 	bindTo(initialOptions);
+
 	lockOptions();
 
 	blockValueChangeSignal(false, false);
 
 	_initialized = true;
+	emit initializedChanged();
 
 	// Don't bind boundValuesChanged before it is initialized: each setup of all controls will generate a boundValuesChanged
 	connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::rSyntaxTextChanged,				Qt::QueuedConnection	);
 	connect(_analysis,					&AnalysisBase::filterChanged,			this,			&AnalysisForm::filterChanged	);
 
 	emit analysisChanged();
+
+	// AnalysisBase::referencedDataSets() defers (answers {}) until an
+	//initialized form exists - the pending JSON is applied here and never read for behaviour
+	//before that. Tell the consumers (results header, RPC dataSetIds, file-modified bookkeeping)
+	//to re-read now that the component state - and with it the real references - exists.
+	if (_analysis->multiDataSetAware())
+		emit _analysis->dataSpecChanged();
 }
 
 void AnalysisForm::knownIssuesUpdated()
@@ -883,7 +1320,7 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 	auto getValueFromJson = [](const Json::Value& jsonValue) -> std::vector<std::string>
 	{
 		if (jsonValue.isString())			return {jsonValue.asString()};
-		else if (jsonValue.isIntegral())	return {std::to_string(jsonValue.asInt())};
+		else if (jsonValue.isIntegral())	return {std::to_string(jsonValue.asInt64())};
 		else if (jsonValue.isNumeric())		return {std::to_string(jsonValue.asDouble())};
 		else if (jsonValue.isArray())
 		{
@@ -891,7 +1328,7 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 			for (const Json::Value& oneValue: jsonValue)
 			{
 				if (oneValue.isString())	values.push_back(oneValue.asString());
-				if (oneValue.isIntegral())	values.push_back(std::to_string(oneValue.asInt()));
+				if (oneValue.isIntegral())	values.push_back(std::to_string(oneValue.asInt64()));
 				if (oneValue.isNumeric())	values.push_back(std::to_string(oneValue.asDouble()));
 			}
 			return values;
@@ -979,12 +1416,6 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 	}
 
 	return result;
-}
-
-void  AnalysisForm::setBoundValue(const string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys)
-{
-	if (_analysis)
-		_analysis->setBoundValue(name, value, meta, parentKeys);
 }
 
 std::set<string> AnalysisForm::usedVariables()

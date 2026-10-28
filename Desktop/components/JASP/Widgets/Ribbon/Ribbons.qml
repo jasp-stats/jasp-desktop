@@ -30,6 +30,116 @@ Item
 
 	onActiveFocusChanged: buttonList.focus = true;
 
+	//While a ribbon button is dragged the other buttons slide aside to show the gap it will drop into. The
+	//model is only reordered once, on release: moveModule writes the order to the settings and a drag would
+	//otherwise rewrite them all the way over.
+	property int	draggedIndex:		-1
+	property int	dropTargetIndex:	-1
+	property real	draggedWidth:		0
+	property Item	draggedButton:		null
+
+	//Turned off just before the model is reordered, so the buttons do not slide back out of a gap that is
+	//about to be filled by the dragged module anyway
+	property bool	slideButtons:		false
+
+	//How far a button must slide to open up that gap. Ribbon buttons are as wide as their title, but every
+	//button in between moves over by exactly the width of the dragged one, whatever their own width is.
+	function buttonShift(button)
+	{
+		if(draggedIndex < 0 || dropTargetIndex < 0 || button === draggedIndex)
+			return 0;
+
+		if(draggedIndex < dropTargetIndex)	return button >  draggedIndex	&& button <= dropTargetIndex	? -draggedWidth : 0;
+		else								return button >= dropTargetIndex	&& button <  draggedIndex		?  draggedWidth : 0;
+	}
+
+	function startModuleDrag(index, width, button)
+	{
+		customMenu.hideMenus();
+		buttonList.cancelFlick(); //Otherwise a flick left over from the scroll wheel keeps fighting the auto scroll
+
+		draggedIndex	= index;
+		dropTargetIndex	= index;
+		draggedWidth	= width;
+		draggedButton	= button;
+		slideButtons	= true;
+	}
+
+	function finishModuleDrag(index)
+	{
+		//Stop sliding before the buttons are put back where the list wants them: the model move right after
+		//this drops the module into the gap they were holding open.
+		slideButtons	= false;
+
+		let to			= dropTargetIndex;
+
+		draggedIndex	= -1; //Stops the auto scroller, which runs on this
+		dropTargetIndex	= -1;
+		draggedButton	= null;
+
+		if(to >= 0 && to !== index)
+			ribbonModel.moveModule(ribbonModelFiltered.filteredRowToOriginal(index), ribbonModelFiltered.filteredRowToOriginal(to));
+	}
+
+	//The ribbon is usually wider than the window, so it scrolls along when the dragged module is held against
+	//either end. Without this a module could only be moved among the buttons that happen to be in view.
+	property real	autoScrollMargin:	20 * preferencesModel.uiScale
+	property real	autoScrollStep:		8  * preferencesModel.uiScale
+
+	//-1 to scroll left, +1 to scroll right, 0 to sit still
+	function autoScrollDirection()
+	{
+		if(!draggedButton)
+			return 0;
+
+		if		(draggedButton.x							< buttonList.x						+ autoScrollMargin)	return -1;
+		else if	(draggedButton.x + draggedButton.width		> buttonList.x + buttonList.width	- autoScrollMargin)	return  1;
+		else																										return  0;
+	}
+
+	//Which button the dragged one is hanging over. The drop areas report that themselves while the mouse moves,
+	//but during an auto scroll they slide underneath a module that stays right where it is, so no drop area is
+	//entered or left and the target has to be worked out from the geometry instead.
+	function updateDropTarget()
+	{
+		if(!draggedButton)
+			return;
+
+		let centerX	= (draggedButton.x + (draggedButton.width / 2)) - buttonList.x + buttonList.contentX,
+			index	= buttonList.indexAt(centerX, buttonList.height / 2),
+			button	= index >= 0 ? buttonList.itemAtIndex(index) : null;
+
+		if(button && button.isModule)
+			dropTargetIndex = index;
+	}
+
+	Timer
+	{
+		id:			autoScroller
+		interval:	16
+		repeat:		true
+		running:	jaspRibbons.draggedIndex >= 0
+
+		onTriggered:
+		{
+			let direction = jaspRibbons.autoScrollDirection();
+
+			if(direction === 0)
+				return;
+
+			let minX	= buttonList.originX,
+				maxX	= buttonList.originX + Math.max(0, buttonList.contentWidth - buttonList.width),
+				newX	= Math.max(minX, Math.min(maxX, buttonList.contentX + (direction * jaspRibbons.autoScrollStep)));
+
+			if(newX === buttonList.contentX)
+				return;
+
+			buttonList.contentX = newX;
+
+			jaspRibbons.updateDropTarget();
+		}
+	}
+
 	Connections
 	{
 		target:				ribbonModel
@@ -130,7 +240,12 @@ Item
 		interactive:					false
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
-		reuseItems:						true
+
+		//The button being dragged is a child of its own delegate, so that delegate has to survive the auto
+		//scroll: recycled or destroyed it would take the button down with it. Not bound to contentWidth,
+		//which the list derives from the delegates it has created, so that would feed back on itself.
+		reuseItems:						jaspRibbons.draggedIndex < 0
+		cacheBuffer:					jaspRibbons.draggedIndex < 0 ? 320 : 100000 //320 is Qt's own default
 
 		ALTNavigation.enabled:				true
 		ALTNavigation.scopeOnly:			true
@@ -187,6 +302,7 @@ Item
 			visible:		 model.ribbonButton
 			ready:			 model.ribbonButton && (model.ribbonButton.ready || model.ribbonButton.special || model.ribbonButton.error)
 			separator:		 model.ribbonButton && model.ribbonButton.separator
+			isModule:		!!model.dynamicModule //Data, the R-console and the separators carry no module and stay where they are
 			
 
 			ALTNavigation.enabled:		!separator

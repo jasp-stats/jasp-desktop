@@ -686,17 +686,14 @@ void CreateComputedColumnCommand::redo()
 	dataSet()->createComputedColumn(fq(_name), columnType(_columnType), computedColumnType(_computedColumnType));
 }
 
-SetComputedColumnCodeCommand::SetComputedColumnCodeCommand(Filter * f, Column * col, const QString& rCode, const QString& jsonCode)
+SetComputedColumnCodeCommand::SetComputedColumnCodeCommand(Column * col, const QString& rCode, const QString& jsonCode)
 	: UndoModelCommandSingleColumn(col, false)
-	, _filterName(	f->nameQ())
 	, _newRCode{	rCode}
 	, _oldRCode{	col->rCodeQ()}
 	, _newJsonCode{	jsonCode}
 	, _oldJsonCode{ tq(col->constructorJsonStr())}
 {
 	setText(QObject::tr("Set code to computed column with name '%1'").arg(columnName()));
-	
-	assert(f->data() == col->data());
 }
 
 void SetComputedColumnCodeCommand::undo()

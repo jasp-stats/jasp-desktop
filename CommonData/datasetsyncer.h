@@ -39,7 +39,7 @@ signals:
 	bool					askYesNo(int dataSetId, QString title, QString message);
 	void					showWarning(int dataSetId, QString title, QString message);
 
-	void					syncRequired(int dataSetId, DataSet * dataSet, QString locator, QString extension, QString databaseJson);
+	void					syncRequired(DataSet * dataSet, QString locator, QString extension, QString databaseJson);
 
 private slots:
 	void					fileChanged(const QString & path);
@@ -50,7 +50,7 @@ private:
 
 	DataSet				*	_dataSet			= nullptr;
 	QFileSystemWatcher	*	_fileWatcher		= nullptr;
-	DatabaseConnectionInfo	*	_dbInfo			= nullptr;
+	DatabaseConnectionInfo	*	_dbInfo				= nullptr;
 	Json::Value				_databaseJson		= Json::nullValue;
 	bool					_isSyncing			= false;
 	bool					_isPendingFileSync	= false; //a file change arrived while a sync was in flight

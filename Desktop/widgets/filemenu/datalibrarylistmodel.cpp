@@ -5,12 +5,10 @@
 #include "log.h"
 #include "datalibrary.h"
 
-DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs) : FileMenuBasicListModel(parent, new DataLibraryFileSystem(parent,  DataLibraryFileSystem::rootelementname )), _dataLibraryBreadCrumbsListModel(crumbs)
+DataLibraryListModel::DataLibraryListModel(FileMenuObject *parent, DataLibraryBreadCrumbsListModel* crumbs) : FileMenuBasicListModel(parent, new DataLibraryFileSystem(parent,  DataLibraryFileSystem::rootelementname )), _dataLibraryBreadCrumbsListModel(crumbs)
 {
 	_fsbmDataLibrary = static_cast<DataLibraryFileSystem*>(_model);;
 	_fsbmDataLibrary->refresh();
-
-	connect(this, &DataLibraryListModel::openFileEvent, dynamic_cast<DataLibrary *>(parent), &DataLibrary::openFile);
 }
 
 void DataLibraryListModel::refresh()
@@ -50,10 +48,7 @@ void DataLibraryListModel::changePathCrumbIndex(const int &index)
 
 void DataLibraryListModel::openFile(const QString &path)
 {
-	FileEvent *event = new FileEvent(this->parent(), FileEvent::FileOpen);
-	event->setPath(path);
-
-	emit openFileEvent(event);
+	FileMenuBasicListModel::openFile(path);
 	
 	changePathCrumbIndex(0);  //Reset begin screen datalibrary (the same as with key navigation).
 }

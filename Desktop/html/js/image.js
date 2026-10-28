@@ -48,7 +48,12 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	hasInteractive:				function() {	
 		if(!useInteractivePlots) 
 			return false; 
-		return this.model.get("interactiveJsonData") !== null && this.model.get("interactiveJsonData") !== undefined;	},
+		var ij = this.model.get("interactiveJsonData");
+		// Check for empty string: the engine serialises null JSON paths as "",
+		// which is not valid interactive data. Without this check, plots with
+		// no interactiveJsonData would spuriously show the "Interactive plot"
+		// toggle option.
+		return ij !== null && ij !== undefined && ij !== "";	},
 	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",							{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name")							});	},
 	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name"), title: this.model.get("title"), type: "interactive"		});	},
 	interactiveImageClicked:	function() {
@@ -61,10 +66,22 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		
 		this.model.set("interactive",		!isCurrentlyInteractive);
 		this.model.set("userInteractive",	true);
-
+		
 		// Clear the current content and re-render
 		// this.myView.$el.empty();
 		this.myView.reRender();
+
+		// Persist the interactive/static toggle state through the userdata
+		// system. The changed:userData event bubbles to analysis.onUserDataChanged,
+		// which calls setData -> jasp.setUserData() via QWebChannel, eventually
+		// reaching C++ Analysis::setUserData. On next render, the state is
+		// restored from the model's userdata.
+		if (!this.settingUserData)
+			this.$el.trigger("changed:userData", [this.userDataDetails, [
+				{ key: 'collapsed', value: this.isCollapsed() },
+				{ key: 'userInteractive', value: this.model.get('userInteractive') },
+				{ key: 'interactive', value: this.model.get('interactive') }
+			]]);
 
 		return true;
 	},
@@ -95,6 +112,43 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		this.views.push(imagePrimitive);
 
 		self.myView = imagePrimitive
+	},
+														  
+	// Overrides objectView.setUserData to handle image-specific properties
+	// (userInteractive, interactive) in addition to the standard collapsed
+	// state. This is necessary because the interactive/static toggle state
+	// lives on model properties that have no generic ancestor handling in
+	// objectView.
+	setUserData: function (details, data) {
+		this.userDataDetails = details;
+		this.settingUserData = true;
+		
+		if (data !== null) {
+			if (data.collapsed !== undefined)
+				this.model.set("collapsed", data.collapsed);
+			
+			if(data.userInteractive !== undefined)
+			{
+				this.model.set("userInteractive",	data.userInteractive)
+				this.model.set("interactive",		data.interactive)
+			}
+		}
+		
+		this.settingUserData = false;
+	},
+														  
+	// Complements objectView.getLocalUserData (which handles collapsed state
+	// and notes) with image-specific interactive toggle state. Called by
+	// analysis.getAllUserData during the userdata persistence walk.
+	getLocalUserData: function () 
+	{
+		if(!useInteractivePlots || !this.model.get("userInteractive"))
+			return null;
+		
+		return	{
+					userInteractive:	this.model.get("userInteractive"),
+					interactive:		this.model.get("interactive")
+				}
 	},
 });
 
@@ -217,11 +271,10 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 	render: function () {//interactive = false) {
 
 		var hasInteractiveError = this.model.get("interactiveConvertError") != ""
-		var hasInteractive		= !hasInteractiveError && this.model.get("interactiveJsonData") != "";
+		var hasInteractive		= !hasInteractiveError && this.model.get("interactiveJsonData") !== "";
 		
 		if (useInteractivePlots && hasInteractive && ((this.model.get("userInteractive") && this.model.get("interactive")) || (!this.model.get("userInteractive") && window.globSet.showInteractiveDefault))) {
 
-			console.log("image.js: this is where the post step to run the json happens!");
 			this.preRenderPlotly();
 
 			// Only call jQuery if there's no error
@@ -324,12 +377,19 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 			Plotly.purge(targetEl);
 			targetEl._plotlyInitialized = false;
 
+			// Keep whatever the plot itself configured, but leave the plotly logo out of the toolbar: it is
+			// only a link back to their site and takes up a slot next to the buttons that actually do
+			// something.
+			const config		= Object.assign({}, payload.config);
+			config.displaylogo	= false;
+
 			// Then create new plot
-			Plotly.newPlot(targetEl, payload.data, payload.layout)
+			Plotly.newPlot(targetEl, payload.data, payload.layout, config)
 				.then(() => {
 					console.log("Plotly chart rendered successfully");
 					// Mark the element as having a valid Plotly chart
 					targetEl._plotlyInitialized = true;
+					this.describePlotlyModeBar(targetEl);
 				})
 				.catch((err) => {
 					console.error("Plotly rendering failed:", err);
@@ -459,6 +519,43 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 		html += JASPWidgets.Exporter.exportErrorWindow(this.$el.find('.error-message-positioner'), error);
 
 		return html;
+	},
+
+	// Plotly labels its toolbar buttons with just their name ("Zoom", "Pan", ...), which does not say
+	// what they actually do. Buttons are matched on data-attr/data-val rather than on the label, since
+	// the label is translated.
+	plotlyModeBarDescriptions: {
+		"dragmode|zoom"		: "Drag a rectangle to zoom in on that part of the plot",
+		"dragmode|pan"		: "Drag to move the plot underneath the axes",
+		"dragmode|select"	: "Drag a rectangle to highlight the points inside it",
+		"dragmode|lasso"	: "Draw a shape to highlight the points inside it",
+		"zoom|in"			: "Zoom in one step",
+		"zoom|out"			: "Zoom out one step",
+		"zoom|auto"			: "Fit the axes around all the data",
+		"zoom|reset"		: "Put the axes back as they started"
+	},
+
+	describePlotlyModeBar: function(el) {
+
+		var descriptions = this.plotlyModeBarDescriptions;
+
+		el.querySelectorAll(".modebar-btn").forEach(function(button) {
+
+			var name		= button.getAttribute("data-title"),
+				key			= button.getAttribute("data-attr") + "|" + button.getAttribute("data-val"),
+				description	= descriptions[key];
+
+			if (!name && !description)
+				return;
+
+			// Hand the tooltip over to the browser. Plotly draws its own from the data-title attribute
+			// with the box pinned to the right of the button (top:110%, right:50%), so it grows to the
+			// left however wide it needs to be and disappears underneath the edge of the results panel.
+			// A title attribute is placed by the platform instead, which keeps it on screen wherever the
+			// plot happens to sit. Removing data-title stops plotly drawing a second tooltip next to it.
+			button.title = description && name ? name + ": " + description : (description || name);
+			button.removeAttribute("data-title");
+		});
 	},
 
 	// ideally these hooks are set inside jaspGraphs...

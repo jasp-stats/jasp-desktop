@@ -28,7 +28,7 @@ class DatabaseFileMenu : public FileMenuObject
 	Q_PROPERTY(bool			rememberMe	READ rememberMe		WRITE setRememberMe		NOTIFY rememberMeChanged	)
 
 public:
-	explicit					DatabaseFileMenu(FileMenu *parent = nullptr);
+	explicit					DatabaseFileMenu(FileMenu *parent);
 
 	Q_INVOKABLE void			connect();
 	Q_INVOKABLE void			runQuery();

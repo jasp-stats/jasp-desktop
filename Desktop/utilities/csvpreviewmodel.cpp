@@ -18,15 +18,71 @@
 #include "csvpreviewmodel.h"
 #include "utilities/desktopcommunicator.h"
 #include "qutils.h"
+#include "utilities/languagemodel.h"
+#include <QScopedValueRollback>
 
 CsvPreviewModel::CsvPreviewModel(QObject *parent) : QAbstractTableModel(parent)
 {
 	_parser = new CSVParser(',', true);
+	resetLocaleToInterface();
+
 }
 
 CsvPreviewModel::~CsvPreviewModel()
 {
 	// CSVParser is a QObject with parent-child relationship, automatic cleanup
+}
+
+QStringList CsvPreviewModel::languages() const
+{
+	//LanguageModel already has both of these, no reason to enumerate anything here.
+	//Hundreds of languages are hard to pick from, so this offers the same short list as Preferences/Interface until More languages is ticked.
+	if(!LanguageModel::lang())
+		return QStringList();
+
+	return _moreLanguages ? LanguageModel::lang()->altLanguages() : LanguageModel::lang()->languageEntryNames();
+}
+
+QString CsvPreviewModel::_languageNameFor(const QLocale & locale) const
+{
+	if(!LanguageModel::lang())
+		return "";
+
+	if(_moreLanguages)
+		return locale.nativeLanguageName();
+
+	const QString entryName = LanguageModel::lang()->entryNameForLocale(locale);
+
+	//A language JASP is not translated into has no entry in the short list, so fall back on the language of the interface
+	return entryName.isEmpty() ? LanguageModel::lang()->currentLanguage() : entryName;
+}
+
+void CsvPreviewModel::setMoreLanguages(bool moreLanguages)
+{
+	if(_moreLanguages == moreLanguages)
+		return;
+
+	QScopedValueRollback<bool> settingLocale(_settingLocale, true); //See _setLocale
+
+	const QLocale wasUsing = _importLocale;
+
+	_moreLanguages = moreLanguages;
+
+	emit moreLanguagesChanged();
+	emit languagesChanged();	//The dropdown switches between the short and the complete list
+
+	//Both lists name the same locale differently, so the names have to be derived again either way
+	QLocale keepUsing = wasUsing;
+
+	//The short list offers the languages JASP speaks, each in the territory of its entry only, as any other territory would hide behind
+	//the name of the entry. So unticking More languages keeps the language if JASP speaks it, and otherwise falls back on that of the interface.
+	if(!_moreLanguages && LanguageModel::lang())
+	{
+		const QString entryName = LanguageModel::lang()->entryNameForLocale(wasUsing);
+		keepUsing = LanguageModel::lang()->localeForEntryName(entryName.isEmpty() ? LanguageModel::lang()->currentLanguage() : entryName);
+	}
+
+	_setLocale(keepUsing);
 }
 
 void CsvPreviewModel::setRawData(const QString &data)
@@ -56,6 +112,105 @@ void CsvPreviewModel::preparePreview(const QString &data, char delimiter)
 	setDelimiter(QChar(delimiter));
 	setRawData(data);
 	setVisible(true);
+	resetLocaleToInterface(); //Every import starts from the locale the user works in, whatever they chose for the previous file
+}
+
+void CsvPreviewModel::resetLocaleToInterface()
+{
+	QScopedValueRollback<bool> settingLocale(_settingLocale, true); //See _setLocale
+
+	const QLocale interfaceLocale = _interfaceLocale();
+
+	//An alternative locale that is not the locale of an entry in the short list (Deutsch/Schweiz say) would hide there behind the name
+	//of an entry ("de - Deutsch"), so then the dialog opens on the complete list, which shows its territory as well.
+	if(!_moreLanguages && LanguageModel::lang() && LanguageModel::lang()->localeForEntryName(LanguageModel::lang()->entryNameForLocale(interfaceLocale)) != interfaceLocale)
+	{
+		_moreLanguages = true;
+		emit moreLanguagesChanged();
+	}
+
+	emit languagesChanged(); //Preferences may have been given another language since the previous import
+
+	_setLocale(interfaceLocale);
+}
+
+QLocale CsvPreviewModel::_interfaceLocale() const
+{
+	//The locale the rest of JASP reads numbers with, which is the alternative locale of the preferences when one is set.
+	//Without a LanguageModel there is no interface to take it from (unit tests), and then plain C is the honest default
+	return LanguageModel::lang() ? LanguageModel::lang()->currentLocale() : QLocale::c();
+}
+
+void CsvPreviewModel::_setLocale(const QLocale & locale)
+{
+	//The dropdowns write whatever they show back through setLanguage and setTerritory, also while they are still catching up
+	//with a list that changed underneath them and briefly show its first entry. That must not overrule the locale set here.
+	QScopedValueRollback<bool> settingLocale(_settingLocale, true);
+
+	//Single point where the locale changes: the two names shown in the dropdowns are derived from it, never the other way around
+	_importLocale	= locale;
+	_language		= _languageNameFor(locale);
+	_territories	= LanguageModel::lang() ? LanguageModel::lang()->territoriesForLanguage(locale.nativeLanguageName()) : QStringList();
+	_territory		= locale.nativeTerritoryName();
+
+	emit languageChanged();
+	emit territoriesChanged();
+	emit territoryChanged();
+
+	_refreshPreview();
+}
+
+void CsvPreviewModel::_refreshPreview()
+{
+	updateInternalStructure();
+
+	emit parseExampleChanged();
+}
+
+void CsvPreviewModel::setLanguage(const QString & language)
+{
+	if(_settingLocale || _language == language || language == "" || !LanguageModel::lang())
+		return;
+
+	//The two lists name languages differently: the short one like the preferences do ("en - American English"), the complete one natively,
+	//where some names stand for a territory of their own ("español de México") and others keep the territory picked when they are spoken there
+	_setLocale(_moreLanguages	? LanguageModel::lang()->localeForNames(language, _territory)
+								: LanguageModel::lang()->localeForEntryName(language));
+}
+
+void CsvPreviewModel::setTerritory(const QString & territory)
+{
+	if(_settingLocale || _territory == territory || territory == "")
+		return;
+
+	//The language shown, as spoken in the territory picked, which can give it another (regional) name: español and México make español de México.
+	//Territories are only offered next to the complete list, the short list holds the locales of its entries (see setMoreLanguages).
+	if(_moreLanguages && LanguageModel::lang())
+		_setLocale(LanguageModel::lang()->localeForTerritory(_importLocale.language(), territory));
+}
+
+bool CsvPreviewModel::_readNumber(const QString & text, double & number) const
+{
+	return QColumnUtils::readNumber(fq(text), number, QColumnUtils::stringToDoubleFor(_importLocale)); //Just like CSVImportColumn::valueLookup
+}
+
+QString CsvPreviewModel::parseExample() const
+{
+	//Values picked to show what the decimal- and group-separators of the chosen locale do to a number. What they are is written the way
+	//the interface writes numbers, like the table does, but without thousand separators: "86,298" and "86298" can only be read one way.
+	static const QStringList samples = { "86.298", "86,298", "1.234,56", "1,234.56" };
+
+	QStringList lines;
+
+	for(const QString & sample : samples)
+	{
+		double	value		= 0;
+		bool	isNumber	= _readNumber(sample, value);
+
+		lines.push_back(sample + "  \u2192  " + (isNumber ? QColumnUtils::doubleToString(value, false) : tr("text")));
+	}
+
+	return lines.join("\n");
 }
 
 void CsvPreviewModel::updateLocale()
@@ -122,7 +277,7 @@ QVariant CsvPreviewModel::data(const QModelIndex &index, int role) const
 			return val;
 
 		double dblVal;
-		if (QColumnUtils::getDoubleValue(val, dblVal, true))
+		if (_readNumber(val, dblVal))
 			return QVariant(QColumnUtils::doubleToString(dblVal));
 
 		// Add quotes to signify that this will be considered as a string
@@ -153,7 +308,11 @@ void CsvPreviewModel::setVisible(bool newVisible)
 	emit visibleChanged();
 	
 	if(!_visible)
+	{
+		//Hand the locale to the importer, which is waiting on another thread for delimiterChosen
+		DesktopCommunicator::singleton()->setKnownImportLocale(_importLocale);
 		DesktopCommunicator::singleton()->delimiterChosen(_delimiter.toLatin1());
+	}
 }
 
 

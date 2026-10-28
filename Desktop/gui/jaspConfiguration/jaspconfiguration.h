@@ -95,6 +95,7 @@ private:
 	QStringList _overrideCommon;
 
 	explicit JASPConfiguration(QObject *parent = nullptr);
+	~JASPConfiguration() override { if(_instance == this) _instance = nullptr; } ///< the cached instance is parented to its creator: without this a second MainWindow would get a dangling pointer back from getInstance()
 	static JASPConfiguration* _instance;
 
 	const QString defaultConfigurationFilename = "conf.toml";

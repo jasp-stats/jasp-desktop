@@ -16,6 +16,7 @@ CREATE TABLE DataSets (
 	revision			INT DEFAULT 0, 
 	dataFileSynch		INT,
 	csvDelimiter		INT DEFAULT 0,
+	importLocale		TEXT DEFAULT "",
 	codeType			TEXT NULL, 
 	rCode				TEXT NULL, 
 	invalidated			INT NULL,

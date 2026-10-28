@@ -834,9 +834,10 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 		{
 			std::string	valueStr = valueLookup(i);
 			double		valueDbl = EmptyValues::missingValueDouble;
-			bool		isDouble = ColumnUtils::getDoubleValue(valueStr, valueDbl);
+			bool		isDouble = ColumnUtils::getDoubleValue(valueStr, valueDbl, useLocale); //useLocale is false whenever the values are not written the way the interface writes numbers but the way C does (R, the database, a csv with a locale of its own)
 
-			_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(valueStr)));
+			//The width is that of the value as the data shows it, and a number written the way C does is shown written differently
+			_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(isDouble && !useLocale ? doubleToDisplayString(valueDbl) : valueStr)));
 		
 			if(setValue(i, valueDbl, isDouble ? "" : valueStr, false) && aChange)
 				(*aChange) = true;
@@ -1769,11 +1770,17 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter)
 		
 		for(size_t r=0; r<strs.size(); r++)
 			if(!useFilter || filter[r])
+			{
 				if(strs[r] == "")
 				{
-					strs[r] = doubleToDisplayString(_dbls[r], false, false, false);
-					weWereDoublesToBeginWith[strs[r]] = _dbls[r];
+					strs[r] = doubleToDisplayString(_dbls[r], false, false, false); //An empty value gives "", so it stays missing
+					
+					if(strs[r] != "")
+						weWereDoublesToBeginWith[strs[r]] = _dbls[r];
 				}
+				else if(isEmptyValue(strs[r]))
+					strs[r] = ""; //Without labels a text empty value (like "NA") is kept as it is, so it must be turned into a missing value here: https://github.com/jasp-stats/jasp-issues/issues/4536
+			}
 		
 		for(size_t r=0; r<strs.size(); r++)
 			if(!useFilter || filter[r])
@@ -1812,27 +1819,23 @@ doublevec Column::dataAsRDoubles(const boolvec &filter) const
 {
 	JASPTIMER_SCOPE(Column::dataAsRDoubles);
 	
-	if(!_hasLabels)
-	{
-		if(filter.size() == 0)
-			return _dbls;
-		
-		assert(filter.size() == rowCount());
-		
-		doublevec dbls;
-		for(size_t row=0; row<rowCount(); row++)
-			if(filter[row])
-				dbls.push_back(_dbls[row]);
-		return dbls;
-	}
-	
 	doublevec doubles;
 		
 	assert(filter.size() == rowCount() || filter.size() == 0);
 
 	//depending on whether filter is usable (length is data length) we filter out rows we dont need
 	bool useFilter = filter.size() == rowCount();
-	doubles.reserve(_ints.size());
+	doubles.reserve(rowCount());
+	
+	if(!_hasLabels)
+	{
+		//Without labels the values are kept as they are, so an empty value (like 9999) must be turned into a missing value here: https://github.com/jasp-stats/jasp-issues/issues/4536
+		for(size_t row=0; row<rowCount(); row++)
+			if(!useFilter || filter[row])
+				doubles.push_back(isEmptyValue(_dbls[row]) ? EmptyValues::missingValueDouble : _dbls[row]);
+		
+		return doubles;
+	}
 	
 	for(size_t row=0; row<rowCount(); row++)
 		if(!useFilter || filter[row])
@@ -2145,10 +2148,19 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	}
 
 
-	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
+	auto labelFor = [&](const std::string & labelValue) { return justAValue ? labelByValue(labelValue) : labelByValueAndDisplay(labelValue, label); };
+
+	//Just like labelsAdd does, a label keeps a whole number as an int, and writes it without thousand separators (see Label::originalValueAsString).
+	//A label that was given one as a double before writes it the way the data writes numbers, which is how value is written.
+	int		wholeNumber;
+	bool	itsWhole		= itsADouble && ColumnUtils::getIntValue(newDoubleToSet, wholeNumber);
+	Label	* newLabel		= itsWhole ? labelFor(std::to_string(wholeNumber)) : nullptr;
 
 	if(!newLabel)
-		newLabel = labelByIntsId(labelsAdd((justAValue || labelIsValue) ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
+		newLabel = labelFor(value);
+
+	if(!newLabel)
+		newLabel = labelByIntsId(labelsAdd((justAValue || labelIsValue) ? value : label, "", itsWhole ? Json::Value(wholeNumber) : itsADouble ? Json::Value(newDoubleToSet) : Json::Value(value)));
 
 	return setValue(row, newLabel->intsId(), writeToDB);
 }
@@ -2614,7 +2626,31 @@ void Column::deleteLabelManually(int labelIndex)
 	data()->workspace()->setDataMode(true);
 }
 
-bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const 
+bool Column::numberAt(size_t row, double & number) const
+{
+	if(!_hasLabels)
+	{
+		if(row >= _dbls.size())
+			return false;
+
+		number = _dbls[row];
+		return (row >= _strs.size() || _strs[row].empty()) && !isEmptyValue(number);
+	}
+
+	if(row >= _ints.size())
+		return false;
+
+	//The value a label keeps says whether it is a number, its double does not: that one is also read from text, and in the locale of the interface
+	const Label * label = labelByRow(row);
+
+	if(!label || label->isEmptyValue() || !label->originalValue().isNumeric())
+		return false;
+
+	number = label->originalValue().asDouble();
+	return !isEmptyValue(number);
+}
+
+bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<bool(size_t, double &)> numberLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const
 {
 	if(!(title == _title && strEmptyVals == emptyValues()->emptyStrings() || rows != rowCount()))
 			return true;
@@ -2629,7 +2665,13 @@ bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_
 		impoLab	= labelLookup(r);
 		dataLab = getLabel(r, false, true);
 
-		if(impoVal != dataVal || (impoLab != "" && impoLab != dataLab))
+		//A number is shown with thousand separators or without them depending on where it is (a label writes a whole number without,
+		//see Label::originalValueAsString), so two numbers are compared as numbers. Only numbers though: text is compared as text, also
+		//when the interface would read it as that number, because the import did not.
+		double impoNumber, dataNumber;
+		bool   sameValue	= impoVal == dataVal || (numberLookup(r, impoNumber) && numberAt(r, dataNumber) && impoNumber == dataNumber);
+
+		if(!sameValue || (impoLab != "" && impoLab != dataLab))
 			return true;
 
 	}
@@ -3096,7 +3138,7 @@ stringvec Column::previewTransform(columnType transformType)
 	return out;
 }
 
-bool Column::initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue)
+bool Column::initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool useLocale)
 {
 									setHasCustomEmptyValues(emptyValues.size());
 									setCustomEmptyValues(emptyValues);
@@ -3106,7 +3148,7 @@ bool Column::initFromLookups(const std::string & newName, size_t rows, const std
 	
 	bool		anyChanges		=	title != Column::title() || newName != name();
 	columnType	prevType		=	type(),
-				suggestedType	=	setValues(rows, valueLookup, labelLookup,	threshold, &anyChanges, true, !_hasLabels);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+				suggestedType	=	setValues(rows, valueLookup, labelLookup,	threshold, &anyChanges, useLocale, !_hasLabels);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
 									setType(type() != columnType::unknown ? type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 
 									
@@ -3604,7 +3646,20 @@ void Column::noLabelsToLabels()
 	_ints.reserve(size);
 	
 	for(size_t row=0; row<size; row++)
-		_ints.push_back(_strs[row].empty() ? labelsAdd(_dbls[row]) : labelsAdd(_strs[row]));
+	{
+		//A number
+		if(_strs[row].empty())
+			_ints.push_back(labelsAdd(_dbls[row]));
+
+		//Text that setValues kept as text, and so it stays: reading it again (as labelsAdd(display) does) could take it
+		//for a number after all, when setValues read it without the locale of the interface (see initFromLookups)
+		else if(std::isnan(_dbls[row]))
+			_ints.push_back(labelsAdd(_strs[row], "", Json::Value(_strs[row])));
+
+		//The display of a label next to its value (see labelsToNoLabels), read again to get that value back
+		else
+			_ints.push_back(labelsAdd(_strs[row]));
+	}
 	
 	_dbls.clear();
 	_strs.clear();

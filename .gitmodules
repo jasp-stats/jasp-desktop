@@ -9,3 +9,6 @@
 [submodule "Engine/jaspModuleBundleManager"]
 	path = Engine/jaspModuleBundleManager
 	url = https://github.com/jasp-stats/jaspModuleBundleManager.git
+[submodule "Tests/gatetest/jasp-mcp"]
+	path = Tests/gatetest/jasp-mcp
+	url = https://github.com/jasp-stats/jasp-mcp

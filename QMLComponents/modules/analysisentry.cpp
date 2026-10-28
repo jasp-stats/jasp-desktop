@@ -38,7 +38,7 @@ AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynami
 	_menu(				analysisEntry.get("menu",			_title).asString()				),
 	_dynamicModule(		dynamicModule														),
 	_isSeparator(		true),
-	_requiresData(		analysisEntry.get("requiresData",	defaultRequiresData).asBool()	),
+	_requiresData(		analysisEntry.get("requiresData",		defaultRequiresData).asBool()		),
 	_icon(				analysisEntry.get("icon",			"").asString()					)
 {
 	for (size_t i = 0; i < _title.length(); ++i)

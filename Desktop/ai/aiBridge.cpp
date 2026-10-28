@@ -27,6 +27,10 @@
 #include "gui/preferencesmodel.h"
 #include "gui/aipersonamodel.h"
 #include "gui/aiconfigmodel.h"
+#include "auth/apitokenprovider.h"
+#ifdef PRO
+#  include "auth/browsertokenprovider.h"
+#endif
 
 // =============================================================================
 // Singleton
@@ -54,25 +58,34 @@ AiBridge *AiBridge::_singleton = nullptr;
 		// Initialize the agent state tracker for workspace-change notifications
 		AgentStateTracker::init();
 
-		// Clear chat when persona changes so the new persona takes effect from a clean slate
+		// Clear chat when persona changes so the new persona takes effect from a clean slate.
+		//
+		// These signals fire in storms at startup — AIConfigModel sets its saved
+		// indices while loading, the persona model loads late — without anything
+		// actually changing. Wiring them straight to clearChat() aborted live
+		// requests (surfacing as a stray error in the chat view) whenever the
+		// storm arrived after the window opened. So they all point at one guard
+		// that reacts only to a *real* change in the effective configuration.
 		AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
 		if (pm)
-			connect(pm, &AIPersonaModel::currentPersonaIndexChanged, this, &AiBridge::clearChat);
+			connect(pm, &AIPersonaModel::currentPersonaIndexChanged, this, &AiBridge::onEffectiveConfigMaybeChanged);
 
 		// Clear chat whenever the AI provider/model config changes — old responses
 		// were generated under a different configuration and shouldn't carry forward.
 		AIConfigModel *acm = AIConfigModel::config();
-		connect(acm, &AIConfigModel::currentProviderIndexChanged,    this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentModelIndexChanged,       this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentEndpointChanged,         this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentApiKeyChanged,           this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentModelChanged,            this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentExtraParamsChanged,      this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentUseCompleteSchemaChanged, this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentSystemPromptPostfixChanged, this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentChatLimitActiveChanged,  this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentChatLimitChanged,        this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentMessageExtraChanged,     this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentProviderIndexChanged,       this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentModelIndexChanged,          this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentEndpointChanged,            this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentApiKeyChanged,              this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentModelChanged,               this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentExtraParamsChanged,         this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentUseCompleteSchemaChanged,   this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentSystemPromptPostfixChanged, this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentChatLimitActiveChanged,     this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentChatLimitChanged,           this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentMessageExtraChanged,        this, &AiBridge::onEffectiveConfigMaybeChanged);
+
+		configureTokenProvider();
 	}
 
 AiBridge::~AiBridge()
@@ -92,7 +105,249 @@ QString AiBridge::endpoint() const
 
 QString AiBridge::authToken() const
 {
-	return AIConfigModel::config()->currentApiKey();
+	// Phase 1: delegates to the API-key provider. Later phases swap in WAM or
+	// browser providers; AiBridge only ever consumes the resulting token.
+	return m_tokenProvider ? m_tokenProvider->token() : QString();
+}
+
+QString AiBridge::authHeaderName() const
+{
+	AIConfigModel *cfg = AIConfigModel::config();
+	QString header = cfg ? cfg->currentAuthHeaderName() : QString();
+	return header.isEmpty() ? QStringLiteral("Authorization") : header;
+}
+
+QString AiBridge::authHeaderPrefix() const
+{
+	AIConfigModel *cfg = AIConfigModel::config();
+	const QString prefix = cfg ? cfg->currentAuthHeaderPrefix() : QString();
+	if (!prefix.isEmpty())
+		return prefix;
+
+	// Default: RFC 6750 "Bearer " for Authorization, raw value for a custom
+	// header (a gateway that takes e.g. "X-API-Key: <token>").
+	return authHeaderName().compare(QStringLiteral("Authorization"), Qt::CaseInsensitive) == 0
+	       ? QStringLiteral("Bearer ")
+	       : QString();
+}
+
+void AiBridge::pushAuthConfig()
+{
+	AIConfigModel *cfg = AIConfigModel::config();
+	if (!cfg || !m_tokenProvider) return;
+
+	// Providers are configured by pushing, never by reaching into AIConfigModel
+	// themselves — auth/ must stay independent of the feature using it, so it
+	// can serve a second consumer (data-store credentials, say) unchanged.
+	if (auto *api = qobject_cast<ApiKeyTokenProvider *>(m_tokenProvider))
+		api->setApiKey(cfg->currentApiKey());
+#ifdef PRO
+	else if (auto *oidc = qobject_cast<BrowserTokenProvider *>(m_tokenProvider))
+		oidc->setOidcConfig({ cfg->currentAuthAuthority(), cfg->currentAuthScope(), cfg->currentAuthClientId(),
+		                     cfg->currentAuthRedirectPort(), cfg->currentAuthAuthorizationUrl(),
+		                     cfg->currentAuthTokenUrl(), cfg->currentAuthTokenType(),
+		                     cfg->currentAuthOfflineAccess() });
+#else
+	Q_UNUSED(cfg)
+#endif
+}
+
+void AiBridge::configureTokenProvider()
+{
+	AIConfigModel *cfg = AIConfigModel::config();
+	const QString mode = cfg ? cfg->currentAuthMode() : QStringLiteral("apiKey");
+
+	if (m_tokenProvider && m_tokenProviderMode == mode)
+	{
+		// Same backend, but the key or authority/scope may have changed.
+		pushAuthConfig();
+		return;
+	}
+
+	m_tokenProviderMode = mode;
+	m_authUnavailable.clear();
+	delete m_tokenProvider;
+	m_tokenProvider = nullptr;
+
+	if (mode == QStringLiteral("apiKey"))
+	{
+		m_tokenProvider = new ApiKeyTokenProvider(this);
+	}
+	else if (mode == QStringLiteral("oidc"))
+	{
+#ifdef PRO
+		const QString backend = cfg ? cfg->currentAuthBackend() : QStringLiteral("auto");
+
+		if (backend == QStringLiteral("devicecode"))
+			m_authUnavailable = QStringLiteral("Device-code sign-in is not implemented yet. "
+									   "Choose the browser sign-in method in AI preferences.");
+		else
+			// "auto" and "browser" both land here: the system browser plus a
+			// loopback redirect is the flow JASP ships.
+			m_tokenProvider = new BrowserTokenProvider(this);
+#else
+		// OIDC sign-in is a PRO feature; a non-PRO build reading a config saved
+		// by a PRO install falls back to no provider — requests go out only if
+		// the user switches to an API-key provider.
+		m_authUnavailable = QStringLiteral("Sign-in with a work account is only available in JASP PRO. "
+									 "Use a provider with an API key instead.");
+#endif
+	}
+
+	// "none" deliberately has no provider: the request goes out with no auth
+	// header, which is what a locally-hosted gateway may want.
+
+	pushAuthConfig();
+
+	if (m_tokenProvider)
+	{
+		connect(m_tokenProvider, &TokenProvider::tokenReady,          this, &AiBridge::onTokenReady);
+		connect(m_tokenProvider, &TokenProvider::interactionRequired, this, &AiBridge::onAuthInteractionRequired);
+		connect(m_tokenProvider, &TokenProvider::authFailed,          this, &AiBridge::onAuthFailed);
+	}
+}
+
+void AiBridge::applyAuthHeader(QNetworkRequest &request) const
+{
+	const QString token = authToken();
+	if (token.isEmpty())
+		return;
+
+	request.setRawHeader(authHeaderName().toUtf8(), (authHeaderPrefix() + token).toUtf8());
+}
+
+void AiBridge::applyExtraHeaders(QNetworkRequest &request) const
+{
+	// Static routing/attribution headers on every request (org ids, cost centres,
+	// correlation ids — headers a gateway or proxy in the middle wants as plain
+	// labels). Claude parity: inferenceCustomHeaders, including its constraint —
+	// NEVER credentials: this rides the plaintext provider JSON, while secrets
+	// belong in SecretVault. The auth header is never overridable from here.
+	AIConfigModel *cfg = AIConfigModel::config();
+	const QString json = cfg ? cfg->currentExtraHeaders().trimmed() : QString();
+	if (json.isEmpty())
+		return;
+
+	const QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	if (!doc.isObject())
+	{
+		Log::log() << "AiBridge: extra headers are not a valid JSON object — ignored" << std::endl;
+		return;
+	}
+
+	const QString authName = authHeaderName();
+	const QJsonObject headers = doc.object();
+	for (auto it = headers.begin(); it != headers.end(); ++it)
+	{
+		const QString value = it.value().toVariant().toString();
+		if (it.key().isEmpty() || value.isEmpty())
+			continue;
+		if (it.key().compare(authName, Qt::CaseInsensitive) == 0)
+			continue;   // the auth header belongs to the token provider alone
+		request.setRawHeader(it.key().toUtf8(), value.toUtf8());
+	}
+}
+
+bool AiBridge::isSignedIn() const
+{
+	return m_tokenProvider && m_tokenProvider->isValid();
+}
+
+QString AiBridge::authAccountName() const
+{
+	return m_tokenProvider ? m_tokenProvider->accountName() : QString();
+}
+
+QDateTime AiBridge::authExpiresAt() const
+{
+	return m_tokenProvider ? m_tokenProvider->expiresAt() : QDateTime();
+}
+
+void AiBridge::signIn()
+{
+	configureTokenProvider();
+
+	if (!m_tokenProvider)
+	{
+		// API-key auth has nothing to sign in to; "none" has nothing at all.
+		if (m_tokenProviderMode != QStringLiteral("apiKey"))
+			emitError(m_authUnavailable.isEmpty()
+				? QStringLiteral("This provider does not use sign-in.")
+				: m_authUnavailable);
+		return;
+	}
+
+	m_tokenProvider->ensureToken();
+}
+
+void AiBridge::signOut()
+{
+	if (m_tokenProvider)
+		m_tokenProvider->signOut();
+
+	emit authStateChanged();
+}
+
+void AiBridge::onTokenReady(const QString &)
+{
+	emit authStateChanged();
+
+	if (m_pendingTest)
+	{
+		m_pendingTest = false;
+		postTestConnection();
+		return;
+	}
+
+	if (m_pendingSend)
+	{
+		// Dropped if the user stopped the stream while signing in — stopStream()
+		// clears m_streaming, so honour that rather than reviving the request.
+		if (!m_streaming)
+		{
+			Log::log() << "AiBridge: dropping queued request — stream was stopped during sign-in" << std::endl;
+			m_pendingSend     = false;
+			m_pendingMessages = QJsonArray();
+			return;
+		}
+
+		const QJsonArray messages = m_pendingMessages;
+		const bool       withTools = m_pendingWithTools;
+		m_pendingSend     = false;
+		m_pendingMessages = QJsonArray();
+		postStreamingRequest(messages, withTools);
+	}
+}
+
+void AiBridge::onAuthInteractionRequired(const QString &message)
+{
+	// The backend needs the user to act. Any queued request stays parked so it
+	// resumes once a token arrives.
+	emit authInteractionRequired(message);
+}
+
+void AiBridge::onAuthFailed(const QString &error)
+{
+	emit authStateChanged();
+
+	if (m_pendingTest)
+	{
+		m_pendingTest = false;
+		emit testConnectionResult(false, error);
+		return;
+	}
+
+	if (m_pendingSend)
+	{
+		m_pendingSend     = false;
+		m_pendingMessages = QJsonArray();
+		m_streaming       = false;
+		emitError(error);
+		emit onStreamClose();
+		return;
+	}
+
+	emitError(error);
 }
 
 QString AiBridge::model() const
@@ -140,6 +395,10 @@ void AiBridge::setDebugDumpEnabled(bool enabled)
 {
 	m_debugDumpEnabled = enabled;
 	Log::log() << "AiBridge: debug dump " << (enabled ? "enabled" : "disabled") << std::endl;
+
+	// Turning the dump off must not leave the previous request body behind in the temp dir.
+	if (!enabled && !Dirs::tempDir().empty())
+		QFile::remove(QString::fromStdString(Dirs::tempDir() + "/ai-request.json"));
 }
 
 // =============================================================================
@@ -289,12 +548,95 @@ void AiBridge::clearChat()
 	stopStream();
 	clearConversation();
 	emit onClearChat();
-	sendIntroMessage();
+
+	// Greet after every clear. This used to be the original behavior; it was
+	// removed because the startup config-signal storm turned it into a
+	// background prefetch — but that storm is now suppressed by the signature
+	// guard in onEffectiveConfigMaybeChanged (first observation never clears),
+	// so the follow-up greeting only ever happens after a real user action:
+	// a provider switch, a mode switch, or the reset button. The empty-
+	// conversation guard makes the reset button's own direct call a no-op.
+	// Non-interactive: a config edit in the settings dialog must not open a
+	// sign-in browser (allowSignIn=false skips the greeting when signed out).
+	sendIntroMessage(false);
+}
+
+void AiBridge::onEffectiveConfigMaybeChanged()
+{
+	// Auth settings may have changed along with the rest; refresh what the
+	// provider was pushed before deciding anything else. Cheap when nothing
+	// actually changed.
+	configureTokenProvider();
+
+	AIConfigModel *cfg = AIConfigModel::config();
+	if (!cfg)
+		return;
+
+	// Everything a reply in the current conversation depends on. Values, not
+	// signals: several signals firing for one real change still clear once, and
+	// a storm of signals for no change at all — startup — clears never.
+	QStringList parts;
+	parts << cfg->currentEndpoint()
+	      << cfg->currentApiKey()
+	      << cfg->currentModel()
+	      << cfg->currentExtraParams()
+	      << cfg->currentSystemPromptPostfix()
+	      << cfg->currentMessageExtra()
+	      << (cfg->currentUseCompleteSchema() ? QStringLiteral("schema=1") : QStringLiteral("schema=0"))
+	      << (cfg->currentChatLimitActive()
+	              ? QStringLiteral("limit=") + QString::number(cfg->currentChatLimit())
+	              : QStringLiteral("limit=off"));
+
+	const auto *personaModel = PreferencesModel::prefs()->aiPersonaModel();
+	if (personaModel)
+		parts << personaModel->activePersona().personaPrompt;
+
+	const QString signature = parts.join(QLatin1Char('|'));
+
+	if (signature == m_effectiveConfigSignature)
+		return;
+
+	// Only reset when there is something to reset. At startup — and during
+	// any late-arriving model load — config signals fire in storms while the
+	// conversation is still empty, and clearing then would emit onClearChat
+	// and prefetch a greeting nobody asked for (loadUserData restores its
+	// indices silently, so the first *observed* signature is whatever the
+	// user's first real change produces — exactly why "first observation"
+	// was the wrong guard and the first switch never reset). Once a
+	// conversation exists, any genuinely different configuration resets it,
+	// first switch included.
+	const bool conversationHasContent = !m_conversation.isEmpty();
+	m_effectiveConfigSignature = signature;
+
+	if (conversationHasContent)
+		clearChat();
 }
 
 void AiBridge::sendIntroMessage()
 {
+	// The user did something visible (opened the chat window, pressed reset) —
+	// interactive sign-in for the greeting is expected behavior.
+	sendIntroMessage(true);
+}
+
+void AiBridge::sendIntroMessage(bool allowSignIn)
+{
 	if (endpoint().isEmpty()) return;
+
+	// Only prime a greeting into an empty conversation. The chat window calls
+	// this whenever it becomes visible; without the guard every toggle of the
+	// window would fire another request.
+	if (!m_conversation.isEmpty()) return;
+
+	// Automatic paths (clearChat after a config edit) must never open a
+	// sign-in browser on their own. Without a usable token the greeting is
+	// simply skipped; it fires properly when the chat window is opened or the
+	// user signs in through the settings card.
+	if (!allowSignIn && m_tokenProvider && !m_tokenProvider->isValid())
+	{
+		Log::log() << "AiBridge: skipping automatic intro — sign-in required" << std::endl;
+		return;
+	}
 
 	// Guard: if a reply is being processed or an RPC dispatch is in
 	// flight (possibly inside a nested event loop), defer until the
@@ -487,23 +829,51 @@ void AiBridge::exportToMarkdownFile(const QString &filePath) const
 
 void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 {
-	QString ep = endpoint();
-	if (ep.isEmpty()) {
+	if (endpoint().isEmpty()) {
 		m_streaming = false;
 		emitError(QStringLiteral("No AI endpoint configured. Please set an endpoint URL."));
 		emit onStreamClose();
 		return;
 	}
 
+	configureTokenProvider();
+
+	if (!m_tokenProvider && m_tokenProviderMode != QStringLiteral("none")) {
+		m_streaming = false;
+		emitError(m_authUnavailable.isEmpty()
+			? QStringLiteral("No authentication is configured for this provider. Choose a sign-in method in AI preferences.")
+			: m_authUnavailable);
+		emit onStreamClose();
+		return;
+	}
+
+	if (m_tokenProvider && !m_tokenProvider->isValid())
+	{
+		// Interactive sign-in, or a refresh that hasn't landed yet. Park the
+		// request and resume in onTokenReady(): blocking here would stall the
+		// event loop the browser flow needs to complete.
+		Log::log() << "AiBridge: request queued until authentication completes" << std::endl;
+		m_pendingMessages  = messages;
+		m_pendingWithTools = withTools;
+		m_pendingSend      = true;
+		m_tokenProvider->ensureToken();
+		return;
+	}
+
+	postStreamingRequest(messages, withTools);
+}
+
+void AiBridge::postStreamingRequest(const QJsonArray &messages, bool withTools)
+{
+	const QString ep = endpoint();
+
 	QNetworkRequest request{QUrl(ep)};
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
 	request.setRawHeader("Accept", "text/event-stream");
 	request.setTransferTimeout(120000); // 120 s — large conversations with tool results need time
 
-	QString token = authToken();
-	if (!token.isEmpty()) {
-		request.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
-	}
+	applyAuthHeader(request);
+	applyExtraHeaders(request);
 
 	QByteArray body = buildRequestBody(messages, withTools);
 
@@ -546,8 +916,10 @@ void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 	<< " | system prompt (common+persona): " << estimateTokens(PreferencesModel::prefs()->aiCommonSystemPrompt() + (PreferencesModel::prefs()->aiPersonaModel() ? PreferencesModel::prefs()->aiPersonaModel()->activePersona().personaPrompt : QString())) << " tokens"
 	           << std::endl;
 
-	// Log the full request body at a debug level (can be very verbose)
-	Log::log() << "AiBridge: REQUEST BODY:\n" << QJsonDocument::fromJson(body).toJson(QJsonDocument::Indented).toStdString() << std::endl;
+	// A request body carries the system prompt and the user's data, so this is verbose-only
+	// (and dropped entirely in release builds).
+	if (m_verboseLogging)
+		Log::log() << "AiBridge: REQUEST BODY:\n" << QJsonDocument::fromJson(body).toJson(QJsonDocument::Indented).toStdString() << std::endl;
 
 	m_activeReply = m_networkManager->post(request, body);
 
@@ -1081,9 +1453,25 @@ void AiBridge::onReplyFinished()
 	int httpStatus = m_activeReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 	QByteArray body = m_activeReply->readAll();
 
-	// Network-level errors (connection refused, timeout, host not found, etc.)
-	// are already handled in onReplyError — just clean up here.
+	// Network-level errors (connection refused, timeout, host not found, etc.) are
+	// already handled in onReplyError. HTTP-level errors (401/403/404 …) *also*
+	// arrive as QNetworkReply errors, but unlike the network ones they carry a body
+	// that says *why* — so surface it instead of swallowing it.
 	if (m_activeReply->error() != QNetworkReply::NoError) {
+		if (!body.isEmpty()) {
+			QString detail = QString::fromUtf8(body).trimmed();
+			QJsonDocument errDoc = QJsonDocument::fromJson(body);
+			if (errDoc.isObject() && errDoc.object().contains(QStringLiteral("error"))) {
+				QJsonObject errObj = errDoc.object().value(QStringLiteral("error")).toObject();
+				QString msg = errObj.value(QStringLiteral("message")).toString();
+				const QString code = errObj.value(QStringLiteral("code")).toString();
+				if (!code.isEmpty()) msg = code + QStringLiteral(": ") + msg;
+				if (!msg.isEmpty()) detail = msg;
+			}
+			if (detail.length() > 300) detail = detail.left(300) + QStringLiteral("…");
+			Log::log() << "AiBridge: HTTP " << httpStatus << " error body: " << body.toStdString() << std::endl;
+			emitError(QStringLiteral("HTTP ") + QString::number(httpStatus) + QStringLiteral(": ") + detail);
+		}
 		m_activeReply->deleteLater();
 		m_activeReply = nullptr;
 		m_streaming = false;
@@ -1141,7 +1529,7 @@ void AiBridge::onReplyFinished()
 			m_processingReply = false;
 			clearConversation();
 			emit onClearChat();
-			sendIntroMessage();
+			sendIntroMessage(false);
 			return;
 		}
 
@@ -1185,7 +1573,7 @@ void AiBridge::onReplyFinished()
 		m_processingReply = false;
 		clearConversation();
 		emit onClearChat();
-		sendIntroMessage();
+		sendIntroMessage(false);
 		return;
 	}
 
@@ -1199,9 +1587,22 @@ void AiBridge::onReplyFinished()
 
 void AiBridge::onReplyError(QNetworkReply::NetworkError error)
 {
-	Log::log() << "AiBridge::onReplyError code=" << (int)error << std::endl;
+	QNetworkReply *reply = m_activeReply;
+	const int httpStatus = reply
+		? reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+		: 0;
+
+	Log::log() << "AiBridge::onReplyError code=" << (int)error
+		<< " http=" << httpStatus << std::endl;
 
 	if (error == QNetworkReply::NoError) return;
+
+	// If the server actually answered, its reply carries a body explaining why and
+	// onReplyFinished() will report that verbatim. Emitting the generic text here
+	// would only overwrite it with something less useful — notably "check your API
+	// key" for a 401 on an Entra-authenticated request, which sends the reader down
+	// entirely the wrong path. Only speak when there was no HTTP response at all.
+	if (httpStatus != 0) return;
 
 	// onReplyFinished will handle the cleanup after this.
 	emitError(networkErrorToString(error, m_activeReply));
@@ -1265,11 +1666,40 @@ bool AiBridge::isBusy() const
 
 void AiBridge::testConnection()
 {
-	QString ep = endpoint();
-	if (ep.isEmpty()) {
+	if (endpoint().isEmpty()) {
 		emit testConnectionResult(false, QStringLiteral("No endpoint configured."));
 		return;
 	}
+
+	// Check the rest of the config before any sign-in, so we never send the user
+	// through a browser prompt only to fail on a missing model.
+	if (model().isEmpty()) {
+		emit testConnectionResult(false, QStringLiteral("No model selected. Please choose a model or type a model name."));
+		return;
+	}
+
+	configureTokenProvider();
+
+	if (!m_tokenProvider && m_tokenProviderMode != QStringLiteral("none")) {
+		emit testConnectionResult(false, m_authUnavailable.isEmpty()
+			? QStringLiteral("No authentication is configured for this provider.")
+			: m_authUnavailable);
+		return;
+	}
+
+	if (m_tokenProvider && !m_tokenProvider->isValid())
+	{
+		m_pendingTest = true;
+		m_tokenProvider->ensureToken();
+		return;
+	}
+
+	postTestConnection();
+}
+
+void AiBridge::postTestConnection()
+{
+	const QString ep = endpoint();
 
 	Log::log() << "AiBridge::testConnection — probing " << ep.toStdString() << std::endl;
 
@@ -1277,9 +1707,8 @@ void AiBridge::testConnection()
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
 	request.setTransferTimeout(10000); // 10 s for a test
 
-	QString token = authToken();
-	if (!token.isEmpty())
-		request.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
+	applyAuthHeader(request);
+	applyExtraHeaders(request);
 
 	// Build a minimal valid body — just enough to provoke a meaningful response
 	QJsonObject body;

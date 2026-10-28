@@ -40,6 +40,15 @@ VariablesListBase::VariablesListBase(QQuickItem* parent)
 {
 	_controlType			= ControlType::VariablesListView;
 	_useControlMouseArea	= false;
+
+	//Per-list dataset/filter selection: the analysis (and with it the selection)
+	//can only become known after construction; formIsKnown tells us when that happened (dynamic
+	//controls), setUp is the hook the static ones get - see handleFormIsKnown.
+	connect(this, &JASPControl::formIsKnown, this, &VariablesListBase::handleFormIsKnown);
+
+	connect(&_hostSelection, &HostFilterSelection::selectedFilterIdChanged,		this, &VariablesListBase::selectedFilterIdChanged);
+	connect(&_hostSelection, &HostFilterSelection::selectionAvailableChanged,	this, &VariablesListBase::selectionAvailableChanged);
+	connect(&_hostSelection, &HostFilterSelection::filterSelectionValuesChanged, this, &VariablesListBase::filterSelectionValuesChanged);
 }
 
 void VariablesListBase::setUp()
@@ -47,6 +56,12 @@ void VariablesListBase::setUp()
 	JASPListControl::setUp();
 
 	_setRelations();
+
+	//AnalysisForm::setAnalysisUp() -> _setUp() is the hook static controls get (formIsKnown is only
+	//emitted for dynamically created ones, see JASPControl's constructor), and by then the analysis
+	//is attached. Reuse handleFormIsKnown: its connections are UniqueConnections, so getting here a
+	//second time (dynamic controls also emit formIsKnown) is harmless.
+	handleFormIsKnown(form());
 
 	ListModelTermsAvailable* availableModel = qobject_cast<ListModelTermsAvailable*>(_draggableModel);
 
@@ -168,7 +183,7 @@ void VariablesListBase::setUpModel()
 	JASPListControl::setUpModel();
 }
 
-bool VariablesListBase::addRowControl(const QString &key, JASPControl *control)
+bool VariablesListBase::addRowControl(const TermRowKey &key, JASPControl *control)
 {
 	bool result = JASPListControl::addRowControl(key, control);
 
@@ -273,12 +288,31 @@ bool VariablesListBase::containsInteractions() const
 	return JASPListControl::containsInteractions();
 }
 
+// (found by the component zoo): declaring dataSetSelectionOption on a list IS the
+//declaration that its values are columns of that namespace (list-as-host) - no available-list
+//or dataset-source relation required for that. JASPListControl::containsVariables() only knows the
+//RELATION routes, so a standalone host-assigned list (the second-source pattern) came out false,
+//which turned encodeValue() off: its values were never encoded and never provenanced into the
+//sidecar - the list selected a dataset its values could not reach. Available lists are unbound
+//(_isBound = false), so for them this only changes the icon/role reads they already had.
+bool VariablesListBase::containsVariables() const
+{
+	if (_hostSelection.selectionAvailable())
+		return true;
+
+	return JASPListControl::containsVariables();
+}
+
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
 {
 	if (dropKeys != _dropKeys)
 	{
+		// The first key gives the related list: when only the other keys change (e.g. when a list becomes invisible),
+		// the relations must not be set again, otherwise this list would be added once more to its available model.
+		bool relatedListChanged = dropKeys.value(0) != _dropKeys.value(0);
 		_dropKeys = dropKeys;
-		_setRelations();
+		if (relatedListChanged)
+			_setRelations();
 		emit dropKeysChanged();
 	}
 
@@ -292,7 +326,9 @@ ListModel *VariablesListBase::getRelatedModel()
 		QString relatedName = dropKeys()[0]; // The first key gives the default drop item.
 		if (_parentListView)
 		{
-			JASPListControl* relatedControl = qobject_cast<JASPListControl*>(_parentListView->model()->getRowControl(_parentListViewKey, relatedName));
+			// this list's own row identity selects the RowControls - a bare name
+			//would land on the first twin's row, not necessarily this one's.
+			JASPListControl* relatedControl = qobject_cast<JASPListControl*>(_parentListView->model()->getRowControl(parentRowKey(), relatedName));
 			if (relatedControl)
 				result = relatedControl->model();
 		}
@@ -334,6 +370,15 @@ void VariablesListBase::_setRelations()
 				emit containsVariablesChanged();
 				emit containsInteractionsChanged();
 
+				//The namespace inheritance (relatedNamespaceList -> related available list, resolved
+				//by JASPListControl::resolvedSelectionHost) only exists from here on, and setUpModel
+				//(which first wired the model's VariableInfo) ran BEFORE the relations: re-push the
+				//now-resolved varInfo so an assigned list under a selecting available list resolves
+				//its column info (types, previews, names) through that host.
+				if (ListModel * m = model())
+					if (VariableInfo * info = resolvedVarInfo())
+						m->setVarInfo(info);
+
 				// When the assigned model is of type interaction or it has multiple columns, then the available model should keep its terms when they are moved to the assigned model
 				if (_listViewType == ListViewType::Interaction || (columns() > 1 && _listViewType != ListViewType::RepeatedMeasures))
 				{
@@ -344,6 +389,62 @@ void VariablesListBase::_setRelations()
 			}
 		}
 	}
+}
+
+JASPListControl * VariablesListBase::relatedNamespaceList()
+{
+	//Semantic main path first: an explicit `source:` names where this list's variables come from.
+	if (JASPListControl * explicitSource = JASPListControl::relatedNamespaceList())
+		return explicitSource;
+
+	// with selection on the LIST, the available list a VariablesForm hands to its
+	//assigned lists (dropKeys[0], wired into availableModel() by _setRelations) is where those
+	//lists' items come from - so their namespace follows it, exactly like an explicit source.
+	//A list that declares its own dataSetSelectionOption serves itself instead: own the edge,
+	//do not inherit one (the host-bound fallback applies to the list that HAS the host).
+	if (_hostSelection.selectionAvailable())
+		return nullptr;
+
+	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_draggableModel);
+	ListModelTermsAvailable* availableModel	= assignedModel ? assignedModel->availableModel() : nullptr;
+
+	if (!availableModel)
+		return nullptr;
+
+	return availableModel->listView();
+}
+
+void VariablesListBase::handleFormIsKnown(AnalysisForm * form)
+{
+	if(!form)
+		return;
+
+	//AnalysisForm::setAnalysisUp() re-runs whenever the analysis or its filter changes; keep the
+	//per-list selection in sync (it follows the analysis filter only until the user picks one).
+	connect(form, &AnalysisForm::analysisChanged,	this, &VariablesListBase::handleAnalysisChanged,			Qt::UniqueConnection);
+	connect(form, &AnalysisForm::filterChanged,		this, &VariablesListBase::handleAnalysisFilterChanged,	Qt::UniqueConnection);
+
+	//The analysis is usually already attached when we get here - analysisChanged may well have fired
+	//before this connection existed. Pull the current analysis in explicitly, otherwise the
+	//selection never gets its default and QML keeps stale values.
+	handleAnalysisChanged();
+}
+
+void VariablesListBase::handleAnalysisChanged()
+{
+	//With the analysis known, the selection (if this list declares one) marks the analysis
+	//multiDataSetAware, hooks the workspace removal signals and gets its default: the analysis'
+	//current filter. All QML bindings of the selection widget hang off these signals:
+	_hostSelection.analysisBecameKnown();
+
+	//The relations (and with them the inherited namespace) may only now exist too:
+	if (ListModel * m = model())
+		if (VariableInfo * info = resolvedVarInfo())
+			m->setVarInfo(info);
+
+	emit selectedFilterIdChanged();
+	emit filterSelectionValuesChanged();
+	emit selectionAvailableChanged();
 }
 
 void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl)
@@ -362,10 +463,16 @@ void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl
 	Term keyTerm = Term::readTerm(checkBoxControl->parentListViewKey());
 	for (const Term& otherTerm : _draggableModel->terms())
 	{
-		if (otherTerm == keyTerm)
+		//the self-skip compares row VALUES on purpose: keyTerm is parsed from
+		//the checkbox's rowValue string and is unqualified, so comparing Term objects would use
+		//the strict identity incl. filterId and the skip would silently stop firing. (The
+		//row CONTROLS lookup below is exact-row-keyed since the re-keying.)
+		if (otherTerm.value() == keyTerm.value())
 			continue;
 
-		RowControls* rowControls = _draggableModel->getRowControls(otherTerm.value());
+		// the row controls map keys on row identity, so the lookup uses the model
+		//term's own TermRowKey.
+		RowControls* rowControls = _draggableModel->getRowControls(TermRowKey::ofTerm(otherTerm));
 		if (!rowControls) continue; // Apparently the controls are not created yet for this row. Does not matter: this function will be called when they are created
 		CheckBoxBase* otherCheckBox = qobject_cast<CheckBoxBase*>(rowControls->getJASPControl(_interactionHighOrderCheckBox));
 		bool otherChecked = otherCheckBox->checked();

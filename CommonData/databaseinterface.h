@@ -90,6 +90,7 @@ public:
 	std::string dbFile(bool onlyPostfix = false) const;									///< Convenience function for getting the filename where sqlite db should be
 
 	static		DatabaseInterface * singleton();					///< There can be only one! https://www.youtube.com/watch?v=sqcLjcSloXs
+	static		DatabaseInterface * singletonOrNull()	{ return _singleton; }	///< Like singleton() but *without* creating one when there is none, for code that must know whether somebody else already made it before claiming ownership.
 	static		void				closeInterfaces();
 
 	bool		hasConnection() { return _db(); }
@@ -113,9 +114,9 @@ public:
 	intset		dataSetIds();
 	bool		dataSetExists(			int dataSetId);
 	void		dataSetDelete(			int dataSetId);
-int			dataSetInsert(							const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, char csvDelimiter = '\0');		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
-	void		dataSetUpdate(			int dataSetId,	const std::string & title = "", const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, char csvDelimiter = '\0');		///< Updates an existing DataSet row in DataSets
-	void		dataSetLoad(			int dataSetId,		  std::string & title,		  std::string & dataFilePath,		long & dataFileTimestamp,		 std::string & description,			   std::string & databaseJson,			   std::string & emptyValuesJson, int & revision, bool & dataSynch, char & csvDelimiter);	///< Loads an existing DataSet row into arguments
+	int			dataSetInsert(							const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, char csvDelimiter = '\0', const std::string & importLocale = "");		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
+	void		dataSetUpdate(			int dataSetId,	const std::string & title = "", const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, char csvDelimiter = '\0', const std::string & importLocale = "");		///< Updates an existing DataSet row in DataSets
+	void		dataSetLoad(			int dataSetId,		  std::string & title,		  std::string & dataFilePath,		long & dataFileTimestamp,		 std::string & description,			   std::string & databaseJson,			   std::string & emptyValuesJson, int & revision, bool & dataSynch, char & csvDelimiter, std::string & importLocale);	///< Loads an existing DataSet row into arguments
 	void		dataSetSetComputedInfo(	int dataSetId, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, int defaultInputFilter);
 	void		dataSetGetComputedInfo(	int dataSetId, bool & invalidated, computedColumnType & codeType, std::string & rCode, std::string & error, int & defaultInputFilter);
 	static int	dataSetColCount(		int dataSetId);

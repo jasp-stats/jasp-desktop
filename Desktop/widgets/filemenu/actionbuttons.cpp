@@ -1,8 +1,10 @@
 #include "actionbuttons.h"
 #include <QObject>
 #include <QtQml>
+#include <algorithm>
 #include "log.h"
 #include "jasptheme.h"
+#include "utilities/settings.h"
 
 ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent)
 {
@@ -28,15 +30,36 @@ void ActionButtons::loadButtonData()
 		{FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
 		{FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
 		{FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
-		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::CurrentFile}										},
+		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::CurrentFile, ResourceButtons::Batch}										},
 		{FileOperation::Close,			tr("Close"),			false,	{}																																				},
 		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced, ResourceButtons::PrefsAI}							},
 		{FileOperation::Contact,		tr("Contact"),			true,	{}																																				},
 #ifndef PRO		
 		{FileOperation::Community,		tr("Community"),		true,	{}																																				},
 #endif
-		{FileOperation::About,			tr("About"),			true,	{}																																				}
+		{FileOperation::About,			tr("About"),			true,	{}																																																				}
 	  };
+
+	// Enterprise lockdown: the Contact and Community entries are pure
+	// outward-link surfaces, so when external links are disabled we drop the
+	// rows entirely instead of greying them out. MainWindow::showContact()/
+	// showCommunity() refuse to open the windows as well. In PRO builds the
+	// Contact window targets the client's own JASP Services tracker (URLs
+	// from forced.json) so it only goes when none of those URLs is set;
+	// Community is not compiled into PRO at all.
+	const bool contactChannelsEmpty =	Settings::value(Settings::CONTACT_URL_FEATURES).toString().isEmpty()
+										&&	Settings::value(Settings::CONTACT_URL_BUGS).toString().isEmpty()
+										&&	Settings::value(Settings::CONTACT_URL_CRASH_REPORT).toString().isEmpty();
+	if (!Settings::value(Settings::EXTERNAL_LINKS_ENABLED).toBool() || contactChannelsEmpty)
+		_data.erase(std::remove_if(_data.begin(), _data.end(), [contactChannelsEmpty](const DataRow& row)
+		{
+#ifdef PRO
+			return row.operation == FileOperation::Community
+				|| (contactChannelsEmpty && row.operation == FileOperation::Contact);
+#else
+			return row.operation == FileOperation::Contact || row.operation == FileOperation::Community;
+#endif
+		}), _data.end());
 	
 	
 	if(JaspTheme::currentTheme())

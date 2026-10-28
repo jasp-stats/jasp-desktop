@@ -34,11 +34,13 @@
 #include "utilities/reporter.h"
 #include "gui/preferencesmodel.h"
 #include "results/resultsjsinterface.h"
+#include "jsonutilities.h"
 #include "utilities/messageforwarder.h"
 #include "modules/description/description.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
 #include <QAccessible>
 #include <QScopeGuard>
+#include <functional> // for std::function in deepOverwrite lambda
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options) 
 	: AnalysisBase(		Analyses::analyses())
@@ -56,7 +58,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 		_optionsFromDifferentVersion = _dynamicModule->version() != optionsVersion;
 
 	if (options)
-		setBoundValues(options); //Same story as other constructor
+		setPendingOptions(options, true); //Same story as other constructor: park the file-load options, created-with-options
 
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	_helpFile						= _dynamicModule ? _dynamicModule->helpFolderPath() + tq(analysisEntry->function()) : "";
@@ -71,6 +73,9 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _resultsMeta(						_results.get(".meta", Json::arrayValue)			)
 	, _imgResults(						duplicateMe->_imgResults						)
 	, _userData(						duplicateMe->_userData							)
+	, _plotEdits(						duplicateMe->_plotEdits							)
+	// _pendingReEdits and _editQueue are not copied; the duplicate starts
+	// with a clean edit pipeline.
 	, _imgOptions(						duplicateMe->_imgOptions						)
 	, _progress(						duplicateMe->_progress							)
 	, _id(								id												)
@@ -88,7 +93,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _rSources(						duplicateMe->_rSources							)
 {
 	_filter = duplicateMe->_filter;
-	
+
 	initAnalysis();
 }
 
@@ -115,7 +120,9 @@ void Analysis::initAnalysis()
 	connect(this,				&Analysis::createFormWhenYouHaveAMoment,	this,	&Analysis::createForm,				Qt::QueuedConnection);
 
 
-	bool isNewAnalysis = boundValues().size() == 0;
+	// the explicit created-with-options bool (set when the file-load/RPC/duplicate
+	//path parked options into the pending-options parking) replaces the old mirror-shaped heuristic.
+	bool isNewAnalysis = !createdWithOptions();
 
 	if(!_isDuplicate && isNewAnalysis)
 		_status = Empty;
@@ -143,14 +150,40 @@ void Analysis::filterRemoved(Filter * f)
 
 DataSet * Analysis::dataSet() const
 {
+	//A multi-dataset aware analysis has no *single* dataset to hand out: components must go
+	//through their (per-host) VariableInfo provider and the engine through the option
+	//provenance. Returning _filterDataSet here would silently point at one of the many.
+	if (multiDataSetAware())
+	{
+		_noSingleDataSet("dataSet()");
+		return nullptr;
+	}
+
 	return _filterDataSet;
+}
+
+///One-shot complaint for the single-dataset API being used on a multi-dataset aware analysis.
+void Analysis::_noSingleDataSet(const char * what) const
+{
+	Log::log() << "Analysis " << id() << ": " << what
+	           << " was used on a multi-dataset aware analysis: it has no single dataset/filter,"
+	           << " variable info must come through the (per-form) provider chain." << std::endl;
 }
 
 Analysis::~Analysis()
 {
 	setRefreshBlocked(true);
 	if(form())
-		destroyForm();
+	{
+		//~Analysis runs deferred (see Analyses::removeAnalysis), i.e. at an event-loop
+		//quiet point after the QML delegate holding JS references to this form has been
+		//destroyed, so a synchronous delete is safe here — and required, because the
+		//deleteLater'd form would otherwise outlive this Analysis (its `analysis`
+		//property would dangle for a loop pass).
+		form()->setParent(nullptr);
+		form()->setParentItem(nullptr);
+		delete form();
+	}
 
 	if(DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
 	{
@@ -218,6 +251,7 @@ bool Analysis::checkAnalysisEntry()
 		Log::log() << "Analysis::checkAnalysisEntry() had a problem: " << e.what() << std::endl;
 
 		_moduleData = nullptr;
+
 		if(_QMLFileWatcher.files().size())
 			_QMLFileWatcher.removePaths(_QMLFileWatcher.files());
 		return false;
@@ -273,7 +307,23 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 	_resultsMeta	= _results.get(".meta", Json::arrayValue);
 	_hasReport		= !PreferencesModel::prefs()->reportingMode() ? false : Reporter::reporter()->analysisHasReportNeeded(this);
 
+	// Two-phase plot-edit restoration after an engine re-run:
+	// Phase 1: applyPlotEdits — injects saved editOptions and sizes into the
+	//   fresh results tree, collecting names of plots whose stored dimensions
+	//   differ from what the engine produced (these need a re-render).
+	// Phase 2: applyPlotReEdits — dispatches re-edit requests to the engine for
+	//   dimension-mismatched plots so they render at the correct stored size.
+	// This avoids engine roundtrips when only editOptions changed (no dimension
+	// change), since those are already fully applied to the results tree.
+	std::set<std::string> reEditNames = applyPlotEdits();
+
 	setStatus(status);
+
+	if (!reEditNames.empty() && _restoringFromJaspFile)
+		Log::log() << "setResults: restoring from .jasp file — skipping engine re-edits for " << reEditNames.size() << " plot(s); saved results already contain the edited plots" << std::endl;
+
+	if (status == Analysis::Complete && !reEditNames.empty() && !_restoringFromJaspFile)
+		applyPlotReEdits(reEditNames);
 
 	emit resultsChangedSignal(this);
 
@@ -328,6 +378,36 @@ void Analysis::imageSaved(const Json::Value & results)
 
 void Analysis::editImage(const Json::Value &options)
 {
+	// Serialise edits through a queue: only one image-edit RPC may be
+	// in flight at a time. If the analysis is already in EditImg state,
+	// queue the request and return — it will be dispatched when the
+	// current edit completes (from imageEdited's queue drain).
+	// If the last queued entry is a resize-only request for the same plot,
+	// replace it instead of appending — avoids wasted engine roundtrips.
+	if (!options.isMember("editOptions") && !_editQueue.empty())
+	{
+		Json::Value & last = _editQueue.back();
+		if (!last.isMember("editOptions") && last.get("name", "").asString() == options.get("name", "").asString())
+		{
+			last = options;
+			return;
+		}
+	}
+
+	_editQueue.push_back(options);
+
+	if (_status == EditImg)
+	{
+		Log::log() << "editImage: queued (edit in flight, queue size="
+				   << _editQueue.size() << ")" << std::endl;
+		return;
+	}
+
+	_dispatchEditImage(_editQueue.front());
+}
+
+void Analysis::_dispatchEditImage(const Json::Value &options)
+{
 	setStatus(Analysis::EditImg);
 	_imgOptions = options;
 }
@@ -336,14 +416,142 @@ void Analysis::imageEdited(const Json::Value & results)
 {
 	std::string name = _imgOptions.get("name", "").asString();
 	_imgResults = results;
+	Log::log() << "imageEdited: engine response w=" << _imgResults.get("width", -1).asInt() << " h=" << _imgResults.get("height", -1).asInt() << " hasData=" << results.isMember("data") << " hasInteractiveJson=" << results.isMember("interactiveJsonData") << std::endl;
 
 	if (name != "")
 	{
-		setEditOptionsOfPlot(name, results["editOptions"]);
+		Log::log() << "imageEdited: name='" << name << "'" << std::endl;
 
-		if (_imgResults.get("resized", false).asBool() && !_imgResults.get("error", true).asBool())
-			updatePlotSize(_imgOptions["name"].asString(), _imgResults.get("width", -1).asInt(), _imgResults.get("height", -1).asInt(), _results);
+		// Determine what kind of edit this response belongs to:
+		// - a user-initiated edit from the plot editor carries the full editor
+		//   state in "editOptions",
+		// - size-only restores from applyPlotReEdits are dispatched as "resize",
+		// - batch re-edits are tracked in _pendingReEdits.
+		// Only genuine user edits may touch the stored editOptions: a resize
+		// must never persist the engine's editOptions, because those include
+		// positional values (axis labels) that are only valid for the data
+		// ordering of the current run (see INTERNAL-jasp issue 3366).
+		bool wasResize = !_imgOptions.isMember("editOptions")
+				&& _imgOptions.isMember("width") && _imgOptions.isMember("height");
+		bool wasReEdit = _pendingReEdits.erase(name) > 0;
+
+		if (!wasResize && !wasReEdit && _imgOptions.isMember("editOptions"))
+		{
+			if (_plotEdits.isMember(name) && _plotEdits[name].isMember("editOptions") && !_plotEdits[name].isMember("editOptionsDiff"))
+			{
+				// Legacy entry (full snapshot from an older .jasp file, not
+				// migrated yet): keep the previous behavior of storing the
+				// full merged options. The entry is converted to a patch by
+				// applyPlotEdits on the first run after loading.
+				//
+				// Note: deepOverwrite is a recursive struct-merge, not a full
+				// deep merge — arrays are replaced wholesale, not merged
+				// element-by-element.
+				Json::Value mergedEditOptions = results["editOptions"];
+
+				// Guard against engine returning a non-object editOptions (e.g.
+				// null, array, empty string). In that case start with an empty
+				// object so the submitted options can be deep-merged in without
+				// being lost.
+				if (!mergedEditOptions.isObject())
+					mergedEditOptions = Json::objectValue;
+
+				std::function<void(Json::Value &, const Json::Value &)> deepOverwrite;
+				deepOverwrite = [&deepOverwrite](Json::Value & target, const Json::Value & source)
+				{
+					if (!source.isObject() || !target.isObject()) return;
+					for (const std::string & key : source.getMemberNames())
+					{
+						if (!target.isMember(key))
+							target[key] = source[key];
+						else if (target[key].isObject() && source[key].isObject())
+							deepOverwrite(target[key], source[key]);
+						else
+							target[key] = source[key];
+					}
+				};
+				deepOverwrite(mergedEditOptions, _imgOptions["editOptions"]);
+
+				_plotEdits[name]["editOptions"] = mergedEditOptions;
+			}
+			else
+				_storePlotEditDiff(name, _imgOptions["editOptions"]);
+		}
+
+		if (results.isMember("revision"))
+			_updatePlotField(_results, name, "revision", results["revision"]);
+
+		if (results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString())
+			_updatePlotField(_results, name, "interactiveJsonData", results["interactiveJsonData"]);
+
+		if (results.isMember("data") && !results["data"].isNull())
+			_updatePlotField(_results, name, "data", results["data"]);
+
+		// Only store dimensions for user-initiated resize operations.
+		// Edit operations send the current model width/height which are not
+		// the user's explicit size intent and must not overwrite previously
+		// stored resize dimensions.
+		if (wasResize)
+		{
+			int w = _imgResults.get("width", -1).asInt(),
+				h = _imgResults.get("height", -1).asInt();
+			if (w > 0 && h > 0)
+			{
+				_updatePlotField(_results, name, "width",  w);
+				_updatePlotField(_results, name, "height", h);
+			}
+		}
+
+		if (!wasReEdit)
+		{
+			// Only persist dimensions from user-initiated resize operations
+			// (same reasoning as above).
+			if (wasResize)
+			{
+				int w = _imgOptions["width"].asInt(),
+					h = _imgOptions["height"].asInt();
+				if (w > 0 && h > 0)
+				{
+					_plotEdits[name]["width"]  = w;
+					_plotEdits[name]["height"] = h;
+				}
+			}
+			Log::log() << "imageEdited: stored _plotEdits for '" << name << "' (" << _plotEdits[name].getMemberNames().size() << " keys)" << std::endl;
+		}
+		else
+		{
+			Log::log() << "imageEdited: re-edit for '" << name << "' completed, not updating _plotEdits" << std::endl;
+
+			// Interactive re-edits echo back the requested size but the
+			// engine renders at its own default dimensions. If the actual
+			// plot dimensions in _results differ from what _plotEdits
+			// expects, queue a resize to get a properly-sized PNG.
+			int actualW = -1, actualH = -1;
+			if (_getPlotDimensions(_results, name, actualW, actualH))
+			{
+				int storedW = _plotEdits.isMember(name) ? _plotEdits[name].get("width", -1).asInt() : -1;
+				int storedH = _plotEdits.isMember(name) ? _plotEdits[name].get("height", -1).asInt() : -1;
+
+				if (storedW > 0 && storedH > 0 && (actualW != storedW || actualH != storedH))
+				{
+					Log::log() << "imageEdited: dimensions mismatch (actual=" << actualW << "x" << actualH << " stored=" << storedW << "x" << storedH << "), queuing resize" << std::endl;
+					Json::Value resizeOpts;
+					resizeOpts["name"]   = name;
+					resizeOpts["type"]   = "resize";
+					resizeOpts["width"]  = storedW;
+					resizeOpts["height"] = storedH;
+					editImage(resizeOpts);
+				}
+			}
+		}
 	}
+
+	// Inject the plot name into _imgResults so JS can identify which image
+	// to update via findImagePrimitive(name). The R engine returns name=null
+	// because our imgOpts json has no "data" field (the engine relies on that
+	// field for name resolution). Without this injection, insertNewImage in JS
+	// cannot locate the correct image view in the volatile views tree.
+	_imgResults["name"] = name;
 
 	// Convert interactiveJsonData file paths to actual JSON objects for the front-end
 	_imgResults = loadPlotlyJsonInResults(_imgResults);
@@ -353,35 +561,247 @@ void Analysis::imageEdited(const Json::Value & results)
 	emit imageEditedSignal(this);
 	emit imageChanged();
 
-	//Maybe this is the wrong request, because it took a while and the user kept changing stuff in the ploteditor
-	if(_imgOptions.isMember("request") && _imgResults.isMember("request") && _imgOptions["request"].asInt() != _imgResults["request"].asInt())
-		editImage(_imgOptions);
+	// Drain the user-edit serialisation queue: pop the just-completed entry, dispatch next if any.
+	if (!_editQueue.empty())
+		_editQueue.pop_front();
+
+	if (!_editQueue.empty())
+	{
+		Log::log() << "imageEdited: draining queue — dispatching next ("
+				   << _editQueue.size() << " remaining)" << std::endl;
+		_dispatchEditImage(_editQueue.front());
+	}
 }
 
-bool Analysis::updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root)
+// Stores the user's edit as a merge patch ("editOptionsDiff") relative to the
+// engine's editOptions of the last run, never as a full snapshot. Engine-derived
+// values such as axis labels are positional and change when the data changes, so
+// they must keep coming from the fresh results: only what the user actually set
+// (references, titles, limits, ...) ends up in the patch, and it is applied on
+// every re-render (applyPlotReEdits).
+void Analysis::_storePlotEditDiff(const std::string & uniqueName, const Json::Value & submittedEditOptions)
 {
-	if(root.isNull()) return false;
+	// The diff base is the engine's editOptions as produced by the last run.
+	// Normally applyPlotEdits stored it ("editOptionsBase"); if the entry does
+	// not have one yet (the first edit creates the entry, and base capture in
+	// applyPlotEdits ran before that), fall back to the engine's options in
+	// _results, which are the same thing.
+	//
+	// The base is not necessarily a plain plot: a plot that a run reused from the
+	// engine state keeps the edits applied to it, and so do its editOptions. The
+	// patch is therefore never recomputed against the base, as that would drop
+	// every earlier change the base already shows. Only what this edit changed
+	// relative to its starting point (base + patch so far) is folded into it.
+	Json::Value base;
+	if (_plotEdits.isMember(uniqueName) && _plotEdits[uniqueName].isMember("editOptionsBase"))
+		base = _plotEdits[uniqueName]["editOptionsBase"];
+	else
+		base = editOptionsOfPlot(uniqueName, false);
 
-	if(root.isArray())
-		for(Json::Value & entry: root)
-			if(updatePlotSize(plotName, width, height, entry))
-				return true;
+	if (!base.isObject())
+		base = Json::objectValue;
 
-	if(root.isObject())
+	// "resetPlot" is editor-internal bookkeeping, not a plot option, and it must
+	// not end up in the patch. A reset returns the plot to the engine's defaults,
+	// so nothing user-set remains and the patch becomes empty.
+	Json::Value submitted = submittedEditOptions;
+	bool resetRequested = submitted.get("resetPlot", false).asBool();
+	submitted.removeMember("resetPlot");
+
+	Json::Value previousPatch = _plotEdits.isMember(uniqueName) ? _plotEdits[uniqueName].get("editOptionsDiff", Json::objectValue) : Json::Value(Json::objectValue);
+	Json::Value patch = resetRequested ? Json::Value(Json::objectValue) : JsonUtilities::jsonExtendPatch(previousPatch, base, submitted);
+
+	// If the entry somehow still holds a legacy full snapshot, it is superseded
+	// by the patch computed here.
+	Json::Value & entry = _plotEdits[uniqueName];
+	entry["editOptionsBase"]	= base;
+	entry["editOptionsDiff"]	= patch;
+	entry.removeMember("editOptions");
+
+	Log::log() << "imageEdited: stored editOptionsDiff for '" << uniqueName << "' (" << patch.getMemberNames().size() << " top-level keys, base has " << base.getMemberNames().size() << ")" << std::endl;
+}
+
+// Converts a legacy plotEdits entry (a full editOptions snapshot from an older
+// .jasp file) into the diff format. Called from applyPlotEdits on the first real
+// run after loading: only then do we have clean engine options to diff against,
+// because the results stored in such a file are polluted with the same overrides.
+// Salvages what the engine never produces itself (user additions such as
+// references) and drops everything else, because there it cannot be told apart
+// from stale engine output (axis labels etc. of the old data ordering).
+void Analysis::_migrateLegacyPlotEdit(const std::string & uniqueName, const Json::Value & engineEditOptions)
+{
+	Json::Value additions = JsonUtilities::jsonKeysMissingFrom(_plotEdits[uniqueName]["editOptions"], engineEditOptions);
+
+	Json::Value & entry = _plotEdits[uniqueName];
+	entry["editOptionsBase"]	= engineEditOptions;
+	entry["editOptionsDiff"]	= additions.isObject() ? additions : Json::objectValue;
+	entry.removeMember("editOptions");
+
+	Log::log() << "applyPlotEdits: migrated legacy plotEdits for '" << uniqueName << "' (" << entry["editOptionsDiff"].getMemberNames().size() << " salvaged top-level keys)" << std::endl;
+}
+
+// Applies saved plot edits after an engine re-run.
+// Returns names of plots needing engine re-render.
+//
+// _results is kept pure — engine output is never modified.
+// _plotEdits stores user edits as a merge patch ("editOptionsDiff") against the
+// engine's editOptions of the last run ("editOptionsBase"):
+//   - The base is refreshed from the fresh results on every real run, so that
+//     patches computed later are relative to the run the user is looking at.
+//     Skipped while restoring from a .jasp file (the stored base from the file
+//     is authoritative, and the results in it may be polluted) and while
+//     rewriting images (those results contain the engine's accumulated edits).
+//   - Legacy entries (full snapshot, no patch) are migrated on the first real
+//     run after loading.
+//   - Plots with a non-empty patch are flagged for interactive re-edit.
+//   - Plots with only dimension changes are flagged for re-edit if stored
+//     dimensions differ from engine-computed ones.
+//   - Width/height are stamped into _results (as before), editOptions are not.
+std::set<std::string> Analysis::applyPlotEdits()
+{
+	std::set<std::string> reEditNames;
+
+	if (_plotEdits.isNull())
 	{
-		if(root.isMember(plotName))
-		{
-			root[plotName]["width"]  = width;
-			root[plotName]["height"] = height;
-			return true;
-		}
-		else
-			for(const std::string & memName : root.getMemberNames())
-				if(updatePlotSize(plotName, width, height, root[memName]))
-					return true;
+		Log::log() << "applyPlotEdits: _plotEdits is null, nothing to apply" << std::endl;
+		return reEditNames;
 	}
 
-	return false;
+	Log::log() << "applyPlotEdits: _plotEdits has " << _plotEdits.getMemberNames().size() << " entries" << std::endl;
+
+	for (const std::string & uniqueName : _plotEdits.getMemberNames())
+	{
+		// Look the plot up once: when the re-run did not produce it (e.g. the
+		// split variable changed, so the per-level plot names are different
+		// now), asking the engine to edit it would target a plot that does not
+		// exist and crash in jaspBase:::editImage. Its stored edit is kept so it
+		// is applied again if the plot comes back, but nothing is re-edited now.
+		Json::Value engineEditOpts;
+		bool plotInResults = _editOptionsOfPlot(_results, uniqueName, engineEditOpts);
+
+		if (!plotInResults)
+		{
+			Log::log() << "applyPlotEdits: plot '" << uniqueName << "' not in results, skipping re-edit" << std::endl;
+			continue;
+		}
+
+		if (!_restoringFromJaspFile && !_inImagesRewrite)
+		{
+			if (_plotEdits[uniqueName].isMember("editOptions") && !_plotEdits[uniqueName].isMember("editOptionsDiff"))
+				_migrateLegacyPlotEdit(uniqueName, engineEditOpts);
+			else
+				_plotEdits[uniqueName]["editOptionsBase"] = engineEditOpts;
+		}
+
+		// Re-fetch: the migration above replaces the entry's options representation.
+		const Json::Value & edit = _plotEdits[uniqueName];
+
+		if (edit.isMember("editOptionsDiff") && edit["editOptionsDiff"].isObject() && edit["editOptionsDiff"].size() > 0)
+		{
+			// A re-run hands us a plain plot: jaspBase deliberately does not re-apply earlier
+			// edits to a freshly drawn figure (see the disabled block in writeImage.R), so every
+			// edited plot needs its patch rendered onto the new one again. Flagging only the plots
+			// whose options differ from the engine's would miss precisely the edits the engine
+			// knows nothing about: reference lines exist only in the editOptions the desktop
+			// sends, never in the ones it receives, so nothing about them can ever differ.
+			reEditNames.insert(uniqueName);
+		}
+
+		if (edit.isMember("width") && edit.isMember("height"))
+		{
+			int storedW = edit["width"].asInt(),
+				storedH = edit["height"].asInt();
+
+			if (storedW > 0 && storedH > 0)
+			{
+				int engineW = -1, engineH = -1;
+				if (_getPlotDimensions(_results, uniqueName, engineW, engineH))
+				{
+					_updatePlotField(_results, uniqueName, "width",				storedW);
+					_updatePlotField(_results, uniqueName, "height",			storedH);
+					_updatePlotField(_results, uniqueName, "originalWidth",		engineW);
+					_updatePlotField(_results, uniqueName, "originalHeight",	engineH);
+
+					if (!edit.isMember("editOptionsDiff") && (storedW != engineW || storedH != engineH))
+						reEditNames.insert(uniqueName);
+				}
+			}
+		}
+	}
+
+	// The forced refresh (see loadResultsUserdataAndRSourcesFromJASPFile) has
+	// served its purpose once a real run happened: every legacy entry whose plot
+	// still exists has been migrated above, and any that remains belongs to a
+	// plot that vanished from the results — it cannot be edited before it
+	// reappears, and the applyPlotEdits of that later run migrates it first.
+	if (_plotEditsNeedRefresh && !_restoringFromJaspFile && !_inImagesRewrite)
+	{
+		bool wasRefreshNeeded = needsRefresh();
+		_plotEditsNeedRefresh = false;
+		if (wasRefreshNeeded != needsRefresh())
+			emit needsRefreshChanged();
+	}
+
+	return reEditNames;
+}
+
+void Analysis::applyPlotReEdits(const std::set<std::string> & plotNames)
+{
+	// Batch re-edits triggered after an engine re-run restore previously-saved
+	// edits to freshly re-run engine output. They coexist with the user-edit
+	// queue (_editQueue) — queued user edits are independent and will complete
+	// naturally via the queue drain in imageEdited.
+	_pendingReEdits.clear();
+
+	for (const std::string & uniqueName : plotNames)
+	{
+		if (_plotEdits.isNull() || !_plotEdits.isMember(uniqueName))
+			continue;
+
+		const Json::Value & edit = _plotEdits[uniqueName];
+
+		bool hasDiff = edit.isMember("editOptionsDiff") && edit["editOptionsDiff"].isObject() && edit["editOptionsDiff"].size() > 0;
+		bool hasDims = edit.isMember("width") && edit.isMember("height");
+
+		if (!hasDiff && !hasDims)
+			continue;
+
+		Json::Value imgOpts;
+		imgOpts["name"] = uniqueName;
+
+		if (hasDiff)
+		{
+			// Materialize the options to send from the engine's fresh output
+			// plus the stored patch: engine-derived values (axis labels,
+			// breaks) come from the fresh run, in the current data order,
+			// while the user's changes come from the patch.
+			Json::Value editOptions = editOptionsOfPlot(uniqueName, false);
+			if (!editOptions.isObject())
+				editOptions = Json::objectValue;
+			JsonUtilities::jsonApplyPatch(editOptions, edit["editOptionsDiff"]);
+
+			imgOpts["type"]			= "interactive";
+			imgOpts["editOptions"]	= editOptions;
+		}
+		else
+		{
+			// Size-only restore: an interactive request without editOptions
+			// errors in R ("argument is of length zero"), so send a plain
+			// resize instead.
+			imgOpts["type"] = "resize";
+		}
+
+		if (hasDims)
+		{
+			imgOpts["width"]	= edit["width"];
+			imgOpts["height"]	= edit["height"];
+		}
+
+		_pendingReEdits.insert(uniqueName);
+
+		Log::log() << "applyPlotReEdits: re-edit '" << uniqueName << "' type=" << imgOpts["type"].asString() << " w=" << imgOpts.get("width", -1).asInt() << " h=" << imgOpts.get("height", -1).asInt() << " hasEditOpts=" << imgOpts.isMember("editOptions") << std::endl;
+		editImage(imgOpts);
+	}
 }
 
 void Analysis::rewriteImages()
@@ -391,7 +811,14 @@ void Analysis::rewriteImages()
 
 void Analysis::imagesRewritten(const Json::Value & results)
 {
+	// The rewritten results contain the engine's accumulated edits (the plots
+	// are re-rendered from their edited objects), so they must not become the
+	// diff base for new patches: applyPlotEdits skips base capture and legacy
+	// migration meanwhile.
+	_inImagesRewrite = true;
 	setResults(results, Analysis::Complete);
+	_inImagesRewrite = false;
+
 	emit resultsChangedSignal(this);
 	emit imageChanged();
 
@@ -494,17 +921,23 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 		{
 			Json::Value plotlyJson;
 			Json::Reader jsonReader;
+			QByteArray fileData = plotlyJsonFile.readAll();
 
-			jsonReader.parse(plotlyJsonFile.readAll().toStdString(),plotlyJson, false);
+			jsonReader.parse(fileData.toStdString(), plotlyJson, false);
 
-			//Decode against this analysis' own dataset encoder: the process-global encoder is only
-			//populated in the engine, so the static ColumnEncoder::decodeJson would be a no-op here.
-			if(DataSet * ds = dataSet())
-				ds->encoder().decodeJson(plotlyJson);
+			if (fileData.size() > 0 && plotlyJson.isNull())
+				Log::log() << "loadPlotlyJsonInResults: parse produced null from non-empty file '" << tempFileRelativePath << "'" << std::endl;
+
+			//Decoding is context-free since plot files are written by R with encoded
+			//names and never pass through the engine's sendString, but the desktop's global decode
+			//table holds a block per live filter of every loaded dataset (plus extras), so ONE
+			//sweep resolves them all - aware and non-aware runs alike.
+			ColumnEncoder::decodeJson(plotlyJson);
 
 			return plotlyJson;
 		}
-		return Json::Value("");
+		Log::log() << "loadPlotlyJsonInResults: FAILED to open file '" << tempFileRelativePath << "'" << std::endl;
+		return Json::Value();
 	};
 
 
@@ -512,8 +945,16 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 
 	recursiveFixer = [&loadFile, &recursiveFixer](Json::Value & results)
 	{
-		if(results.isObject() && results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString() && QFileInfo::exists(tq(TempFiles::sessionDirName() + "/" + results["interactiveJsonData"].asString())))
-			results["interactiveJsonData"] = loadFile(results["interactiveJsonData"].asString());
+		if(results.isObject() && results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString())
+		{
+			std::string relPath = results["interactiveJsonData"].asString();
+			if (QFileInfo::exists(tq(TempFiles::sessionDirName() + "/" + relPath)))
+			{
+				Json::Value loaded = loadFile(relPath);
+				if (!loaded.isNull())
+					results["interactiveJsonData"] = loaded;
+			}
+		}
 
 		if(results.isObject())
 			for(const std::string & member : results.getMemberNames())
@@ -528,7 +969,7 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 	return results;
 }
 
-Json::Value Analysis::asJSON(bool withRSource) const
+Json::Value Analysis::asJSON(bool withRSource)
 {
 	Json::Value analysisAsJson = Json::objectValue;
 
@@ -548,10 +989,27 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
-	analysisAsJson["options"]		= boundValues();
+	// the saved options are GENERATED from the components in the STORAGE shape
+	//): per-term `{name, filterId?, types}` objects for the term families (filterId omitted
+	//when -1, provenance inside the term, same-name-different-filter twins immune to positional
+	//drift), every other family its value tree - no `.meta` and no sidecar (both are send-time
+	//artifacts). The Engine wire (createAnalysisRequestJson below) keeps the frozen
+	//{value,types} + sidecar contract untouched. bindTo/Terms(json) re-apply this tree verbatim on
+	//reload (the applier accepts both shapes); version STAYS 7.0.0 - the shape never shipped, so
+	//released files (plain names, all-`-1` ⟹ host-bound fallbacks forever) and old bare-prefix result
+	//tokens are handled by the legacy-token decode, no stamp migration.
+	analysisAsJson["options"]		= createOptionsJson(BoundControl::Storage);
 	analysisAsJson["userdata"]		= userData();
+	analysisAsJson["plotEdits"]		= _plotEdits;
 	analysisAsJson["dynamicModule"] = _moduleData ? _moduleData->asJsonForJaspFile() : Json::objectValue;
 	analysisAsJson["saveState"]     = (_dynamicModule && _dynamicModule->descriptionQml()) ? (_dynamicModule->descriptionQml()->alwaysSaveState()  ? "always" : _dynamicModule->descriptionQml()->neverSaveState() ? "never" : "default") : "default";
+
+	//Marker for older JASP versions (and for the file itself) that this analysis depends on the
+	//multi-dataset machinery: its options carry dataSetId/filterId provenance in their .meta.
+	//Those ids are straight from the storage db (which the .jasp restores verbatim), so a reopened
+	//file resolves them again unchanged - no name-based side table or remapping is needed.
+	if (multiDataSetAware())
+		analysisAsJson["multiDataSetAware"] = true;
 	
 
 	if (withRSource)
@@ -559,7 +1017,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	
 	
 	analysisAsJson["columns"]		= Json::arrayValue;
-	
+
 	for(Column * column : DataSetPackage::pkg()->dataSet()->columns())
 		if(column->analysisId() == _id)
 			analysisAsJson["columns"].append(column->name());
@@ -586,6 +1044,38 @@ void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & an
 {
 	Log::log() << "Now loading userdata results and R Sources for analysis " << _name << " from file." << std::endl;
 	setUserData(analysisData["userdata"]);
+	if (analysisData.isMember("plotEdits") && !analysisData["plotEdits"].isNull())
+	{
+		_plotEdits = analysisData["plotEdits"];
+		Log::log() << "loadResultsUserdata: restored _plotEdits with " << _plotEdits.getMemberNames().size() << " entries" << std::endl;
+
+		// Legacy plotEdits entries (a full editOptions snapshot from an older .jasp
+		// file) cannot be migrated at load time: the results stored in such a file
+		// are polluted with the same overrides, so there is nothing clean to diff
+		// against. Instead, force a refresh through JASP's builtin refresh-needed
+		// mechanism: the user is asked to refresh before resizing or editing, and
+		// applyPlotEdits migrates the entries on that first refresh, when fresh
+		// engine results provide the diff base.
+		bool wasRefreshNeeded = needsRefresh();
+		for (const std::string & uniqueName : _plotEdits.getMemberNames())
+			if (_plotEdits[uniqueName].isMember("editOptions"))
+			{
+				_plotEditsNeedRefresh = true;
+				Log::log() << "loadResultsUserdata: legacy plotEdits for '" << uniqueName << "' found, refresh required to migrate" << std::endl;
+				break;
+			}
+		if (!wasRefreshNeeded && needsRefresh())
+			emit needsRefreshChanged();
+	}
+	else
+		Log::log() << "loadResultsUserdata: no plotEdits key in saved data (or null)" << std::endl;
+
+	// Suppress engine re-edits while restoring: on file-open the engine has no
+	// state for this analysis yet, so editImage requests would crash it. The
+	// saved results already contain the edited/resized plots, so skipping the
+	// re-render here is safe (and faster — no roundtrip per plot).
+	_restoringFromJaspFile = true;
+	auto restoringGuard = qScopeGuard([&]{ _restoringFromJaspFile = false; });
 	setResults(analysisData["results"], status);
 	setRSources(analysisData["rSources"]);
 
@@ -648,16 +1138,19 @@ void Analysis::boundValueChangedHandler()
 
 void Analysis::requestComputedColumnCreationHandler(const std::string& columnName)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestComputedColumnCreationHandler"); return; }
 	emit requestComputedColumnCreation(columnName, this);
 }
 
 void Analysis::requestColumnCreationHandler(const std::string & columnName, columnType colType)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestColumnCreationHandler"); return; }
 	emit requestColumnCreation(columnName, this, colType);
 }
 
 void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestComputedColumnDestructionHandler"); return; }
 	emit requestComputedColumnDestruction(columnName, this);
 }
 
@@ -709,6 +1202,17 @@ void Analysis::filterByNameDone(int dataSetId, const QString &name, const QStrin
 		run();
 }
 
+bool Analysis::shouldRun()
+{
+	// the run request is GENERATED from component state
+	//(createAnalysisRequestJson -> AnalysisBase::createOptionsJson), so dispatch requires an
+	//initialized form: before setAnalysisUp has attached and bound it there is no component
+	//state, the pending JSON parks (and must never be read for a run), and staying Empty defers
+	//the dispatch to a later sync pass - by then the form is up. QML load failure means no form
+	//forever: no analysis, no state case.
+	return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && form()->initialized() && !_isReport;
+}
+
 Json::Value Analysis::createAnalysisRequestJson()
 {
 	performType perform = desiredPerformTypeFromAnalysisStatus();
@@ -728,7 +1232,10 @@ Json::Value Analysis::createAnalysisRequestJson()
 	json["typeRequest"]			= engineStateToString(engineState::analysis);
 	json["id"]					= int(id());
 	json["perform"]				= performTypeToString(perform);
-	json["preloadData"]			= _moduleData ? _moduleData->preloadData() : true;
+	//An aware analysis always runs preload-style (its datasets ride the queued reads), so the
+	//forced true that used to live in Modules::AnalysisEntry::preloadData() is applied here,
+	//from the live flag (the form is initialized by the time a request is generated).
+	json["preloadData"]			= (_moduleData ? _moduleData->preloadData() : true) || multiDataSetAware();
 	json["revision"]			= revision();
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
@@ -741,10 +1248,21 @@ Json::Value Analysis::createAnalysisRequestJson()
 		json["filter"]			= fq(filterName());
 		json["dataSetId"]		= _filter ? _filter->data()->id() : -1;
 
-		if (perform == performType::saveImg || perform == performType::editImg)	
+		//A multi-dataset aware analysis encodes and loads per option: the transient `.filterIds`
+		//sidecar of the GENERATED Engine json names the filter each option/term was selected
+		//through (DataBridge::prepareMultiDataSetRun consumes it, the engine
+		//strips it before R). The sidecar flip: the run request is no longer read from the
+		//mirror-era read but generated from the components (AnalysisForm::createOptionsJson) -
+		//shouldRun() only dispatches with an initialized form, so there is always component state
+		//to generate from (no pre-attach request can read pending JSON). For non-aware
+		//analyses the generated tree is byte-identical to the mirror (equivalence harness).
+		if (multiDataSetAware())
+			json["multiDataSetAware"]	= true;
+
+		if (perform == performType::saveImg || perform == performType::editImg)
 			json["image"]		= imgOptions();
 
-		json["options"]		= boundValues();
+		json["options"]		= createOptionsJson(BoundControl::Engine);
 	}
 
 	return json;
@@ -769,12 +1287,15 @@ void Analysis::duplicateMe()
 QString Analysis::generateWrapper()
 {
 	if (!_analysisForm || !_moduleData) return QString();
+	//An aware analysis gets the datasets-style wrapper: the live flag decides (the form is
+	//attached here), like the bridge path (syntaxbridge.cpp generateWrapper).
 	return _analysisForm->generateWrapper(
 					tq(_moduleData->dynamicModule()->name()),
 					tq(_name),
 					tq(_qml),
 					tq(_title),
-					_moduleData->preloadData()
+					_moduleData->preloadData() || multiDataSetAware(), //aware analyses always preload
+					multiDataSetAware()
 	);
 }
 
@@ -847,6 +1368,34 @@ Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName, bool emi
 	return editOptions;
 }
 
+Json::Value Analysis::editOptionsOfPlotFromEdits(const std::string & uniqueName)
+{
+	if (_plotEdits.isMember(uniqueName))
+	{
+		const Json::Value & edit = _plotEdits[uniqueName];
+
+		if (edit.isMember("editOptions"))
+			return edit["editOptions"]; //legacy full snapshot, not migrated yet
+
+		if (edit.isMember("editOptionsDiff"))
+		{
+			// Materialize what the editor should display: the engine's current
+			// options with the user's patch applied. Engine-derived values
+			// (labels) are always current this way, while user additions
+			// persist. Because the patch was computed against the same base
+			// the next diff will use, an untouched editor round-trips to an
+			// empty patch.
+			Json::Value editOptions = editOptionsOfPlot(uniqueName, false);
+			if (!editOptions.isObject())
+				editOptions = Json::objectValue;
+			JsonUtilities::jsonApplyPatch(editOptions, edit["editOptionsDiff"]);
+			return editOptions;
+		}
+	}
+
+	return editOptionsOfPlot(uniqueName, false);
+}
+
 bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions)
 {
 	if(results.isArray())
@@ -860,7 +1409,7 @@ bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string
 		{
 			editOptions = results["editOptions"];
 
-			Log::log() << "Found editOptions of " << uniqueName << " and they are:\n" << editOptions.toStyledString() << std::endl;
+			Log::log() << "Found editOptions of " << uniqueName << " (" << editOptions.getMemberNames().size() << " keys)" << std::endl;
 
 			return true;
 		}
@@ -873,30 +1422,54 @@ bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string
 	return false;
 }
 
-void Analysis::setEditOptionsOfPlot(const std::string & uniqueName, const Json::Value & editOptions)
-{
-	if(!_setEditOptionsOfPlot(_results, uniqueName, editOptions))
-		MessageForwarder::showWarning(tr("Could not find set edit options of plot %1 so plot editing will not remember anything (if it evens works)...").arg(tq(uniqueName)));
-}
-
-bool Analysis::_setEditOptionsOfPlot(Json::Value & results, const std::string & uniqueName, const Json::Value & editOptions)
+bool Analysis::_getPlotDimensions(const Json::Value & results, const std::string & uniqueName, int & width, int & height) const
 {
 	if(results.isArray())
-		for(Json::Value & entry : results)
-			if(_setEditOptionsOfPlot(entry, uniqueName, editOptions))
+		for(const Json::Value & entry : results)
+			if(_getPlotDimensions(entry, uniqueName, width, height))
 				return true;
 
 	if(results.isObject())
 	{
 		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
 		{
-			Log::log() << "Replacing editOptions of " << uniqueName << ", old:\n" << results["editOptions"].toStyledString() << "\nnew:\n" << editOptions.toStyledString() << std::endl;
-			results["editOptions"] = editOptions;
+			// Prefer originalWidth/originalHeight (engine-computed native size
+			// captured before we stamp the user's stored dimensions into width/height).
+			// Fall back to width/height for bootstrapping: on the very first run
+			// before applyPlotEdits has written originalWidth, width still holds
+			// the engine's native size.
+			width  = results.get("originalWidth",  results.get("width",  -1).asInt()).asInt();
+			height = results.get("originalHeight", results.get("height", -1).asInt()).asInt();
+			
 			return true;
 		}
 
 		for(const std::string & member : results.getMemberNames())
-			if(_setEditOptionsOfPlot(results[member], uniqueName, editOptions))
+			if(_getPlotDimensions(results[member], uniqueName, width, height))
+				return true;
+	}
+
+	return false;
+}
+
+bool Analysis::_updatePlotField(Json::Value & results, const std::string & uniqueName, const std::string & fieldName, const Json::Value & value)
+{
+	if(results.isArray())
+		for(Json::Value & entry : results)
+			if(_updatePlotField(entry, uniqueName, fieldName, value))
+				return true;
+
+	if(results.isObject())
+	{
+		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
+		{
+			Log::log() << "_updatePlotField: found '" << uniqueName << "' setting field='" << fieldName << "'" << std::endl;
+			results[fieldName] = value;
+			return true;
+		}
+
+		for(const std::string & member : results.getMemberNames())
+			if(_updatePlotField(results[member], uniqueName, fieldName, value))
 				return true;
 	}
 
@@ -938,6 +1511,8 @@ Json::Value Analysis::rSources() const
 
 bool Analysis::isOwnComputedColumn(const std::string & colName) const
 {
+	if (multiDataSetAware()) { _noSingleDataSet("isOwnComputedColumn"); return false; }
+
 	Column * col = DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->column(colName) : nullptr;
 
 	return col->analysisId() == id();
@@ -1141,7 +1716,7 @@ void Analysis::setUpgradeMsgs(const Modules::UpgradeMsgs &msgs)
 
 bool Analysis::needsRefresh() const
 {
-	return _wasUpgraded || _storedWithoutState || _optionsFromDifferentVersion;
+	return _wasUpgraded || _storedWithoutState || _optionsFromDifferentVersion || _plotEditsNeedRefresh;
 }
 
 bool Analysis::isWaitingForModule()
@@ -1167,13 +1742,15 @@ void Analysis::setUserData(Json::Value userData)
 		return false;
 	};
 
-	if (_analysisForm) _analysisForm->setHasVolatileNotes(checkForVolatileNotes(_userData));
+	if (_analysisForm) 
+		_analysisForm->setHasVolatileNotes(checkForVolatileNotes(_userData));
 }
 
 void Analysis::setRSources(const Json::Value &rSources)
 {
 	_rSources.clear();
-	if (rSources.isNull() || !rSources.isObject()) return;
+	if (rSources.isNull() || !rSources.isObject()) 
+		return;
 
 	for (const std::string &sourceName : rSources.getMemberNames())
 		_rSources[sourceName] = rSources[sourceName];
@@ -1352,6 +1929,9 @@ std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) 
 
 bool Analysis::isColumnFreeOrMine(const QString & columnName) const
 {
+	//Which dataset would "free" even refer to? Refuse rather than answer about the wrong one.
+	if (multiDataSetAware()) { _noSingleDataSet("isColumnFreeOrMine"); return false; }
+
 	//An analysis without a filter/dataset is not "mine": treat every column as free.
 	if(!_filter || !_filter->data())
 		return true;

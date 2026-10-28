@@ -25,6 +25,7 @@ public:
 	static std::string	logFileNameBase;
 
 	static void			init(std::ostream* nullStream);
+	static std::ostream & nullStream();		///< A stream that silently drops everything written to it, the usual argument to init().
 	static void			setLogFileName(const std::string & filePath);
 
 	static void			setDefaultDestination(logType newDestination);

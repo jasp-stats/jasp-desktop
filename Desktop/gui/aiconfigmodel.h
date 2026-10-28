@@ -42,6 +42,23 @@ struct AIProviderEntry
 	QString               name;         // "DeepSeek"
 	QString               endpoint;     // full chat completions URL
 	QString               defaultApiKey;
+	// Auth is described by protocol, not by vendor, so supporting another
+	// identity provider is configuration rather than new fields:
+	//   scheme = authMode   who = authAuthority   app = authClientId
+	//   what   = authScope  how = authBackend     wire = authHeaderName/Prefix
+	QString               authMode;         // "apiKey" (default when empty) | "oidc" | "none"
+	QString               authAuthority;    // OIDC authority: tenant id, "organizations", or issuer URL
+	QString               authScope;        // resource the token is requested for
+	QString               authClientId;     // app registration; empty = built-in JASP client id
+	QString               authBackend;      // "auto" (default when empty) | wam | browser | devicecode
+	QString               authHeaderName;   // empty = "Authorization"
+	QString               authHeaderPrefix; // empty = "Bearer " for Authorization, raw otherwise
+	int                   authRedirectPort = 0;  // loopback redirect port; 0 = ephemeral (Okta needs a fixed one)
+	QString               authAuthorizationUrl;  // empty = derive from the authority (discovery / Entra convention)
+	QString               authTokenUrl;          // empty = likewise; must be set together with the above
+	QString               authTokenType;         // "" / "access_token" (default) | "id_token" — which JWT is the bearer
+	QString               authOfflineAccess;     // "" / "on" (default) = request offline_access | "off" = exactly the configured scopes
+	QString               extraHeaders;          // raw JSON object of extra HTTP headers on every request; empty = none. Routing only — never credentials
 	bool                  isSystem  = true;   // from shipped JSON?
 	QVector<AIModelEntry> models;             // at least 1
 };
@@ -149,6 +166,43 @@ public:
 	           WRITE setCurrentMessageExtra         NOTIFY currentMessageExtraChanged)
 	Q_PROPERTY(QString currentWarning              READ currentWarning              NOTIFY currentWarningChanged)
 
+	// ── Authentication (scheme | authority | scope | backend | wire) ─────
+	Q_PROPERTY(QString currentAuthMode         READ currentAuthMode
+	           WRITE setCurrentAuthMode         NOTIFY currentAuthModeChanged)
+
+	// ── Which connection method the AI page shows (the tab): "apiKey"
+	// (default) or "oidc". Stored so JASP reopens where the user left off,
+	// and so a group policy can pin it — Settings::value() prefers
+	// HKCU/HKLM Software\Policies\JASP over the user's own setting.
+	// Kept consistent with the active provider: changing either follows
+	// the other.
+	Q_PROPERTY(QString authMode READ authMode WRITE setAuthMode NOTIFY authModeChanged)
+	Q_PROPERTY(QString currentAuthAuthority    READ currentAuthAuthority
+	           WRITE setCurrentAuthAuthority    NOTIFY currentAuthAuthorityChanged)
+	Q_PROPERTY(QString currentAuthScope        READ currentAuthScope
+	           WRITE setCurrentAuthScope        NOTIFY currentAuthScopeChanged)
+	Q_PROPERTY(QString currentAuthClientId     READ currentAuthClientId
+	           WRITE setCurrentAuthClientId     NOTIFY currentAuthClientIdChanged)
+	Q_PROPERTY(int    currentAuthRedirectPort  READ currentAuthRedirectPort
+	           WRITE setCurrentAuthRedirectPort NOTIFY currentAuthRedirectPortChanged)
+	Q_PROPERTY(QString currentAuthAuthorizationUrl READ currentAuthAuthorizationUrl
+	           WRITE setCurrentAuthAuthorizationUrl NOTIFY currentAuthAuthorizationUrlChanged)
+	Q_PROPERTY(QString currentAuthTokenUrl     READ currentAuthTokenUrl
+	           WRITE setCurrentAuthTokenUrl     NOTIFY currentAuthTokenUrlChanged)
+	Q_PROPERTY(QString currentAuthTokenType    READ currentAuthTokenType
+	           WRITE setCurrentAuthTokenType    NOTIFY currentAuthTokenTypeChanged)
+	Q_PROPERTY(QString currentAuthOfflineAccess READ currentAuthOfflineAccess
+	           WRITE setCurrentAuthOfflineAccess NOTIFY currentAuthOfflineAccessChanged)
+	Q_PROPERTY(QString authDiscoveryMessage READ authDiscoveryMessage WRITE setAuthDiscoveryMessage NOTIFY authDiscoveryMessageChanged)
+	Q_PROPERTY(QString currentExtraHeaders     READ currentExtraHeaders
+	           WRITE setCurrentExtraHeaders     NOTIFY currentExtraHeadersChanged)
+	Q_PROPERTY(QString currentAuthBackend      READ currentAuthBackend
+	           WRITE setCurrentAuthBackend      NOTIFY currentAuthBackendChanged)
+	Q_PROPERTY(QString currentAuthHeaderName   READ currentAuthHeaderName
+	           WRITE setCurrentAuthHeaderName   NOTIFY currentAuthHeaderNameChanged)
+	Q_PROPERTY(QString currentAuthHeaderPrefix READ currentAuthHeaderPrefix
+	           WRITE setCurrentAuthHeaderPrefix NOTIFY currentAuthHeaderPrefixChanged)
+
 	// ── Is current provider user-editable? ──────────────
 	Q_PROPERTY(bool currentProviderIsUserEditable
 	           READ currentProviderIsUserEditable NOTIFY currentProviderChanged)
@@ -183,6 +237,46 @@ public:
 	QString currentMessageExtra()          const;
 	void    setCurrentMessageExtra(const QString &v);
 	QString currentWarning()               const;
+	QString currentAuthMode()              const;
+	void    setCurrentAuthMode(const QString &v);
+	QString authMode()                     const;
+	void    setAuthMode(const QString &v);
+	QString currentAuthAuthority()         const;
+	void    setCurrentAuthAuthority(const QString &v);
+	QString currentAuthScope()             const;
+	void    setCurrentAuthScope(const QString &v);
+	QString currentAuthClientId()          const;
+	void    setCurrentAuthClientId(const QString &v);
+	int     currentAuthRedirectPort()      const;
+	void    setCurrentAuthRedirectPort(int v);
+	QString currentAuthAuthorizationUrl() const;
+	void    setCurrentAuthAuthorizationUrl(const QString &v);
+	QString currentAuthTokenUrl()          const;
+	void    setCurrentAuthTokenUrl(const QString &v);
+	QString currentAuthTokenType()         const;
+	void    setCurrentAuthTokenType(const QString &v);
+	QString currentAuthOfflineAccess()    const;
+	void    setCurrentAuthOfflineAccess(const QString &v);
+
+	/// Fetch the authority's /.well-known/openid-configuration and fill the
+	/// authorization and token URL fields from it. Button-triggered (PrefsAI):
+	/// endpoint discovery is a configuration-time action, never something the
+	/// sign-in flow does silently. Status lands in authDiscoveryMessage.
+	Q_INVOKABLE void discoverAuthEndpoints();
+
+	/// Result of the last discoverAuthEndpoints() — "Discovering…", the
+	/// discovered endpoints, or the reason it failed. Empty before first use.
+	/// Writable so the UI can stage guidance text (e.g. from the provider picker).
+	QString authDiscoveryMessage() const;
+	void    setAuthDiscoveryMessage(const QString &message);
+	QString currentExtraHeaders()         const;
+	void    setCurrentExtraHeaders(const QString &v);
+	QString currentAuthBackend()           const;
+	void    setCurrentAuthBackend(const QString &v);
+	QString currentAuthHeaderName()        const;
+	void    setCurrentAuthHeaderName(const QString &v);
+	QString currentAuthHeaderPrefix()      const;
+	void    setCurrentAuthHeaderPrefix(const QString &v);
 	bool    currentProviderIsUserEditable() const;
 
 	// ── Reset ────────────────────────────────────────────
@@ -202,6 +296,21 @@ signals:
 	void currentChatLimitChanged();
 	void currentMessageExtraChanged();
 	void currentWarningChanged();
+	void currentAuthModeChanged();
+	void authModeChanged();
+	void currentAuthAuthorityChanged();
+	void currentAuthScopeChanged();
+	void currentAuthClientIdChanged();
+	void currentAuthRedirectPortChanged();
+	void currentAuthAuthorizationUrlChanged();
+	void currentAuthTokenUrlChanged();
+	void currentAuthTokenTypeChanged();
+	void currentAuthOfflineAccessChanged();
+	void authDiscoveryMessageChanged();
+	void currentExtraHeadersChanged();
+	void currentAuthBackendChanged();
+	void currentAuthHeaderNameChanged();
+	void currentAuthHeaderPrefixChanged();
 	void currentProviderChanged();
 	void providerValuesChanged();
 	void modelValuesChanged();
@@ -210,6 +319,8 @@ private:
 	// ── Override helpers ────────────────────────────────
 	struct ProviderOverrides {
 		QString endpoint;
+		// Legacy carrier for API keys written before SecretVault existed. Read
+		// once by the migration at the end of loadUserData(); never written.
 		QString apiKey;
 		QString currentModelId;
 		QString customModel;
@@ -223,6 +334,21 @@ private:
 		bool        chatLimitActive        = true;
 		QString     messageExtra;
 		bool        messageExtraSet        = false;
+
+		// Auth overrides — empty means "not overridden".
+		QString     authMode;
+		QString     authAuthority;
+		QString     authScope;
+		QString     authClientId;
+		QString     authBackend;
+		QString     authHeaderName;
+		QString     authHeaderPrefix;
+		int         authRedirectPort = 0;
+		QString     authAuthorizationUrl;
+		QString     authTokenUrl;
+		QString     authTokenType;
+		QString     authOfflineAccess;
+		QString     extraHeaders;
 
 		bool operator==(const ProviderOverrides &o) const = default;
 	};
@@ -249,6 +375,10 @@ private:
 	void loadShippedProviders();
 	void loadUserData();
 	void saveUserData();
+
+	/// Make the active provider match the stored authMode — switch to the last
+	/// provider of that kind, or revert the mode when none exists.
+	void applyAuthModeToSelection();
 	ModelOverrides freshModelOverrides(const AIModelEntry *m) const;
 
 	// ── Values array getters ────────────────────────────
@@ -263,11 +393,12 @@ private:
 	const AIProviderEntry* currentProvider() const;
 	const AIModelEntry*    currentModelEntry() const;
 
-	// ── Members ─────────────────────────────────────────
+	// ── Members ─────────────────────────────────
 	QVector<AIProviderEntry>          m_providers;
 	QVector<AIProviderEntry>          m_shipped;
 	QMap<QString, ProviderOverrides>  m_providerOverrides;
 	QMap<QString, ModelOverrides>     m_modelOverrides;
+	QString                            m_authDiscoveryMessage;
 
 	int m_currentProviderIndex = -1;
 	int m_currentModelIndex    = -1;

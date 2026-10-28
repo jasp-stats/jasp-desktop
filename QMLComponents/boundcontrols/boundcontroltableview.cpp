@@ -67,6 +67,11 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 
 	for (const Json::Value& row : value)
 	{
+		//const operator[]/asString throw on non-object rows and non-string entries (e.g.
+		//fuzzed garbage in an options table), so skip anything that is not shaped as a row.
+		if (!row.isObject())
+			continue;
+
 		tableTerms.colNames.push_back(tq(row["name"].asString()));
 		if (index == 0)
 		{
@@ -76,6 +81,8 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 		tableTerms.values.push_back({});
 		for (const Json::Value& value : row["values"])
 		{
+			//bool/null/objects are not representable in a table cell, but they must keep their place as an
+			//empty cell: skipping them would move every following value of this column up a row.
 			QVariant val;
 			if (value.isInt())			val = value.asInt();
 			else if (value.isDouble())	val = value.asDouble();
@@ -102,7 +109,7 @@ void BoundControlTableView::bindTo(const Json::Value &value)
 	_tableView->tableModel()->initTableTerms(tableTerms);
 }
 
-void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListModelTableViewBase::TableTerms &tableTerms)
+void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListModelTableViewBase::TableTerms &tableTerms) const
 {
 	Json::Value levels(Json::arrayValue);
 	for (const QString& rowName : tableTerms.rowNames)
@@ -127,6 +134,15 @@ void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListM
 	}
 }
 
+Json::Value BoundControlTableView::createEngineValue() const
+{
+	//Same builder the write path uses (resetBoundValue): live TableTerms through the virtual
+	//fillBoundValue - see the header.
+	Json::Value boundValue(Json::arrayValue);
+	fillBoundValue(boundValue, _tableView->tableModel()->tableTerms());
+	return boundValue;
+}
+
 Json::Value BoundControlTableView::_defaultValue(int colIndex, int rowIndex) const
 {
 	Json::Value result;
@@ -146,10 +162,5 @@ Json::Value BoundControlTableView::_defaultValue(int colIndex, int rowIndex) con
 
 void BoundControlTableView::resetBoundValue()
 {
-	Json::Value boundValue(Json::arrayValue);
-	const ListModelTableViewBase::TableTerms& tableTerms = _tableView->tableModel()->tableTerms();
-
-	fillBoundValue(boundValue, tableTerms);
-
-	setBoundValue(boundValue);
+	setBoundValue(createEngineValue());
 }

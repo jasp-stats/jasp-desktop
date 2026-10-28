@@ -27,6 +27,7 @@ public:
 	typedef std::map<std::string, issuesPerVersion>				issuesPerModule;
 
 	explicit KnownIssues(QObject *parent = nullptr);
+	~KnownIssues() override { if(_knownIssues == this) _knownIssues = nullptr; } ///< the singleton must not dangle: a second Analyses constructing its own would assert (see FileMenu::_singleton)
 
 	static KnownIssues * issues() { return _knownIssues; }
 

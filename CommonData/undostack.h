@@ -164,14 +164,13 @@ private:
 class SetComputedColumnCodeCommand: public UndoModelCommandSingleColumn
 {
 public:
-	SetComputedColumnCodeCommand(Filter * f, Column * column, const QString& rCode, const QString& jsonCode);
+	SetComputedColumnCodeCommand(Column * column, const QString& rCode, const QString& jsonCode);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
-	QString					_filterName,
-							_oldRCode,
+	QString					_oldRCode,
 							_newRCode,
 							_oldJsonCode,
 							_newJsonCode;
@@ -461,6 +460,8 @@ class UndoStack : public QUndoStack
 	Q_OBJECT
 public:
 	UndoStack(QObject* parent = nullptr);
+	///The stacks are owned by their DataSet, so the current one can be destroyed by a workspace teardown. Don't leave the singleton dangling.
+	~UndoStack() override { if(_currentUndoStack == this) _currentUndoStack = nullptr; }
 
 	static UndoStack*	singleton() { return _currentUndoStack; }
 	static void			setCurrent(UndoStack* stack) { _currentUndoStack = stack; }

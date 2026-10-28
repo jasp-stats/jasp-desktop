@@ -115,7 +115,7 @@ private:
 													_semaphoreInName,
 													_semaphoreOutName;
 	uint64_t										_msgIDSend				= 0,
-													_msgIDRecv				= std::numeric_limits<uint64_t>::max(); //Sentinel: message IDs are single digits (0-9), so any first message is detected as "new".
+													_msgIDRecv				= std::numeric_limits<uint64_t>::max(); //Sentinel: any first message id (modulo 10000) is detected as "new".
 };
 
 #endif // IPCCHANNEL_H

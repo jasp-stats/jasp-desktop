@@ -43,7 +43,7 @@ public:
 
 	bool			isJsonValid(const Json::Value& optionValue)	const	override;
 	Json::Value		createJson()								const	override;
-	Json::Value		createMeta()								const	override;
+	Json::Value		createEngineMeta()							const	override;
 	void			bindTo(const Json::Value& value)					override;
 	bool			encodeValue()								const	override	{ return true; }
 	ListModel*		model()										const	override	{ return _factorLevelsModel; }
@@ -82,6 +82,12 @@ protected slots:
 	void			termsChangedHandler() override;
 
 protected:
+	///< the option value as written by the live model (termsChangedHandler writes
+	/// exactly this through the mirror; the generator reads the same builder, no drift).
+	/// createJson() stays the DEFAULT-value builder (minFactors x minLevels names) that the
+	/// initial binding and the RPC "shape" use.
+	Json::Value		createEngineValue()												const	override;
+
 	GENERIC_SET_FUNCTION(FactorName,			_factorName,			factorNameChanged,			QString		)
 	GENERIC_SET_FUNCTION(LevelName,				_levelName,				levelNameChanged,			QString		)
 	GENERIC_SET_FUNCTION(FactorPlaceHolder,		_factorPlaceHolder,		factorPlaceHolderChanged,	QString		)

@@ -58,7 +58,7 @@ void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const Terms::Rel
 			for (int i = 0; i < _tuples.size(); i++)
 			{
 				Terms row = _tuples[i];
-				row.discardWhatIsntTheseTerms(terms);
+				row.discardWhatIsntTheseTerms(terms);	//name-based set partition: the option value is authoritative for what is bound, stamps take no part here
 				if (row.size() > 0)
 				{
 					for (int j = int(row.size()); j < _columns; j++)
@@ -135,13 +135,71 @@ void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 	endResetModel();
 }
 
-void ListModelMultiTermsAssigned::availableTermsResetHandler(Terms , Terms termsToRemove)
+Terms ListModelMultiTermsAssigned::reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)
 {
+	// (ORIGIN-AUTHORITATIVE): the tuple version of the reconcile - the tuples are
+	//the source of truth, the flattened _terms is rebuilt from them afterwards. Participation is
+	//exactly the base rule (termFollowsProviderChange): a cell stamped `filterIdToUpdate`
+	//follows, -1 and foreign stamps never move. Survivors are REPLACED BY the delivered
+	//universe term and the row maps re-key like the rename flow does; vanished cells are
+	//returned for the handler to clear.
+	Terms vanished;
+	bool changed = false;
+
+	for (Terms& tuple : _tuples)
+	{
+		for (Term& term : tuple)
+		{
+			if (term.value().isEmpty() || !termFollowsProviderChange(term.filterId(), filterIdToUpdate))
+				continue;
+
+			const TermRowKey oldKey = TermRowKey::ofTerm(term);
+
+			if (newUniverse.containsValue(term.value()))	//NAME-ONLY on purpose
+			{
+				term = newUniverse.at(size_t(newUniverse.indexOfValue(term.value())));
+
+				const TermRowKey newKey = TermRowKey::ofTerm(term);
+				if (newKey != oldKey)
+				{
+					if (_rowControlsMap.contains(oldKey))
+						_rowControlsMap.insert(newKey, _rowControlsMap.take(oldKey));
+					if (_rowControlsValues.contains(oldKey))
+						_rowControlsValues.insert(newKey, _rowControlsValues.take(oldKey));
+				}
+			}
+			else
+				vanished.add(term);
+
+			changed = true;
+		}
+	}
+
+	if (changed)
+		_setTerms();	//rebuilds the flattened _terms (and row controls) from the reconciled tuples
+
+	return vanished;
+}
+
+void ListModelMultiTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved, int filterIdToUpdate)
+{
+	// (ORIGIN-AUTHORITATIVE): the pool's provider moved on: tuple cells stamped
+	//`filterIdToUpdate` are replaced by the delivered universe terms when the column survives
+	//and die when it vanished; -1 and foreign stamps never move. The vanished cells (plus the
+	//pool's own removals) are cleared through the usual cell machinery, exactly like a plain
+	//column removal.
+	Terms vanished;
+	if (availableModel())
+		vanished = reconcileProviderChange(filterIdToUpdate, availableModel()->allTerms());
+
+	if (termsRemoved.size() == 0 && vanished.size() == 0)
+		return;
+
 	QList<int> indexes;
 	int i = 0;
 	for (const Term& oneTerm : terms())
 	{
-		if (termsToRemove.containsValue(oneTerm))		indexes.append(i);
+		if (termsRemoved.containsValue(oneTerm) || vanished.containsValue(oneTerm))		indexes.append(i);
 		i++;
 	}
 

@@ -31,6 +31,7 @@
 #include "data/columnsmodel.h"
 #include "datasettablemodel.h"
 #include "data/fileevent.h"
+#include "batchresult.h"
 #include "data/filtermodel.h"
 #include "data/columnmodel.h"
 #include "engine/enginesync.h"
@@ -69,6 +70,8 @@ using Modules::Upgrader;
 
 class Application;
 class AllHelp;
+class QQuickWebEngineDownloadRequest;
+class QTimer;
 ///
 /// Not only the main window of the application but also the main class.
 /// Instantiates relevant models and loads QML (see loadQml)
@@ -86,6 +89,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool			analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 	Q_PROPERTY(bool			welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
+	Q_PROPERTY(bool			externalLinksEnabled	READ externalLinksEnabled																CONSTANT						)
 	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
     Q_PROPERTY(bool			aiChatVisible	READ aiChatVisible              WRITE setAiChatVisible                NOTIFY aiChatVisibleChanged	)
@@ -100,18 +104,23 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		contactUrlFeatures	READ contactUrlFeatures										CONSTANT							)
 	Q_PROPERTY(QString		contactUrlBugs		READ contactUrlBugs											CONSTANT							)
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
-	Q_PROPERTY(QString		questionsUrl		READ questionsUrl											CONSTANT							)
+	Q_PROPERTY(QString		questionsUrl		READ questionsUrl																	CONSTANT							)
+	Q_PROPERTY(QString		companyLogoUrl		READ companyLogoUrl																	CONSTANT							)
+	Q_PROPERTY(int			companyLogoHeight	READ companyLogoHeight																	CONSTANT							)
 	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
+	Q_PROPERTY(bool			startedForBatch		READ startedForBatch										CONSTANT							)
 
 	friend class FileMenu;
+	friend class TestAll; ///< drives the command-line open/synchronize chain through a real MainWindow
 public:
-	explicit MainWindow(Application *application);
+	explicit MainWindow(Application *application, bool batchRun = false);
 			~MainWindow() override;
 
 	static MainWindow * singleton() { return _singleton; }
 
 	void				showNewData();
-	void				open(QString filepath);
+
+	void				open(const QString & mainFilePath, const QString & inputDataFile = "", const QString & exportFile = "", bool keepJASPOpen = false, bool save = false);
 	void				open(const Json::Value & dbJson);
 	void				testLoadedJaspFile(int timeOut, bool save);
 	void				reportHere(QString dir);
@@ -138,13 +147,30 @@ public:
 	const QString 		commHowToSupport()		const;
 	const QString 		commUrl()				const;
 	const QString 		commUrlMembers()		const;
+	/// Master switch for outward-facing community links and windows — see the
+	/// `externalLinksEnabled` entry in settings.cpp for the exact scope.
+	/// JASP Services links are deliberately exempt.
+	bool				externalLinksEnabled()	const;
 	const QString 		contactUrlBugs()		const;
 	const QString 		contactUrlFeatures()	const;
 	const QString 		contactUrlCrashReport()	const;
 	const QString 		contactText()			const;
-	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
+	/// 'Ask a question' link target — settings-driven (`questionsUrl`),
+	/// overridable per client through forced.json / group policy.
+	const QString		questionsUrl()			const;
+	/// Resolved `companyLogoPath` setting: a file:// URL to the company logo
+	/// (absolute path as-is; relative beside the exe / in Resources/), or ""
+	/// when unset or the file is missing. Read once per launch.
+	QString				companyLogoUrl()	const;
+	/// `companyLogoHeight` setting (default 35), clamped to 0–200: base
+	/// height of the welcome-page logo, scaled with the page.
+	int					companyLogoHeight()	const;
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
+
+	bool				startedForBatch()					const	{ return _startedForBatch; }	///< whether this JASP was started to process a data file for another JASP, see setStartedForBatch()
+	void				setStartedForBatch(bool startedForBatch);
+	void                configureBatchRun(int timeoutMinutes);
 	
 public slots:
 	void addNewDataSet();
@@ -184,7 +210,7 @@ public slots:
 	void zoomResetKeyPressed();	
 	void undo();
 	void redo();
-	void openURLFile(QString fileURLPath);
+    bool openURLFile(QString fileURLPath);
 
 	QObject * loadQmlData(QString data, QUrl url);
 
@@ -205,6 +231,10 @@ public slots:
 	void	openGitHubBugReport() const;
 	void	reloadResults() const;
 	void	updateShownFilterInQmlContext();
+	void	_open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save);
+	void	waitForAllAnalysesFinishedBeforeStartingEvent();
+	void	_startWaitingEventIfAnalysesStillFinished();
+	void	waitingEventTimedOut();
 
 private slots:
 	void _setProgressBarVisible(bool progressBarVisible);
@@ -230,6 +260,7 @@ private:
 	void			analysesCountChangedHandler();
 	void			analysisChangedDownstreamHandler(int id, QString options);
 	void			analysisSaveImageHandler(int id, QString options);
+	void			webEngineDownloadRequested(QQuickWebEngineDownloadRequest * download);
 	void			analysisEditImageHandler(int id, QString options);
 	void			removeAnalysisRequestHandler(int id);
 	Json::Value		getResultsMeta();
@@ -244,16 +275,14 @@ private:
 	void pauseEngines();
 	void resumeEngines();
 
-	void _openFile();
 	void _openDbJson();
-	void connectFileEventCompleted(FileEvent * event);
 	void refreshPlotsHandler(bool askUserForRefresh = true);
 	void checkEmptyWorkspace();
 	void registerRpcHandlers();
 
 signals:
 	void saveJaspFile();
-	void editImageCancelled(		int			id);
+	void editImageCancelled(		int			id, QString name);
 	void updateAnalysesUserData(	QString		userData);
 	void runButtonTextChanged(		QString		runButtonText);
 	void runButtonEnabledChanged(	bool		runButtonEnabled);
@@ -282,15 +311,14 @@ signals:
 	void hadFatalErrorChanged();
 	
 private slots:
-	void resultsPageLoaded();
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 	void removeAllAnalyses();
 
-	void dataSetIORequestHandler(FileEvent *event);
-	void dataSetIOCompleted(FileEvent *event);
-	void populateUIfromDataSet();
-	void startDataEditorEventCompleted(FileEvent *event);
+	void fileEventRequestHandler(FileEvent *event);
+	void fileEventRequestFinalize(FileEvent *event);
+	void populateUIfromDataSet(bool loadAnalyses = false);
+	void startDataEditorEventCompleted(FileEvent *event, bool startEditor = true);
 	void analysisAdded(Analysis *analysis);
 	void resendResultsToWebEngine();
 
@@ -366,8 +394,7 @@ private:
 	int								_progressBarProgress,	//Runs from 0 to 100
 									_screenPPI				= 1;
 
-	QString							_openOnLoadFilename,
-									_fatalError				= "The engine crashed...",
+	QString							_fatalError				= "The engine crashed...",
 									_progressBarStatus,
 									_downloadNewJASPUrl		= "";
 	Json::Value						_openOnLoadDbJson		= Json::nullValue;
@@ -376,8 +403,6 @@ private:
 	AsyncLoaderThread				_loaderThread;
 
 	bool							_applicationExiting		= false,
-									_resultsPageLoaded		= false,
-									_qmlLoaded				= false,
 									_openedUsingArgs		= false,
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
@@ -389,15 +414,16 @@ private:
 									_contactVisible			= false,
 									_communityVisible		= false,
                                     _hadFatalError			= false,
-                                     _aiChatVisible           = false,
-									_chatWindowActive		= false;
+									 _aiChatVisible			= false,
+									_chatWindowActive		= false,
+									_startedForBatch		= false;
 	QFont							_defaultFont;
 	QPointer<QWindow>				_chatWindow				= nullptr;
 	QTimer					*		_progressBarTimer		= nullptr;
-	JaspRpcDispatcher*  _rpcDispatcher  = nullptr;
-	JaspRpcServer*      _rpcServer      = nullptr;
-	AiBridge				*	_aiBridge				= nullptr;
-	AIConfigModel			*	_aiConfigModel			= nullptr;
+	JaspRpcDispatcher		*		_rpcDispatcher			= nullptr;
+	JaspRpcServer			*		_rpcServer				= nullptr;
+	AiBridge				*		_aiBridge				= nullptr;
+	AIConfigModel			*		_aiConfigModel			= nullptr;
 
 	// RPC async data-load job tracking
 	struct RpcLoadJob
@@ -407,6 +433,12 @@ private:
 	};
 	std::unordered_map<int, RpcLoadJob>	_rpcJobs;
 	int									_nextRpcJobId = 1;
+	FileEvent					*	_waitingEvent			= nullptr;
+	QTimer						*	_waitingEventStartTimer		= nullptr; ///< debounces the start of a waiting event until the analyses have stopped changing status (see waitForAllAnalysesFinishedBeforeStartingEvent)
+	QTimer						*	_waitingEventTimeoutTimer	= nullptr; ///< deadline for the whole batch worker, including import and export
+	BatchResult _batchResult;
+	bool _batchRunning = false, _batchKeepOpen = false, _batchWaitingForAnalyses = false;
+	void finishBatchRun();
 };
 
 #endif // MAINWIDGET_H

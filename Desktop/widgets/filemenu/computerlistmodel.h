@@ -12,7 +12,7 @@ class ComputerListModel : public FileMenuBasicListModel
 	Q_OBJECT
 
 public:
-	explicit ComputerListModel(QObject *parent = nullptr);
+	explicit ComputerListModel(FileMenuObject *parent);
 
 	QString					getMostRecent();
 	void					addRecentFolder(const QString &newpath);

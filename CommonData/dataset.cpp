@@ -35,7 +35,7 @@ DataSet::DataSet(Workspace * workspace, int id)
 {
 	Log::log() << "DataSet::DataSet(id=" << id << ")" << std::endl;
 
-	_encoder = new ColumnEncoder();
+	_encoder = ColumnEncoder::createCanonical();	// the DataSet owns the mint, the namespaces (views) belong to the filters
 	_syncer  = new DataSetSyncer(this);
 	_emptyValues	= new EmptyValues(nullptr);
 	connect(_emptyValues,	&EmptyValues::emptyValuesChanged,	this,		&DataSet::emptyValuesChanged			);
@@ -46,12 +46,24 @@ DataSet::DataSet(Workspace * workspace, int id)
 	
 	_undoStack = new UndoStack(this);
 	
+	//Undoing the hand-made edits all the way back to the synced point (setDataFileSynch marks that
+	//spot on the stack) means the data matches its data file again, so the synching can go back on.
+	connect(_undoStack,			&QUndoStack::cleanChanged,	this,		&DataSet::handleUndoCleanChanged			);
+	
 	connect(this,			&DataSet::datasetChanged,			this,		&DataSet::handleDataSetChanged			);
 	
 	connect(this,			&DataSet::showYesNo,				_workspace, &Workspace::showYesNo					);
 	connect(this,			&DataSet::askPassword,				_workspace, &Workspace::askPassword					);
 	connect(this,			&DataSet::showWarning,				_workspace, &Workspace::showWarning					);
-	connect(this,			&DataSet::manualEditMade,			_workspace, &Workspace::manualEditMade				);
+	//The columns change during a synchronization from the data file as well, but that is not an edit by
+	//the user: acting on it would switch the external synching off again after every single sync.
+	connect(this,			&DataSet::manualEditMade,			this,		[this]()
+	{
+		if(_synchingDataNow)
+			return;
+
+		setManualEdits(true);
+	});
 	connect(this,			&DataSet::datasetChanged,			_workspace, &Workspace::datasetChanged				);
 	connect(this,			&DataSet::labelsReordered,			_workspace, &Workspace::labelsReordered				);
 
@@ -63,8 +75,6 @@ DataSet::DataSet(Workspace * workspace, int id)
 	connect(this,			&DataSet::refreshAllCompCols,		_workspace, &Workspace::refreshAllCompCols			);
 	
 	connect(_workspace,		&Workspace::filterByNameDone,		this,		&DataSet::filterByNameDone				);
-
-	setTitle(name().replace("_", " "));
 
 	_description = fq(tr("Originally created empty by %1 on %2").arg(tq(AppInfo::getShortDesc())).arg(tq(Utils::currentDateTime())));
 
@@ -120,6 +130,25 @@ void DataSet::addFilter()
 	while(filterExists(filterName));
 	
 	showFilter(createFilter(filterName));
+}
+
+Filter *DataSet::loadStoredFilter(const std::string & name)
+{
+	if(name.empty() || name == DEFAULT_FILTER_NAME)
+		return nullptr;	//the default filter is always live; a second default object would be a bug
+
+	if(Filter * existing = filter(name))
+		return existing;
+
+	try
+	{
+		return createFilter(name, false);	//dbLoad by name keeps the row id; registers itself into _filters
+	}
+	catch(...)
+	{
+		Log::log() << "DataSet::loadStoredFilter: could not materialise stored filter '" << name << "'" << std::endl;
+		return nullptr;
+	}
 }
 
 void DataSet::showFilter(Filter * f)
@@ -302,7 +331,12 @@ void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Column
 
 		//Column names/types have (just) been (re)loaded into this DataSet, so keep our own encoder in
 		//sync; when this dataset is the shown/current one it is what the encoder indirection points at.
-		_encoder->setCurrentNames(getColumnNames());
+		// (zoo run 2, codeF): the mint must keep the TYPED triple-per-column shape - a
+		//names-only re-mint here (the shape a fresh import/sync ends with, and startFileSyncing's
+		//immediate doSync() guarantees one after every load) downgrades every view's block to one
+		//slot per column, so a bind-time encodeRScript (rlang/JAGS textareas) mints indexes the
+		//engine's typed mint decodes as a different column entirely.
+		_encoder->setCurrentNames(getColumnTypesMap());
 
 		incRevision(); //Should trigger reload at engine end
 	}
@@ -534,13 +568,10 @@ std::map<std::string,columnType> DataSet::getColumnTypesMap()
 	return theMap;
 }
 
-void DataSet::setupEncoderPrefix()
+ColumnEncoder * DataSet::shownEncoder()
 {
-	//Make the encoder prefix globally unique (carries the dataset id) so ALL datasets loaded into the
-	//engine can coexist without encoded-name collisions. Must run after the id has been finalized
-	//(dbCreate/dbLoad), which is why it is called at the end of those, not in the constructor.
-	_encoder->_encodePrefix = "JASPColumn_" + std::to_string(_dataSetId) + "_";
-	_encoder->setCurrentNames(getColumnTypesMap()); //regenerate all encoded names with the new prefix
+	Filter * f = shownFilter();
+	return f ? f->columnEncoder() : nullptr;
 }
 
 void DataSet::setDataFileAndTimeStamp(const std::string &dataFilePath, long timestamp)
@@ -588,47 +619,65 @@ void DataSet::setDatabaseJson(const Json::Value & databaseJson)
 		emit databaseJsonChanged(); 
 }
 
+void DataSet::setManualEdits(bool manualEdits)
+{
+	if(_manualEdits == manualEdits)
+		return;
+
+	_manualEdits = manualEdits;
+
+	//Changing the data by hand means the data file no longer describes this dataset, so stop synching
+	//with it: otherwise the next change of that file silently reverts those edits. Remembering whether
+	//the synching was on at all is what lets undoing the edits (handleUndoCleanChanged) turn it back
+	//on, and only then.
+	if(_manualEdits)
+	{
+		_synchTurnedOffByManualEdits = _dataFileSynch;
+		setDataFileSynch(false);
+	}
+
+	emit manualEditsChanged();
+}
+
 void DataSet::setDataFileSynch(bool synchronizing)					
 { 
 	bool isChange	= _dataFileSynch	!= synchronizing;
 	_dataFileSynch	= synchronizing;	
 	if(isChange) dbUpdate(); 
 	
+	//Synching on means the data matches the data file as it is right now, so whatever hand-made edits
+	//switched it off before are water under the bridge. Marking that spot in the undo stack lets undoing
+	//edits back to it tell that the data matches the file again (see handleUndoCleanChanged).
+	if(synchronizing)
+	{
+		_synchTurnedOffByManualEdits = false;
+
+		//Clear the flag here and not just in DataSetPackage::setSynchingExternally: the synching can also
+		//come back on straight through the syncer (FileMenu::setCurrentDataFile when a generated data
+		//file lands). A stale true would make the *next* setManualEdits(true) return early, leaving the
+		//synching on while the data diverges from the file again.
+		setManualEdits(false);
+
+		if(_undoStack)
+			_undoStack->setClean();
+	}
+
 	if(isChange)
 		emit dataFileSynchChanged();
 }
 
-void DataSet::synchronize()
+void DataSet::handleUndoCleanChanged(bool clean)
 {
-	_syncer->syncNow();
-}
-
-void DataSet::synchronizeFromDatabase()
-{
-	if(!isDatabase())
-	{
-		Log::log()	<< "Trying to synch from db but there is no databaseJson" << std::endl;
+	//Undone back to the point where the data still matched the data file (see setDataFileSynch), so
+	//the edits that switched the synching off are gone and it can go back on. Only when those edits
+	//were what switched it off, of course.
+	if(!clean || !_manualEdits || !_synchTurnedOffByManualEdits)
 		return;
-	}
 
-	_syncer->syncNow();
-}
-
-void DataSet::synchronizeFromDataFile()
-{
-	if(dataFileQ() == "")
-	{
-		Log::log()	<< "Trying to synch from a file but there is no datafile path" << std::endl;
-		return;
-	}
-
-	if(!QFileInfo::exists(dataFileQ()))
-	{
-		Log::log()	<< "Trying to synch from a file but it does not exist (" << dataFileQ() << ")." << std::endl;
-		return;
-	}
-
-	_syncer->syncNow();
+	//startFileSyncing() re-arms the watcher and flips dataFileSynch back on, which clears the
+	//manual-edits bookkeeping and announces itself (via Workspace's shown-dataset relays). It is a
+	//no-op when the file is gone, which leaves everything as it was.
+	_syncer->startFileSyncing(tq(_dataFilePath));
 }
 
 void DataSet::dbCreate()
@@ -640,7 +689,7 @@ void DataSet::dbCreate()
 	db().transactionWriteBegin();
 
 	//The variables are probably empty though:
-_dataSetId		= db().dataSetInsert(_dataFilePath, _dataFileTimestamp, _description, _database.toStyledString(), _emptyValues->toJson().toStyledString(), _dataFileSynch, _csvDelimiter);
+	_dataSetId		= db().dataSetInsert(_dataFilePath, _dataFileTimestamp, _description, _database.toStyledString(), _emptyValues->toJson().toStyledString(), _dataFileSynch, _csvDelimiter, _importLocale);
 	_defaultFilter	= new Filter(this);
 	
 	_defaultFilter->dbCreate();
@@ -650,13 +699,16 @@ _dataSetId		= db().dataSetInsert(_dataFilePath, _dataFileTimestamp, _description
 
 	_rowCount		= 0;
 
-	setupEncoderPrefix();
+	//Mint the (still empty) column names through the canonical; the default filter's view - whose
+	//block is rewritten as a consequence - got its final id from dbCreate above, so the funnel is
+	//live from here on.
+	_encoder->setCurrentNames(getColumnTypesMap());
 }
 
 void DataSet::dbUpdate()
 {
-assert(_dataSetId > 0);
-	db().dataSetUpdate(_dataSetId, _title, _dataFilePath, _dataFileTimestamp, _description, _database.toStyledString(), _emptyValues->toJson().toStyledString(), _dataFileSynch, _csvDelimiter);
+	assert(_dataSetId > 0);
+	db().dataSetUpdate(_dataSetId, _title, _dataFilePath, _dataFileTimestamp, _description, _database.toStyledString(), _emptyValues->toJson().toStyledString(), _dataFileSynch, _csvDelimiter, _importLocale);
 	incRevision();
 }
 
@@ -679,7 +731,7 @@ void DataSet::dbLoad(int id, std::function<void(float)> progressCallback, Versio
 
 	std::string emptyVals, databaseJson;
 
-	db().dataSetLoad(_dataSetId, _title, _dataFilePath, _dataFileTimestamp, _description, databaseJson, emptyVals, _revision, _dataFileSynch, _csvDelimiter);
+	db().dataSetLoad(_dataSetId, _title, _dataFilePath, _dataFileTimestamp, _description, databaseJson, emptyVals, _revision, _dataFileSynch, _csvDelimiter, _importLocale);
 
 	db().dataSetGetComputedInfo(_dataSetId, _invalidated, _codeType, _rCode, _error, _defaultInputFilterId);
 
@@ -763,7 +815,21 @@ void DataSet::dbLoad(int id, std::function<void(float)> progressCallback, Versio
 			f->dbUpdate(true);
 	}
 
-	setupEncoderPrefix();
+	//Remint the canonical with the loaded columns: every live filter view's block
+	//in the global decode table is rewritten as an automatic consequence, and the views attached
+	//just below (loadStoredFilter -> Filter::dbLoad) mint their blocks from this state.
+	_encoder->setCurrentNames(getColumnTypesMap());
+
+	//Eagerly materialise every stored filter (the upgrade branch above already did). Multi-dataset
+	//aware selections list LIVE filters only (Workspace::_filterDropDownList, RPC dataset_info),
+	//so a named filter that exists only as a db row is unselectable after a reopen - and a saved
+	//selection option naming it gets coerced away by ComboBoxBase::bindTo before it ever reaches
+	//the host. loadStoredFilter attaches to the existing row
+	//so the db row id - the invariant saved provenance refers to - is preserved, is a no-op for
+	//filters that are already live (default included), and runs after the canonical remint above
+	//so the freshly attached views mint their blocks from the loaded names.
+	for(const int filterRowId : db().dataSetGetFilters(_dataSetId))
+		loadStoredFilter(db().filterGetName(filterRowId));
 }
 
 
@@ -1299,12 +1365,15 @@ void DataSet::refresh(bool doColumnsToo)
 	emit titleChanged();
 }
 
-void DataSet::runFilters()
+void DataSet::runFilters(const QString & editedColumn)
 {
-	_defaultFilter->setInvalidated(true);
-	
+	//All filters are treated uniformly: Filter::columnUsed() knows about the R filter
+	//code, the drag&drop json and (for the default filter) active label filters, so it
+	//is the single source of truth for whether an edit can change a filter's result.
+	//When we do not know which column was edited, every filter re-runs.
 	for(Filter * f : _filters)
-		f->setInvalidated(true);
+		if(editedColumn.isEmpty() || f->columnUsed(editedColumn))
+			f->setInvalidated(true);
 }
 
 DatabaseInterface &DataSet::db()	
@@ -1320,14 +1389,23 @@ const DatabaseInterface &DataSet::db() const
 stringset DataSet::findUsedColumnNames(std::string searchThis)
 {
 	stringset columnsFound, columnsWithTypeFound;
-	encoder().encodeRScript(searchThis, &columnsWithTypeFound);
-	
+
+	//Text scanning encodes through the shown filter's VIEW (the canonical itself never mints
+	//full strings); which view it is cannot matter for the result set because the
+	//encode->decode roundtrip below drops the namespace again.
+	ColumnEncoder * view = shownEncoder();
+
+	if(!view)
+		return columnsFound;
+
+	view->encodeRScript(searchThis, &columnsWithTypeFound);
+
 	//The found columns now also include the type, but we dont really care about that right now.
 	//Instead we'll make use of the encode->decode not being symmetrical (for the results to be less ugly) and dropping the type
-	
+
 	for(const std::string & colPlusType : columnsWithTypeFound)
-		columnsFound.insert(encoder().decode(encoder().encode(colPlusType)));
-	
+		columnsFound.insert(ColumnEncoder::decode(view->encode(colPlusType)));
+
 	return columnsFound;
 }
 
@@ -1462,11 +1540,11 @@ bool DataSet::setData(const QModelIndex &index, const QVariant &value, int role)
 			handleColumnChanged(column);
 			handleLabelsReordered(column);
 			
-			//Probably the labelfilter thing and the constructor thing should 
+			//Probably the labelfilter thing and the constructor thing should
 			if(column->hasLabelFilter())
 			{
 				emit labelFilterChanged();
-				runFilters();
+				runFilters(tq(column->name()));
 			}
 		}
 		
@@ -1730,7 +1808,9 @@ bool DataSet::insertColumns(int column, int count, const QModelIndex &)
 
 	emit datasetChanged(_dataSetId, tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
-	_encoder->setCurrentNames(getColumnNames());
+	// typed re-mint - the new columns carry a type (scale default above), and a
+	//names-only mint here would downgrade every existing column's triple to a single slot.
+	_encoder->setCurrentNames(getColumnTypesMap());
 
 	return true;
 }
@@ -1758,15 +1838,19 @@ bool DataSet::removeColumns(int column, int count, const QModelIndex &)
 
 	emit datasetChanged(_dataSetId, tq(changed), tq(missingColumns), tq(changeNameColumns), false, false);
 
-	_encoder->setCurrentNames(getColumnNames());
+	// the SURVIVING columns keep their types - a names-only re-mint here would
+	//downgrade their triples to single slots (same zoo-driven bug class as endBatchedToDB).
+	_encoder->setCurrentNames(getColumnTypesMap());
 
 	return true;
 }
 
 void DataSet::handleColumnChanged(const Column * column)
 {
+	//No manualEditMade here: this runs for label edits and filter resets (through Column::columnChanged)
+	//as well, and those are not changes of the *data*, so they must not switch the external synching off.
+	//The one caller that *is* a data change, DataSet::setData, announces the manual edit itself.
 	emit datasetChanged(_dataSetId, tq(stringvec({column->name()})), {}, {}, false, false);
-	emit manualEditMade();
 }
 
 void DataSet::handleLabelsReordered(const Column *column)
@@ -1983,11 +2067,21 @@ void DataSet::filterByNameDone(int dataSetID, const QString &name, const QString
 		return;
 
 	Filter * f = filter(fq(name));
-	
-	if(f && f->dbLoadResultAndError())
+
+	if(!f)
+		return;
+
+	//The reply that reaches us is guaranteed to be for the most recently dispatched request
+	//(EngineRepresentation drops superseded ones), so after loading the results the filter is
+	//fresh: its cached state now matches its inputs, regardless of whether the values changed.
+	bool changed = f->dbLoadResultAndError();
+
+	f->setInvalidated(false);
+
+	if(changed)
 	{
 		emit f->refreshAllAnalyses(f);
-		
+
 		if(shownFilter() == f)
 			refresh();
 	}

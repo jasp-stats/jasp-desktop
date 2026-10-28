@@ -40,6 +40,7 @@ public:
 	Q_INVOKABLE	QString						getColumnTransformedToolTip(const QString & name, int transformedTo)				const;
 
 				QVariant					provideInfo(varInfoType info, const QString& colName = "", int row = 0)		const	override;
+	Q_INVOKABLE	QVariant					provideInfoAt(varInfoType info, int colIndex, int row = 0)					const;
 				bool						absorbInfo(	varInfoType info, const QString& name, int row, QVariant value)			override;
 				QAbstractItemModel		*	providerModel()																					override	{ return this;	}
 

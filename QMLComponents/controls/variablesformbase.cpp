@@ -11,19 +11,27 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
 //
-// You should have received a copy of the GNU Affero General Public
-// License along with this program.  If not, see
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
 
 #include "variablesformbase.h"
 #include "variableslistbase.h"
 #include "jasptheme.h"
+#include "analysisform.h"
+#include "analysisbase.h"
+#include "workspace.h"
+#include "log.h"
 
 VariablesFormBase::VariablesFormBase(QQuickItem* parent) : JASPControl(parent)
 {
 	_controlType			= ControlType::VariablesForm;
 	_useControlMouseArea	= false;
+
+	//Dataset/filter selection is NOT a form concern: each list that wants its own
+	//namespace declares dataSetSelectionOption on itself (VariablesListBase / FilterSelect.qml).
+	//The form is layout and available/assigned relations only.
 }
 
 void VariablesFormBase::componentComplete()
@@ -96,13 +104,12 @@ void VariablesFormBase::componentComplete()
 				_controlsHeightSetByForm.push_back(control);
 		}
 		else if (type == ControlType::ComboBox)
-		{
 			_controlsWidthSetByForm.push_back(control);
-			connect(control, &QQuickItem::heightChanged, this, &VariablesFormBase::setControlsSizeSlot);
-		}
 	}
 
-	QMetaObject::invokeMethod(this, "init");
+	emit availableVariablesListChanged();
+	emit allAssignedVariablesListChanged();
+	emit allJASPControlsChanged();
 
 	setInitialized();
 }
@@ -128,9 +135,4 @@ void VariablesFormBase::setMinimumHeightVariablesLists(qreal value)
 JASPControl* VariablesFormBase::availableVariablesList() const
 {
 	return _availableVariablesList;
-}
-
-void VariablesFormBase::setControlsSizeSlot()
-{
-	QMetaObject::invokeMethod(this, "setControlsSize");
 }

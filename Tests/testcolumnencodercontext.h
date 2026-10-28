@@ -30,7 +30,24 @@ private slots:
 	void cleanup();
 	void scopedContextsDecodeInterleavedAndRestoreLiveState();
 	void malformedContextDoesNotMutateLiveState();
+	void replayNeverMutatesLiveEncodersAndNestsExactly();
 	void currentEncoderReTargetsOnSwitchAndClearsOnDestruction();
+	void encodePerDataSetRoutesOptionsToEncoderOfTheirDataSet();
+	void encodePerDataSetRoutesOptionsToStampedFilterView();
+	void encodePerDataSetAttributedToPrimaryWithoutProvenance();
+	void encodePerDataSetWithoutResolverIsLegacyEquivalent();
+	// the two provenance-meta collector unit tests retired WITH the meta collectors
+	//(the `.filterIds` sidecar is the one provenance carrier now; its collector/grammar pins live
+	//JASPTest::testGeneratedEngineJsonSidecar* and testPlaceOptionFilterIdsCollisionDemotion).
+	void decodeJsonCoversEveryBlockAndHonoursSafeHtml();
+	// canonical mint + per-filter views + the one global decode table
+	void canonicalAnswersNoFullStringEncodeDecode();
+	void filterViewsMintDistinctTokensThatBothDecode();
+	void remintRewritesEveryViewBlockAndStaleTokensGoRaw();
+	void typeOnlyChangeKeepsTokensAndMovesBareDefaults();
+	void destroyingViewOrCanonicalErasesBlocks();
+	void independentCanonicalsFromIdenticalMapsProduceIdenticalBlocks();
+	void extrasStyleInstanceFeedsTheGlobalTable();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

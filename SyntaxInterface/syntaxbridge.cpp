@@ -46,13 +46,10 @@
 #include "columnencoder.h"
 #include "columnencodercontext.h"
 
-#include "boost/iostreams/stream.hpp"
-#include <boost/iostreams/device/null.hpp>
 #include <string>
 #include <vector>
 #include <cstdlib>
 #include <ostream>
-#include <streambuf>
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -84,15 +81,6 @@ static bool									gl_verbose						=
 static bool									gl_logInitialized				= false;
 static bool									gl_qtMessageHandlerInstalled	= false;
 
-class NullBuffer : public std::streambuf
-{
-protected:
-	int_type overflow(int_type c) override { return traits_type::not_eof(c); }
-};
-
-static NullBuffer							gl_nullBuffer;
-static std::ostream							gl_nullStream(&gl_nullBuffer);
-
 static std::string							gl_param_resultFont				=
 #ifdef WIN32
 	"Arial,sans-serif,freesans,\"Segoe UI\"";
@@ -104,15 +92,14 @@ static std::string							gl_param_resultFont				=
 
 namespace
 {
-	boost::iostreams::stream<boost::iostreams::null_sink>	gl_nullLogStream((boost::iostreams::null_sink()));
-	bool													gl_loggingInitialized = false;
+	bool	gl_loggingInitialized = false;
 }
 
 static void configureBridgeLogging(bool verbose)
 {
 	if(!gl_loggingInitialized)
 	{
-		Log::init(&gl_nullLogStream);
+		Log::init(&Log::nullStream());
 		gl_loggingInitialized = true;
 	}
 
@@ -195,7 +182,7 @@ static void configureLogging()
 	if (!gl_logInitialized)
 	{
 		gl_verbose = envFlagEnabled("JASP_SYNTAX_VERBOSE");
-		Log::init(&gl_nullStream);
+		Log::init(&Log::nullStream());
 		gl_logInitialized = true;
 	}
 
@@ -240,19 +227,21 @@ static ColumnEncoder & requireExtraColumnEncoder()
 	return *encoder;
 }
 
-static ColumnEncoder::colTypeMap currentDatasetColumnTypes()
-{
-	DataSet * dataSet = gl_dataBridge ? gl_dataBridge->provideAndUpdateDataSet() : nullptr;
-	return dataSet ? dataSet->getColumnTypesMap() : ColumnEncoder::colTypeMap();
-}
-
 static Json::Value columnEncoderContextJson()
 {
 	ColumnEncoder * extraEncoder = extraColumnEncoder();
+	//The columns come from the shown dataset; its canonical only mints indices - the tokens are
+	//minted by the filter VIEWS - so capture the prefix from the shown filter's view as well
+	//(the process-global one only mirrors the dataset namespace after a read redirected it, which
+	//made the capture order-dependent).
+	DataSet * dataSet = gl_dataBridge ? gl_dataBridge->provideAndUpdateDataSet() : nullptr;
 
 	return ColumnEncoderContext(
-		currentDatasetColumnTypes(),
-		extraEncoder ? extraEncoder->currentNames() : ColumnEncoder::colTypeMap()
+		dataSet ? dataSet->getColumnTypesMap() : ColumnEncoder::colTypeMap(),
+		extraEncoder ? extraEncoder->currentNames() : ColumnEncoder::colTypeMap(),
+		//The tokens ride the shown filter's VIEW namespace (JASPColumn_D<dsId>_F<filterId>_,
+		//) - the canonical itself carries no prefix.
+		dataSet && dataSet->shownEncoder() ? dataSet->shownEncoder()->encodePrefix() : std::string()
 	).toJson();
 }
 
@@ -349,7 +338,10 @@ static void clearQmlFormCache()
 static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
 {
 	bool providerWillBeRecreated = gl_initialized && gl_initializedDbInMemory != dbInMemory;
-	if (providerWillBeRecreated)
+	//resetDataSet destroys the workspace every cached form may still be bound to (dropdowns
+	//point at its Filters, forms at its columns) - so those forms have to go with it, or the
+	//next parseOptions touches freed memory and segfaults.
+	if (providerWillBeRecreated || resetDataSet)
 		clearQmlFormCache();
 
 	DataSetProvider * provider = DataSetProvider::getProvider(dbInMemory, resetDataSet, gl_application);
@@ -440,12 +432,12 @@ void STDCALL syntaxBridgeShutdown()
 	gl_jaspBaseInitialized = false;
 }
 
-void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
+int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
 {
 	if (!init(dbInMemory))
 	{
 		Log::log() << "Error during initialization" << std::endl;
-		return;
+		return -1;
 	}
 
 	DataSetProvider* provider = nullptr;
@@ -456,7 +448,15 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 		createDataBridge(dbInMemory);
 	}
 	else
-		provider = DataSetProvider::getProvider(dbInMemory);
+	{
+		//Unnamed (legacy) loads replace the data, so they reset - and go through
+		//resetDataProvider() so the QML form cache bound to the old workspace is dropped too.
+		//Named multi-dataset loads must ACCUMULATE in the workspace - a fresh state is
+		//established by clearNativeState() before loadDataSets(), not by each individual load.
+		const bool named = syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name;
+		provider = named ? DataSetProvider::getProvider(dbInMemory, false, gl_application)
+		                 : resetDataProvider(dbInMemory, true);
+	}
 
 	std::map<std::string, stringvec > dataSet;
 
@@ -469,7 +469,14 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 		dataSet[column.name] = values;
 	}
 
-	provider->loadDataSet(dataSet, threshold, orderLabelsByValue);
+	//A named dataset goes into the workspace as its own DataSet (with id + encoder prefix, titled);
+	//an unnamed one keeps the legacy behaviour of filling the shown dataset.
+	provider->loadDataSet(dataSet, threshold, orderLabelsByValue,
+	                      syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name ? tq(syntaxBridgeDataSet->name) : QString());
+
+	//Either way the just-loaded dataset is the shown one: hand its REAL database id back so
+	//callers (jaspSyntax, jaspTools) can refer to it by the invariant instead of the title.
+	return provider->dataSet() ? provider->dataSet()->id() : -1;
 }
 
 void STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory)
@@ -567,6 +574,14 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!init())
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error during initialization.");
 
+	//Request boundary, exactly like Engine::receiveAnalysisMessage: a slice queue is only ever
+	//valid for the request that filled it. The aware branch below refills it through
+	//prepareMultiDataSetRun; anything else (non-aware parse, early error return, an aware run
+	//whose R side died before consuming every slice) must leave NOTHING behind - otherwise the
+	//next request's dataset reads silently get handed the previous run's dataset/filter/columns.
+	if (gl_dataBridge)
+		gl_dataBridge->setMultiDataSetQueue({});
+
 	std::string qmlFileStr		= qmlFile,
 				versionStr		= version,
 				analysisNameStr	= analysisName,
@@ -576,17 +591,110 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!form)
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Cannot create QML Form " + qmlFileStr);
 
+	//Request boundary again (see the queue clear above): raw selection values from a previous
+	//parse must never be picked up by a host registering during this one.
+	form->setPendingDataSetSelectionRawValues(Json::Value());
+
+	//Dataset selection options carry the syntax surface: human strings only - the
+	//bare dataset TITLE for a dataset's default filter, or the dropdown label "title - filterName"
+	//for a named one, resolved by EXACT lookup against Workspace::datasetSelectionSurfaceMap()
+	//(never parsed or split: titles may contain " - " or ":"). The control contract everywhere
+	//carries FILTER ids, so the translation happens here, before anything binds, and the QML side
+	//stays byte-identical in desktop and syntax mode. There is no numeric-id path: a number
+	//resolves only when a dataset is titled that number (the title-shadows-id confusion went away together
+	//with id acceptance). Unknown strings fail loudly, listing what IS selectable. Hosts that did
+	//not exist yet when this parse ran (async ComponentsList instantiation) get the still
+	//untranslated raw values handed to the form as pending, and resolve their own option the
+	//moment they register it. (The bound DropDown itself cannot flag emptiness - it holds
+	//unmatched values pending - so this raw check stays the gatekeeper.)
+	Json::Value rawOptions;
+	Json::Reader rawReader;
+	if (!rawReader.parse(options, rawOptions))
+		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Could not parse the options json");
+
+	std::string optionsToParse = options;
+
+	if (const QStringList selectionOptions = form->dataSetSelectionOptionNames(); !selectionOptions.isEmpty())
+	{
+		Json::Value pending = rawOptions;   //what late hosts may still resolve from
+
+		Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr;
+
+		for (const QString & option : selectionOptions)
+		{
+			const std::string key = option.toStdString();
+
+			const Json::Value value = rawOptions.isMember(key) ? rawOptions[key] : Json::Value("");
+
+			int	   filterId = -1;
+			QString error;
+
+			if (!workspace)
+				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"),
+					"The dataset selection option '" + key + "' must name one of the loaded datasets (none are loaded)");
+
+			if (!workspace->resolveDataSetSelectionValue(option, value, filterId, error))
+				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), error.toStdString());
+
+			rawOptions[key]	= std::to_string(filterId);   //strings, exactly like the desktop dropdown writes them
+			pending.removeMember(key);                    //resolved; late hosts need nothing of it
+		}
+
+		Json::StreamWriterBuilder writer;
+		writer["indentation"] = "";
+		optionsToParse = Json::writeString(writer, rawOptions);
+
+		form->setPendingDataSetSelectionRawValues(pending);
+	}
+
 	Json::Value parsedOptions;
 	std::string errorMsg;
-	if (!form->parseOptions(options, parsedOptions, errorMsg))
+	// parseOptions now REPORTS the generated Engine tree (values + send-time .meta
+	//minus provenance + the transient .filterIds sidecar), not a stored mirror - the
+	//binding below wrote every value through its control, so this is the same state, generated.
+	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg))
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
+
+	//Establish the request context before any encoding happens: provideAndUpdateDataSet() points the
+	//process-global ColumnEncoder at the loaded dataset. Without it encodeColumnNamesinOptions() below
+	//falls back to the empty default encoder, the options keep their original column names, and the
+	//analysis then gets a dataset whose columns *are* encoded - so it finds no data at all.
+	if (gl_dataBridge)
+		gl_dataBridge->provideAndUpdateDataSet();
 
 	gl_dataBridge->extraEncodings()->setCurrentNamesFromOptionsMeta(parsedOptions);
 	gl_dataBridge->updateOptionsAccordingToMeta(parsedOptions);
-	ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
-	rbridge_setWantedCols(analysisColsTypes);
 
 	Json::Value status = statusBase("syntaxBridgeLoadQmlAndParseOptions");
+
+	if (form->analysisObj() && form->analysisObj()->multiDataSetAware())
+	{
+		//Multi-dataset aware run: exactly what Engine::runAnalysis does, through the shared
+		//DataBridge preparation. The selection options arrived as filter ids (translated from
+		//dataset names above); binding the FilterSelect dropdowns switched each form to its own
+		//filter before the lists bound ('depends'), so the .meta stamped per form, the options
+		//encode per dataset and the slice queue feeds the R-side reads. Syntax datasets have no
+		//user filters; a name resolved to the dataset's default filter. The primary is the first
+		//loaded dataset (in the generated wrapper this is the documented
+		//no-selection-surface fallback, `datasets[[1L]]`).
+		const int primaryId = DataSetProvider::getProvider(gl_initializedDbInMemory, false)->firstLoadedDataSetId();
+		const DataBridge::MultiDataSetRunPlan plan = gl_dataBridge->prepareMultiDataSetRun(parsedOptions, primaryId, "", analysisNameStr);
+
+		rbridge_setWantedCols(plan.primaryCols);
+		status["multiDataSetJson"] = plan.multiDataSetJson;
+	}
+	else
+	{
+		ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
+		rbridge_setWantedCols(analysisColsTypes);
+	}
+
+	// R never sees provenance - strip the transient `.filterIds` sidecar that
+	//prepareMultiDataSetRun consumed above (and the classic path left alone) from what goes back
+	//into the syntax-bridge caller, exactly like Engine::runAnalysis does before
+	//rbridge_runModuleCall.
+	DataBridge::stripTransientProvenanceForR(parsedOptions);
+
 	status["ok"] = true;
 	status["options"] = parsedOptions;
 	return statusResult(status);
@@ -773,6 +881,53 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 	catch(...)
 	{
 		return statusError(statusBase("syntaxBridgeDecodeColumnText"), "Unknown error while decoding column text.");
+	}
+}
+
+// Decode a WHOLE json payload (an analysis' results json, say) with the ONE process-global strict
+// decode table: a block per live filter of every dataset in the
+// bridge workspace, plus the extras and fallback blocks. The old per-encoder sweep (each DataSet's
+// own encoder, then the extra-options encoder, then the process-global one) collapsed into this
+// single static entry - every encoder only ever replaced the exact tokens it minted, so the sweep
+// is order-independent and the table is exactly its union. Aware and non-aware payloads are not
+// different here. Payloads that are not valid json are handed back unchanged; the success envelope
+// is { ok: true, text: <decoded json> }.
+const char* STDCALL syntaxBridgeDecodeJsonText(const char* json)
+{
+	if (!json || json[0] == '\0')
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), "Cannot decode an empty payload.");
+
+	Json::Value payload;
+	Json::Reader reader;
+	if (!reader.parse(json, payload))
+	{
+		Json::Value status = statusBase("syntaxBridgeDecodeJsonText");   // not json at all:
+		status["ok"]   = true;                                           // nothing to decode,
+		status["text"] = json;                                           // pass the text through
+		return statusResult(status);
+	}
+
+	try
+	{
+		//Single choke point, the same context-free global-table sweep the engine's sendString uses
+		//but plain (not HTML): every live filter of every dataset + extras + fallback in one walk.
+		ColumnEncoder::decodeJson(payload);
+
+		Json::StreamWriterBuilder writer;
+		writer["indentation"] = "";
+
+		Json::Value status = statusBase("syntaxBridgeDecodeJsonText");
+		status["ok"]   = true;
+		status["text"] = Json::writeString(writer, payload);
+		return statusResult(status);
+	}
+	catch(const std::exception & exception)
+	{
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), exception.what());
+	}
+	catch(...)
+	{
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), "Unknown error while decoding json text.");
 	}
 }
 
@@ -978,6 +1133,14 @@ AnalysisForm* getQmlForm(const QString& qmlFileStr)
 
 bool generateWrapper(const QString& modulePath, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData)
 {
+	if (analysisName.endsWith("Internal"))
+	{
+		//...Internal is the analysis entry point of a wrapped analysis (and may be pointed at directly
+		//by unwrapped ones); generating a wrapper named after it would shadow the analysis body itself.
+		Log::log() << "generateWrapper: refusing to generate a wrapper for '" << fq(analysisName) << "'" << std::endl;
+		return true;
+	}
+
 	QString qmlFilePath = modulePath + "/inst/qml/" + qmlFileName;
 
 	AnalysisForm* form = getQmlForm(qmlFilePath);
@@ -987,7 +1150,16 @@ bool generateWrapper(const QString& modulePath, const QString& analysisName, con
 		return false;
 	}
 
-	QString returnedValue = form->generateWrapper(QDir(modulePath).dirName(), analysisName, qmlFileName, analysisTitle, preloadData);
+	//MultiDataSetAwareness is decided by the loaded form, nowhere else: a control that registers a
+	//dataset selection (HostFilterSelection, through dataSetSelectionOption) flipped the dummy
+	//analysis' flag while the form was set up in getQmlForm. So the wrapper style (datasets vs
+	//data parameter) follows the form too - no Description.qml declaration is involved.
+	const bool multiDataSetAware = form->analysisObj() && form->analysisObj()->multiDataSetAware();
+
+	//An aware analysis always preloads: its datasets ride the same engine read/queue machinery.
+	const bool effectivePreloadData = preloadData || multiDataSetAware;
+
+	QString returnedValue = form->generateWrapper(QDir(modulePath).dirName(), analysisName, qmlFileName, analysisTitle, effectivePreloadData, multiDataSetAware);
 
 	QFile file(modulePath + "/R/" + analysisName + "Wrapper.R");
 	file.resize(0); // Empty the file

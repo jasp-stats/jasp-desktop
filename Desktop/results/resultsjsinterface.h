@@ -69,6 +69,7 @@ public:
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
 	Q_INVOKABLE void exportAnalysisHTML(int analysisId);
 	Q_INVOKABLE void runJavaScript(const QString & js);
+	Q_INVOKABLE void jsLog(				QString msg);
 
 	//Callable from javascript through resultsJsInterfaceInterface...
 signals:
@@ -92,6 +93,7 @@ signals:
 				void prepForExport();
 	Q_INVOKABLE void exportPrepFinished();
 	Q_INVOKABLE void showRSyntaxInResults(	bool show);
+	
 
 
 public slots:
@@ -134,7 +136,7 @@ public slots:
 	void setShowInteractiveDefaultHandler(	bool			show);
 	void setFixDecimalsHandler(				QString			numDecimals);
 	void analysisImageEditedHandler(		Analysis	*	analysis);
-	void cancelImageEdit(					int				id);
+	void cancelImageEdit(					int				id, const QString & name);
 	void exportSelected(			const	QString		&	filename);
 	void setResultsPageUrl(					QString			resultsPageUrl);
 	// void setZoomInWebEngine();	// we use zoomFactor in webengine now, but let's not clean up it yet.

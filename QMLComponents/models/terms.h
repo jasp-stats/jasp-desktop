@@ -42,13 +42,37 @@ class VariableInfoConsumer;
 class Terms
 {
 public:
-	typedef QMap<QString, QMap<QString, Json::Value> >		RelatedValuesPerTerm;
+	///< row-scoped child values keyed by ROW IDENTITY (value + filterId), not by
+	///  name: same-name rows behind different filters (the same-name twins) keep their own children
+	///  instead of clobbering each other. Read them with relatedValuesForTerm().
+	typedef QMap<TermRowKey, QMap<QString, Json::Value> >	RelatedValuesPerTerm;
+
+	///< The related values of one row: exact (value, filterId) hit, else the
+	///  (value, -1) entry — the unqualified key the JSON applier writes before the list stamps
+	///  its host onto the term (the bind flow) — else empty. An entry belonging to ANOTHER twin
+	///  is never handed out: that sharing is exactly what this keying removes.
+	static const QMap<QString, Json::Value> &	relatedValuesForTerm(const RelatedValuesPerTerm & values, const Term & term);
 
 	Terms(const QList<QString>								& terms,	Terms *parent = nullptr);
 	Terms(const std::vector<std::vector<std::string> >		& terms,	Terms *parent = nullptr);
 	Terms(const QList<Term>									& terms,	Terms *parent = nullptr);
 	Terms(																Terms *parent = nullptr);
-	Terms(const Json::Value& values, const Json::Value& types, const std::string& keyValue, const std::string& keyLabel, RelatedValuesPerTerm& allControlValues);
+	///< The ONE options-json -> Terms applier: takes the option value as stored
+	///  or generated and absorbs every legacy normalization into this chokepoint - unwrapping
+	/// `{value, types}` objects, a bare `{value, optionKey?}` Storage object (
+	///  types live inside the per-term `{name, filterId?, types}` objects now), a single-string
+	///  `types` becoming a one-element array (pre-0.19 files), and the R-syntax-simplified form
+	///  of an interaction list WITHOUT row components (bare strings / arrays of strings) becoming
+	///  `{keyValue: [components]}` rows. The shape normalization that used to be split across
+	///  bind-time helpers + split-parts parsing lives here now: the flags
+	///  come from the list (containsInteractions/hasRowComponent), every other caller parses with
+	/// defaults. Provenance: the ENGINE shape (RPC/syntax/run requests) carries
+	///  no filterId anywhere and parses to all-`-1` terms exactly as before (released files
+	///  too, permanently); the STORAGE shape carries it per term (`{name, filterId?, types}`) and
+	///  the parsed terms keep those ids - the list's intake (ListModel::_setAllowedType) stamps
+	///  only unqualified terms, so loaded stale/foreign ids survive the bind and degrade on the
+	///  engine side through the filterById miss into the legacy fallback, never through a restamp.
+	Terms(const Json::Value& optionValue, const std::string& keyValue, const std::string& keyLabel, RelatedValuesPerTerm& allControlValues, bool containsInteractions = false, bool hasRowComponent = false);
 
 	void set(const QList<QString>							& terms, bool isUnique = true);
 	void set(const std::vector<Term>						& terms, bool isUnique = true);
@@ -83,6 +107,12 @@ public:
 	bool discardWhatDoesContainTheseComponents(		const Terms &terms);
 	bool discardWhatDoesNotContainTheseComponents(	const Terms &terms);
 	bool discardWhatDoesContainTheseTerms(			const Terms &terms);
+	///< The NAME-based set partition ("keep only the entries whose value is in `terms`"), used by
+	///  the row-level sync flows (ListModelMultiTermsAssigned::initTerms,
+	///  ListModelInteractionAssigned::availableTermsResetHandler) where the question is pure set
+	///  membership: stamps take no part here, and so does provider provenance - the ORIGIN-
+	///  AUTHORITATIVE staleness/prune logic lives in the pool and the diff
+	///  (ListModelTermsAvailable), not in Terms.
 	bool discardWhatIsntTheseTerms(					const Terms &terms, Terms *discarded = nullptr);
 
 	QSet<int> replaceVariableName(const std::string & oldName, const std::string & newName);
@@ -91,6 +121,10 @@ public:
 
 	const Term &at(size_t index)										const;
 	Term &at(size_t index);
+	///< Term-aware lookups: a lookup term with filterId -1 matches on name alone
+	///< (unqualified = context fallback), a stamped one must match name AND filterId — so a list
+	///< can hold two same-name terms from different filters and callers still hit the right one.
+	///< The QString overloads stay pure name lookups (first term with that name).
 	bool containsValue(const Term				&	term)				const;
 	bool containsValue(const QString			&	value)				const;
 	int	 indexOfLabel(const QString				&	component)			const;
@@ -119,9 +153,25 @@ public:
 
 	Json::Value types(bool onlyChanged = false, const VariableInfoConsumer* info = nullptr) const;
 
-	Json::Value getOptionsWithRelatedValues(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool useArray, bool useValueAndType) const;
 	Json::Value getValuesOptions() const;
-	Json::Value getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow) const;
+	///< The canonical `{value, types[, optionKey]}` option serialization of these terms:
+	///  row objects (keyValue + optional keyLabel + the term's related child values)
+	///  when the list has row components or interactions, a single value for isSingleRow, bare
+	///  values otherwise. The row assembly is inlined HERE (the separate related-values shuffle
+	///  of the mirror era was deleted with it); useValueAndType selects the
+	///  `{value, types}` entry shape per row (ComponentsList-style variable lists pass true).
+	Json::Value getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow, bool useValueAndType = false) const;
+
+	///< The Storage serialization of these terms - the FILE format, generated by
+	///  BoundControlTerms/ComponentsList/InputList under JsonFormat::Storage. Same tree discipline
+	///  as getOptions (rows under keyValue + keyLabel + the term's related child values when the
+	///  list has row components or interactions, single term object for isSingleRow, optionKey kept)
+	///  but every term is the clean per-term object {name, filterId?, types} (Term::toJsonStorage):
+	///  no outer positional `types` array (types belong to the term in typed state) and no
+	///  positional sidecar - provenance rides INSIDE each term, which is what makes same-name-
+	///  different-filter twins immune to positional drift across a save/reload cycle. Round-trips
+	///  losslessly through the Terms(json) applier (pinned by testStorageTermShapeAndRoundTrip).
+	Json::Value getStorageOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow) const;
 
 private:
 

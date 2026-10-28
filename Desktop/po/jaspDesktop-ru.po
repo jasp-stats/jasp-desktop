@@ -196,190 +196,6 @@ msgid "Reset"
 msgstr "Перезагрузить"
 
 msgctxt "ComputeColumnWindow|"
-msgid "absolute value"
-msgstr "абсолютное значение"
-
-msgctxt "ComputeColumnWindow|"
-msgid "standard deviation"
-msgstr "стандартное отклонение"
-
-msgctxt "ComputeColumnWindow|"
-msgid "variance"
-msgstr "дисперсия"
-
-msgctxt "ComputeColumnWindow|"
-msgid "summation"
-msgstr "суммация"
-
-msgctxt "ComputeColumnWindow|"
-msgid "product of values"
-msgstr "произведение значений"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns minimum of values"
-msgstr "возвращает минимальное значение"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns maximum of values"
-msgstr "возвращает максимальное значение"
-
-msgctxt "ComputeColumnWindow|"
-msgid "mean"
-msgstr "среднее"
-
-msgctxt "ComputeColumnWindow|"
-msgid "rounds y to n decimals"
-msgstr "округляет y до n десятичных знаков"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns number of elements in y"
-msgstr "возвращает количество элементов в y"
-
-msgctxt "ComputeColumnWindow|"
-msgid "median"
-msgstr "медиана"
-
-msgctxt "ComputeColumnWindow|"
-msgid "natural logarithm"
-msgstr "натуральный логарифм"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 2 logarithm"
-msgstr "логарифм по основанию 2"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 10 logarithm"
-msgstr "логарифм по основанию 10"
-
-msgctxt "ComputeColumnWindow|"
-msgid "logarithm of y in 'base'"
-msgstr "логарифм y по основанию"
-
-msgctxt "ComputeColumnWindow|"
-msgid "exponential"
-msgstr "экспоненциальный"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
-"correlations, numbers between -1 and 1 to the real line"
-msgstr ""
-"Z-преобразование Фишера (т. е., аркгиперболический тангенс) для "
-"преобразования корреляций, чисел от -1 до 1 в реальную прямую"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
-"real numbers to numbers between -1 and 1"
-msgstr ""
-"Обратное Z-преобразование Фишера (т. е., гиперболический тангенс) для "
-"преобразования действительных чисел в числа от -1 до 1"
-
-msgctxt "ComputeColumnWindow|"
-msgid "break your data up in numBreaks levels"
-msgstr "разбить ваши данные на уровни numBreaks"
-
-msgctxt "ComputeColumnWindow|"
-msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
-"замените любые отсутствующие значения (NA) в столбце значением в replaceWith"
-
-msgctxt "ComputeColumnWindow|"
-msgid "if-else statement"
-msgstr "оператор \"if-else\""
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Gaussian distribution with specified mean and standard "
-"deviation sd"
-msgstr ""
-"генерирует данные из распределения Гаусса с указанным средним значением и "
-"стандартным отклонением sd"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from t distribution with degrees of freedom df and non-"
-"centrality parameter ncp"
-msgstr ""
-"генерирует данные из распределения t со степенями свободы df и параметром "
-"нецентральности ncp"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a chi-squared distribution with degrees of freedom df "
-"and non-centrality parameter ncp"
-msgstr ""
-"генерирует данные из распределения хи-квадрат со степенями свободы df и "
-"параметром нецентральности ncp"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from an F distribution with specified degrees of freedoms "
-"df1, df2 and non-centrality parameter ncp"
-msgstr ""
-"генерирует данные из F-распределения с заданными степенями свободы df1, df2 "
-"и параметром нецентральности ncp"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a binomial distribution with specified trials and "
-"probability prob"
-msgstr ""
-"генерирует данные из биномиального распределения с указанными испытаниями и "
-"вероятностью"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a negative binomial distribution with specified trials "
-"and probability prob"
-msgstr ""
-"генерирует данные из отрицательного биномиального распределения с указанными "
-"испытаниями и вероятностью"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a geometric distribution with specified probability prob"
-msgstr ""
-"генерирует данные из геометрического распределения с заданной вероятностью"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr "генерирует данные из распределения Пуассона с заданной лямбдой"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a beta distribution with specified shapes alpha and beta"
-msgstr ""
-"генерирует данные из бета-распределения с указанными формами альфа и бета"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a uniform distribution between min and max"
-msgstr ""
-"генерирует данные из равномерного распределения между указанными минимальным "
-"и максимальным значениями"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr "генерирует данные из гамма-распределения заданной формы и шкалы"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from an exponential distribution with specified rate"
-msgstr "генерирует данные из экспоненциального распределения с заданной долей"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a log-normal distribution with specified logarithmic "
-"mean meanLog and standard deviation sdLog"
-msgstr ""
-"генерирует данные из логарифмически нормального распределения с указанным "
-"средним логарифмическим meanLog и стандартным отклонением sdLog"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Weibull distribution with specified shape and scale"
-msgstr "генерирует данные из распределения Вейбулла с заданной формой и шкалой"
-
-msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
 msgstr "Показать сгенерированный код R"
 
@@ -678,10 +494,6 @@ msgid "Data Preferences"
 msgstr "Настройки данных"
 
 msgctxt "PrefsData|"
-msgid "Use default spreadsheet editor"
-msgstr "Использовать редактор электронных таблиц по умолчанию"
-
-msgctxt "PrefsData|"
 msgid "Select custom editor"
 msgstr "Выбрать пользовательский редактор"
 
@@ -851,244 +663,6 @@ msgstr ""
 msgctxt "RecentFiles|"
 msgid "Recent Files"
 msgstr "Недавние файлы"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code clear(ed)"
-msgstr "Код вычисляемых столбцов очищен или очищается"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code applied"
-msgstr "Применен код вычисляемых столбцов"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
-"Пожалуйста, введите все аргументы - смотрите поля, отмеченные красным цветом."
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Only one formula per computed column allowed."
-msgstr "Для каждого вычисляемого столбца допускается только одна формула."
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Welcome to the drag and drop computed column constructor!"
-msgstr "Добро пожаловать в конструктор вычисляемых колонок!"
-
-msgctxt "DropTrash|"
-msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr ""
-"Удалите ненужные фрагменты здесь; чтобы стереть весь лист щелкните дважды"
-
-msgctxt "OperatorSelector|"
-msgid "Addition"
-msgstr "Сложение"
-
-msgctxt "OperatorSelector|"
-msgid "Subtraction"
-msgstr "Вычитание"
-
-msgctxt "OperatorSelector|"
-msgid "Multiplication"
-msgstr "Умножение"
-
-msgctxt "OperatorSelector|"
-msgid "Division"
-msgstr "Деление"
-
-msgctxt "OperatorSelector|"
-msgid "Power (2^3 returns 8)"
-msgstr "Мощность (2^3 возвращает 8)"
-
-msgctxt "OperatorSelector|"
-msgid "Square root"
-msgstr "Квадратный корень"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Модуль: возвращает остаток от деления. 3%2 возвращает 1"
-
-msgctxt "OperatorSelector|"
-msgid "returns logicals and can be the root of a filter formula"
-msgstr "возвращает логические значения и может быть корнем формулы фильтрации"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Equality: %1"
-msgstr "Равенство: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Inequality: %1"
-msgstr "Неравенство: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than: %1"
-msgstr "Меньше, чем: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than or equal to: %1"
-msgstr "Меньше или равно: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than: %1"
-msgstr "Больше, чем: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than or equal to: %1"
-msgstr "Больше или равно: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "And: %1"
-msgstr "И: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Or: %1"
-msgstr "Или: %1"
-
-msgctxt "OperatorSelector|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "Разделение: применяет фильтр отдельно к каждой подгруппе"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "not: %1"
-msgstr "не: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Addition"
-msgstr "Сложение"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Subtraction"
-msgstr "Вычитание"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Multiplication"
-msgstr "Умножение"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Division"
-msgstr "Деление"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Power (2^3 returns 8)"
-msgstr "Мощность (2^3 возвращает 8)"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Square root"
-msgstr "Квадратный корень"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Модуль: возвращает остаток от деления. 3%2 возвращает 1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "returns logicals"
-msgstr "возвращает логические значения"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Equality: %1"
-msgstr "Равенство: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Inequality: %1"
-msgstr "Неравенство: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than: %1"
-msgstr "Меньше, чем: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than or equal to: %1"
-msgstr "Меньше или равно: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than: %1"
-msgstr "Больше, чем: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than or equal to: %1"
-msgstr "Больше или равно: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "And: %1"
-msgstr "И: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Or: %1"
-msgstr "Или: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "Разделение: применяет фильтр отдельно к каждой подгруппе"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Not: %1"
-msgstr "Не: %1"
-
-msgctxt "FilterWindow|"
-msgid "absolute value"
-msgstr "абсолютное значение"
-
-msgctxt "FilterWindow|"
-msgid "standard deviation"
-msgstr "стандартное отклонение"
-
-msgctxt "FilterWindow|"
-msgid "variance"
-msgstr "дисперсия"
-
-msgctxt "FilterWindow|"
-msgid "summation"
-msgstr "суммация"
-
-msgctxt "FilterWindow|"
-msgid "product of values"
-msgstr "произведение значений"
-
-msgctxt "FilterWindow|"
-msgid "returns minimum of values"
-msgstr "возвращает минимальное из значений"
-
-msgctxt "FilterWindow|"
-msgid "returns maximum of values"
-msgstr "возвращает максимальное из значений"
-
-msgctxt "FilterWindow|"
-msgid "mean"
-msgstr "среднее"
-
-msgctxt "FilterWindow|"
-msgid "rounds y to n decimals"
-msgstr "округляет y до n десятичных знаков"
-
-msgctxt "FilterWindow|"
-msgid "returns number of elements in y"
-msgstr "возвращает количество элементов в y"
-
-msgctxt "FilterWindow|"
-msgid "median"
-msgstr "медиана"
-
-msgctxt "FilterWindow|"
-msgid "if-else statement"
-msgstr "оператор \"if-else\""
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -2477,24 +2051,6 @@ msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
 msgstr "Не удается найти компонент %1 для источника %2"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Standardizes the variable"
-msgstr "Стандартизирует переменную"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr ""
-"Возвращает значение true, если строка содержит подстроку хотя бы один раз"
-
-msgctxt "FilterWindow|"
-msgid "Standardizes the variable"
-msgstr "Стандартизирует переменную"
-
-msgctxt "FilterWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr ""
-"возвращает true, если строка содержит подстроку по крайней мере один раз"
-
 msgctxt "PlotEditingAxis|"
 msgid "Title"
 msgstr "Заголовок"
@@ -2795,10 +2351,6 @@ msgctxt "TableView|"
 msgid "Delete"
 msgstr "Удалить"
 
-msgctxt "ComputeColumnWindow|"
-msgid "returns the sign of values"
-msgstr "возвращает знак значений"
-
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
@@ -2822,10 +2374,6 @@ msgstr "См. документацию для получения дополни�
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
 msgstr "Параметры пользовательского интерфейса"
-
-msgctxt "FilterWindow|"
-msgid "returns the sign of values"
-msgstr "возвращает знак значений"
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
@@ -2950,43 +2498,6 @@ msgstr "Компоненты с открытым исходным кодом"
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
 msgstr "Показать синтаксис R"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Logit transform (i.e., the inverse of the standard logit function, or log-"
-"odds transform) converts numbers between 0 and 1 to the real line."
-msgstr ""
-"Логит-преобразование (то есть обратное стандартной логистической функции) "
-"преобразует числа от 0 до 1 в вещественную строку."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse logit transform (i.e., the standard logit function) converts numbers "
-"on the real line to numbers between 0 and 1."
-msgstr ""
-"Обратное логит-преобразование (то есть стандартная логистическая функция) "
-"преобразует числа в вещественной строке в числа от 0 до 1."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
-"stabilize variance and attempt to make the data more normal distribution-"
-"like."
-msgstr ""
-"Двухпараметрическое преобразование Бокса-Кокса для стабилизации дисперсии и "
-"попытки сделать данные более похожими на нормальное распределение."
-
-msgctxt "ComputeColumnWindow|"
-msgid "Inverse two-parameter Box-Cox transform."
-msgstr "Обратное двухпараметрическое преобразование Бокса-Кокса."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
-"attempt to make the data more normal distribution-like."
-msgstr ""
-"Преобразование Йео-Джонсона для стабилизации дисперсии и попытки сделать "
-"данные более похожими на нормальное распределение."
 
 msgctxt "EnginesWindow|"
 msgid "Engines Overview"
@@ -3370,8 +2881,8 @@ msgid "has selected module "
 msgstr "имеет выбранный модуль "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "Нажмите на файл ниже для синхронизации или использования "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "Нажмите на файл ниже для синхронизации или использования %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
@@ -4321,20 +3832,6 @@ msgctxt "ColumnModel|"
 msgid "Column definition"
 msgstr ""
 
-msgctxt "ComputeColumnWindow|"
-msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr ""
-
-msgctxt "FilterWindow|"
-msgid ""
-"Combine with not-operator to filter out rows with missing values (NA) for a "
-"column."
-msgstr ""
-
-msgctxt "PrefsData|"
-msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
-
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
@@ -4802,32 +4299,6 @@ msgctxt "PrefsResults|"
 msgid "Page size"
 msgstr ""
 
-msgctxt "FilterConstructor|"
-msgid "Filter cleared\n"
-msgstr ""
-
-msgctxt "FilterConstructor|"
-msgid "Filter applied\n"
-msgstr ""
-
-msgctxt "FilterConstructor|"
-msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
-
-msgctxt "FilterConstructor|"
-msgid ""
-"Formula does not return a set of logical values, and therefore cannot be "
-"used in the filter.\n"
-msgstr ""
-
-msgctxt "FilterConstructor|"
-msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
-
-msgctxt "JASPColumn|"
-msgid "Click icon to change column type"
-msgstr ""
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr ""
@@ -4927,10 +4398,6 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
-msgstr ""
-
-msgctxt "JASPColumn|"
-msgid "Column description: "
 msgstr ""
 
 msgctxt "VariablesList|"
@@ -5088,34 +4555,6 @@ msgid ""
 "The jasp engine is running in security sandbox mode and only has access to: "
 msgstr ""
 
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise mean"
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise sum"
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise standard deviation"
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise variance"
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise median"
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise minimum"
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise maximum"
-msgstr ""
-
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
 msgstr ""
@@ -5138,34 +4577,6 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr ""
-
-msgctxt "FilterWindow|"
-msgid "Rowwise mean"
-msgstr ""
-
-msgctxt "FilterWindow|"
-msgid "Rowwise sum"
-msgstr ""
-
-msgctxt "FilterWindow|"
-msgid "Rowwise standard deviation"
-msgstr ""
-
-msgctxt "FilterWindow|"
-msgid "Rowwise variance"
-msgstr ""
-
-msgctxt "FilterWindow|"
-msgid "Rowwise median"
-msgstr ""
-
-msgctxt "FilterWindow|"
-msgid "Rowwise minimum"
-msgstr ""
-
-msgctxt "FilterWindow|"
-msgid "Rowwise maximum"
 msgstr ""
 
 msgctxt "PrefsUI|"
@@ -5430,41 +4841,6 @@ msgid ""
 "Refresh the analysis?"
 msgstr ""
 
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform with an automatic determination of the shape "
-"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
-"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform (scale-invariant Box-Box; transforms values "
-"greater than -shift) to stabilize variance and attempt to make the data more "
-"normal distribution-like."
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform with an automatic determination of the shape "
-"parameter lambda. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) with an automatic "
-"determination of the shape parameter lambda. The search for optimal lambda "
-"is bounded within 'lower' and 'upper' limits."
-msgstr ""
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Johnson transform (transforms any real values). The search for optimal "
-"parameter is bounded within 'lower' and 'upper' limits."
-msgstr ""
-
 msgctxt "PrefsAdvanced|"
 msgid "Module library URL: "
 msgstr ""
@@ -5555,10 +4931,6 @@ msgstr ""
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Vertical Line"
-msgstr ""
-
-msgctxt "PlotEditor|"
-msgid "References"
 msgstr ""
 
 msgctxt "ResultMenuModel|"
@@ -5956,11 +5328,6 @@ msgstr ""
 msgctxt "CsvPreview|"
 msgid "Tab"
 msgstr ""
-
-#, fuzzy
-msgctxt "CsvPreview|"
-msgid "Advanced"
-msgstr "Расширенный"
 
 msgctxt "CsvPreview|"
 msgid "Load"
@@ -8207,4 +7574,1166 @@ msgid ""
 "manually kill and engine by right-clicking it. \n"
 "This can be helpful if it stopped responding during some particularly heavy "
 "yet unnecessary calculation.\n"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "All Files"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "%1 Files"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Save File"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Sandbox folder:"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Browse to the folder used as home for the sandboxed Engines. This is where "
+"JASP stores logs, clipboard images and where sandboxed Engines may read and "
+"write files. Leave empty to use the default: JASP_Sandbox in your home-"
+"folder (chosen over Documents because that one tends to be synced by "
+"OneDrive)."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"The folder used as home for the sandboxed Engines. Leave empty to use the "
+"default: JASP_Sandbox in your home-folder."
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Drag to reorder the modules in the ribbon"
+msgstr ""
+
+msgctxt "PreferencesModel|"
+msgid "Engine Sandbox directory changed"
+msgstr ""
+
+msgctxt "PreferencesModel|"
+msgid ""
+"The directory used by the Engine Sandbox has been changed, this will only "
+"take full effect after JASP is restarted."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Batch"
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Batch runs the analyses of a JASP file against other data files, so open a "
+"JASP file (or save your work as one) before running a batch."
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"The workspace has changes that were not saved yet. A batch starts from the "
+"JASP file <i>as it is on disk</i>, so save it first if you want your latest "
+"changes to be used."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Every data file is run against the current JASP file:"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "<no JASP file opened>"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Data files to run it against"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Add files..."
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Browse to the data files to run the JASP file against, you can select "
+"several at once."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Add folder..."
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Browse to a folder holding data files. All data files in it and in its "
+"subfolders are listed, so you can deselect the ones you do not want. Files "
+"JASP cannot import (such as .jasp, .html and .pdf files) are skipped."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "No data files yet."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "no data files"
+msgstr ""
+
+#, qt-format
+msgctxt "Batch|"
+msgid "%1 of %2 selected"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Remove this folder and its data files from the list"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Remove from the list"
+msgstr ""
+
+#, fuzzy
+msgctxt "Batch|"
+msgid "Results"
+msgstr "Результаты"
+
+msgctxt "Batch|"
+msgid "Output folder:"
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Browse to the folder the results should be written to. Leave it empty to "
+"write each result next to its own data file."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Leave empty to write each result next to its own data file."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Export the results as:"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "HTML"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "PDF"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "JASP file"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Do not export"
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Which kind of result is written per data file. \"Do not export\" only "
+"synchronizes and refreshes, which is a good way to check that a set of data "
+"files runs through without errors."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Options"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Open a JASP window for each data file"
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Show the JASP that is started and leave it open at the end instead of "
+"closing it, so you can look at the result. Every data file gets its own, all "
+"open at the same time, so a folder of twenty data files leaves you with "
+"twenty JASPs to close again. These JASPs also take the focus, where a batch "
+"that closes itself again leaves you working undisturbed."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Keep columns missing from the data file"
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Keep the columns the JASP file uses but the data file does not have, with "
+"the data they already had, instead of removing them. The columns of the data "
+"file are then added next to the ones already there."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Run"
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"This is what JASP runs, you can also use it from a terminal or a script:"
+msgstr ""
+
+#, fuzzy
+msgctxt "Batch|"
+msgid "Copy"
+msgstr "Копировать"
+
+msgctxt "Batch|"
+msgid "Copied to the clipboard"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Copy the commandline to the clipboard"
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Running..."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Run batch"
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Start JASP with the commandline above. Keep this JASP open while the batch "
+"runs."
+msgstr ""
+
+msgctxt "Batch|"
+msgid "Stop"
+msgstr ""
+
+msgctxt "Batch|"
+msgid ""
+"Stop the running batch. The data files it already processed keep their "
+"results."
+msgstr ""
+
+#, fuzzy
+msgctxt "Batch|"
+msgid "Clear output"
+msgstr "Очистить вывод"
+
+msgctxt "PrefsData|"
+msgid "Data synchronization"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Use default as external spreadsheet editor."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Synchronize when a new data file is dropped into JASP"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Could not import data: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"Cannot analyse this file: imported %1 rows, but all data values are blank or "
+"marked as missing. Check the file and JASP's missing-value settings."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Could not export results: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Validation error: %1"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Timed out waiting for the batch data file to finish."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "There is no dataset to synchronize with."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Unable to open template: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "JASP internal error: %1"
+msgstr ""
+
+msgctxt "AllHelp|"
+msgid ""
+"\n"
+"Batch\n"
+"=========\n"
+"\n"
+"Batch takes the JASP file you have open, swaps its data for another data "
+"file, waits for every analysis to finish and writes the results out again. "
+"Point it at data files, at whole folders, or at both, and it does that once "
+"per data file, which makes it useful for a monthly report, a set of "
+"measurements that arrives per subject, or any other situation where the "
+"analyses stay the same and only the data changes.\n"
+"\n"
+"Everything on this page is also available from the commandline, and the "
+"commandline that this page is going to run is shown at the bottom of it. So "
+"once a batch does what you want you can copy that line into a terminal or a "
+"script and run it there, for instance from a scheduled task. See [the "
+"commandline documentation](https://github.com/jasp-stats/jasp-desktop/blob/"
+"development/Docs/user-guide/command-line-batch-howto.md) for the options "
+"that are not on this page, such as the timeout and logging to a file.\n"
+"\n"
+"## What actually happens\n"
+"\n"
+"For each data file JASP:\n"
+"\n"
+"1. loads the JASP file, so every run starts from the same analyses and "
+"options;\n"
+"2. synchronizes the data with the data file, the way the *Synchronisation* "
+"button does inside JASP;\n"
+"3. waits until all analyses have finished refreshing on the new data;\n"
+"4. exports the results, unless you asked it not to;\n"
+"5. closes, unless you asked it to stay open.\n"
+"\n"
+"**Every data file gets its own JASP process.** JASP starts a fresh copy of "
+"itself per data file, so one file cannot influence the next: each one starts "
+"from the JASP file again.\n"
+"\n"
+"The JASP file is used *as it is on disk*, so save your workspace first if "
+"you made changes you want the batch to use. The JASP you are running the "
+"batch from must stay open while the batch runs, it is the one keeping track "
+"of it. If you would rather not have that, copy the commandline and run it "
+"from a terminal instead.\n"
+"\n"
+"## JASP file to run\n"
+"\n"
+"The JASP file you currently have open. Open (or save) the file whose "
+"analyses you want to run before starting a batch.\n"
+"\n"
+"## Data files to run it against\n"
+"\n"
+"Use *Add files...* to add data files, several at once if you like, and *Add "
+"folder...* to add all data files in a folder. A folder is searched "
+"recursively, so the data files in its subfolders are added as well. Anything "
+"JASP can import counts as a data file: `.csv`, `.txt`, `.tsv`, `.sav`, `."
+"zsav`, `.por`, `.xpt`, `.ods`, `.xls`, `.xlsx`, `.dta`, `.sas7bdat`, `."
+"sas7bcat`, `.rdata`, `.rds`, `.mwx` and `.mpx`.\n"
+"\n"
+"`.jasp`, `.html` and `.pdf` files are not data files, so a folder is allowed "
+"to also hold the results of an earlier run.\n"
+"\n"
+"The list shows every data file that can be run, also each one in the folders "
+"you added. Click a data file to deselect it when you do not want to run it, "
+"or click a folder to select or deselect all of its data files at once. A "
+"data file is listed only once, even when it is in more than one of the "
+"folders you added. To take a folder or a data file you added off the list "
+"again, hover over it and click the minus sign at its end.\n"
+"\n"
+"The folders are looked at again whenever you open this page and when you run "
+"the batch, so the data files that were put in them in the meantime are "
+"listed and selected as well.\n"
+"\n"
+"As long as all data files of a folder are selected, the commandline simply "
+"names the folder, so it also picks up data files that are put in that folder "
+"later on when you run the commandline yourself. Once one of them is "
+"deselected, the commandline names the selected data files one by one "
+"instead.\n"
+"\n"
+"## Results\n"
+"\n"
+"The result is named after the data file and written to the output folder, or "
+"next to the data file when you leave that empty:\n"
+"\n"
+"```\n"
+"measurements/january.csv   ->   reports/january.html\n"
+"```\n"
+"\n"
+"One thing to watch: the name is taken up to the **first** dot, not the last. "
+"A data file called `january.2026.csv` produces `january.html`, so a folder "
+"holding `january.2026.csv` and `january.2027.csv` would have them overwrite "
+"each other. Give such files a name without extra dots, or use a separate "
+"output folder per run.\n"
+"\n"
+"The folder a data file is in is not part of the name either: `2025/january."
+"csv` and `2026/january.csv` both produce `january.html`, so in a shared "
+"output folder the one that runs last overwrites the other. Leave the output "
+"folder empty to write every result next to its own data file.\n"
+"\n"
+"With \"Do not export\" JASP only synchronizes and refreshes. That is a good "
+"way to check that a set of data files runs through without errors.\n"
+"\n"
+"## Options\n"
+"\n"
+"*Open a JASP window for each data file* shows the JASP that is started and "
+"leaves it open at the end instead of closing it, so you can look at the "
+"result yourself. This works for a folder too, but do keep in mind what it "
+"means there: every data file gets its own JASP and they all stay open, so a "
+"folder of twenty data files leaves you with twenty JASPs running at the same "
+"time. They are also started all at once rather than one after the other, "
+"since none of them ever finishes on its own.\n"
+"\n"
+"Note that this is also the one case where the batch takes the focus: a JASP "
+"meant to stay open should be one you can get at. See *While it runs* below.\n"
+"\n"
+"*Keep columns missing from the data file* changes what happens to a column "
+"that the JASP file uses but the new data file does not have. Normally such a "
+"column is removed and the analyses using it report that their variable is "
+"gone. With this option the column is kept as it is, with the data it already "
+"had, so the analyses keep their variables, and the columns of the new data "
+"file are added next to the ones already there rather than taking their "
+"place.\n"
+"\n"
+"## While it runs\n"
+"\n"
+"Batch workers run in hidden windows, so you can keep working in JASP or "
+"another application. *Open a JASP window for each data file* opens visible "
+"windows for inspection instead.\n"
+"\n"
+"The output shows progress for each data file. An empty or invalid file, an "
+"analysis error, a failed export, or a timeout counts as a failure; "
+"processing continues with the next file. JASP warning messages are reported "
+"without opening a dialog. The template's original linked data file is not "
+"automatically reloaded: the selected batch data is used.\n"
+"\n"
+"At the end, errors and warnings are listed by data file, followed by the "
+"number of successful files, failed files, and distinct JASP warning messages "
+"per file. Raw runtime diagnostics (such as Chromium output) are shown "
+"separately and are not counted as warnings. An exported report can contain "
+"an analysis error and still count as a failed file. With *Open a JASP window "
+"for each data file*, the summary reports how many windows were launched; "
+"their analyses are not monitored for completion.\n"
+"\n"
+"*Stop* ends the batch; the data files it already processed keep their "
+"results.\n"
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "Select the data files to run the JASP file against"
+msgstr ""
+
+#, fuzzy
+msgctxt "BatchFileMenu|"
+msgid "Data Files"
+msgstr "Файлы данных"
+
+msgctxt "BatchFileMenu|"
+msgid "Not a data file"
+msgstr ""
+
+#, qt-format
+msgctxt "BatchFileMenu|"
+msgid "JASP cannot import these files, so they were not added: %1"
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "Select a folder holding data files to run the JASP file against"
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "Select a folder for the results"
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "A batch runs the analyses of a JASP file, so open (or save) one first."
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid ""
+"Add the data files, or a folder holding them, to run the JASP file against."
+msgstr ""
+
+#, qt-format
+msgctxt "BatchFileMenu|"
+msgid "%1 does not exist anymore, remove it from the data files."
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "Select at least one of the data files to run the JASP file against."
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "Cannot run batch"
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "Stopping the batch..."
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "The batch was stopped."
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "The batch finished, all data files were processed."
+msgstr ""
+
+#, qt-format
+msgctxt "BatchFileMenu|"
+msgid ""
+"The batch finished with error code %1, see above for which data file(s) "
+"failed."
+msgstr ""
+
+#, qt-format
+msgctxt "BatchFileMenu|"
+msgid "JASP could not be started to run the batch: %1"
+msgstr ""
+
+msgctxt "BatchFileMenu|"
+msgid "[ earlier output was dropped ]"
+msgstr ""
+
+msgctxt "ResourceButtons|"
+msgid "Batch"
+msgstr ""
+
+msgctxt "CsvPreview|"
+msgid "Read numbers as written in"
+msgstr ""
+
+msgctxt "CsvPreview|"
+msgid "More languages"
+msgstr ""
+
+msgctxt "CsvPreview|"
+msgid ""
+"Offer every language instead of the ones JASP is translated into, and let "
+"the territory be chosen as well."
+msgstr ""
+
+msgctxt "CsvPreview|"
+msgid "Territory"
+msgstr ""
+
+msgctxt "CsvPreviewModel|"
+msgid "text"
+msgstr ""
+
+msgctxt "DataLibrary|"
+msgid "Click here to open the Online Data Library"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Onboarding"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Show onboarding tour on next start"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Enable this to see the guided tour again the next time JASP starts."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Start tutorial"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Data and Analysis Section"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "This is the main entry point for the Data and Analysis menu."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "File Menu and Preferences"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Clicking the hamburger button in the upper left corner opens/closes this "
+"file menu and preferences interface, used to open and save files, and to "
+"configure JASP global preferences."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Modules Library"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"This is where you can manage analytics modules. In the list on the far right "
+"of this area, you can enable/disable installed modules, and you can also "
+"manage all available modules from the online modules store on the left."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "AI Assistant"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Click the robot icon here or press Ctrl+J to bring up the AI chat panel."
+"Detailed AI settings can be found in the preferences menu."
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Elements"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Getting Started"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Finish"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Next"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Previous"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Skip the Tutorial"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Insert element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Remove element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Move element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Change column type"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit number"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit logical"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit text"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Clear all"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals and can be the root of a filter formula"
+msgstr "возвращает логические значения и может быть корнем формулы фильтрации"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals"
+msgstr "возвращает логические значения"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Addition"
+msgstr "Сложение"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Subtraction"
+msgstr "Вычитание"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Multiplication"
+msgstr "Умножение"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Division"
+msgstr "Деление"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Power (2^3 returns 8)"
+msgstr "Мощность (2^3 возвращает 8)"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr "Модуль: возвращает остаток от деления. 3%2 возвращает 1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Equality: %1"
+msgstr "Равенство: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inequality: %1"
+msgstr "Неравенство: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than: %1"
+msgstr "Меньше, чем: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than or equal to: %1"
+msgstr "Меньше или равно: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than: %1"
+msgstr "Больше, чем: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than or equal to: %1"
+msgstr "Больше или равно: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "And: %1"
+msgstr "И: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Or: %1"
+msgstr "Или: %1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "Разделение: применяет фильтр отдельно к каждой подгруппе"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "absolute value"
+msgstr "абсолютное значение"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "standard deviation"
+msgstr "стандартное отклонение"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "variance"
+msgstr "дисперсия"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "summation"
+msgstr "суммация"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "product of values"
+msgstr "произведение значений"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Standardizes the variable"
+msgstr "Стандартизирует переменную"
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns minimum of values"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns maximum of values"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "mean"
+msgstr "среднее"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns the sign of values"
+msgstr "возвращает знак значений"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "rounds y to n decimals"
+msgstr "округляет y до n десятичных знаков"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns number of elements in y"
+msgstr "возвращает количество элементов в y"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "median"
+msgstr "медиана"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "if-else statement"
+msgstr "оператор \"if-else\""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns true if string contains substring at least once"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Combine with not-operator to filter out rows with missing values (NA) for a "
+"column."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Square root"
+msgstr "Квадратный корень"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Not: %1"
+msgstr "Не: %1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "natural logarithm"
+msgstr "натуральный логарифм"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 2 logarithm"
+msgstr "логарифм по основанию 2"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 10 logarithm"
+msgstr "логарифм по основанию 10"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "logarithm of y in 'base'"
+msgstr "логарифм y по основанию"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "exponential"
+msgstr "экспоненциальный"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
+"correlations, numbers between -1 and 1 to the real line"
+msgstr ""
+"Z-преобразование Фишера (т. е., аркгиперболический тангенс) для "
+"преобразования корреляций, чисел от -1 до 1 в реальную прямую"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
+"real numbers to numbers between -1 and 1"
+msgstr ""
+"Обратное Z-преобразование Фишера (т. е., гиперболический тангенс) для "
+"преобразования действительных чисел в числа от -1 до 1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Logit transform (i.e., the inverse of the standard logit function, or log-"
+"odds transform) converts numbers between 0 and 1 to the real line."
+msgstr ""
+"Логит-преобразование (то есть обратное стандартной логистической функции) "
+"преобразует числа от 0 до 1 в вещественную строку."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse logit transform (i.e., the standard logit function) converts numbers "
+"on the real line to numbers between 0 and 1."
+msgstr ""
+"Обратное логит-преобразование (то есть стандартная логистическая функция) "
+"преобразует числа в вещественной строке в числа от 0 до 1."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+"Двухпараметрическое преобразование Бокса-Кокса для стабилизации дисперсии и "
+"попытки сделать данные более похожими на нормальное распределение."
+
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform with an automatic determination of the shape "
+"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
+"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inverse two-parameter Box-Cox transform."
+msgstr "Обратное двухпараметрическое преобразование Бокса-Кокса."
+
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform (scale-invariant Box-Box; transforms values "
+"greater than -shift) to stabilize variance and attempt to make the data more "
+"normal distribution-like."
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform with an automatic determination of the shape "
+"parameter lambda. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
+"attempt to make the data more normal distribution-like."
+msgstr ""
+"Преобразование Йео-Джонсона для стабилизации дисперсии и попытки сделать "
+"данные более похожими на нормальное распределение."
+
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) with an automatic "
+"determination of the shape parameter lambda. The search for optimal lambda "
+"is bounded within 'lower' and 'upper' limits."
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Johnson transform (transforms any real values). The search for optimal "
+"parameter is bounded within 'lower' and 'upper' limits."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "break your data up in numBreaks levels"
+msgstr "разбить ваши данные на уровни numBreaks"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "replace any missing values (NA) in column by the value in replaceWith"
+msgstr ""
+"замените любые отсутствующие значения (NA) в столбце значением в replaceWith"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Gaussian distribution with specified mean and standard "
+"deviation sd"
+msgstr ""
+"генерирует данные из распределения Гаусса с указанным средним значением и "
+"стандартным отклонением sd"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from t distribution with degrees of freedom df and non-"
+"centrality parameter ncp"
+msgstr ""
+"генерирует данные из распределения t со степенями свободы df и параметром "
+"нецентральности ncp"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a chi-squared distribution with degrees of freedom df "
+"and non-centrality parameter ncp"
+msgstr ""
+"генерирует данные из распределения хи-квадрат со степенями свободы df и "
+"параметром нецентральности ncp"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from an F distribution with specified degrees of freedoms "
+"df1, df2 and non-centrality parameter ncp"
+msgstr ""
+"генерирует данные из F-распределения с заданными степенями свободы df1, df2 "
+"и параметром нецентральности ncp"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a binomial distribution with specified trials and "
+"probability prob"
+msgstr ""
+"генерирует данные из биномиального распределения с указанными испытаниями и "
+"вероятностью"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a negative binomial distribution with specified trials "
+"and probability prob"
+msgstr ""
+"генерирует данные из отрицательного биномиального распределения с указанными "
+"испытаниями и вероятностью"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a geometric distribution with specified probability prob"
+msgstr ""
+"генерирует данные из геометрического распределения с заданной вероятностью"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a Poisson distribution with specified rate lambda"
+msgstr "генерирует данные из распределения Пуассона с заданной лямбдой"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a beta distribution with specified shapes alpha and beta"
+msgstr ""
+"генерирует данные из бета-распределения с указанными формами альфа и бета"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a uniform distribution between min and max"
+msgstr ""
+"генерирует данные из равномерного распределения между указанными минимальным "
+"и максимальным значениями"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a gamma distribution with specified shape and scale"
+msgstr "генерирует данные из гамма-распределения заданной формы и шкалы"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from an exponential distribution with specified rate"
+msgstr "генерирует данные из экспоненциального распределения с заданной долей"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a log-normal distribution with specified logarithmic "
+"mean meanLog and standard deviation sdLog"
+msgstr ""
+"генерирует данные из логарифмически нормального распределения с указанным "
+"средним логарифмическим meanLog и стандартным отклонением sdLog"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Weibull distribution with specified shape and scale"
+msgstr "генерирует данные из распределения Вейбулла с заданной формой и шкалой"
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise mean"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise sum"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise standard deviation"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise variance"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise median"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise minimum"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise maximum"
+msgstr ""
+
+msgctxt "ScriptConstructorView|"
+msgid "Filter cleared"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Filter applied"
+msgstr "Фильтр применен"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code clear(ed)"
+msgstr "Код вычисляемых столбцов очищен или очищается"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code applied"
+msgstr "Применен код вычисляемых столбцов"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Please enter all arguments - see fields marked in red."
+msgstr ""
+"Пожалуйста, введите все аргументы - смотрите поля, отмеченные красным цветом."
+
+msgctxt "ScriptConstructorView|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Only one formula per computed column allowed."
+msgstr "Для каждого вычисляемого столбца допускается только одна формула."
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Dump unwanted snippets here; double-click to erase the entire slate"
+msgstr ""
+"Удалите ненужные фрагменты здесь; чтобы стереть весь лист щелкните дважды"
+
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop filter!"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop computed column constructor!"
+msgstr "Добро пожаловать в конструктор вычисляемых колонок!"
+
+msgctxt "ScriptNodeItem|"
+msgid "Click icon to change column type"
+msgstr ""
+
+msgctxt "ScriptNodeItem|"
+msgid "Column description: "
+msgstr ""
+
+#, qt-format
+msgctxt "ScriptNodeItem|"
+msgid "Only %1 allowed in this context."
+msgstr ""
+
+msgctxt "ScriptNodeItem|"
+msgid "/"
 msgstr ""

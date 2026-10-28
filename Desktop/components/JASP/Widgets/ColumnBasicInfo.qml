@@ -185,7 +185,7 @@ Item
 					height:				33 * jaspTheme.uiScale
 					width:				common.showIcons ? height : 0
 					iconSource:			jaspTheme.iconPath + "collapse.png"
-					onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
+					onClicked:			variablesContainer.requestClose()
 					toolTip:			qsTr("Close variable window")
 					radius:				height
 					visible:			common.showIcons

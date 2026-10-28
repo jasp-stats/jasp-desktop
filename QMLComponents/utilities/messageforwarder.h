@@ -4,6 +4,7 @@
 #include <QQuickItem>
 #include <qmessagebox.h>
 #include <string>
+#include <functional>
 
 class DatabaseConnectionInfo;
 
@@ -23,6 +24,8 @@ public:
 	~MessageForwarder() { _singleton = nullptr;}
 
 	static MessageForwarder * msgForwarder() { return _singleton; }
+	using WarningHandler = std::function<void(const QString &, const QString &, bool)>;
+	static void setWarningHandler(WarningHandler handler) { _warningHandler = std::move(handler); }
 
 	static QMessageBox* getInfoBox(const QString& title, const QString& message);
 
@@ -75,6 +78,7 @@ public slots:
 	
 
 private:
+	static WarningHandler _warningHandler;
 	static		bool				useNativeFileDialogs();
 	static		bool				engineSandbox();
 	static		MessageForwarder	* _singleton;

@@ -36,12 +36,18 @@ public:
 	const QList<Terms>&	tuples() const { return _tuples; }
 
 public slots:
-	void			availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;
+	void			availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove, int filterIdToUpdate)				override;
 	void			sourceVariableNamesChanged(QMap<QString, QString> map)										override;
 
 
 private:
 	void			_setTerms();
+	///< (ORIGIN-AUTHORITATIVE): the tuples are the family's source of truth, so the
+	///  reconcile runs over them (the base class version would edit the flattened _terms only,
+	///  which the next _setTerms() would revert) - survivors are REPLACED BY the delivered
+	///  universe term, vanished cells are collected for the cell-clearing machinery; the row
+	///  maps re-key rename-flow style.
+	Terms			reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)	override;
 
 protected:
 	int				_columns = 2;

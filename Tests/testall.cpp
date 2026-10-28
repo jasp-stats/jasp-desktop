@@ -1,7 +1,10 @@
 #include "testall.h"
 #include "testinfo.h"
+#include "numbersinlocales.h"
 #include "tempfiles.h"
 #include "processinfo.h"
+#include "dirs.h"
+#include <QDir>
 #include "qutils.h"
 #include "databaseinterface.h"
 #include "data/datasetpackage.h"
@@ -9,27 +12,78 @@
 #include "data/importers/odsimporter.h"
 #include "data/importers/jaspimporter.h"
 #include "data/exporters/jaspexporter.h"
+#include "analysis/analyses.h"	// Analyses::decodeLegacyResultTokens (static gate+sweep)
 #include "data/exporters/dataexporter.h"
 #include "data/importers/excelimporter.h"
 #include "data/importers/rdataimporter.h"
 #include "data/importers/readstatimporter.h"
+#include "data/importers/minitabimporter.h"
+#include "data/importers/database/databaseimportcolumn.h"
 #include "utilities/settings.h"
+#include "gui/preferencesmodel.h"
 #include "utilities/desktopcommunicator.h"
 #include "datasetsyncer.h"
+#include <QTemporaryDir>
+#include <QScopeGuard>
+#include "columnutils.h"
+#include "appinfo.h"
+#include <cmath>
 #include "dataset.h"
 #include "workspace.h"
 #include "undostack.h"
+#include "filter.h"
+#include "columnencoder.h"
+#include "databridge.h"
+#include "rbridge.h"
+#include "analysisbase.h"
+#include "models/listmodel.h"	// the provider-update participation rule + reconcile
+#include "analysisform.h"
+#include "controls/jaspcontrol.h"
+#include "rsyntax/formulaparser.h"	// emission + re-parse roundtrip
 #include "data/asyncloader.h"
+#include "data/importers/csv/csvparser.h"
+#include "data/datasetloader.h"
+#include "data/expanddataproxymodel.h"
+#include "archivereader.h"
+#include "mainwindow.h"
+#include "engine/enginerepresentation.h"
+#include "results/resultsjsinterface.h"
+#include "scriptconstructormodel.h"
+#include "scriptnode.h"
+#include "scriptconstructorregistry.h"
+
+#include "mainwindow.h"
+#include "data/filtermodel.h"
+#include "data/columnmodel.h"
+#include "data/columnsmodel.h"
+#include "qquick/scriptconstructorview.h"
+#include "qquick/scriptnodeitem.h"
+#include "timers.h"
 
 #include <QSignalSpy>
 #include <QFile>
 #include <QFileInfo>
+#include <QEventLoop>
+#include <QTimer>
+#include <QUndoStack>
+#include <QQuickWindow>
+#include <QMouseEvent>
+#include <QGuiApplication>
+#include <QStandardItemModel>
+#include <QtWebEngineQuick/qtwebenginequickglobal.h>
+#include <random>
+#include <functional>
 #include <sqlite3.h>
-#include "data/asyncloader.h"
+#include <archive.h>
+#include <archive_entry.h>
 
 
 void TestAll::initTestCase()
 {
+	//Dirs::tempDir() falls back to "./" when the appdata dir is never set (main.cpp does it for the
+	//real UI), so without this every run drops <pid>/internal.sqlite + <pid>/status in whatever the
+	//CWD happens to be - the repo root when run from a build shell.
+	Dirs::setLocalAppdataDir(QDir::tempPath().toStdString() + "/jasp-test-runs");
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 }
 
@@ -48,8 +102,17 @@ void TestAll::cleanup()
 	delete _importer;
 	_importer = nullptr;
 
-	DatabaseInterface::singleton()->close();
-	DatabaseInterface::singleton()->closeInterfaces();
+	//After a test tore down a full MainWindow the session database is gone with it, so the
+	//DatabaseInterface the singleton() call would lazily recreate here cannot load anything anymore.
+	//closeInterfaces() alone is enough: deleting a null pointer is fine and the destructor closes.
+	try
+	{
+		DatabaseInterface::closeInterfaces();
+	}
+	catch(const std::exception & e)
+	{
+		std::cerr << "TestAll::cleanup: skipping database teardown: " << e.what() << std::endl;
+	}
 	delete _pkg;
 	_pkg = nullptr;
 }
@@ -70,6 +133,189 @@ bool TestAll::_newPkgWithDataSet()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), _pkg->createDataSet(), [](int){});
 
 	return _pkg->dataSet() != nullptr;
+}
+
+QQuickItem * TestAll::_findQuickItemByName(const QString & objectName)
+{
+	for(QWindow * window : QGuiApplication::topLevelWindows())
+		if(QQuickWindow * quickWindow = qobject_cast<QQuickWindow*>(window))
+			if(QQuickItem * item = quickWindow->findChild<QQuickItem*>(objectName))
+				return item;
+	return nullptr;
+}
+
+void TestAll::testMainWindowShowsFilterWindow()
+{
+	// Makes MainWindow::checkForUpdates() bail out (mainwindow.cpp).
+	QCoreApplication::setApplicationName("JASPTest");
+
+	// The full QML UI contains WebEngine views (ChatWindow, results page), so WebEngine must be
+	// initialized before MainWindow creates its QQmlApplicationEngine (same order as main.cpp).
+	QtWebEngineQuick::initialize();
+
+	// MainWindow constructs the one-and-only DataSetPackage singleton, so no other package may
+	// exist at this point (the cleanup() of any previous test has deleted it).
+	QVERIFY(DataSetPackage::pkg() == nullptr);
+
+	MainWindow * mainWindow = new MainWindow(nullptr);
+
+	QSignalSpy qmlLoadedSpy(mainWindow, &MainWindow::qmlLoadedChanged);
+	QTRY_VERIFY(!qmlLoadedSpy.isEmpty()); // loadQML() runs from a QTimer::singleShot in the ctor
+
+	// Load a dataset the way production does: into the package owned by MainWindow, mark it
+	// as the shown dataset (DataSetLoader::loadPackage does the same) and then notify the UI
+	// (newDataLoaded -> MainWindow::populateUIfromDataSet).
+	DataSet * dataSet = DataSetPackage::pkg()->createDataSet();
+	QVERIFY(dataSet != nullptr);
+	// Exactly what DataSetLoader::loadPackage does (datasetloader.cpp): setShownDataSet may
+	// early-return (the empty dataset was already made shown by the EngineSync-ctor reset),
+	// so refresh() is needed to (re)emit shownDataSetChanged now that makeConnections() has
+	// wired up the models.
+	DataSetPackage::pkg()->workspace()->setShownDataSet(dataSet);
+	DataSetPackage::pkg()->workspace()->refresh();
+
+	// Pre-set the delimiter: with MainWindow connected, askCsvDelimiterSignal would otherwise
+	// open a CSV delimiter dialog and deadlock the synchronous import on the main thread.
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(',');
+
+	CSVImporter importer;
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), dataSet, [](int){});
+	DataSetPackage::pkg()->newDataLoaded();
+
+	// --- FilterWindow / VariablesWindow mutual exclusion (enforced in DataPanel.qml) ---
+	// ColumnModel is parented to the DataSetPackage (QIdentityProxyModel(pkg)), not to MainWindow.
+	FilterModel * filterModel = mainWindow->findChild<FilterModel*>();
+	QVERIFY(filterModel != nullptr);
+	ColumnModel * columnModel = DataSetPackage::pkg()->findChild<ColumnModel*>();
+	QVERIFY(columnModel != nullptr);
+
+	// Direction A: opening the FilterWindow must close the VariablesWindow through its usual
+	// apply/discard route. Open variables first (filter closed -> nothing to close yet), then
+	// open the filter. chosenColumn is -1, so the computed-column dialog cannot pop, and the
+	// DataPanel Connections fire synchronously (direct connect) -> modal-free, no event-loop spin.
+	// This leaves the FilterWindow open (its Loader builds it exactly once, like the original test).
+	columnModel->setVisible(true);
+	QVERIFY(columnModel->visible());
+	QVERIFY(!filterModel->filterVisible());
+
+	filterModel->setFilterVisible(true);
+	QVERIFY(!columnModel->visible());      // VariablesWindow closed because the Filter opened
+	QVERIFY(filterModel->filterVisible()); // FilterWindow stayed open
+
+	// Open/keep the filter window the way the UI does (Loader in DataPanel.qml).
+
+	// FilterWindow (objectName "filterWindow") must appear and the ScriptConstructor inside it
+	// must have built its chrome now that it is visible.
+	QQuickItem * filterWindow = nullptr;
+	QTRY_VERIFY((filterWindow = _findQuickItemByName("filterWindow")) != nullptr);
+
+	ScriptConstructorView * scriptConstructor = filterWindow->findChild<ScriptConstructorView*>();
+	QVERIFY(scriptConstructor != nullptr);
+	QTRY_VERIFY(scriptConstructor->scriptArea() != nullptr); // non-null once the chrome is built
+
+	// Regression: a freshly opened, untouched filter (the default/empty filter, whose json is
+	// DEFAULT_FILTER_JSON and equals the empty model's serialization) must NOT report as changed,
+	// otherwise closing it wrongly pops the "apply or discard?" prompt even with no user action.
+	QVERIFY2(!scriptConstructor->jsonChanged(), "Untouched filter constructor reported changes");
+	QVERIFY(scriptConstructor->lastCheckPassed());
+
+	// --- Trash can regression: double-click must erase the entire script area ---
+	// The trash item is the only script-area child with z == 10.
+	QQuickItem * trash = nullptr;
+	for(QQuickItem * child : scriptConstructor->scriptArea()->childItems())
+		if(child->z() == 10)
+			trash = child;
+	QVERIFY2(trash != nullptr, "Trash item not found in script area");
+
+	QQuickWindow * quickWindow = trash->window();
+	QVERIFY(quickWindow != nullptr);
+
+	// The offscreen SplitView never assigns a width to the Loader (it stays 0 wide), which
+	// excludes the whole filter window from mouse hit-testing even though its content is
+	// visible (children overflow unclipped ancestors). In the real app the SplitView/anchors
+	// give the loader a proper width; emulate that here.
+	if(QQuickItem * loader = filterWindow->parentItem())
+	{
+		loader->setHeight(std::max(loader->height(), 600.0));
+		loader->setWidth(std::max(loader->width(), 1200.0));
+	}
+
+	auto trashCentre = [&]()
+	{
+		return trash->mapToScene(QPointF(trash->width() / 2, trash->height() / 2));
+	};
+	const QPointF centre = trashCentre();
+	QVERIFY2(centre.x() > 0 && centre.y() > 0 && centre.x() < quickWindow->width() && centre.y() < quickWindow->height(),
+		qPrintable(QString("Trash not inside the window bounds: centre=%1,%2 constructor=%3x%4 at %5,%6 window=%7x%8 trashSize=%9x%10")
+			.arg(centre.x()).arg(centre.y())
+			.arg(scriptConstructor->width()).arg(scriptConstructor->height())
+			.arg(scriptConstructor->x()).arg(scriptConstructor->y())
+			.arg(quickWindow->width()).arg(quickWindow->height())
+			.arg(trash->width()).arg(trash->height())));
+
+	// The engine/loader threads push filter results back into the view asynchronously; a push
+	// whose json differs from the current model resets it (fromJson emits reset), wiping
+	// unapplied formulas at any event-loop spin. QTest's mouse helpers spin internally, and
+	// the resulting QML GC churn reliably crashes this offscreen harness (not seen in the
+	// real app). So:
+	// - break the QML applyRequested -> FilterModel connection, so the trash's checkAndApply
+	//   cannot trigger the full apply chain (re-running the filter rebuilds the entire
+	//   DataSetView) inside the harness; and
+	// - verify the trash via its deterministic debug event counters, delivering the mouse
+	//   sequence directly to the item (no event-loop spin -> no interleaving).
+	// NOTE: real window hit-testing delivery to the trash was verified separately (the
+	// topmost-item walk shows ScriptTrashItem is the only accepting item at its position, and
+	// QTest-delivered presses arrived at it) — it is only the spinning+GC combination that
+	// cannot run in this harness.
+	QObject::disconnect(scriptConstructor, &ScriptConstructorView::applyRequested, scriptConstructor, nullptr);
+
+	QSignalSpy applySpy(scriptConstructor, &ScriptConstructorView::applyRequested);
+
+	// Boolean-valid formula (Filter mode requires it) so the trash's checkAndApply succeeds.
+	ScriptNodeOperator * equals = new ScriptNodeOperator("==", false);
+	equals->setLeft(new ScriptNodeColumn("contNormal"));
+	ScriptNodeLiteral * one = new ScriptNodeLiteral(ScriptNode::Type::Number);
+	one->setNumberValue(1);
+	equals->setRight(one);
+	scriptConstructor->model()->insertNode(equals, DropTarget::root());
+	scriptConstructor->refresh();
+	QCOMPARE(scriptConstructor->model()->formulaCount(), 1);
+
+	ScriptTrashItem * trashItem = qobject_cast<ScriptTrashItem*>(trash);
+	QVERIFY2(trashItem != nullptr, "Trash is not a ScriptTrashItem");
+	const int pressesBefore = trashItem->debugPressCount;
+	const int dblClicksBefore = trashItem->debugDoubleClickCount;
+
+	auto sendMouse = [&](QEvent::Type type)
+	{
+		QMouseEvent me(type, trashCentre(), quickWindow->mapToGlobal(trashCentre()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+		QCoreApplication::sendEvent(trash, &me);
+	};
+	sendMouse(QEvent::MouseButtonPress);
+	sendMouse(QEvent::MouseButtonRelease);
+	sendMouse(QEvent::MouseButtonDblClick);
+	sendMouse(QEvent::MouseButtonRelease);
+
+	QCOMPARE(trashItem->debugPressCount, pressesBefore + 1);
+	QCOMPARE(trashItem->debugDoubleClickCount, dblClicksBefore + 1);
+	QCOMPARE(scriptConstructor->model()->formulaCount(), 0); // slate erased
+	QVERIFY(!applySpy.isEmpty());							 // emptied filter was applied
+
+	// Direction B (reverse), done last: opening the VariablesWindow must close the FilterWindow
+	// through its usual apply/discard route. The filter is clean here (just trashed to empty and
+	// applied) and applyRequested is disconnected, so no dialog pops and the Loader-destroy churn
+	// is minimal. It is last because closing the Filter deactivates its Loader and tears down the
+	// FilterWindow/ScriptConstructor that the assertions above relied on.
+	columnModel->setVisible(true);
+	QVERIFY(!filterModel->filterVisible()); // FilterWindow closed because the VariablesWindow opened
+	QVERIFY(columnModel->visible());        // VariablesWindow stayed open
+
+	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
+	JASPTIMER_PRINTALL();
+
+	// Deliberately do not delete mainWindow: tearing down the EngineSync / DatabaseInterface
+	// during process shutdown throws (sqlite session already gone), which would fail the test
+	// even though the assertions passed. The binary exits right after this slot anyway.
 }
 
 #define TO_STR2(x) #x
@@ -229,7 +475,8 @@ void TestAll::testJaspRoundRobin()
 
 	std::cerr << "Storing jasp file temporarily to: " << jaspFile << std::endl;
 	// Create snapshot before exporting
-	JASPExporter::createSnapshot("testjasp_snapshot_");
+	std::string snapshotError;
+	QVERIFY2(JASPExporter::createSnapshot("testjasp_snapshot_", &snapshotError), ("Could not create snapshot: " + snapshotError).c_str());
 	JASPExporter().saveDataSet(jaspFile, [](int){});
 	
 	_pkg->reset();
@@ -309,6 +556,637 @@ void TestAll::testJaspDataImport()
 	
 	DataSet loadMe(nullptr, dataSet->id());
 	QVERIFY2(dataSet->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
+}
+
+///Cancelling the csv preview aborts the import from inside loadDataSet. A model reset that is left open then makes the whole of JASP draw
+///nothing at all, which is what a blank window after Cancel comes down to. And nothing of the aborted import should be kept.
+void TestAll::testCancelledImportLeavesTheModelUsable()
+{
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(true);	//true: this one asks for a delimiter, so it can be cancelled
+
+	DataSet * dataSet = _pkg->createDataSet(); //As DataSetLoader::loadPackage does before it imports
+
+	//The workspace and the dataset it shows are the models the data view draws
+	QSignalSpy workspaceResetStarted(	_pkg->workspace(),	&QAbstractItemModel::modelAboutToBeReset);
+	QSignalSpy workspaceResetFinished(	_pkg->workspace(),	&QAbstractItemModel::modelReset);
+	QSignalSpy dataSetResetStarted(		dataSet,			&QAbstractItemModel::modelAboutToBeReset);
+	QSignalSpy dataSetResetFinished(	dataSet,			&QAbstractItemModel::modelReset);
+
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); //Otherwise it would not ask at all
+
+	//Answering with '\0' is what pressing Cancel in the preview window comes down to
+	QMetaObject::Connection cancelling = connect(DesktopCommunicator::singleton(), &DesktopCommunicator::askCsvDelimiterSignal,
+		[](const QString &, char) { DesktopCommunicator::singleton()->delimiterChosen('\0'); });
+
+	QDir csvDir(_testLibrary());
+	csvDir.cd("csv");
+
+	bool threw = false;
+
+	try
+	{
+		_importer->loadDataSet(fq(csvDir.absoluteFilePath("Data Import Test CSV.csv")), dataSet, [](int){});
+	}
+	catch(const std::exception &)
+	{
+		threw = true; //"No data loaded", the way an aborted import always ends
+	}
+
+	disconnect(cancelling);
+
+	QVERIFY2(threw, "cancelling the preview should abort the import");
+	QCOMPARE(workspaceResetFinished.count(),	workspaceResetStarted.count());	//Every begin got its end, so the models are usable again
+	QCOMPARE(dataSetResetFinished.count(),		dataSetResetStarted.count());
+	QCOMPARE(dataSet->columnCount(),			0);								//Nothing of the aborted import is kept, so the next import takes this empty dataset (see Workspace::createDataSet)
+}
+
+///A NULL in a numeric column of a database is missing, not 0: PostgreSQL, MySQL and ODBC hand it over as a number that is not there
+void TestAll::testDatabaseImportNulls()
+{
+	DatabaseImportColumn column(nullptr, "x", QMetaType::fromType<double>());
+
+	column.addValue(QVariant(1.5));
+	column.addValue(QVariant(QMetaType::fromType<double>()));	//That NULL
+
+	QCOMPARE(column.valueLookup(0), std::string("1.5"));
+	QCOMPARE(column.valueLookup(1), std::string(""));
+}
+
+///Has (Q)ColumnUtils read and write numbers the way JASP does with its interface set to locale, until what is returned goes out of scope.
+///The tests here otherwise run without any locale of the interface, just like the numbers in C.
+static auto interfaceLocale(const QLocale & locale, bool useThousandSeparators = false)
+{
+	const QLocale defaultBefore;
+
+	QColumnUtils::setCallbacksAndDefaultLocale(locale, useThousandSeparators);
+
+	return qScopeGuard([defaultBefore]
+	{
+		QLocale::setDefault(defaultBefore);
+		ColumnUtils::setCurrentQLocaleId("C");
+		ColumnUtils::setDecimalPoint(".");
+		ColumnUtils::setAlternativeDoubleToString(nullptr, nullptr);
+		ColumnUtils::setExtraStringToNumber(nullptr, nullptr);
+	});
+}
+
+///Has a csv import take ';' as delimiter and read its numbers as picked (nothing picked: the way the interface does),
+///as if the csv preview just closed, until what is returned goes out of scope
+static auto csvPreviewPicked(std::optional<QLocale> picked)
+{
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(';');
+	DesktopCommunicator::singleton()->setKnownImportLocale(picked);
+
+	return qScopeGuard([]
+	{
+		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
+		DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt);
+	});
+}
+
+///The locale picked in the csv preview decides how the numbers of that file are read, whatever the locale of the interface:
+///"1,234" in a German file is one point two three four, and "1,234.56" is no German number at all even though English reads it fine.
+void TestAll::testCsvImportLocale()
+{
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);	//false: take the delimiter below instead of asking for it
+
+	QTemporaryDir	dir;
+	QFile			csv(dir.filePath("german.csv"));
+	QVERIFY(csv.open(QIODevice::WriteOnly));
+	csv.write("x;y\n1,234;1,234.56\n86,298;2\n0,5;3\n1.234,56;4\n");
+	csv.close();
+
+	auto english = interfaceLocale(QLocale(QLocale::English, QLocale::UnitedStates));
+
+	auto german = csvPreviewPicked(QLocale(QLocale::German, QLocale::Germany));
+
+	_importer->loadDataSet(fq(csv.fileName()), _pkg->createDataSet(), [](int){});
+
+	QVERIFY(_pkg->dataSet() && _pkg->dataSet()->columnCount() == 2);
+
+	const doublevec & values = _pkg->dataSet()->column(0)->dbls();
+
+	QCOMPARE(values.size(),	size_t(4));
+	QCOMPARE(values[0],		1.234);
+	QCOMPARE(values[1],		86.298);
+	QCOMPARE(values[2],		0.5);
+	QCOMPARE(values[3],		1234.56);
+
+	QCOMPARE(_pkg->dataSet()->column(1)->getValue(0), std::string("1,234.56")); //Text, not the number the interface would make of it
+}
+
+///A csv with a locale of its own hands its numbers over written the way C does (see CSVImportColumn), but the data shows them the way the interface
+///writes them, so that is the width the column needs: with thousand separators 1234567.5 takes up 11 characters, not 9
+void TestAll::testCsvImportLocaleColumnWidth()
+{
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);
+
+	QTemporaryDir	dir;
+	QFile			csv(dir.filePath("german.csv"));
+	QVERIFY(csv.open(QIODevice::WriteOnly));
+	csv.write("x\n1234567,5\n");
+	csv.close();
+
+	auto english = interfaceLocale(QLocale(QLocale::English, QLocale::UnitedStates), true);
+
+	auto german = csvPreviewPicked(QLocale(QLocale::German, QLocale::Germany));
+
+	_importer->loadDataSet(fq(csv.fileName()), _pkg->createDataSet(), [](int){});
+
+	QVERIFY(_pkg->dataSet() && _pkg->dataSet()->columnCount() == 1);
+
+	Column * column = _pkg->dataSet()->column(0);
+
+	QCOMPARE(column->getValue(0),										std::string("1,234,567.5"));
+	QCOMPARE(column->getMaximumWidthInCharacters(true, true, 0),		size_t(11));
+}
+
+///A locale that groups thousands with a space reads numbers grouped with any kind of space: French prescribes U+202F and Russian U+00A0,
+///but a file has whichever one the software that wrote it knew, or the plain space of a keyboard
+void TestAll::testNumbersGroupedWithSpaces()
+{
+	const QList<QChar> spaces = { u' ', QChar(0x00A0), QChar(0x202F), QChar(0x2009) }; //Plain, no-break, narrow no-break and thin
+
+	for(const QLocale & locale : { QLocale(QLocale::French, QLocale::France), QLocale(QLocale::French, QLocale::Canada), QLocale(QLocale::Russian, QLocale::Russia), QLocale(QLocale::Swedish, QLocale::Sweden) })
+	{
+		auto interfaceIsSet	= interfaceLocale(locale); //For reading whole numbers, ColumnUtils::getIntValue
+		auto readNumbersAs	= QColumnUtils::stringToDoubleFor(locale);
+
+		for(QChar space : spaces)
+		{
+			const QString	wholeNumber	= "1" + QString(space) + "234",
+							number		= wholeNumber + locale.decimalPoint() + "5",
+							what		= " in " + locale.bcp47Name() + " with U+" + QString::number(space.unicode(), 16).toUpper().rightJustified(4, u'0');
+			double			read		= 0;
+			int				readWhole	= 0;
+
+			QVERIFY2(readNumbersAs(fq(number), read) && read == 1234.5,						qPrintable(number		+ what));
+			QVERIFY2(ColumnUtils::getIntValue(fq(wholeNumber), readWhole) && readWhole == 1234,	qPrintable(wholeNumber	+ what));
+		}
+	}
+
+	//A locale that groups with something else does not take a space for its group separator
+	double read;
+	QVERIFY(!QColumnUtils::stringToDoubleFor(QLocale(QLocale::English, QLocale::UnitedStates))(fq("1" + QString(QChar(0x00A0)) + "234.5"), read));
+}
+
+///Writes NumbersInLocales::samples() to a csv, each in a column of its own so that no sample decides what the others are, rows times
+static QString writeNumberSamples(const QTemporaryDir & dir, int rows = 1)
+{
+	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
+
+	QByteArray names, values;
+
+	for(size_t i=0; i<samples.size(); i++)
+	{
+		names	+= (i ? ";" : "") + QByteArray("sample") + QByteArray::number(qulonglong(i));
+		values	+= (i ? ";" : "") + QByteArray(samples[i].written);
+	}
+
+	QFile csv(dir.filePath("numbers.csv"));
+
+	if(!csv.open(QIODevice::WriteOnly))
+		return "";
+
+	csv.write(names + "\n" + QByteArray(values + "\n").repeated(rows));
+
+	return csv.fileName();
+}
+
+///Where a sample is in the data (see writeNumberSamples), for a message
+static QString sampleAt(const NumbersInLocales::Sample & sample, size_t row)
+{
+	return QString("\"%1\" in row %2").arg(QString::fromUtf8(sample.written)).arg(row + 1);
+}
+
+///Every sample in every row of the data (see writeNumberSamples) that is not the number, or the text, it is in the language readIn
+static QStringList numberSamplesReadWrong(DataSet * data, const QLocale & readIn)
+{
+	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
+
+	if(!data || data->columnCount() != int(samples.size()))
+		return { "the data should have a column for every sample" };
+
+	QStringList readWrong;
+
+	for(size_t i=0; i<samples.size(); i++)
+		for(size_t row=0; row<data->column(i)->rowCount(); row++)
+		{
+			const double	number		= samples[i].readIn(readIn);
+			double			read		= 0;
+			const bool		readNumber	= data->column(i)->numberAt(row, read);
+
+			if(std::isnan(number) ? readNumber : !readNumber || !qFuzzyCompare(read, number))
+				readWrong.push_back(QString("%1 should be %2, but is %3").arg(sampleAt(samples[i], row), std::isnan(number) ? "text" : QString::number(number, 'g', 12), readNumber ? QString::number(read, 'g', 12) : "text"));
+		}
+
+	return readWrong;
+}
+
+///Every sample in every row of the data (see writeNumberSamples) that is not shown the way the interface shows what it is in the language readIn
+static QStringList numberSamplesShownWrong(DataSet * data, const QLocale & readIn, const QLocale & interface, bool thousandSeparators)
+{
+	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
+
+	if(!data || data->columnCount() != int(samples.size()))
+		return { "the data should have a column for every sample" };
+
+	QStringList shownWrong;
+
+	for(size_t i=0; i<samples.size(); i++)
+	{
+		Column		*	column	= data->column(i);
+		const double	number	= samples[i].readIn(readIn);
+
+		//Text stays as it was written, and a column of whole numbers comes out nominal, where the label writes its number plainly: without thousand separators
+		const QString	shouldShow	= std::isnan(number)					? QString::fromUtf8(samples[i].written)
+									: column->type() == columnType::scale	? NumbersInLocales::shownIn(interface, number, thousandSeparators)
+																			: QString::number(number, 'g', 10);
+
+		for(size_t row=0; row<column->rowCount(); row++)
+		{
+			const QString shows = tq(column->getValue(row));
+
+			if(shows != shouldShow)
+				shownWrong.push_back(QString("%1 should show as \"%2\", but shows as \"%3\"").arg(sampleAt(samples[i], row), shouldShow, shows));
+		}
+	}
+
+	return shownWrong;
+}
+
+///Every combination of an interface in English, German or French, with and without thousand separators, and a csv whose numbers are written in
+///English, German or French, or in a language nobody picked (the csv preview was never shown, as when synchronising a file imported before it existed)
+void TestAll::testCsvImportNumbers_data()
+{
+	QTest::addColumn<QLocale>(	"interface");
+	QTest::addColumn<bool>(		"thousandSeparators");
+	QTest::addColumn<bool>(		"picked");
+	QTest::addColumn<QLocale>(	"readIn");
+
+	for(const QLocale & interface : NumbersInLocales::locales())
+		for(bool thousandSeparators : { false, true })
+		{
+			const QString interfaceIs = QLocale::languageToString(interface.language()) + " interface" + (thousandSeparators ? " with thousand separators" : "");
+
+			for(const QLocale & file : NumbersInLocales::locales())
+				QTest::addRow("%s, %s file", qPrintable(interfaceIs), qPrintable(QLocale::languageToString(file.language())))
+					<< interface << thousandSeparators << true << file;
+
+			//Nothing picked: read the way the interface reads
+			QTest::addRow("%s, nothing picked", qPrintable(interfaceIs))
+				<< interface << thousandSeparators << false << interface;
+		}
+}
+
+///A number is read in the language of its file and shown in the language of the interface, whichever combination of the two it is
+void TestAll::testCsvImportNumbers()
+{
+	QFETCH(QLocale,	interface);
+	QFETCH(bool,	thousandSeparators);
+	QFETCH(bool,	picked);
+	QFETCH(QLocale,	readIn);
+
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);
+
+	QTemporaryDir	dir;
+	const QString	csv = writeNumberSamples(dir);
+	QVERIFY(!csv.isEmpty());
+
+	auto interfaceIsSet	= interfaceLocale(interface, thousandSeparators);
+	auto fileIsPicked	= csvPreviewPicked(picked ? std::optional<QLocale>(readIn) : std::nullopt);
+
+	_importer->loadDataSet(fq(csv), _pkg->createDataSet(), [](int){});
+
+	const QStringList	readWrong	= numberSamplesReadWrong(	_pkg->dataSet(), readIn),
+						shownWrong	= numberSamplesShownWrong(	_pkg->dataSet(), readIn, interface, thousandSeparators);
+
+	QVERIFY2(readWrong	.isEmpty(), qPrintable("\n" + readWrong	.join("\n")));
+	QVERIFY2(shownWrong	.isEmpty(), qPrintable("\n" + shownWrong	.join("\n")));
+}
+
+void TestAll::testCsvSyncNumbers_data()
+{
+	testCsvImportNumbers_data();
+}
+
+///Synchronising reads the file with the same choices again (see DataSetLoader::syncPackage), so an unchanged file changes nothing:
+///the values read are compared with the values shown (see ImportColumn::valueLookupAsShown), in whichever language each of them is.
+///A file that did change fills its columns again, and then every value has to find back the label it had (see Column::setValue).
+void TestAll::testCsvSyncNumbers()
+{
+	QFETCH(QLocale,	interface);
+	QFETCH(bool,	thousandSeparators);
+	QFETCH(bool,	picked);
+	QFETCH(QLocale,	readIn);
+
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);
+
+	QTemporaryDir	dir;
+	const QString	csv = writeNumberSamples(dir);
+	QVERIFY(!csv.isEmpty());
+
+	auto interfaceIsSet	= interfaceLocale(interface, thousandSeparators);
+	auto fileIsPicked	= csvPreviewPicked(picked ? std::optional<QLocale>(readIn) : std::nullopt);
+
+	_importer->loadDataSet(fq(csv), _pkg->createDataSet(), [](int){});
+
+	//MainWindow asks the user whether to synchronise, here the answer is always yes
+	QMetaObject::Connection syncing = connect(_pkg, &DataSetPackage::checkDoSync, this, []{ return true; });
+	auto stopSyncing = qScopeGuard([syncing]{ disconnect(syncing); });
+
+	QSignalSpy changed(_pkg, &DataSetPackage::datasetChanged);
+
+	auto synchronise = [&]
+	{
+		CSVImporter syncer(false);
+		syncer.syncDataSet(fq(csv), _pkg->dataSet(), [](int){});
+	};
+
+	auto samplesChanged = [&]
+	{
+		QStringList samples;
+		for(const QString & column : changed.last()[1].toStringList()) //changedColumns (after dataSetID), named by writeNumberSamples
+			samples.push_back(QString::fromUtf8(NumbersInLocales::samples()[column.mid(QString("sample").size()).toULongLong()].written));
+		return samples;
+	};
+
+	synchronise();
+
+	QCOMPARE(changed.count(), 1);
+	QVERIFY2(samplesChanged().isEmpty(), qPrintable("these samples count as changed: " + samplesChanged().join(", ")));
+
+	QStringList	readWrong	= numberSamplesReadWrong(	_pkg->dataSet(), readIn),
+				shownWrong	= numberSamplesShownWrong(	_pkg->dataSet(), readIn, interface, thousandSeparators);
+
+	QVERIFY2(readWrong	.isEmpty(), qPrintable("\n" + readWrong	.join("\n")));
+	QVERIFY2(shownWrong	.isEmpty(), qPrintable("\n" + shownWrong	.join("\n")));
+
+	QVERIFY(!writeNumberSamples(dir, 2).isEmpty()); //One row more changes every column
+
+	synchronise();
+
+	QCOMPARE(changed.count(),		2);
+	QCOMPARE(samplesChanged().size(),	int(NumbersInLocales::samples().size()));
+	QCOMPARE(_pkg->dataSet()->rowCount(),	2);
+
+	readWrong	= numberSamplesReadWrong(	_pkg->dataSet(), readIn);
+	shownWrong	= numberSamplesShownWrong(	_pkg->dataSet(), readIn, interface, thousandSeparators);
+
+	QVERIFY2(readWrong	.isEmpty(), qPrintable("\n" + readWrong	.join("\n")));
+	QVERIFY2(shownWrong	.isEmpty(), qPrintable("\n" + shownWrong	.join("\n")));
+}
+
+///A sync compares numbers as numbers (however they are shown), but text as text: also text the interface would read as that same number,
+///because the import did not. "1,234.56" is no German number, so in a German file it is text, even if JASP shows 1234.56 just like that in English.
+void TestAll::testCsvSyncTextAndNumbersStayApart()
+{
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);
+
+	QTemporaryDir	dir;
+	QFile			csv(dir.filePath("german.csv"));
+
+	auto writeCsv = [&](const QByteArray & content)
+	{
+		if(!csv.open(QIODevice::WriteOnly))
+			return false;
+		csv.write(content);
+		csv.close();
+		return true;
+	};
+
+	auto english	= interfaceLocale(QLocale(QLocale::English, QLocale::UnitedStates));
+	auto german		= csvPreviewPicked(QLocale(QLocale::German, QLocale::Germany));
+
+	QVERIFY(writeCsv("becomesNumber;becomesText\n1,234.56;1234,56\n"));
+	_importer->loadDataSet(fq(csv.fileName()), _pkg->createDataSet(), [](int){});
+
+	double number;
+	QVERIFY(!_pkg->dataSet()->column("becomesNumber")	->numberAt(0, number));
+	QVERIFY( _pkg->dataSet()->column("becomesText")		->numberAt(0, number));
+
+	//The same number the other way around, and read the way the interface does, the file would be the same
+	QVERIFY(writeCsv("becomesNumber;becomesText\n1234,56;1,234.56\n"));
+
+	QMetaObject::Connection syncing = connect(_pkg, &DataSetPackage::checkDoSync, this, []{ return true; });
+	auto stopSyncing = qScopeGuard([syncing]{ disconnect(syncing); });
+
+	QSignalSpy changed(_pkg, &DataSetPackage::datasetChanged);
+
+	CSVImporter syncer(false);
+	syncer.syncDataSet(fq(csv.fileName()), _pkg->dataSet(), [](int){});
+
+	QCOMPARE(changed.count(), 1);
+
+	QStringList changedColumns = changed[0][1].toStringList(); //After dataSetID
+	changedColumns.sort();
+	QCOMPARE(changedColumns, QStringList({ "becomesNumber", "becomesText" }));
+
+	QVERIFY( _pkg->dataSet()->column("becomesNumber")	->numberAt(0, number));
+	QCOMPARE(number, 1234.56);
+	QVERIFY(!_pkg->dataSet()->column("becomesText")		->numberAt(0, number));
+	QCOMPARE(_pkg->dataSet()->column("becomesText")->strs()[0], std::string("1,234.56")); //Still a scale column, which shows text as missing
+}
+
+///The delimiter and locale of a csv hold for a single load or sync, also one that fails: left behind, the next csv opened
+///would not show its preview but be split with that delimiter (see DesktopCommunicator::askCsvDelimiter)
+void TestAll::testFailedLoadOrSyncForgetsCsvChoices()
+{
+	if(_pkg) delete _pkg;
+
+	_pkg = new DataSetPackage(this);
+	_pkg->createDataSet();
+
+	DesktopCommunicator * communicator = DesktopCommunicator::singleton();
+
+	//An empty csv cannot be read (CSV::open throws), as happens when a synchronised file is being written just then
+	QTemporaryDir	dir;
+	QFile			empty(dir.filePath("empty.csv"));
+	QVERIFY(empty.open(QIODevice::WriteOnly));
+	empty.close();
+
+	_pkg->dataSet()->setCsvChoices(';', "de");
+
+	QVERIFY_THROWS_EXCEPTION(std::exception, DataSetLoader::syncPackage(fq(empty.fileName()), ".csv", _pkg->dataSet()));
+	QCOMPARE(communicator->knownCsvDelimiter(), '\0');
+	QVERIFY (!communicator->knownImportLocale());
+
+	communicator->setKnownCsvDelimiter(';'); //Which is how data_load in MainWindow opens a csv without its preview
+
+	QVERIFY_THROWS_EXCEPTION(std::exception, DataSetLoader::loadPackage(fq(empty.fileName()), ".csv"));
+	QCOMPARE(communicator->knownCsvDelimiter(), '\0');
+	QVERIFY (!communicator->knownImportLocale());
+}
+
+///The numbers in an .ods file are written the way C writes them (office:value), whatever the locale of the spreadsheet or of JASP,
+///so an interface in whatever language must read them just like C does: a German one must not read 0.111 as one hundred and eleven.
+void TestAll::testOdsImportLocale()
+{
+	QDir odsDir(_testLibrary());
+	odsDir.cd("ods");
+
+	auto importIt = [&]()
+	{
+		DatabaseInterface::closeInterfaces(); //Like cleanup() does, a DataSetPackage wants a database of its own
+		delete _pkg;
+		delete _importer;
+
+		_pkg		= new DataSetPackage(this);
+		_importer	= new ods::ODSImporter();
+
+		_importer->loadDataSet(fq(odsDir.absoluteFilePath("Data Import Test ODS.ods")), _pkg->createDataSet(), [](int){});
+
+		std::vector<doublevec> values;
+		for(Column * column : _pkg->dataSet()->columns())
+			values.push_back(column->dbls());
+
+		return values;
+	};
+
+	const std::vector<doublevec> inC = importIt();
+
+	for(const QLocale & interface : NumbersInLocales::locales())
+		for(bool thousandSeparators : { false, true })
+		{
+			auto interfaceIsSet = interfaceLocale(interface, thousandSeparators);
+
+			const std::vector<doublevec>	inInterface	= importIt();
+			const QString					interfaceIs	= QLocale::languageToString(interface.language()) + (thousandSeparators ? " with thousand separators" : "");
+
+			QCOMPARE(inInterface.size(), inC.size());
+
+			for(size_t c=0; c<inC.size(); c++)
+			{
+				QCOMPARE(inInterface[c].size(), inC[c].size());
+
+				for(size_t r=0; r<inC[c].size(); r++)
+					QVERIFY2((std::isnan(inC[c][r]) && std::isnan(inInterface[c][r])) || inC[c][r] == inInterface[c][r], qPrintable(QString("column %1 row %2: %3 in C but %4 in %5").arg(c).arg(r).arg(inC[c][r]).arg(inInterface[c][r]).arg(interfaceIs)));
+			}
+		}
+}
+
+///Writes a Minitab worksheet (.mwx): a zip holding a metadata file and the sheet it points to, both json (see Minitab::findMetadataPath)
+static bool writeMinitabWorksheet(const QString & path, const std::string & sheetJson)
+{
+	const std::map<std::string, std::string> files =
+	{
+		{ "sheet_metadata.json",	R"({ "Worksheet": { "Uri": "sheets/0/sheet" } })"	},
+		{ "sheets/0/sheet.json",	sheetJson											}
+	};
+
+	struct archive * zip = archive_write_new();
+	archive_write_set_format_zip(zip);
+
+	bool written = archive_write_open_filename(zip, fq(path).c_str()) == ARCHIVE_OK;
+
+	for(const auto & [name, content] : files)
+	{
+		struct archive_entry * entry = archive_entry_new();
+		archive_entry_set_pathname(	entry, name.c_str());
+		archive_entry_set_size(		entry, content.size());
+		archive_entry_set_filetype(	entry, AE_IFREG);
+		archive_entry_set_perm(		entry, 0644);
+
+		written = written && archive_write_header(zip, entry) == ARCHIVE_OK && archive_write_data(zip, content.data(), content.size()) == la_ssize_t(content.size());
+
+		archive_entry_free(entry);
+	}
+
+	written = archive_write_close(zip) == ARCHIVE_OK && written;
+	archive_write_free(zip);
+
+	return written;
+}
+
+///A Minitab worksheet stores numbers, not text written in some locale, so whatever the interface a number is read as the number it is:
+///one with three decimals is what an interface grouping thousands with a dot would take for a thousand times as much (1.234 in German).
+void TestAll::testMinitabImportLocale()
+{
+	QTemporaryDir	dir;
+	const QString	worksheet	= dir.filePath("numbers.mwx");
+	const doublevec	numbers		= { 1.234, 0.125, 12.375, 1234.5, 2 };
+
+	QVERIFY(writeMinitabWorksheet(worksheet, R"({ "MaxRows_DEP": 5, "MaxColumns_DEP": 1, "Data": { "Columns": [
+		{ "WorksheetVarBody": { "Name": "x", "VarData": { "VarDataBody": { "NumericData": [ 1.234, 0.125, 12.375, 1234.5, 2 ] } } } } ] } })"));
+
+	for(const QLocale & interface : NumbersInLocales::locales())
+		for(bool thousandSeparators : { false, true })
+		{
+			auto interfaceIsSet = interfaceLocale(interface, thousandSeparators);
+
+			DatabaseInterface::closeInterfaces(); //Like cleanup() does, a DataSetPackage wants a database of its own
+			delete _pkg;
+			delete _importer;
+
+			_pkg		= new DataSetPackage(this);
+			_importer	= new MinitabImporter();
+
+			_importer->loadDataSet(fq(worksheet), _pkg->createDataSet(), [](int){});
+
+			Column * column = _pkg->dataSet() ? _pkg->dataSet()->column("x") : nullptr;
+			QVERIFY(column);
+			QCOMPARE(column->rowCount(), numbers.size());
+
+			for(size_t row=0; row<numbers.size(); row++)
+			{
+				double read = 0;
+				QVERIFY2(column->numberAt(row, read) && read == numbers[row], qPrintable(QString("%1 in row %2 is read as %3 by an interface in %4%5")
+					.arg(numbers[row]).arg(row + 1).arg(read, 0, 'g', 12).arg(QLocale::languageToString(interface.language()), thousandSeparators ? " with thousand separators" : "")));
+			}
+		}
+}
+
+///A jaspfile saved before csvDelimiter and importLocale existed gets them when it is opened, also when it says it was saved by the version this is
+void TestAll::testDataSetsTableUpgrade()
+{
+	if(_pkg)	delete _pkg;
+
+	_pkg = new DataSetPackage(this);	//Gives a freshly created internal database
+
+	const int dataSetId = _pkg->createDataSet()->id();
+
+	DatabaseInterface * db = DatabaseInterface::singleton();
+
+	db->runStatements("ALTER TABLE DataSets DROP COLUMN importLocale;");
+	db->runStatements("ALTER TABLE DataSets DROP COLUMN csvDelimiter;");
+
+	db->upgradeDBFromVersion(AppInfo::version);
+
+	std::string	title, dataFilePath, description, databaseJson, emptyValuesJson, importLocale = "not read";
+	long		dataFileTimestamp;
+	int			revision;
+	bool		dataSynch;
+	char		csvDelimiter = 'x';
+
+	//Throws "no such column" when the upgrade left one of them out
+	db->dataSetLoad(dataSetId, title, dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, revision, dataSynch, csvDelimiter, importLocale);
+
+	QCOMPARE(csvDelimiter,	'\0');
+	QCOMPARE(importLocale,	std::string(""));
 }
 
 // Regression test for https://github.com/jasp-stats/jasp-desktop/commit/0a90b9a34e9d754f55bc32ec1efd2f67940ef756
@@ -412,6 +1290,36 @@ void TestAll::testFilterLabels()
 	QVERIFY2(!treatLabel->filterAllows(),				qPrintable("'Treat'label is not filtered"));
 }
 
+void TestAll::testCsvParserTrimsOnlyUnquotedPadding()
+{
+	CSVParser parser(',');
+
+	const CSVParser::Grid grid = parser.parse(std::string(
+		" a , b\t,\tc \n"
+		"\" a \",\" b\",\"c \"\n"
+		" \"a\" ,\t\"b\"\t,\"c\"\n"
+		"   ,\"\",\"  \"\n"
+		"\"a,b\",\"a\"\"b\",d\n"));
+
+	QCOMPARE(grid.size(), size_t(5));
+
+	//Unquoted padding is not data, so it goes.
+	QCOMPARE(grid[0], stringvec({"a", "b", "c"}));
+
+	//What sits inside the quotes is data, so it stays.
+	QCOMPARE(grid[1], stringvec({" a ", " b", "c "}));
+
+	//And padding around a quoted field is padding too.
+	QCOMPARE(grid[2], stringvec({"a", "b", "c"}));
+
+	//A field of nothing but whitespace is empty (which the importers read as a missing value), while
+	//quoted whitespace is a value of its own.
+	QCOMPARE(grid[3], stringvec({"", "", "  "}));
+
+	//None of this may disturb the quoting itself.
+	QCOMPARE(grid[4], stringvec({"a,b", "a\"b", "d"}));
+}
+
 // ---------- DataSetSyncer tests ----------
 
 void TestAll::testSyncerStartStopFileSyncing()
@@ -476,11 +1384,10 @@ void TestAll::testSyncerFileChangeEmitsSignal()
 	QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 5000);
 
 	QList<QVariant> args = spy.takeFirst();
-	QCOMPARE(args.size(), 5); //(dataSetId, DataSet*, locator, extension, databaseJson)
-	QCOMPARE(args[0].toInt(), ds->id());
-	QCOMPARE(args[2].toString(), testFilePath);
-	QCOMPARE(args[3].toString(), QString("csv")); //extension
-	QVERIFY(args[4].toString().isEmpty()); //databaseJson
+	QCOMPARE(args.size(), 4); //(DataSet*, locator, extension, databaseJson)
+	QCOMPARE(args[1].toString(), testFilePath);
+	QCOMPARE(args[2].toString(), QString("csv")); //extension
+	QVERIFY(args[3].toString().isEmpty()); //databaseJson
 
 	syncer.stopFileSyncing();
 }
@@ -763,6 +1670,429 @@ void TestAll::testSyncerRetriesFileChangeMissedDuringSync()
 	syncer.stopFileSyncing();
 }
 
+void TestAll::testManualEditStopsExternalSynching()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+	QVERIFY(!_pkg->synchingExternally());
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	QString testFilePath = tempDir.filePath("manual_edit.csv");
+	QVERIFY(_writeTextFile(testFilePath, "a,b,c\n1,2,3\n"));
+
+	QSignalSpy synchingSpy(_pkg, &DataSetPackage::synchingExternallyChanged);
+
+	ds->syncer().startFileSyncing(testFilePath);
+	QVERIFY(_pkg->synchingExternally());
+	//Setting the data file and turning the synching on each announce themselves, so what matters is
+	//that the last thing everybody heard is the state we are actually in.
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(synchingSpy.last().first().toBool());
+
+	//Changing a value by hand means the data file no longer reflects the workspace, so the synching
+	//has to stop and everybody watching (the ribbon) has to hear about it.
+	synchingSpy.clear();
+	const QModelIndex	cell		= ds->index(0, 0);
+	const QString		oldValue	= ds->data(cell, int(dataPkgRoles::value)).toString();
+	QVERIFY(ds->setData(cell, QVariant(oldValue + "9"), int(dataPkgRoles::value)));
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!ds->dataFileSynch());
+	QVERIFY(!_pkg->synchingExternally());
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(!synchingSpy.last().first().toBool());
+
+	//Turning it back on is what the ribbon button does. That also clears the manual-edits flag, so a
+	//next edit can disable the synching again.
+	synchingSpy.clear();
+	_pkg->setSynchingExternally(true);
+
+	QVERIFY(_pkg->synchingExternally());
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(synchingSpy.last().first().toBool());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testReloadDataFileDiscardsManualEdits()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Importer::syncDataSet reads the preferences singleton; nothing else in the tests creates one.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+	QVERIFY(PreferencesModel::prefs());
+
+	//syncDataSet asks permission through checkDoSync; with no MainWindow around nothing answers it.
+	connect(DataSetPackage::pkg(), &DataSetPackage::checkDoSync, this, &TestAll::_checkDoSyncFake, Qt::DirectConnection);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	const QString csvPath = tempDir.filePath("reload.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n3,4\n"));
+
+	DataSet * ds = _pkg->createDataSet();
+	QVERIFY(ds);
+	_pkg->workspace()->setShownDataSet(ds);
+
+	CSVImporter importer;
+	importer.loadDataSet(fq(csvPath), ds, [](int){});
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	const QModelIndex cell = ds->index(0, 0);
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("1"));
+
+	//Editing by hand is what turns the synching off, and what "Reload Data File" has to undo.
+	QVERIFY(ds->setData(cell, QVariant("999"), int(dataPkgRoles::value)));
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("999"));
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//This is what picking "Reload Data File" does: turn the synching back on and re-import the
+	//(unchanged) data file. That has to bring the original value back.
+	_pkg->setSynchingExternally(true);
+	QVERIFY(_pkg->synchingExternally());
+
+	CSVImporter reloader;
+	reloader.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("1"));
+	QVERIFY(!_pkg->manualEdits());
+
+	//A sync replaces the data, but those changes are not edits by the user, so it must not switch the
+	//synching off again - the Synchronisation button would turn itself off after every sync.
+	QVERIFY(ds->dataFileSynch());
+	QVERIFY(_pkg->synchingExternally());
+
+	//Which also has to hold for a sync that finds nothing to change...
+	CSVImporter reloadAgain;
+	reloadAgain.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	//...and for one that brings in a new column, which DataSet::createColumn announces as a manual edit.
+	QVERIFY(_writeTextFile(csvPath, "a,b,c\n1,2,5\n3,4,6\n"));
+
+	CSVImporter reloadWithNewColumn;
+	reloadWithNewColumn.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QCOMPARE(ds->columnCount(), 3);
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testUndoingManualEditRestoresSynching()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString csvPath = tempDir.filePath("undo_synch.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n"));
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	const QModelIndex	cell		= ds->index(0, 0);
+	const QString		oldValue	= ds->data(cell, int(dataPkgRoles::value)).toString();
+
+	//Exactly what editing a cell in the data view does: push the change as an undo command.
+	ds->undoStack()->push(new SetDataCommand(ds, 0, 0, QVariant(oldValue + "9"), int(dataPkgRoles::value)));
+
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), oldValue + "9");
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//Undoing puts the data back to what the data file holds, so the synching must come back on.
+	ds->undoStack()->undo();
+
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), oldValue);
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	//And redoing the edit switches it off again.
+	ds->undoStack()->redo();
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testSynchRestoreIsPerDataSet()
+{
+	_pkg = new DataSetPackage(this);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString	csvA = tempDir.filePath("a.csv"),
+					csvB = tempDir.filePath("b.csv");
+	QVERIFY(_writeTextFile(csvA, "a,b\n1,2\n"));
+	QVERIFY(_writeTextFile(csvB, "p,q\n3,4\n"));
+
+	auto loadInto = [&](DataSet * ds, const QString & csv)
+	{
+		_pkg->workspace()->setShownDataSet(ds);
+		CSVImporter importer;
+		importer.loadDataSet(fq(csv), ds, [](int){});
+	};
+
+	//A synchs with its data file and then gets edited by hand, which switches its synching off.
+	DataSet * dsA = _pkg->createDataSet();
+	QVERIFY(dsA);
+	loadInto(dsA, csvA);
+	dsA->syncer().startFileSyncing(csvA);
+	QVERIFY(_pkg->synchingExternally());
+
+	dsA->undoStack()->push(new SetDataCommand(dsA, 0, 0, QVariant("99"), int(dataPkgRoles::value)));
+	QVERIFY(dsA->synchTurnedOffByManualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//B has a data file too, but is deliberately not synching with it.
+	DataSet * dsB = _pkg->createDataSet();
+	QVERIFY(dsB);
+	loadInto(dsB, csvB);
+	dsB->setDataFile(fq(csvB));
+	QVERIFY(!dsB->dataFileSynch());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//Undoing something in B brings *B's* undo stack back to clean. A's hand edits must not make that
+	//turn B's synching on behind the user's back.
+	dsB->undoStack()->push(new SetDataCommand(dsB, 0, 0, QVariant("77"), int(dataPkgRoles::value)));
+	dsB->undoStack()->undo();
+
+	QVERIFY(!dsB->synchTurnedOffByManualEdits());
+	QVERIFY(!dsB->dataFileSynch());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//While undoing in A, which is where the edits were made, does turn it back on.
+	_pkg->workspace()->setShownDataSet(dsA);
+	dsA->undoStack()->undo();
+
+	QVERIFY(dsA->dataFileSynch());
+	QVERIFY(_pkg->synchingExternally());
+
+	dsA->syncer().stopFileSyncing();
+}
+
+void TestAll::testManualEditsAreTrackedPerDataSet()
+{
+	_pkg = new DataSetPackage(this);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString	csvA = tempDir.filePath("a.csv"),
+					csvB = tempDir.filePath("b.csv");
+	QVERIFY(_writeTextFile(csvA, "a,b\n1,2\n"));
+	QVERIFY(_writeTextFile(csvB, "p,q\n3,4\n"));
+
+	auto synchedDataSetFrom = [&](const QString & csv)
+	{
+		DataSet * ds = _pkg->createDataSet();
+		_pkg->workspace()->setShownDataSet(ds);
+
+		CSVImporter importer;
+		importer.loadDataSet(fq(csv), ds, [](int){});
+		ds->syncer().startFileSyncing(csv);
+
+		return ds;
+	};
+
+	//A synchs with its data file and is then edited by hand, which switches its synching off.
+	DataSet * dsA = synchedDataSetFrom(csvA);
+	QVERIFY(dsA);
+	QVERIFY(dsA->dataFileSynch());
+
+	dsA->undoStack()->push(new SetDataCommand(dsA, 0, 0, QVariant("99"), int(dataPkgRoles::value)));
+	QVERIFY(dsA->manualEdits());
+	QVERIFY(!dsA->dataFileSynch());
+
+	//B is a second dataset, synching with a data file of its own. A's hand edits are not B's.
+	DataSet * dsB = synchedDataSetFrom(csvB);
+	QVERIFY(dsB);
+	QVERIFY(dsB->dataFileSynch());
+	QVERIFY(!dsB->manualEdits());
+	QVERIFY(!_pkg->manualEdits());		//B is the shown one, and B was not edited
+	QVERIFY(_pkg->synchingExternally());
+
+	//Editing B by hand has to switch B's synching off too, even though A was already edited.
+	dsB->undoStack()->push(new SetDataCommand(dsB, 0, 0, QVariant("77"), int(dataPkgRoles::value)));
+
+	QVERIFY(dsB->manualEdits());
+	QVERIFY(!dsB->dataFileSynch());
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//And none of that touched A.
+	QVERIFY(dsA->manualEdits());
+	QVERIFY(!dsA->dataFileSynch());
+
+	//Undoing B's edit brings B's synching back, and leaves A alone.
+	dsB->undoStack()->undo();
+
+	QVERIFY(!dsB->manualEdits());
+	QVERIFY(dsB->dataFileSynch());
+	QVERIFY(dsA->manualEdits());
+	QVERIFY(!dsA->dataFileSynch());
+
+	dsA->syncer().stopFileSyncing();
+	dsB->syncer().stopFileSyncing();
+}
+
+void TestAll::testLabelEditDoesNotStopSynching()
+{
+	_pkg = new DataSetPackage(this);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString csvPath = tempDir.filePath("labels.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\nx,1\ny,2\n"));
+
+	DataSet * ds = _pkg->createDataSet();
+	QVERIFY(ds);
+	_pkg->workspace()->setShownDataSet(ds);
+
+	CSVImporter importer;
+	importer.loadDataSet(fq(csvPath), ds, [](int){});
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+	QVERIFY(!_pkg->manualEdits());
+
+	Column * col = ds->column(0);
+	QVERIFY(col);
+
+	//A label is not data: renaming one must leave the synching alone.
+	QVERIFY(col->setLabelDisplay(0, "a nicer label"));
+
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	//Same for resetting the label filter.
+	col->resetFilterAllows();
+
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testStartFileSyncingDirectlyAlsoClearsManualEdits()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString csvPath = tempDir.filePath("regen.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n"));
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	const QModelIndex cell = ds->index(0, 0);
+	QVERIFY(ds->setData(cell, QVariant("9"), int(dataPkgRoles::value)));
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//Turning the synching back on *directly on the syncer*, not through
+	//DataSetPackage::setSynchingExternally, has to clear the manual-edits flag as well. That is what
+	//FileMenu::setCurrentDataFile does when a generated data file lands (and FileMenu::
+	//setDataFileWatcher(true) on the way back). A stale flag would block the next edit from switching
+	//the synching off again: DataSet::setManualEdits(true) would see no change and return early.
+	ds->syncer().startFileSyncing(csvPath);
+
+	QVERIFY(_pkg->synchingExternally());
+	QVERIFY(!_pkg->manualEdits());
+
+	//...so a next hand edit must again switch the synching off, instead of leaving it on while the
+	//data diverges from the file that the watcher will then sync over.
+	QVERIFY(ds->setData(cell, QVariant("8"), int(dataPkgRoles::value)));
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testSynchingExternallyRequiresWatcher()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString csvPath = tempDir.filePath("stale_flag.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n"));
+
+	//What loading a workspace that was saved *while synching* looks like: the dataFileSynch flag
+	//comes back from the database, but the file watcher died with the previous session and is only
+	//re-registered on open (MainWindow::fileEventRequestFinalize). Until then the ribbon must not
+	//claim the data file is leading - nothing is watching it.
+	ds->setDataFile(fq(csvPath));
+	ds->setDataFileSynch(true);
+
+	QVERIFY(ds->dataFileSynch());
+	QVERIFY(!ds->syncer().isFileSyncing());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//Re-arming the watcher makes the answer honest again...
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	//...and stopping it takes the flag out of the picture entirely.
+	ds->syncer().stopFileSyncing();
+	QVERIFY(!_pkg->synchingExternally());
+}
+
+void TestAll::testUndoChangedSurvivesWorkspaceRecreation()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Stands in for the one model behind the data view: created once, while the first workspace exists.
+	ExpandDataProxyModel model(this);
+
+	//Loading data throws that workspace away and makes a new one, just like opening a data file does.
+	_pkg->reset();
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+	QCOMPARE(UndoStack::singleton(), ds->undoStack());
+
+	QSignalSpy undoSpy(&model, &ExpandDataProxyModel::undoChanged);
+
+	UndoModelCommand * command = new UndoModelCommand(ds);
+	command->setText("test edit");
+	UndoStack::singleton()->push(command);
+
+	//The ribbon's Undo/Redo buttons only ever update on this signal.
+	QCOMPARE(undoSpy.count(), 1);
+	QCOMPARE(model.undoText(), QString("test edit"));
+
+	//And tearing the workspace down must not leave the singleton pointing at a freed stack.
+	_pkg->deleteWorkspace();
+	QVERIFY(!UndoStack::singleton());
+	QCOMPARE(model.undoText(), QString());
+}
+
 void TestAll::testFilterSetFilterVectorResizesToResult()
 {
 	QVERIFY(_newPkgWithDataSet());
@@ -885,19 +2215,32 @@ void TestAll::testEncoderPrefixPerDataset()
 	DataSet * a = _pkg->dataSet();
 	QVERIFY(a);
 	QVERIFY(a->columnCount() > 0);
+	QVERIFY(a->defaultFilter());
 
 	const std::string colName	= a->column(0)->name();
-	const std::string prefixA	= "JASPColumn_" + std::to_string(a->id()) + "_";
-	const std::string encodedA	= a->encoder().encode(colName);
+	const std::string prefixA	= "JASPColumn_D" + std::to_string(a->id()) + "_F" + std::to_string(a->defaultFilter()->id()) + "_";
 
-	QVERIFY2(encodedA.find(prefixA) == 0,	qPrintable("Encoder prefix must carry the dataset id"));
+	ColumnEncoder * viewA = a->defaultFilter()->columnEncoder();
+	QVERIFY2(viewA, "a live filter must own its namespace view");
+	const std::string encodedA = viewA->encode(colName);
+
+	QVERIFY2(encodedA.find(prefixA) == 0,	qPrintable(tq("Filter view prefix must carry the dataset AND filter id, got: " + encodedA)));
+	QVERIFY2(encodedA.size() > prefixA.size() + 8 && encodedA.compare(encodedA.size() - 8, 8, "_Encoded") == 0,	qPrintable(tq("tokens end in the _Encoded postfix, got: " + encodedA)));
 	QVERIFY2(encodedA.find("-1") == std::string::npos,	qPrintable("Encoder prefix must not be the -1 sentinel"));
 
-	//Reload from the DB (the .jasp restore path): the prefix must still carry the id, not -1.
+	//The canonical holds the mint but mints no tokens itself: it answers membership, encode throws.
+	QVERIFY2(a->encoder().shouldEncode(colName), "the canonical must know its own column names");
+	bool canonicalEncodeThrew = false;
+	try { a->encoder().encode(colName); } catch(const std::runtime_error &) { canonicalEncodeThrew = true; }
+	QVERIFY2(canonicalEncodeThrew, "the canonical must never answer full-string encode");
+
+	//Reload from the DB (the .jasp restore path): dataset AND filter rowids are stable, so the
+	//reloaded dataset's default-filter view mints the exact same tokens (see
+	//testDataSetFilterIdsSurviveStorageReload for the id-persistence pin).
 	DataSet loadMe(nullptr, a->id());
 	QCOMPARE(loadMe.id(), a->id());
-	const std::string encodedReload = loadMe.encoder().encode(colName);
-	QVERIFY2(encodedReload.find(prefixA) == 0,	qPrintable("Reloaded dataset must keep the id-based prefix"));
+	QCOMPARE(loadMe.defaultFilter()->id(), a->defaultFilter()->id());
+	const std::string encodedReload = loadMe.defaultFilter()->columnEncoder()->encode(colName);
 	QCOMPARE(encodedReload, encodedA);
 
 	//A second dataset with a colliding column name must get a distinct prefix.
@@ -907,18 +2250,3902 @@ void TestAll::testEncoderPrefixPerDataset()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
 	QVERIFY(b->id() != a->id());
 
-	const std::string prefixB	= "JASPColumn_" + std::to_string(b->id()) + "_";
-	const std::string encodedB	= b->encoder().encode(b->column(0)->name());
+	const std::string prefixB	= "JASPColumn_D" + std::to_string(b->id()) + "_F" + std::to_string(b->defaultFilter()->id()) + "_";
+	const std::string encodedB	= b->defaultFilter()->columnEncoder()->encode(b->column(0)->name());
 	QVERIFY2(encodedB.find(prefixB) == 0,	qPrintable("Second dataset must get its own id-based prefix"));
 	QVERIFY(encodedB != encodedA);
 
-	//Instance-level JSON decode must work against the dataset's own encoder (the static
-	//ColumnEncoder::decodeJson is a no-op on the desktop: the global current-encoder indirection is
-	//only set inside the engine).
+	//Decoding is context-free since the ONE global table holds a block per live filter
+	//of every loaded dataset, so a single sweep resolves tokens of both datasets (the old
+	//instance-rooted decodeJson only saw its own dataset).
 	Json::Value json;
-	json["axis"] = encodedA;
-	a->encoder().decodeJson(json);
-	QCOMPARE(json["axis"].asString(), colName);
+	json["axis"]	= encodedA;
+	json["series"]	= encodedB;
+	ColumnEncoder::decodeJson(json);
+	QCOMPARE(json["axis"].asString(),	colName);
+	QCOMPARE(json["series"].asString(),	b->column(0)->name());
+}
+
+void TestAll::testDataSetFilterDropDownList()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->id() != a->id());
+
+	a->addFilter(); //"Filter 0", shown on a (b stays the shown dataset)
+	const int aExtraFilterId = a->shownFilter()->id();
+	QVERIFY(a->defaultFilter());
+	QVERIFY(aExtraFilterId != a->defaultFilter()->id());
+	QVERIFY(b->defaultFilter());
+
+	const QVariantList entries = ws->dataSetFilterDropDownList();
+
+	QCOMPARE(entries.size(), 3); //a-default, a-"Filter 0", b-default
+
+	for(const QVariant & entryVar : entries)
+	{
+		const QVariantMap entry = entryVar.toMap();
+		const QString value		= entry["value"].toString();
+		const QString label		= entry["label"].toString();
+
+		Filter * f = ws->filterById(value.toInt());
+		QVERIFY2(f, qPrintable("Every dropdown value must be a (workspace-wide unique) filterId, got: " + value));
+		QCOMPARE(label, f->data()->title() + " - " + f->title());
+	}
+
+	QSet<QString> values;
+	for(const QVariant & entryVar : entries)
+		values.insert(entryVar.toMap()["value"].toString());
+
+	QVERIFY(values.contains(QString::number(a->defaultFilter()->id())));
+	QVERIFY(values.contains(QString::number(aExtraFilterId)));
+	QVERIFY(values.contains(QString::number(b->defaultFilter()->id())));
+
+	//The computed-dataset input list keeps excluding the shown dataset; the selection list never does:
+	for(const QVariant & entryVar : ws->inputFilterDropDownList())
+	{
+		Filter * f = ws->filterById(entryVar.toMap()["value"].toString().toInt());
+		QVERIFY(f);
+		QVERIFY2(f->data()->id() != ws->shownDataSetId(), "inputFilterDropDownList must keep excluding the shown dataset");
+	}
+}
+
+void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->id() != a->id());
+
+	//Same csv, so the very same column exists in both datasets (contNormal is a scale column):
+	const std::string colName	= "contNormal";
+	Column			*	colInA	= a->column(colName);
+	Column			*	colInB	= b->column(colName);
+	QVERIFY2(colInA, qPrintable(tq("First dataset should have column " + colName)));
+	QVERIFY2(colInB, qPrintable(tq("Second dataset should have column " + colName)));
+
+	const std::string qualified	= colName + "." + columnTypeToString(colInB->type());
+
+	//The engine always refreshes each dataset's canonical (with types!) via provideAndUpdateDataSet
+	//before encoding against it; do the same here because the desktop import path may have left
+	//untyped names.
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+	b->encoder().setCurrentNames(b->getColumnTypesMap());
+
+	//Encode through the shown filter's VIEW: the canonical itself mints no tokens.
+	ColumnEncoder * viewA = a->shownEncoder(), * viewB = b->shownEncoder();
+	QVERIFY(viewA && viewB);
+
+	Json::Value options(Json::objectValue);
+
+	options["dependent"]					= Json::Value(Json::objectValue);
+	options["dependent"]["value"].append(colName);
+	options["dependent"]["types"].append(columnTypeToString(colInA->type()));
+	options["covariate"]					= Json::Value(Json::objectValue);
+	options["covariate"]["value"].append(colName);
+	options["covariate"]["types"].append(columnTypeToString(colInB->type()));
+
+	options[".meta"]["dependent"]["shouldEncode"]	= true;
+	options[".meta"]["covariate"]["shouldEncode"]	= true;
+	// The sidecar flip: the provenance rides the transient `.filterIds` sidecar (the .meta
+	//stamps retired); each option names the filter its terms were selected through and
+	//that filter re-attributes the collected cols+types to its own dataset.
+	options[".filterIds"]["dependent"]				= a->shownFilter()->id();
+	options[".filterIds"]["covariate"]				= b->shownFilter()->id();
+
+	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+			options, true,
+			[ws](int & dataSetId, int filterId) -> ColumnEncoder *
+			{
+				// the sidecar filterId resolves to that filter's VIEW and re-attributes dataSetId -
+				// filter ids imply their dataset. Exactly the
+				//prepareMultiDataSetRun resolver shape, against the real workspace.
+				if(filterId >= 0)
+				{
+					Filter * f = ws->filterById(filterId);
+
+					if(f && f->data())
+					{
+						dataSetId = f->data()->id();
+						return f->columnEncoder();
+					}
+				}
+
+				DataSet * ds = ws->dataSetById(dataSetId);
+				return ds ? ds->shownEncoder() : nullptr;	//legacy fallback
+			},
+			a->id());
+
+	QCOMPARE(colsPerDataSet.size(), size_t(2));
+	QVERIFY(colsPerDataSet.count(a->id()) == 1);
+	QVERIFY(colsPerDataSet.count(b->id()) == 1);
+
+	const std::string encodedInA = viewA->encode(qualified),
+					encodedInB = viewB->encode(qualified);
+
+	QVERIFY2(encodedInA != encodedInB, "The same column in two datasets must not encode to the same name");
+	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()),	QString::fromStdString(encodedInA));
+	QCOMPARE(QString::fromStdString(options["covariate"][0].asString()),	QString::fromStdString(encodedInB));
+
+	//Decoding is context-free since ONE sweep of the global table resolves both
+	//datasets' slices - there is no instance-rooted decode left to route around:
+	Json::Value fromA(encodedInA), fromB(encodedInB);
+	ColumnEncoder::decodeJson(fromA);
+	ColumnEncoder::decodeJson(fromB);
+	QCOMPARE(QString::fromStdString(fromA.asString()), QString::fromStdString(colName));
+	QCOMPARE(QString::fromStdString(fromB.asString()), QString::fromStdString(colName));
+
+	//The old "another dataset's encoder must not decode this slice" pin is replaced by its
+	//successor: the table resolving a foreign live token is exactly the point
+	//- only STALE namespaces leave tokens raw.
+	Json::Value wrongWay(encodedInA);
+	ColumnEncoder::decodeJson(wrongWay);
+	QCOMPARE(QString::fromStdString(wrongWay.asString()), QString::fromStdString(colName));
+
+	std::string staleToken;
+	{
+		ColumnEncoder doomed("JASPColumn_D999999_F999999_");		//a namespace that lives only for a moment (transient filter analogue)
+		doomed.setCurrentNames(a->getColumnTypesMap());
+		staleToken = doomed.encode(qualified);
+		QCOMPARE(ColumnEncoder::decode(staleToken), colName);
+	}
+	QCOMPARE(ColumnEncoder::decode(staleToken), staleToken);	//its block was erased with it: raw
+
+	// The encode -> decode -> encode -> decode cycle: decoding hands back the plain column name
+	// (the ".type" qualifier is deliberately dropped - decode gives the name as it is in the data),
+	// and that plain name re-encodes to the current type's encoded name, so the cycle is stable
+	// from there on:
+	const std::string decoded1	= ColumnEncoder::decode(encodedInA);
+	QCOMPARE(QString::fromStdString(decoded1), QString::fromStdString(colName));
+
+	const std::string again		= viewA->encode(decoded1);
+	QCOMPARE(QString::fromStdString(again), QString::fromStdString(encodedInA));
+	QCOMPARE(QString::fromStdString(ColumnEncoder::decode(again)), QString::fromStdString(colName));
+
+	// And the emitted token format is dataset-AND-filter-namespaced, so results
+	// decode sweeps need no routing table and deleted namespaces simply stop answering:
+	QVERIFY2(encodedInA.rfind("JASPColumn_D" + std::to_string(a->id()) + "_F" + std::to_string(a->shownFilter()->id()) + "_", 0) == 0,
+	         qPrintable(tq("encoded names must start with JASPColumn_D<dataSetId>_F<filterId>_, got: " + encodedInA)));
+	QVERIFY2(encodedInA.size() > 8 && encodedInA.compare(encodedInA.size() - 8, 8, "_Encoded") == 0,
+	         "encoded names must end in the _Encoded postfix");
+}
+
+void TestAll::testEncoderMutationFunnel()
+{
+	//Every mutation class funnels into the canonical mint (setCurrentNames / updateColumnTypesOnly)
+	//or the view (register/erase), and the ONE global decode table must reflect exactly the current
+	//state after each - no caller has to remember a second step.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 1);
+	QVERIFY(a->defaultFilter());
+
+	ColumnEncoder * viewOne = a->defaultFilter()->columnEncoder();
+	QVERIFY(viewOne);
+
+	const std::string colName = a->column(0)->name();
+
+	//The app's bookkeeping path (setShownDataSet / provideAndUpdateDataSet do this after mutations):
+	auto remint = [a]() { a->encoder().setCurrentNames(a->getColumnTypesMap()); };
+
+	//Every token of a namespace must map back to a name the mint currently holds:
+	auto tableMatchesMint = [a](ColumnEncoder * view)
+	{
+		const ColumnEncoder::colTypeMap & types = a->encoder().currentNames();
+
+		for(const auto & nameType : types)
+		{
+			const std::string token = view->encode(nameType.first);
+			QCOMPARE(QString::fromStdString(ColumnEncoder::decode(token)), QString::fromStdString(nameType.first));
+		}
+	};
+
+	remint();
+	tableMatchesMint(viewOne);
+
+	// --- type-only change (Column::setType -> updateColumnTypesOnly): no token churn ------------
+	Column * first = a->column(0);
+	const columnType oldType = first->type();
+	const columnType newType = oldType == columnType::scale ? columnType::nominal : columnType::scale;
+	const std::string bareTokenBefore = viewOne->encode(colName);
+
+	first->setType(newType);
+
+	QCOMPARE(viewOne->encode(colName), viewOne->encode(colName + "." + columnTypeToString(newType)));
+	QCOMPARE(ColumnEncoder::decode(bareTokenBefore), colName);	//the old token still resolves (nothing was re-minted)
+	tableMatchesMint(viewOne);
+
+	// --- filter create: a second live namespace on the same mint --------------------------------
+	a->addFilter();												//"Filter 0", shown
+	Filter * extra = a->shownFilter();
+	QVERIFY2(extra && extra != a->defaultFilter(), "addFilter must show the new filter");
+	ColumnEncoder * viewTwo = extra->columnEncoder();
+	QVERIFY(viewTwo);
+
+	const std::string tokenOne = viewOne->encode(colName),
+					tokenTwo = viewTwo->encode(colName);
+
+	QVERIFY2(tokenOne != tokenTwo, "the same name in two filters of one dataset must mint distinct tokens");
+	QCOMPARE(ColumnEncoder::decode(tokenOne), colName);
+	QCOMPARE(ColumnEncoder::decode(tokenTwo), colName);		//both decode, context-free
+	tableMatchesMint(viewTwo);
+
+	// --- column add: grow ------------------------------------------------------------------------
+	QVERIFY(a->createColumn("FunnelFresh", columnType::scale));
+	remint();
+	QCOMPARE(ColumnEncoder::decode(viewOne->encode("FunnelFresh")), std::string("FunnelFresh"));
+	QCOMPARE(ColumnEncoder::decode(viewTwo->encode("FunnelFresh")), std::string("FunnelFresh"));
+
+	// --- column rename: the table maps current names only ----------------------------------------
+	const std::string freshToken = viewOne->encode("FunnelFresh");
+	Column * fresh = a->column("FunnelFresh");
+	QVERIFY(fresh);
+	fresh->setNameManually(tq("RenewedFun"));
+	remint();
+
+	QCOMPARE(ColumnEncoder::decode(viewOne->encode("RenewedFun")), std::string("RenewedFun"));
+	QVERIFY2(ColumnEncoder::decode(freshToken) != "FunnelFresh",
+			 "a renamed-away name must not survive anywhere in the table");
+	tableMatchesMint(viewOne);
+
+	// --- column remove: shrink --------------------------------------------------------------------
+	const std::string renewedToken = viewOne->encode("RenewedFun");
+	a->removeColumn("RenewedFun");
+	remint();
+
+	QVERIFY2(ColumnEncoder::decode(renewedToken) != "RenewedFun",
+			 "a removed column must not stay decodable under its own name");
+	QCOMPARE(ColumnEncoder::decode(tokenOne), colName);		//the untouched part of the space keeps working
+	tableMatchesMint(viewOne);
+	tableMatchesMint(viewTwo);
+
+	// --- filter destroy: its block goes raw, everything else is untouched -------------------------
+	a->removeFilter(extra);
+
+	QCOMPARE(ColumnEncoder::decode(tokenTwo), tokenTwo);		//deleted filter's tokens go raw
+	QVERIFY2(!ColumnEncoder::shouldDecode(tokenTwo), "the destroyed filter's namespace must be gone");
+	QCOMPARE(ColumnEncoder::decode(tokenOne), colName);		//the default filter is unaffected
+	tableMatchesMint(viewOne);
+
+	// --- dataset unload: every block of the unloaded dataset goes raw, the others stay -------------
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	b->encoder().setCurrentNames(b->getColumnTypesMap());
+	QVERIFY(b->defaultFilter()->columnEncoder());
+	const std::string tokenB = b->defaultFilter()->columnEncoder()->encode(b->column(0)->name());
+	QCOMPARE(ColumnEncoder::decode(tokenB), b->column(0)->name());
+
+	ws->setShownDataSet(b);
+	ws->deleteShownDataSet();
+
+	QCOMPARE(ColumnEncoder::decode(tokenB), tokenB);			//unloaded: raw
+	QVERIFY2(!ColumnEncoder::shouldDecode(tokenB), "an unloaded dataset must leave nothing decodable");
+	QCOMPARE(ColumnEncoder::decode(tokenOne), colName);		//dataset a keeps decoding
+}
+
+void TestAll::testDecodeSupersetSemanticsAcrossLiveNamespaces()
+{
+	// every decode site is the static entry, so a single sweep must resolve
+	//tokens from ANY live namespace (any filter of any loaded dataset, plus extras) regardless of
+	//which one the payload was minted against - and must leave everything that is NOT a live
+	//namespace's token exactly raw. Superset for live namespaces, strict for dead ones.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+
+	//The provideAndUpdateDataSet remint (what the engine does per request), then a NAMED filter on
+	//b so its view is a second live namespace on a second dataset while dataset a stays shown.
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+	b->encoder().setCurrentNames(b->getColumnTypesMap());
+	b->addFilter();
+	Filter * bNamed = b->shownFilter();
+	QVERIFY(bNamed && bNamed != b->defaultFilter());
+	b->encoder().setCurrentNames(b->getColumnTypesMap());
+
+	//Extras: a first-class block of the table, fed the way factorlevellistbase feeds it.
+	ColumnEncoder extras("JaspExtraOptions_");
+	Json::Value extrasMeta(Json::objectValue);
+	extrasMeta[".meta"]["levels"]["encodeThis"] = "a factor level";
+	extras.setCurrentNamesFromOptionsMeta(extrasMeta);
+
+	const std::string tokenA	= a->shownEncoder()->encode(a->column(0)->name());
+	const std::string tokenB	= bNamed->columnEncoder()->encode("contNormal");
+	const std::string tokenEx	= extras.encode("a factor level");
+
+	//A namespace that dies before the sweep (deleted filter analogue): captured while live, raw after.
+	std::string tokenDeleted;
+	{
+		a->addFilter();						//shown on a
+		Filter * doomed = a->shownFilter();
+		QVERIFY(doomed && doomed != a->defaultFilter());
+		a->encoder().setCurrentNames(a->getColumnTypesMap());
+		tokenDeleted = doomed->columnEncoder()->encode(a->column(0)->name());
+		QCOMPARE(ColumnEncoder::decode(tokenDeleted), a->column(0)->name());
+		a->removeFilter(doomed);
+	}
+
+	const std::string tokenForeign	= "JASPColumn_D987654_F987654_0_Encoded";		//never minted anywhere
+
+	// --- one static sweep resolves every live namespace (the superset), unknown stays raw ----------
+	Json::Value payload(Json::objectValue);
+	payload["fromShownDataset"]	= tokenA;
+	payload["fromOtherFilter"]	= tokenB;
+	payload["fromExtras"]		= tokenEx;
+	payload["fromDeleted"]		= tokenDeleted;
+	payload["neverMinted"]		= tokenForeign;
+	ColumnEncoder::decodeJson(payload);
+
+	QCOMPARE(payload["fromShownDataset"].asString(),	a->column(0)->name());
+	QCOMPARE(payload["fromOtherFilter"].asString(),		std::string("contNormal"));
+	QCOMPARE(payload["fromExtras"].asString(),			std::string("a factor level"));
+	QCOMPARE(payload["fromDeleted"].asString(),			tokenDeleted);		//deleted filter goes raw
+	QCOMPARE(payload["neverMinted"].asString(),			tokenForeign);		//unknown goes raw
+
+	// --- the scalar entries behave identically ------------------------------------------------------
+	QCOMPARE(ColumnEncoder::decode(tokenB), std::string("contNormal"));		//a's decode of b's token: superset
+	QCOMPARE(ColumnEncoder::decode(tokenForeign), tokenForeign);
+	QVERIFY2(!ColumnEncoder::shouldDecode(tokenDeleted), "the destroyed filter's block must be gone");
+	QCOMPARE(ColumnEncoder::decodeAll("see " + tokenEx + " and " + tokenForeign),
+			std::string("see a factor level and " + tokenForeign));
+
+	// --- and every converged results-site uses exactly these entries: the sweep the desktop results
+	// decode performs (EngineRepresentation::checkForComputedColumns / Analysis::loadPlotlyJsonInResults
+	// twins) resolves the extras token too - the gap was this site decoding dataset-only.
+	Json::Value resultsJson(Json::objectValue);
+	resultsJson["columnName"] = tokenEx;
+	ColumnEncoder::decodeJson(resultsJson);
+	QCOMPARE(resultsJson["columnName"].asString(), std::string("a factor level"));
+}
+
+void TestAll::testComputedColumnSiteDecodesExtrasTokens()
+{
+	// The one site that decoded dataset-only was EngineRepresentation's
+	//computed-column reporting (enginerepresentation.cpp). Every site is the static
+	//entry, so a columnName that is an EXTRAS token (not a dataset token) resolves too. The
+	//observable: the site only reaches Workspace::computedColumnSucceeded - which clears the
+	//column error on the warning-less success path - when the reported name decodes to a real
+	//column of the dataset.
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * a = _pkg->workspace()->shownDataSet();
+	QVERIFY(a);
+
+	Column * col = a->createComputedColumn("ExtraReported", columnType::scale);
+	QVERIFY(col);
+	QVERIFY(col->setError("stale error"));
+
+	std::string token;
+	{
+		ColumnEncoder extras("JaspExtraOptions_");
+		Json::Value extrasMeta(Json::objectValue);
+		extrasMeta[".meta"]["lv"]["encodeThis"] = "ExtraReported";	//the factorlevellistbase shape
+		extras.setCurrentNamesFromOptionsMeta(extrasMeta);
+
+		token = extras.encode("ExtraReported");
+		QVERIFY2(token.rfind("JaspExtraOptions_", 0) == 0, qPrintable(tq("extras token expected, got: " + token)));
+
+		Json::Value results(Json::objectValue);
+		results["columnName"]	= token;
+		results["columnType"]	= int(columnType::scale);
+		results["dataChanged"]	= true;
+
+		EngineRepresentation rep(0, new QProcess());	//no engine process needed for this site
+		rep.checkForComputedColumns(a, results);
+	}
+
+	QCOMPARE(QString::fromStdString(col->error()), QString());		//decoded through the extras block
+
+	//Negative control (at this very site): with the extras encoder dead the token is raw, no
+	//column matches it and the site leaves the error alone.
+	QVERIFY(col->setError("stale error again"));
+
+	Json::Value results(Json::objectValue);
+	results["columnName"]	= token;
+	results["columnType"]	= int(columnType::scale);
+	results["dataChanged"]	= true;
+
+	EngineRepresentation rep(0, new QProcess());
+	rep.checkForComputedColumns(a, results);
+
+	QCOMPARE(QString::fromStdString(col->error()), QString("stale error again"));
+}
+
+void TestAll::testMultiDataSetQueueHandout()
+{
+	MultiDataSetSliceQueue	queue;
+
+	//No queue: nothing to hand out (legacy read-path):
+	QVERIFY(queue.take() == nullptr);
+
+	std::vector<MultiDataSetSliceQueue::Slice> slices;
+	slices.push_back({ 11, 111, ColumnEncoder::colsPlusTypes() });
+	slices.push_back({ 11, 112, ColumnEncoder::colsPlusTypes() });   //same dataset, other filter: still a slice of its own
+	slices.push_back({ 12, 112, ColumnEncoder::colsPlusTypes() });
+	slices.push_back({ 13,  13, ColumnEncoder::colsPlusTypes() });
+
+	queue.set(std::move(slices));
+
+	//Slices are handed out in order, once each, then the queue is empty again:
+	const MultiDataSetSliceQueue::Slice * first = queue.take();
+	QVERIFY(first);
+	QCOMPARE(first->dataSetId, 11);
+	QCOMPARE(first->filterId, 111);
+
+	const MultiDataSetSliceQueue::Slice * second = queue.take();
+	QVERIFY(second);
+	QCOMPARE(second->dataSetId, 11);
+	QCOMPARE(second->filterId, 112);
+
+	const MultiDataSetSliceQueue::Slice * third = queue.take();
+	QVERIFY(third);
+	QCOMPARE(third->dataSetId, 12);
+
+	const MultiDataSetSliceQueue::Slice * fourth = queue.take();
+	QVERIFY(fourth);
+	QCOMPARE(fourth->dataSetId, 13);
+
+	QVERIFY(queue.take() == nullptr);
+
+	//And a new request (empty queue) fully disables the multi-dataset read-path again:
+	queue.set({});
+	QVERIFY(queue.take() == nullptr);
+}
+
+void TestAll::testMultiDataSetQueueClearedAtRequestBoundary()
+{
+	//DataBridge-level pin of the request-boundary discipline: both Engine::receiveAnalysisMessage
+	//(engine.cpp) and the entry of syntaxBridgeLoadQmlAndParseOptionsStatus clear the queue with
+	//exactly setMultiDataSetQueue({}) before the request branches; the aware branch then refills it
+	//through prepareMultiDataSetRun. This pins the fill (on a real workspace) and the reset, so an
+	//aware parse that queued slices and an R side that died mid-consumption can never leak a stale
+	//slice into the next request's dataset reads.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+
+	DataBridge bridge(ProcessInfo::currentPID());	//borrows the process-wide workspace, just like the syntax bridge does in a host
+
+	// The sidecar flip: the slice queue is collected from the `.filterIds` sidecar leaves (the
+	//.meta stamps are gone); two distinct named filters are two slices.
+	Json::Value options(Json::objectValue);
+	options[".filterIds"]["dependent"]	= a->shownFilter()->id();
+	options[".filterIds"]["covariate"]	= b->shownFilter()->id();
+
+	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "requestBoundaryTest");
+
+	//Two distinct stamped filters (a's and b's shown/default one): two slices, handed out in order:
+	QCOMPARE(plan.multiDataSetJson["ids"].size(), 2u);
+	QVERIFY(bridge.takeMultiDataSetSlice() != nullptr);
+	QVERIFY(bridge.takeMultiDataSetSlice() != nullptr);
+	QVERIFY(bridge.takeMultiDataSetSlice() == nullptr);
+
+	//Refill and abort mid-consumption (the leak scenario: aware parse, R error before every slice
+	//was read), then run the request-boundary reset: the next request gets nothing, no matter what
+	//the previous one left queued.
+	bridge.prepareMultiDataSetRun(options, a->id(), "", "requestBoundaryTest");
+	QVERIFY(bridge.takeMultiDataSetSlice() != nullptr);	//one slice consumed, one still queued
+	bridge.setMultiDataSetQueue({});						//<- the exact call every bridge/engine request starts with
+	QVERIFY(bridge.takeMultiDataSetSlice() == nullptr);
+}
+
+void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
+{
+	// prepareMultiDataSetRun resolves each option's encoder from the FILTER
+	//VIEW its `.filterIds` sidecar names (not the shown encoder), with the fallback to the
+	//shown-filter view for options the sidecar does not name. The landmine: the form's HOST
+	//filter differs from the shown dataset filter - the sidecar'd option must encode in the
+	//host's namespace, the unnamed one in the shown one, and the global table must decode both.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	//A second dataset so we can point the shown dataset elsewhere than a, proving the resolver
+	//follows the stamp's filter, not whatever dataset/filter is currently shown.
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->id() != a->id());
+
+	a->addFilter();						//"Filter 0" on a, shown on a
+	Filter * hostFilter = a->shownFilter();
+	QVERIFY2(hostFilter && hostFilter != a->defaultFilter(), "addFilter must show the new host filter");
+	const int hostFilterId = hostFilter->id();
+
+	//The landmine proper: switch a's SHOWN filter back to the default. The form keeps the named
+	//filter as its host (stamped on its options), while the dataset shows another filter from here
+	//on - option encoding must follow the stamp, not the shown filter.
+	a->showFilter(a->defaultFilter());
+
+	//Now switch the workspace's shown dataset to b: a's host filter is neither the shown dataset
+	//nor its shown filter, exactly the mixed-run scenario.
+	ws->setShownDataSet(b);
+	ColumnEncoder::setCurrentEncoder(b->shownEncoder());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	QVERIFY2(colA && colA->type() != columnType::unknown, "debug.csv must give a typed contNormal in the first dataset too");
+	const std::string qualified	= colName + "." + columnTypeToString(colA->type());
+
+	//Remint a's canonical so both a-filters' blocks hold the current names (provideAndUpdateDataSet
+	//does this per request; the resolver returns live views either way).
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string hostToken		= hostFilter->columnEncoder()->encode(qualified);
+	const std::string shownDefault	= a->defaultFilter()->columnEncoder()->encode(qualified);
+	QVERIFY2(hostToken != shownDefault, "the host filter and the default filter must mint distinct tokens");
+
+	Json::Value options(Json::objectValue);
+
+	options["dependent"]				= Json::Value(Json::objectValue);
+	options["dependent"]["value"]		= Json::Value(Json::arrayValue);
+	options["dependent"]["value"].append(colName);
+	options["dependent"]["types"]		= Json::Value(Json::arrayValue);
+	options["dependent"]["types"].append(columnTypeToString(colA->type()));
+	options["legacy"]					= Json::Value(Json::objectValue);
+	options["legacy"]["value"]			= Json::Value(Json::arrayValue);
+	options["legacy"]["value"].append(colName);
+	options["legacy"]["types"]			= Json::Value(Json::arrayValue);
+	options["legacy"]["types"].append(columnTypeToString(colA->type()));
+
+	options[".meta"]["dependent"]["shouldEncode"]	= true;
+	options[".meta"]["legacy"]["shouldEncode"]		= true;
+	// The sidecar flip: provenance in the sidecar (.meta stays provenance-free)...
+	options[".filterIds"]["dependent"]				= hostFilterId;		//the host filter, NOT the shown one
+	//..."legacy" carries no sidecar node -> the shown-filter fallback
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "perStampViewTest");
+
+	//prepareMultiDataSetRun re-points currentEncoder at a's shown filter (default) as part of
+	//provideAndUpdateDataSet(primaryDataSetId); the sidecar'd option must still land in the host's
+	//namespace, proving the resolver used the sidecar filter's view, not the (just-changed) current.
+	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()), QString::fromStdString(hostToken));
+
+	//The un-stamped option falls back to the shown filter's view of the primary dataset (default).
+	QCOMPARE(QString::fromStdString(options["legacy"][0].asString()), QString::fromStdString(shownDefault));
+
+	//The host filter must be in the slice queue (its sidecar id collected it):
+	bool hostQueued = false;
+	for(const Json::Value & id : plan.multiDataSetJson["ids"])
+		if(id.asString() == std::to_string(hostFilterId))
+			hostQueued = true;
+	QVERIFY2(hostQueued, "the sidecar'd host filter must be queued as a slice");
+
+	//And the one global table decodes both namespaces back to the real name, context-free:
+	Json::Value sweep(Json::arrayValue);
+	sweep.append(options["dependent"][0].asString());
+	sweep.append(options["legacy"][0].asString());
+	ColumnEncoder::decodeJson(sweep);
+	QCOMPARE(sweep[0].asString(), colName);
+	QCOMPARE(sweep[1].asString(), colName);
+}
+
+void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
+{
+	// the FLIP of the "sidecar is inert" pin: the generated Engine json
+	//carries its transient provenance in the `.filterIds` tree and NO provenance in `.meta`),
+	//and the engine-side walk now RUNS OFF that sidecar. Pinned at DataBridge level:
+	//  (1) the generated shape (meta + sidecar) resolves through the SIDECAR filter's VIEW
+	//      and queues that filter - the exact inversion of the documented delta;
+	//  (2) positional semantics: an int|null array resolves the terms one by one, null
+	//      positions take the shown-filter fallback (same-name-different-source);
+	//  (3) .meta provenance keys are dead input: a stamped tree WITHOUT a sidecar now runs
+	//      through the fallback and queues no host filter - the generator emits no
+	//      provenance keys at all and the meta collectors are deleted;
+	//  (4) strip: DataBridge::stripTransientProvenanceForR removes the sidecar at the engine
+	//      boundary (R never sees provenance) and nothing else, and is a no-op on
+	//      sidecar-less (every non-aware) trees;
+	//  (5) the grammar helpers/collector: collectFilterIdsFromSidecar sees every int leaf
+	//      including the "$" container member the collision placement uses; and the generated
+	//      .meta carries no provenance keys (the deleted meta collectors'negative control,
+	// re-armed on its premise).'
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();						//a named filter on a, shown right after creation
+	Filter * hostFilter = a->shownFilter();
+	QVERIFY2(hostFilter && hostFilter != a->defaultFilter(), "addFilter must show the new host filter");
+	const int hostFilterId = hostFilter->id();
+
+	a->showFilter(a->defaultFilter());	//the landmine shape again: the host filter is NOT the shown one
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	QVERIFY2(colA && colA->type() != columnType::unknown, "debug.csv must hold a typed contNormal");
+	const std::string qualified	= colName + "." + columnTypeToString(colA->type());
+
+	const std::string hostToken		= hostFilter->columnEncoder()->encode(qualified);
+	const std::string shownDefault	= a->defaultFilter()->columnEncoder()->encode(qualified);
+	QVERIFY2(hostToken != shownDefault, "the two namespaces must mint distinct tokens");
+
+	auto makeTermOption = [&colName](Json::Value & tree, const std::string & name)
+	{
+		tree[name]				= Json::Value(Json::objectValue);
+		tree[name]["value"]		= Json::Value(Json::arrayValue);
+		tree[name]["value"].append(colName);
+		tree[name]["types"]		= Json::Value(Json::arrayValue);
+		tree[name]["types"].append("scale");
+	};
+	auto queuesFilter = [](const DataBridge::MultiDataSetRunPlan & plan, int filterId)
+	{
+		for(const Json::Value & id : plan.multiDataSetJson["ids"])
+			if(id.asString() == std::to_string(filterId))
+				return true;
+		return false;
+	};
+
+	DataBridge bridge(ProcessInfo::currentPID());
+
+	// --- (1) the generated shape drives the run -------------------------------------------------
+	Json::Value generatedTree(Json::objectValue);
+	makeTermOption(generatedTree, "dependent");
+	generatedTree[".meta"]["dependent"]["shouldEncode"]	= true;	//meta MINUS the provenance keys)...
+	generatedTree[".filterIds"]["dependent"]			= hostFilterId;	//...provenance in the sidecar
+
+	const DataBridge::MultiDataSetRunPlan planGenerated = bridge.prepareMultiDataSetRun(generatedTree, a->id(), "", "sidecarDrives");
+
+	QCOMPARE(QString::fromStdString(generatedTree["dependent"][0].asString()), QString::fromStdString(hostToken));	//the sidecar's filter VIEW, not the shown fallback
+	QVERIFY2(queuesFilter(planGenerated, hostFilterId), "the sidecar's host filter is queued as a slice (the queue build)");
+
+	// --- (2) positional array: per-term resolution, null = the shown-filter fallback --------------------
+	Json::Value mixedTree(Json::objectValue);
+	makeTermOption(mixedTree, "mixed");
+	mixedTree["mixed"]["value"].append(colName);			//same name twice, provenance differs
+	mixedTree["mixed"]["types"].append("scale");
+	mixedTree[".meta"]["mixed"]["shouldEncode"]	= true;
+	mixedTree[".filterIds"]["mixed"].append(hostFilterId);
+	mixedTree[".filterIds"]["mixed"].append(Json::Value());	//null = unqualified term position
+
+	bridge.prepareMultiDataSetRun(mixedTree, a->id(), "", "sidecarMixed");
+
+	QCOMPARE(QString::fromStdString(mixedTree["mixed"][0].asString()), QString::fromStdString(hostToken));		//position 0: the sidecar's filter
+	QCOMPARE(QString::fromStdString(mixedTree["mixed"][1].asString()), QString::fromStdString(shownDefault));	//position 1: null -> the shown-filter fallback
+
+	// --- (3) the mirror's .meta stamps are dead input -------------------------------------------
+	Json::Value mirrorTree(Json::objectValue);
+	makeTermOption(mirrorTree, "dependent");
+	mirrorTree[".meta"]["dependent"]["shouldEncode"]	= true;
+	mirrorTree[".meta"]["dependent"]["dataSetId"]		= a->id();
+	mirrorTree[".meta"]["dependent"]["filterId"]		= hostFilterId;	//today's mirror shape - inert now
+
+	const DataBridge::MultiDataSetRunPlan planMirror = bridge.prepareMultiDataSetRun(mirrorTree, a->id(), "", "stampsInert");
+
+	QCOMPARE(QString::fromStdString(mirrorTree["dependent"][0].asString()), QString::fromStdString(shownDefault));
+	QVERIFY2(!queuesFilter(planMirror, hostFilterId), "meta stamps are no longer read for behaviour - an unstamped-by-sidecar tree queues no host filter");
+
+	// --- (4) strip at the engine boundary --------------------------------------------------
+	const std::string generatedBefore = generatedTree.toStyledString();
+	Json::Value forR = generatedTree;
+	DataBridge::stripTransientProvenanceForR(forR);
+	QVERIFY2(!forR.isMember(ColumnEncoder::FILTERIDS_MEMBER), "R never sees the transient provenance");
+	QVERIFY2(generatedTree.isMember(ColumnEncoder::FILTERIDS_MEMBER), "strip runs on the ENCODED COPY - _analysisOptions keeps the sidecar for re-runs");
+
+	Json::Value expectedStrip = generatedTree;
+	expectedStrip.removeMember(ColumnEncoder::FILTERIDS_MEMBER);
+	QCOMPARE(forR.toStyledString(), expectedStrip.toStyledString());	//the member vanishes, nothing else moves
+
+	Json::Value classicTree(Json::objectValue);
+	classicTree["plain"]			= colName;
+	classicTree[".meta"]["plain"]["shouldEncode"]	= true;
+	const std::string classicBefore = classicTree.toStyledString();
+	DataBridge::stripTransientProvenanceForR(classicTree);
+	QCOMPARE(classicTree.toStyledString(), classicBefore);			//sidecar-less (non-aware) trees pass through untouched
+
+	// --- (5) the sidecar grammar and the collectors ----------------------------------------------
+	std::set<int> fromSidecar;
+	ColumnEncoder::collectFilterIdsFromSidecar(generatedTree[ColumnEncoder::FILTERIDS_MEMBER], fromSidecar);
+	QVERIFY2(fromSidecar == std::set<int>({ hostFilterId }), "collectFilterIdsFromSidecar finds the scalar id");
+
+	std::set<int> fromMeta;
+	// the meta collector is DELETED with the mirror's stamping era - the negative
+	//control retargets to its premise: the generated `.meta` carries NO provenance keys anywhere
+	//so a meta-based reader could not find hostFilterId even if one existed; the sidecar
+	//above is the only carrier.
+	std::function<bool(const Json::Value &)> hasProvenanceKey = [&hasProvenanceKey](const Json::Value & node)
+	{
+		if(node.isObject())
+		{
+			if(node.isMember("dataSetId") || node.isMember("filterId"))
+				return true;
+			for(const std::string & member : node.getMemberNames())
+				if(hasProvenanceKey(node[member]))
+					return true;
+		}
+		else if(node.isArray())
+			for(const Json::Value & element : node)
+				if(hasProvenanceKey(element))
+					return true;
+		return false;
+	};
+	QVERIFY2(!hasProvenanceKey(generatedTree[".meta"]), "generated .meta holds no dataSetId/filterId keys: the sidecar is the only provenance");
+
+	Json::Value container(Json::objectValue);	//the collision shape: "$" positional + named children
+	Json::Value positional(Json::arrayValue);
+	positional.append(hostFilterId);
+	positional.append(Json::Value());
+	container[ColumnEncoder::FILTERIDS_SELF]	= positional;
+	container["childOpt"]						= a->defaultFilter()->id();
+
+	QCOMPARE(ColumnEncoder::sidecarOwnFilterId(container), -1);	//"$" here is the positional array: no scalar own id
+	Json::Value ownScalar(Json::objectValue);
+	ownScalar[ColumnEncoder::FILTERIDS_SELF]	= hostFilterId;
+	QCOMPARE(ColumnEncoder::sidecarOwnFilterId(ownScalar), hostFilterId);							//"$" scalar = own option-level id
+	QVERIFY(ColumnEncoder::sidecarPositional(container) != nullptr);					//positional visible THROUGH the container
+	QCOMPARE(ColumnEncoder::sidecarChild(container, "childOpt").asInt(), a->defaultFilter()->id());
+	QVERIFY(ColumnEncoder::sidecarChild(container, ColumnEncoder::FILTERIDS_SELF).isNull());	//"$" is never a child lookup
+
+	std::set<int> fromContainer;
+	ColumnEncoder::collectFilterIdsFromSidecar(container, fromContainer);
+	QVERIFY2(fromContainer == std::set<int>({ hostFilterId, a->defaultFilter()->id() }), "the collector walks containers and nulls alike (queue = both filters)");
+
+	//and the one global table still decodes the produced token context-free:
+	Json::Value sweep(Json::arrayValue);
+	sweep.append(generatedTree["dependent"][0].asString());
+	ColumnEncoder::decodeJson(sweep);
+	QCOMPARE(sweep[0].asString(), colName);
+}
+
+void TestAll::testPerTermMixedProvenanceEncodesViaOwnViews()
+{
+	// the request-encoding single walk resolves PER NODE from the sidecar - a
+	//POSITIONAL array with genuinely mixed filters encodes each term in its own filter's VIEW
+	//(the flagship x@f1/x@f2 within ONE list) and the slice queue carries BOTH filters.
+	//This is the behavior the pre-flip lockstep could not express (one stamp per option).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();						//"Filter 0"
+	Filter * f1 = a->shownFilter();
+	a->addFilter();						//"Filter 1"
+	Filter * f2 = a->shownFilter();
+	QVERIFY2(f1 && f2 && f1 != f2, "two distinct named filters required");
+
+	a->showFilter(a->defaultFilter());	//neither position's filter is the shown one
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	QVERIFY2(colA && colA->type() != columnType::unknown, "debug.csv must hold a typed contNormal");
+	const std::string qualified	= colName + "." + columnTypeToString(colA->type());
+
+	const std::string token1 = f1->columnEncoder()->encode(qualified);
+	const std::string token2 = f2->columnEncoder()->encode(qualified);
+	QVERIFY2(token1 != token2 && !token1.empty() && !token2.empty(), "the two filter views must mint distinct tokens");
+
+	Json::Value options(Json::objectValue);
+	options["mixed"]				= Json::Value(Json::objectValue);
+	options["mixed"]["value"]		= Json::Value(Json::arrayValue);
+	options["mixed"]["value"].append(colName);
+	options["mixed"]["value"].append(colName);		//the SAME name twice, provenance differs per term
+	options["mixed"]["types"]		= Json::Value(Json::arrayValue);
+	options["mixed"]["types"].append("scale");
+	options["mixed"]["types"].append("scale");
+	options[".meta"]["mixed"]["shouldEncode"]	= true;
+	options[".filterIds"]["mixed"].append(f1->id());
+	options[".filterIds"]["mixed"].append(f2->id());
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "mixedPerTerm");
+
+	QCOMPARE(QString::fromStdString(options["mixed"][0].asString()), QString::fromStdString(token1));
+	QCOMPARE(QString::fromStdString(options["mixed"][1].asString()), QString::fromStdString(token2));
+
+	bool queued1 = false, queued2 = false;
+	for(const Json::Value & id : plan.multiDataSetJson["ids"])
+	{
+		if(id.asString() == std::to_string(f1->id())) queued1 = true;
+		if(id.asString() == std::to_string(f2->id())) queued2 = true;
+	}
+	QVERIFY2(queued1 && queued2, "both term filters are queued as slices (sidecar queue build)");
+
+	//and the walk's collected cols are attributed to the filters' own dataset (re-attribution):
+	QVERIFY(plan.primaryCols.count(std::make_pair(qualified, columnType::scale)) == 1);
+
+	//what R gets after the boundary strip: both encodings, no provenance anywhere.
+	Json::Value forR = options;
+	DataBridge::stripTransientProvenanceForR(forR);
+	QVERIFY(!forR.isMember(".filterIds"));
+	QCOMPARE(QString::fromStdString(forR["mixed"][0].asString()), QString::fromStdString(token1));
+	QVERIFY(forR.toStyledString().find("filterId") == std::string::npos);
+}
+
+void TestAll::testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder()
+{
+	// The pins for the single walk:
+	//  (1) the CONTAINER sidecar node (positional "$" + named row-child nodes, the
+	//      collision shape) encodes a row-object array per POSITION through the "$" entries,
+	//      and the row-object members ride the row's view exactly like the pre-flip option-level
+	//      stamp swallowed the whole array (children are NOT separately encoded here - today's
+	//      semantics, byte-preserved);
+	//  (2) the CLASSIC non-aware encoder (encodeColumnNamesinOptions, null resolver) ignores the
+	//      sidecar ENTIRELY: identical tree with and without `.filterIds` encodes byte-identically
+	//      and collects identical cols, always against the current encoder (legacy -
+	//      sidecar presence must never change non-aware behavior).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();
+	Filter * f1 = a->shownFilter();
+	a->addFilter();
+	Filter * f2 = a->shownFilter();
+	a->showFilter(a->defaultFilter());
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	const std::string qualified	= colName + "." + columnTypeToString(colA->type());
+	const std::string token1	= f1->columnEncoder()->encode(qualified);
+	const std::string token2	= f2->columnEncoder()->encode(qualified);
+	const std::string tokenShown = a->defaultFilter()->columnEncoder()->encode(qualified);
+
+	// --- (1) container sidecar over a row-object array -------------------------------------------
+	Json::Value options(Json::objectValue);
+	Json::Value row1(Json::objectValue), row2(Json::objectValue);
+	row1["value"]	= colName;
+	row1["hyp"]		= colName;
+	row2["value"]	= colName;
+	row2["hyp"]		= colName;
+	options["comp"]	= Json::Value(Json::arrayValue);
+	options["comp"].append(row1);
+	options["comp"].append(row2);
+	options[".meta"]["comp"]["shouldEncode"]	= true;
+	options[".filterIds"]["comp"][ColumnEncoder::FILTERIDS_SELF].append(f1->id());
+	options[".filterIds"]["comp"][ColumnEncoder::FILTERIDS_SELF].append(f2->id());
+	options[".filterIds"]["comp"]["hyp"]		= f2->id();	//a named child node next to the "$" array
+
+	ColumnEncoder::setCurrentEncoder(f1->columnEncoder());	//resolver-free walk: proves below it is ignored
+	const ColumnEncoder::perDataSetColsPlusTypes cols = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+			options, true,
+			[ws](int & dataSetId, int filterId) -> ColumnEncoder *
+			{
+				if(filterId >= 0)
+					if(Filter * f = ws->filterById(filterId); f && f->data())
+					{
+						dataSetId = f->data()->id();
+						return f->columnEncoder();
+					}
+				DataSet * ds = ws->dataSetById(dataSetId);
+				return ds ? ds->shownEncoder() : nullptr;
+			},
+			a->id());
+
+	QCOMPARE(QString::fromStdString(options["comp"][0]["value"].asString()), QString::fromStdString(token1));	//row 0 via $[0]
+	QCOMPARE(QString::fromStdString(options["comp"][0]["hyp"].asString()),    QString::fromStdString(token1));	//row members ride the ROW view (today's whole-array semantics)
+	QCOMPARE(QString::fromStdString(options["comp"][1]["value"].asString()),  QString::fromStdString(token2));	//row 1 via $[1]
+	QCOMPARE(QString::fromStdString(options["comp"][1]["hyp"].asString()),    QString::fromStdString(token2));
+	QCOMPARE(cols.count(a->id()), size_t(1));																	//re-attribution lands on the filters' dataset
+	QVERIFY(cols.count(9999) == 0);
+
+	// --- (2) classic non-aware: the sidecar is invisible to it --------------------------------
+	Json::Value classicTree(Json::objectValue);
+	classicTree["dependent"]				= Json::Value(Json::objectValue);
+	classicTree["dependent"]["value"]		= Json::Value(Json::arrayValue);
+	classicTree["dependent"]["value"].append(colName);
+	classicTree["dependent"]["types"]		= Json::Value(Json::arrayValue);
+	classicTree["dependent"]["types"].append("scale");
+	classicTree[".meta"]["dependent"]["shouldEncode"]	= true;
+
+	Json::Value classicWithSidecar = classicTree;
+	classicWithSidecar[".filterIds"]["dependent"]		= Json::Value(Json::arrayValue);
+	classicWithSidecar[".filterIds"]["dependent"].append(f1->id());		//MIXED provenance that classic must ignore
+	classicWithSidecar[".filterIds"]["dependent"].append(Json::Value());
+
+	ColumnEncoder::setCurrentEncoder(a->defaultFilter()->columnEncoder());	//the legacy current-encoder indirection
+	const ColumnEncoder::colsPlusTypes plainCols	= ColumnEncoder::encodeColumnNamesinOptions(classicTree, true);
+	ColumnEncoder::setCurrentEncoder(a->defaultFilter()->columnEncoder());
+	const ColumnEncoder::colsPlusTypes sidecarCols	= ColumnEncoder::encodeColumnNamesinOptions(classicWithSidecar, true);
+
+	classicWithSidecar.removeMember(ColumnEncoder::FILTERIDS_MEMBER);	//only the transient tree itself may differ - the ENCODINGS must be byte-identical
+	QCOMPARE(QString::fromStdString(classicWithSidecar.toStyledString()), QString::fromStdString(classicTree.toStyledString()));
+	QCOMPARE(sidecarCols.size(), plainCols.size());
+	QVERIFY(sidecarCols == plainCols);
+	QCOMPARE(QString::fromStdString(classicTree["dependent"][0].asString()), QString::fromStdString(tokenShown));	//through the current encoder only - never f1's view
+	QVERIFY2(classicTree["dependent"][0].asString() != token1, "a classic run must not be dragged into a sidecar filter's namespace");
+}
+
+void TestAll::testPerFactorProvenanceEncodesViaOwnViews()
+{
+	// (the FactorsForm deferral closed): a factors option's sidecar is an
+	//ARRAY-OF-ARRAYS - element i = factor i's per-term positional filterId array (the generator
+	//FactorsFormBase::createFilterIds; here the generated shape is hand-written exactly as the
+	//walk consumes it). The engine walk must resolve it factor-positionally then term-positionally:
+	//  (1) a factor whose terms come from DIFFERENT filters encodes each term through ITS filter's
+	//      view (the flagship, per factor), and both factors' filters join the slice queue;
+	//  (2) the flagship twins ACROSS factors: the same column name in two factors of one form,
+	//      stamped with different filterIds, gets two distinct tokens (the same-name-different-
+	//      source case that motivated the twins rule, at factor granularity);
+	//  (3) an unqualified term position (null inside a factor's array) takes the shown-filter
+	//      fallback, exactly like a null in a flat per-term array (nulls never inherit);
+	//  (4) the boundary strip removes the whole sidecar; what R sees carries no provenance.
+	//Factor values are OBJECTS {name, title, indicators:{value, types}} - the discriminator shape
+	//(see the walk comment) - and the conversion produces the "<optionKey>" + "<optionKey>.types"
+	//members the encode arm then tokenizes per term.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();
+	Filter * f1 = a->shownFilter();
+	a->addFilter();
+	Filter * f2 = a->shownFilter();
+	QVERIFY2(f1 && f2 && f1 != f2, "two distinct named filters required");
+
+	a->showFilter(a->defaultFilter());	//neither factor term's filter is the shown one
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	QVERIFY2(colA && colA->type() != columnType::unknown, "debug.csv must hold a typed contNormal");
+	const std::string qualified = colName + "." + columnTypeToString(colA->type());
+
+	const std::string token1 = f1->columnEncoder()->encode(qualified);
+	const std::string token2 = f2->columnEncoder()->encode(qualified);
+	const std::string tokenShown = a->defaultFilter()->columnEncoder()->encode(qualified);
+	QVERIFY2(token1 != token2 && token1 != tokenShown, "the three views must mint distinct tokens");
+
+	//--- (1)+(2)+(3): two factors; factor 1 holds the twin contNormal@f1 + contNormal@null,
+	//factor 2 holds contNormal@f2. The option key ("indicators") is the FactorsForm default for
+	//non-interaction forms; the shape mirrors FactorsFormBase::createEngineValue.
+	Json::Value options(Json::objectValue);
+	Json::Value factor1(Json::objectValue), factor2(Json::objectValue);
+	factor1["name"] = "Factor1";	factor1["title"] = "Factor 1";
+	factor1["indicators"]["value"].append(colName);
+	factor1["indicators"]["value"].append(colName);
+	factor1["indicators"]["types"].append("scale");
+	factor1["indicators"]["types"].append("scale");
+	factor2["name"] = "Factor2";	factor2["title"] = "Factor 2";
+	factor2["indicators"]["value"].append(colName);
+	factor2["indicators"]["types"].append("scale");
+	options["factors"] = Json::Value(Json::arrayValue);
+	options["factors"].append(factor1);
+	options["factors"].append(factor2);
+	options[".meta"]["factors"]["shouldEncode"] = true;
+	options[".filterIds"]["factors"] = Json::Value(Json::arrayValue);
+	options[".filterIds"]["factors"].append(Json::Value(Json::arrayValue));		//factor 1: two terms
+	options[".filterIds"]["factors"][0].append(f1->id());
+	options[".filterIds"]["factors"][0].append(Json::Value());					//null = unqualified term
+	options[".filterIds"]["factors"].append(Json::Value(Json::arrayValue));		//factor 2: one term
+	options[".filterIds"]["factors"][1].append(f2->id());
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "perFactor");
+
+	//factor 1, term 0: through f1's view; term 1 (null): the shown-filter fallback; factor 2: f2's view.
+	//The converted value lives under the option key ("indicators"), the types copy next to it.
+	QCOMPARE(QString::fromStdString(options["factors"][0]["indicators"][0].asString()), QString::fromStdString(token1));
+	QCOMPARE(QString::fromStdString(options["factors"][0]["indicators"][1].asString()), QString::fromStdString(tokenShown));
+	QCOMPARE(QString::fromStdString(options["factors"][1]["indicators"][0].asString()), QString::fromStdString(token2));
+	//the structural factor members are not column references - they stay untouched
+	QCOMPARE(QString::fromStdString(options["factors"][0]["name"].asString()), QString("Factor1"));
+	QCOMPARE(QString::fromStdString(options["factors"][1]["title"].asString()), QString("Factor 2"));
+	//the types copy rides along, untouched (type names are not column names)
+	QCOMPARE(QString::fromStdString(options["factors"][0]["indicators.types"][0].asString()), QString("scale"));
+
+	//the queue: both factor filters (the null position contributes nothing, the analysis' own
+	//default filter always rides along)
+	bool queued1 = false, queued2 = false;
+	for(const Json::Value & id : plan.multiDataSetJson["ids"])
+	{
+		if(id.asString() == std::to_string(f1->id())) queued1 = true;
+		if(id.asString() == std::to_string(f2->id())) queued2 = true;
+	}
+	QVERIFY2(queued1 && queued2, "both factors' filters are queued as slices");
+
+	//the walk's wanted cols are attributed per term to the term filter's dataset (re-attribution)
+	QVERIFY(plan.primaryCols.count(std::make_pair(qualified, columnType::scale)) >= 1);
+
+	//--- (4) the strip: R never sees the sidecar, tokens intact
+	Json::Value forR = options;
+	DataBridge::stripTransientProvenanceForR(forR);
+	QVERIFY(!forR.isMember(".filterIds"));
+	QCOMPARE(QString::fromStdString(forR["factors"][1]["indicators"][0].asString()), QString::fromStdString(token2));
+	QVERIFY(forR.toStyledString().find("filterId") == std::string::npos);
+}
+
+void TestAll::testPerFactorSidecarCollectorAndDiscriminatorNoMisfire()
+{
+	// the two remaining walk-level pins:
+	//  (1) the queue collector recurses the ARRAY-OF-ARRAYS sidecar (int leaves nested two levels
+	//      deep) - the queue build must see every factor's every term filter;
+	//  (2) the discriminator CANNOT misfire on the existing flat shapes - each is pinned by
+	//      running the walk and asserting the pre-post byte identity:
+	//      (a) a flat term array with a flat int|null sidecar (BoundControlTerms shape) keeps the
+	//          flat per-term semantics - an array ELEMENT can never be read as a factor array;
+	//      (b) an array-of-OBJECTS value (the FactorLevelList shape) with a SCALAR sidecar node
+	//          stays on the whole-element path (positional == null, the new case never fires);
+	//      (c) the ComponentsList container shape ({"$": flat ints, named child}) over a
+	//          row-object array keeps the per-ROW semantics pinned by
+	//          testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder - the "$" entries are
+	//          ints, never arrays, so the per-factor case cannot fire;
+	//      (d) a value that is an array of objects with NO sidecar at all stays untouched.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();
+	Filter * f1 = a->shownFilter();
+	a->addFilter();
+	Filter * f2 = a->shownFilter();
+	a->showFilter(a->defaultFilter());
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName = "contNormal";
+	Column * colA = a->column(colName);
+	const std::string qualified = colName + "." + columnTypeToString(colA->type());
+	const std::string token1 = f1->columnEncoder()->encode(qualified);
+	const std::string token2 = f2->columnEncoder()->encode(qualified);
+
+	//--- (1) the collector walks the array-of-arrays ---------------------------------------------
+	std::set<int> ids;
+	Json::Value perFactor(Json::arrayValue);
+	perFactor.append(Json::Value(Json::arrayValue));
+	perFactor[0].append(f1->id());
+	perFactor[0].append(Json::Value());
+	perFactor.append(Json::Value(Json::arrayValue));
+	perFactor[1].append(f2->id());
+	ColumnEncoder::collectFilterIdsFromSidecar(perFactor, ids);
+	QVERIFY2(ids == std::set<int>({ f1->id(), f2->id() }), "the collector sees every factor's term filters through the nested arrays");
+	//and through the container-demoted shape (placeOptionFilterIds collision) just the same
+	Json::Value container(Json::objectValue);
+	container[ColumnEncoder::FILTERIDS_SELF] = perFactor;
+	std::set<int> idsContainer;
+	ColumnEncoder::collectFilterIdsFromSidecar(container, idsContainer);
+	QVERIFY2(idsContainer == ids, "the container-wrapped array-of-arrays collects identically");
+
+	//--- (2a) flat term array + flat sidecar: byte-identical to the pre-post flat semantics -------
+	//Controlling case: even a sidecar whose elements are ARRAYS (the new shape) must NOT be
+	//applied per-factor when the value's elements are NOT objects - the discriminator is the
+	//value's element shape first. Here the value is a flat string array, so the old flat read
+	//applies: element arrays read as non-int positions -> the shown-filter fallback for every term.
+	Json::Value flat(Json::objectValue);
+	flat["list"]["value"].append(colName);
+	flat["list"]["value"].append(colName);
+	flat["list"]["types"].append("scale");
+	flat["list"]["types"].append("scale");
+	flat[".meta"]["list"]["shouldEncode"] = true;
+	flat[".filterIds"]["list"] = Json::Value(Json::arrayValue);
+	flat[".filterIds"]["list"].append(Json::Value(Json::arrayValue));	//a "factor" element on a FLAT value...
+	flat[".filterIds"]["list"][0].append(f1->id());
+	flat[".filterIds"]["list"].append(Json::Value(Json::arrayValue));
+	flat[".filterIds"]["list"][1].append(f2->id());
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	bridge.prepareMultiDataSetRun(flat, a->id(), "", "discriminatorFlat");
+
+	//both terms fell back to the shown filter (the array elements are not term ids) - the flat
+	//read is preserved, the per-factor case never fired on a non-object value element
+	QCOMPARE(QString::fromStdString(flat["list"][0].asString()), QString::fromStdString(a->defaultFilter()->columnEncoder()->encode(qualified)));
+	QCOMPARE(QString::fromStdString(flat["list"][1].asString()), QString::fromStdString(a->defaultFilter()->columnEncoder()->encode(qualified)));
+
+	//--- (2b) array-of-objects value + SCALAR sidecar: whole-element path (FactorLevelList shape) -
+	Json::Value levels(Json::objectValue);
+	Json::Value lvlRow(Json::objectValue);
+	lvlRow["name"] = "FacA 1";
+	lvlRow["levels"].append("contNormal");
+	levels["facLevels"] = Json::Value(Json::arrayValue);
+	levels["facLevels"].append(lvlRow);
+	levels[".meta"]["facLevels"]["shouldEncode"] = true;
+	levels[".meta"]["facLevels"]["encodeThis"] = "FacA 1";
+	levels[".filterIds"]["facLevels"] = f1->id();		//scalar node: positional == null
+
+	DataBridge bridge2(ProcessInfo::currentPID());
+	bridge2.prepareMultiDataSetRun(levels, a->id(), "", "discriminatorScalarSidecar");
+
+	//the whole element rode the scalar node's view (today's semantics, unchanged): the level name
+	//inside the row object is encoded through f1's view, exactly like the pre-post scalar read
+	QCOMPARE(QString::fromStdString(levels["facLevels"][0]["levels"][0].asString()), QString::fromStdString(token1));
+
+	//--- (2c) ComponentsList container shape: "$" ints drive per-row (pin stays green) -----------
+	Json::Value rows(Json::objectValue);
+	Json::Value row1(Json::objectValue), row2(Json::objectValue);
+	row1["value"] = colName;	row2["value"] = colName;
+	rows["comp"] = Json::Value(Json::arrayValue);
+	rows["comp"].append(row1);
+	rows["comp"].append(row2);
+	rows[".meta"]["comp"]["shouldEncode"] = true;
+	rows[".filterIds"]["comp"][ColumnEncoder::FILTERIDS_SELF].append(f1->id());
+	rows[".filterIds"]["comp"][ColumnEncoder::FILTERIDS_SELF].append(f2->id());
+
+	DataBridge bridge3(ProcessInfo::currentPID());
+	bridge3.prepareMultiDataSetRun(rows, a->id(), "", "discriminatorContainer");
+
+	QCOMPARE(QString::fromStdString(rows["comp"][0]["value"].asString()), QString::fromStdString(token1));
+	QCOMPARE(QString::fromStdString(rows["comp"][1]["value"].asString()), QString::fromStdString(token2));
+
+	//--- (2d) array-of-objects value, NO sidecar at all: untouched by the new case ---------------
+	Json::Value plain(Json::objectValue);
+	Json::Value plainRow(Json::objectValue);
+	plainRow["name"] = "FacA 1";
+	plainRow["levels"].append(colName);
+	plain["facLevels"] = Json::Value(Json::arrayValue);
+	plain["facLevels"].append(plainRow);
+	plain[".meta"]["facLevels"]["shouldEncode"] = true;
+
+	DataBridge bridge4(ProcessInfo::currentPID());
+	bridge4.prepareMultiDataSetRun(plain, a->id(), "", "discriminatorNoSidecar");
+
+	//no sidecar -> the enclosing (shown-filter fallback) namespace, exactly the pre-post read
+	QCOMPARE(QString::fromStdString(plain["facLevels"][0]["levels"][0].asString()),
+			 QString::fromStdString(a->defaultFilter()->columnEncoder()->encode(qualified)));
+}
+
+void TestAll::testPlaceOptionFilterIdsCollisionDemotion()
+{
+	// the generators' sidecar placement (AnalysisBase::placeOptionFilterIds).
+	//A stamped list's positional node sharing its slot with stamped row-child nodes is demoted
+	//into the container's reserved "$" member (the grammar the engine walk consumes - pinned by
+	//testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder); trees without a collision
+	//keep the schema byte-identically. This placement is what a ComponentsList/TableFields
+	//aware form hits the moment it generates (crash bomb closed by the flip).
+	QVector<std::string> none;
+	Json::Value ids12(Json::arrayValue);	ids12.append(11);	ids12.append(12);
+
+	//positional array node + stamped row child under it -> container { "$": [11,12], child: 22 }
+	Json::Value root(Json::objectValue);
+	AnalysisBase::placeOptionFilterIds(root, none, "dep", ids12);
+	AnalysisBase::placeOptionFilterIds(root, {"dep"}, "child", Json::Value(22));
+	QVERIFY2(root["dep"].isObject(), "colliding positional node becomes a container");
+	QVERIFY(root["dep"]["$"].isArray());
+	QCOMPARE(root["dep"]["$"][0].asInt(), 11);
+	QCOMPARE(root["dep"]["$"][1].asInt(), 12);
+	QCOMPARE(root["dep"]["child"].asInt(), 22);
+	QCOMPARE(ColumnEncoder::sidecarOwnFilterId(root["dep"]), -1);					//"$" is the array: no scalar own id
+	QVERIFY(ColumnEncoder::sidecarPositional(root["dep"]) != nullptr);			//positional still resolves through "$"
+	QCOMPARE(ColumnEncoder::sidecarChild(root["dep"], "child").asInt(), 22);		//named child lookup works beside "$"
+
+	//scalar own node + child -> container { "$": 7, kid: 8 }
+	Json::Value scalarRoot(Json::objectValue);
+	AnalysisBase::placeOptionFilterIds(scalarRoot, none, "list", Json::Value(7));
+	AnalysisBase::placeOptionFilterIds(scalarRoot, {"list"}, "kid", Json::Value(8));
+	QCOMPARE(ColumnEncoder::sidecarOwnFilterId(scalarRoot["list"]), 7);
+	QCOMPARE(scalarRoot["list"]["kid"].asInt(), 8);
+
+	//no collision: byte-identical to the schema (plain ints/arrays, no containers)
+	Json::Value clean(Json::objectValue), expect(Json::objectValue);
+	Json::Value arr(Json::arrayValue);	arr.append(2);	arr.append(Json::Value());
+	AnalysisBase::placeOptionFilterIds(clean, none, "a", Json::Value(1));
+	AnalysisBase::placeOptionFilterIds(clean, none, "b", arr);
+	expect["a"] = 1;
+	expect["b"].append(2);	expect["b"].append(Json::Value());
+	QCOMPARE(clean.toStyledString(), expect.toStyledString());
+
+	//deep row chain: the demotion follows the path down (parentNames nest like meta's)
+	Json::Value deep(Json::objectValue);
+	AnalysisBase::placeOptionFilterIds(deep, none, "outer", ids12);
+	AnalysisBase::placeOptionFilterIds(deep, {"outer", "rows"}, "inner", Json::Value(5));
+	QVERIFY(deep["outer"]["$"].isArray());
+	QCOMPARE(deep["outer"]["rows"]["inner"].asInt(), 5);
+}
+
+void TestAll::testPreAttachOptionsParkAndAreNeverReadForBehaviour()
+{
+	// options arriving while no form is attached PARK as pending JSON (this is
+	//exactly what Analyses::create does with the optionsJson from a file entry). Nothing that
+	//drives BEHAVIOUR may read them before setAnalysisUp applies them once through the controls:
+	// - createOptionsJson(Engine|Storage) - the generated run/save trees - stay empty
+	//   (an analysis without a form has no component state to generate from);
+	// - referencedDataSets()/usesDataSet()/dataSpec() DEFER ({} / "" - no crash) instead of
+	//   reading the pending .meta; the pre-gate behaviour (a pending dataSetId stamp claiming a
+	//   dataset) is exactly what the gate pins dead;
+	// - run dispatch is gated on form()->initialized() (Analysis::shouldRun) and RPC
+	//   analysis_run refuses without a form, so the pending tree can never ride a request.
+	//No PreferencesModel bootstrap: touching AnalysisForm makes PreferencesModelBase lazy-create
+	//its own base singleton, and a second `new PreferencesModel` would assert against it.
+	QVERIFY(_newPkgWithDataSet());
+
+	AnalysisBase analysis;
+	analysis.setMultiDataSetAware(true);
+
+	Json::Value pending(Json::objectValue);
+	pending["depA"]							= Json::Value(Json::objectValue);
+	pending["depA"]["value"]				= Json::Value(Json::arrayValue);
+	pending["depA"]["value"].append("Score");
+	pending["depA"]["types"]				= Json::Value(Json::arrayValue);
+	pending["depA"]["types"].append("scale");
+	pending[".meta"]["depA"]["shouldEncode"]	= true;
+	pending[".meta"]["depA"]["dataSetId"]	= 4242;		//dev-fixture stamps: must NOT steer behaviour
+	pending[".meta"]["depA"]["filterId"]	= 11;
+
+	analysis.setPendingOptions(pending, true);	//the pre-attach parking path (Analyses::create)
+
+	QVERIFY(analysis.pendingOptions() == pending);															//parked as-is (bootstrap data, not behaviour)
+	QVERIFY(analysis.hasPendingOptions());
+	QVERIFY(analysis.createdWithOptions());																	//the explicit isNewAnalysis successor
+	QCOMPARE(analysis.createOptionsJson(BoundControl::Engine), Json::Value(Json::objectValue));			//run/save generation: nothing pre-attach
+	QCOMPARE(analysis.createOptionsJson(BoundControl::Storage), Json::Value(Json::objectValue));
+	QCOMPARE(analysis.referencedDataSets().size(), size_t{0});											//gate: pending .meta never read
+	QVERIFY2(!analysis.usesDataSet(4242), "a pending dataSetId stamp must not make the analysis claim a dataset before attach");
+	QCOMPARE(analysis.dataSpec().toStdString(), std::string());											//no crash, no pending-read
+
+	//And attach consumes the parking lot wholesale: setAnalysisUp TAKES the pending tree once
+	//(takePendingOptions) and lets the CONTROLS own the state from then on, so after attach neither
+	//the lying stamps nor the pending values survive except what a control bound. A bare C++ form
+	//has no controls (the apply-once-with-controls semantics live in the qml harness, see
+	//tst_generatedOptionsJsonAware.qml::test_pending_json_applied_once_and_stamps_never_read);
+	//what this pins here is the clear side: a re-attach never reads the old parking.
+	AnalysisForm form;
+	form.setAnalysis(&analysis);			//_formCompleted is false in this harness, so this alone changes nothing
+	QVERIFY(analysis.pendingOptions() == pending);	//still parked - attach has NOT happened, behaviour still deferred
+	QCOMPARE(analysis.referencedDataSets().size(), size_t{0});
+}
+
+// (ORIGIN-AUTHORITATIVE): the participation rule of the signal-driven provider
+//update (ListModel::reconcileProviderChange, the successor of the deleted restamp walk): a
+//term follows iff its stamp equals the pool's reported participation key - the filterId the
+//affected terms currently carry (the old selection id on a host switch, the unchanged
+//selection id on a data change, -1 for a hostless pool). -1 terms are governed by the
+//provider WITHOUT host selection: they participate exactly when the key is -1 (a hostless
+//pool's update, whose delivered universe is -1-stamped too, so their identity never changes
+//through this) and never on a qualified update. Foreign-stamped terms (a typed copy from
+//another pool's selection) keep their provenance.
+//The behaviour half runs ONE reconcile on a bare model: the pool's rebuilt universe is
+//delivered birth-stamped, survivors are REPLACED BY the delivered term (stamp rides the
+//replacement, never an in-place re-point), vanished names die, everything else stays.
+void TestAll::testProviderUpdateParticipationKeepsForeignStamps()
+{
+	QVERIFY(ListModel::termFollowsProviderChange(11, 11));	//owned (the key names this provider): follows
+	QVERIFY(!ListModel::termFollowsProviderChange(12, 11));	//foreign stamp: keeps its own
+	QVERIFY(!ListModel::termFollowsProviderChange(-1, 11));	//unqualified: governed by the host-bound fallback chain, never by a host switch
+	QVERIFY(!ListModel::termFollowsProviderChange(12, -1));	//qualified term under a hostless pool's update: foreign stays foreign
+	QVERIFY(ListModel::termFollowsProviderChange(-1, -1));	//hostless pool's update: the default provider's own references
+
+	//Minimal harness: no listView (the reconcile and this seed path touch none of the
+	//listView-dependent machinery; unknown-typed terms keep _setAllowedType from
+	//dereferencing it) and no sources (_initTerms's initRowControls=false skips the connect).
+	class ReconcileTestModel : public ListModel
+	{
+	public:
+		ReconcileTestModel() : ListModel(nullptr) {}
+		void seedTerms(const Terms& terms) { _initTerms(terms, Terms::RelatedValuesPerTerm(), false); }
+	};
+
+	Terms universe;	//the pool's rebuilt universe, delivered birth-stamped: x is served through 13 now
+	Term delivered(tq("x"));
+	delivered.setFilterId(13);
+	universe.add(delivered);
+
+	ReconcileTestModel model;
+	Terms seeded;
+	Term owned(tq("x"));		owned.setFilterId(11);
+	Term foreign(tq("y"));		foreign.setFilterId(12);
+	Term fresh(tq("z"));						//unqualified intake
+	seeded.add(owned);
+	seeded.add(foreign);
+	seeded.add(fresh);
+	model.seedTerms(seeded);
+
+	Terms vanished = model.reconcileProviderChange(11, universe);	//the provider moved 11 -> 13 and still serves x
+
+	QCOMPARE(vanished.size(), size_t{0});
+	const Terms &after = model.terms();
+	QCOMPARE(after.size(), size_t{3});
+	QCOMPARE(after.at(0).value(),		tq("x"));
+	QCOMPARE(after.at(0).filterId(),	13);	//followed its provider - by REPLACEMENT (the delivered term's stamp)
+	QCOMPARE(after.at(1).value(),		tq("y"));
+	QCOMPARE(after.at(1).filterId(),	12);	//kept its own provenance (would encode via filter 12's view)
+	QCOMPARE(after.at(2).value(),		tq("z"));
+	QCOMPARE(after.at(2).filterId(),	-1);	//unqualified intake stays -1 (governed by the host-bound fallback chain, never re-pointed)
+
+	//And a name the provider dropped dies: x is gone from the delivered universe, so the
+	//owned reference x@11 is returned as vanished (the caller removes it with its family
+	//machinery - the reconcile itself only reports). The foreign y@12 keeps its provenance
+	//even though THIS universe has no y either: its own provider may still serve it.
+	Terms universeWithoutThem;
+	Term unrelated(tq("w"));
+	unrelated.setFilterId(13);
+	universeWithoutThem.add(unrelated);
+
+	ReconcileTestModel model2;
+	Terms seeded2;
+	Term ownedX(tq("x"));		ownedX.setFilterId(11);
+	Term foreignY(tq("y"));		foreignY.setFilterId(12);
+	seeded2.add(ownedX);
+	seeded2.add(foreignY);
+	model2.seedTerms(seeded2);
+
+	Terms vanished2 = model2.reconcileProviderChange(11, universeWithoutThem);	//the provider dropped x
+
+	QCOMPARE(vanished2.size(), size_t{1});		//x@11 died with its provider
+	QCOMPARE(vanished2.at(0).value(),	tq("x"));
+	QCOMPARE(vanished2.at(0).filterId(), 11);
+	const Terms &after2 = model2.terms();
+	QCOMPARE(after2.size(), size_t{2});			//the removal is the caller's job; the model still holds both until then
+	QCOMPARE(after2.at(0).value(),		tq("x"));
+	QCOMPARE(after2.at(0).filterId(),	11);	//vanished: reported, not silently rewritten
+	QCOMPARE(after2.at(1).value(),		tq("y"));
+	QCOMPARE(after2.at(1).filterId(),	12);	//foreign stamp survives a vanished name - its provider may still serve it
+}
+
+// THE Storage file format. Every term family serializes its terms as clean typed
+//objects {name, filterId?, types} (filterId omitted when -1) under the existing row/optionKey
+//discipline, and the tree round-trips losslessly: Storage-json -> Terms(json) applier ->
+//regenerate -> BYTE-EQUAL. The flagship is the same-name-different-filter twin pair: x@11 and
+//x@12 in one list must survive the cycle as two distinct terms (strict Term equality
+//makes that real - before the identity fix they would have deduped). The Engine wire is NOT
+//touched by this (frozen R contract + positional .filterIds sidecar, see
+//testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR); the applier accepts both shapes
+//with byte-identical semantics on the engine side (testApplierAcceptsEngineAndStorageShapes).
+void TestAll::testStorageTermShapeAndRoundTrip()
+{
+	struct Cycle { Json::Value storage, again; Terms reparsed; };
+
+	//helper: one full storage cycle - serialize, parse back through the ONE applier, regenerate.
+	auto storageCycle = [](const Terms& terms, const std::string& keyValue, const std::string& keyLabel,
+	                       bool containsInteractions, bool hasRowComponent, bool isSingleRow,
+	                       const Terms::RelatedValuesPerTerm& related = Terms::RelatedValuesPerTerm()) -> Cycle
+	{
+		Cycle c;
+		c.storage	= terms.getStorageOptions(related, keyValue, keyLabel, containsInteractions, hasRowComponent, isSingleRow);
+
+		Terms::RelatedValuesPerTerm parsedRelated;
+		c.reparsed	= Terms(c.storage, keyValue, keyLabel, parsedRelated, containsInteractions, hasRowComponent);
+
+		c.again		= c.reparsed.getStorageOptions(parsedRelated, keyValue, keyLabel, containsInteractions, hasRowComponent, isSingleRow);
+		return c;
+	};
+
+	// --- simple term list, incl. the flagship twins x@11 / x@12 ---------------------------------
+	Term x11(tq("x"), columnType::scale);		x11.setFilterId(11);
+	Term x12(tq("x"), columnType::nominal);	x12.setFilterId(12);
+	Term y(tq("y"), columnType::ordinal);
+	Terms simple;	simple.add(x11);	simple.add(x12);	simple.add(y);
+	QCOMPARE(simple.size(), size_t{3});			//strict equality keeps the twins side by side
+
+	Cycle sc = storageCycle(simple, "value", "", false, false, false);
+	QCOMPARE(sc.again.toStyledString(), sc.storage.toStyledString());								//lossless round trip
+	QVERIFY(sc.storage.isObject() && sc.storage.isMember("value") && !sc.storage.isMember("types"));	//no outer positional types in Storage (per-term now)
+	QCOMPARE(sc.storage["value"].size(), 3u);
+	QCOMPARE(sc.storage["value"][0]["name"].asString(),		"x");
+	QCOMPARE(sc.storage["value"][0]["types"][0].asString(),	"scale");
+	QCOMPARE(sc.storage["value"][0]["filterId"].asInt(),		11);
+	QCOMPARE(sc.storage["value"][1]["filterId"].asInt(),		12);
+	QCOMPARE(sc.storage["value"][2]["name"].asString(),		"y");
+	QVERIFY(!sc.storage["value"][2].isMember("filterId"));		//unqualified: member omitted (never null)
+	QCOMPARE(sc.reparsed.size(), size_t{3});					//twins did NOT dedupe through the cycle
+	QVERIFY(sc.reparsed.terms()[0] == x11);
+	QVERIFY(sc.reparsed.terms()[1] == x12);
+	QVERIFY(sc.reparsed.terms()[2] == y);
+
+	// --- interaction terms: rows keep the optionKey, the nested entry is the term object ---------
+	Term abTerm(QStringList() << tq("a") << tq("b"), {columnType::scale, columnType::nominal});
+	abTerm.setFilterId(7);
+	Terms inter;	inter.add(abTerm);	inter.add(Term(tq("c"), columnType::scale));
+	Cycle ic = storageCycle(inter, "components", "", true, false, false);
+	QCOMPARE(ic.again.toStyledString(), ic.storage.toStyledString());
+	QCOMPARE(ic.storage["optionKey"].asString(), "components");
+	QVERIFY(ic.storage["value"][0]["components"]["name"].isArray());			//interaction name = component array
+	QCOMPARE(ic.storage["value"][0]["components"]["name"][0].asString(), "a");
+	QCOMPARE(ic.storage["value"][0]["components"]["filterId"].asInt(), 7);
+	QCOMPARE(ic.reparsed.size(), size_t{2});
+	QCOMPARE(ic.reparsed.terms()[0].filterId(), 7);
+	QCOMPARE(ic.reparsed.terms()[0].size(), size_t{2});							//both components survived
+	QCOMPARE(ic.reparsed.terms()[0].at(0).toStdString(), std::string("a"));
+	QCOMPARE(ic.reparsed.terms()[0].at(1).toStdString(), std::string("b"));
+	QCOMPARE(ic.reparsed.terms()[1].filterId(), -1);
+
+	// --- row-bearing list: optionKey discipline kept, children stay in today's row shape --------
+	Term z(tq("z"), columnType::scale);	z.setFilterId(3);
+	Terms rows;	rows.add(z);
+	Terms::RelatedValuesPerTerm related;
+	QMap<QString, Json::Value> kids;
+	kids[tq("keep")]	= Json::Value(true);
+	kids[tq("extra")]	= Json::Value("s");
+	related[TermRowKey(tq("z"), 3)]	= kids;	// rows key on (value, filterId)
+	Cycle rc = storageCycle(rows, "variable", "", false, true, false, related);
+	QCOMPARE(rc.again.toStyledString(), rc.storage.toStyledString());
+	QCOMPARE(rc.storage["optionKey"].asString(), "variable");
+	QCOMPARE(rc.storage["value"][0]["variable"]["name"].asString(),	"z");
+	QCOMPARE(rc.storage["value"][0]["variable"]["filterId"].asInt(),	3);
+	QCOMPARE(rc.storage["value"][0]["keep"].asBool(),	true);					//row children survive as siblings
+	QCOMPARE(rc.storage["value"][0]["extra"].asString(),	"s");
+	QCOMPARE(rc.reparsed.size(), size_t{1});
+	QVERIFY(rc.reparsed.terms()[0] == z);
+	QCOMPARE(rc.reparsed.terms()[0].filterId(), 3);							//the loaded stamp survives the applier
+
+	// --- single row: one term object as the value; empty keeps today's "" -----------------------
+	Term w(tq("w"), columnType::scale);	w.setFilterId(5);
+	Terms single;	single.add(w);
+	Cycle wc = storageCycle(single, "value", "", false, false, true);
+	QCOMPARE(wc.again.toStyledString(), wc.storage.toStyledString());
+	QCOMPARE(wc.storage["value"]["name"].asString(), "w");
+	QCOMPARE(wc.storage["value"]["filterId"].asInt(), 5);
+	QCOMPARE(wc.reparsed.size(), size_t{1});
+	QVERIFY(wc.reparsed.terms()[0] == w);
+
+	Terms emptySingle, emptyList;
+	const Json::Value emptyS	= emptySingle.getStorageOptions({}, "value", "", false, false, true);
+	const Json::Value emptyL	= emptyList.getStorageOptions({}, "value", "", false, false, false);
+	QCOMPARE(emptyS["value"].asString(),			"");						//empty single-row mirrors the engine shape
+	QVERIFY(emptyL["value"].isArray() && emptyL["value"].size() == 0);
+	Cycle es = storageCycle(emptySingle, "value", "", false, false, true);	//both round-trip empty -> empty
+	QCOMPARE(es.again.toStyledString(), es.storage.toStyledString());
+	QCOMPARE(es.reparsed.size(), size_t{0});
+	Cycle el = storageCycle(emptyList, "value", "", false, false, false);
+	QCOMPARE(el.again.toStyledString(), el.storage.toStyledString());
+	QCOMPARE(el.reparsed.size(), size_t{0});
+}
+
+// the single JSON->Terms applier accepts BOTH shapes - the new Storage
+//per-term objects AND every engine/legacy input - with byte-identical parse semantics on the
+//legacy side: released files (plain names, `{value,types}`, single-string types, bare arrays,
+//R-syntax-simplified interaction rows, factor-level rows) keep parsing to exactly the terms they
+//did before Phase 5, all UNQUALIFIED (-1) - no filterId key exists in any of them and none is
+//fabricated. A Storage entry is only claimed by the strict shape test (name + types/filterId,
+//no other members), which is what keeps `{value,types}` engine rows and `name`+`levels`
+//factor rows out of the new branch.
+void TestAll::testApplierAcceptsEngineAndStorageShapes()
+{
+	auto parse = [](const Json::Value& optionValue, const std::string& keyValue = "value", const std::string& keyLabel = "",
+	               bool containsInteractions = false, bool hasRowComponent = false)
+	{
+		Terms::RelatedValuesPerTerm related;
+		return Terms(optionValue, keyValue, keyLabel, related, containsInteractions, hasRowComponent);
+	};
+
+	// --- engine shape {value, types}: today's parse, all terms -1 (permanently supported) --
+	Json::Value engine(Json::objectValue);
+	engine["value"].append("x");
+	engine["value"].append("y");
+	engine["types"].append("scale");
+	engine["types"].append("nominal");
+	Terms fromEngine = parse(engine);
+	QCOMPARE(fromEngine.size(), size_t{2});
+	QCOMPARE(fromEngine.terms()[0].filterId(), -1);
+	QCOMPARE(fromEngine.terms()[1].filterId(), -1);
+	QCOMPARE(fromEngine.terms()[0].value().toStdString(), "x");
+	QCOMPARE(fromEngine.terms()[1].types()[0], columnType::nominal);
+
+	// ...and the same tree with a lying filterId member at OPTION level (the preview shape):
+	//unknown option members never steered the parse and still do not (terms stay -1).
+	Json::Value previewShape = engine;
+	previewShape["filterIds"].append(11);
+	previewShape["filterIds"].append(12);
+	Terms fromPreview = parse(previewShape);
+	QCOMPARE(fromPreview.size(), size_t{2});
+	QCOMPARE(fromPreview.terms()[0].filterId(), -1);
+	QCOMPARE(fromPreview.terms()[1].filterId(), -1);
+
+	// --- bare forms: string, string array, pre-0.19 single-string types --------------------------
+	QCOMPARE(parse(Json::Value("x")).size(), size_t{1});
+	QCOMPARE(parse(Json::Value("x")).terms()[0].filterId(), -1);
+	Json::Value bare(Json::arrayValue);	bare.append("x");	bare.append("y");
+	Terms fromBare = parse(bare);
+	QCOMPARE(fromBare.size(), size_t{2});
+	QCOMPARE(fromBare.terms()[0].value().toStdString(), "x");
+	Json::Value legacyTypes(Json::objectValue);
+	legacyTypes["value"]	= "x";
+	legacyTypes["types"]	= "scale";				//pre-0.19 single string
+	Terms fromLegacy = parse(legacyTypes);
+	QCOMPARE(fromLegacy.size(), size_t{1});
+	QCOMPARE(fromLegacy.terms()[0].types()[0], columnType::scale);
+
+	// --- R-syntax-simplified interaction list (bare entries become {keyValue:[components]}) ------
+	Json::Value simplified(Json::arrayValue);
+	simplified.append("a");
+	Json::Value pair(Json::arrayValue);	pair.append("a");	pair.append("b");
+	simplified.append(pair);
+	Terms fromSimplified = parse(simplified, "components", "", true, false);
+	QCOMPARE(fromSimplified.size(), size_t{2});
+	QCOMPARE(fromSimplified.terms()[1].size(), size_t{2});
+	QCOMPARE(fromSimplified.terms()[1].filterId(), -1);
+
+	// --- factor-level rows (object with `name` + `levels`) stay on the row path ------------------
+	Json::Value factorRow(Json::objectValue);
+	factorRow["name"]	= "Fac 1";
+	factorRow["levels"].append("Lev 1");
+	factorRow["levels"].append("Lev 2");
+	Json::Value factorOption(Json::arrayValue);
+	factorOption.append(factorRow);
+	Terms factorRows = parse(factorOption, "name");
+	QCOMPARE(factorRows.size(), size_t{1});
+	QCOMPARE(factorRows.terms()[0].value().toStdString(), "Fac 1");
+	QCOMPARE(factorRows.terms()[0].filterId(), -1);					//a `name` member alone is NOT a term object
+
+	// --- engine row object {keyValue:{value,types}} keeps parsing exactly as before --------------
+	Json::Value engineRow(Json::objectValue);
+	engineRow["components"]["value"].append("a");
+	engineRow["components"]["value"].append("b");
+	engineRow["components"]["types"].append("scale");
+	engineRow["components"]["types"].append("nominal");
+	Json::Value engineRows(Json::arrayValue);	engineRows.append(engineRow);
+	Terms::RelatedValuesPerTerm noKids;
+	Terms fromEngineRow = parse(engineRows, "components", "", true, false);
+	QCOMPARE(fromEngineRow.size(), size_t{1});
+	QCOMPARE(fromEngineRow.terms()[0].size(), size_t{2});
+	QCOMPARE(fromEngineRow.terms()[0].filterId(), -1);
+
+	// --- storage shapes parse to the SAME values, plus the typed filterIds ------------------------
+	Json::Value storageSimple(Json::objectValue);
+	storageSimple["value"][0]["name"]			= "x";
+	storageSimple["value"][0]["types"].append("scale");
+	storageSimple["value"][0]["filterId"]		= 11;
+	storageSimple["value"][1]["name"]			= "x";
+	storageSimple["value"][1]["types"].append("nominal");
+	storageSimple["value"][1]["filterId"]		= 12;
+	Terms fromStorage = parse(storageSimple);
+	QCOMPARE(fromStorage.size(), size_t{2});						//the twins coexist
+	QCOMPARE(fromStorage.terms()[0].filterId(), 11);
+	QCOMPARE(fromStorage.terms()[1].filterId(), 12);
+	QCOMPARE(fromStorage.terms()[1].types()[0], columnType::nominal);
+	//engine and storage entries with the same content agree on value+types, differ only on provenance:
+	QCOMPARE(fromStorage.terms()[0].value(), fromEngine.terms()[0].value());
+	QCOMPARE(fromStorage.terms()[0].types(), fromEngine.terms()[0].types());
+
+	//nested storage row ({keyValue: {name, types, filterId}}) + siblings stay children -------------
+	Json::Value storageRow(Json::objectValue);
+	storageRow["variable"]["name"]			= "z";
+	storageRow["variable"]["types"].append("scale");
+	storageRow["variable"]["filterId"]		= 3;
+	storageRow["keep"]						= true;
+	Json::Value storageRows(Json::arrayValue);	storageRows.append(storageRow);
+	Terms::RelatedValuesPerTerm relatedOut;
+	Terms fromStorageRow{ storageRows, "variable", "", relatedOut, false, true };
+	QCOMPARE(fromStorageRow.size(), size_t{1});
+	QCOMPARE(fromStorageRow.terms()[0].filterId(), 3);
+	QVERIFY(relatedOut.contains(TermRowKey(tq("z"), 3)));				// keyed by the term's row identity (z@3)
+	QCOMPARE(relatedOut[TermRowKey(tq("z"), 3)][tq("keep")].asBool(), true);	//row children collected as today
+
+	//a stale/foreign loaded id is KEPT verbatim (the applier never repairs, never drops it - the
+	//engine-side filterById miss turns it into the shown-filter fallback at run time):
+	Json::Value stale(Json::objectValue);
+	stale["value"][0]["name"]		= "gone";
+	stale["value"][0]["types"]		= "scale";
+	stale["value"][0]["filterId"]	= 999999;
+	Terms fromStale = parse(stale);
+	QCOMPARE(fromStale.size(), size_t{1});
+	QCOMPARE(fromStale.terms()[0].filterId(), 999999);
+	//an explicit null filterId (the QML->Json bridge legacy; generated Storage OMITS instead)
+	//reads as unqualified without disqualifying the shape:
+	Json::Value nullFid(Json::objectValue);
+	nullFid["value"][0]["name"]		= "n";
+	nullFid["value"][0]["types"]	= "scale";
+	nullFid["value"][0]["filterId"]	= Json::Value();
+	Terms fromNull = parse(nullFid);
+	QCOMPARE(fromNull.size(), size_t{1});
+	QCOMPARE(fromNull.terms()[0].value().toStdString(), "n");
+	QCOMPARE(fromNull.terms()[0].filterId(), -1);
+}
+
+// (the row-control zoo case): RelatedValuesPerTerm and the row
+//assembly keyed row children by term.value() — the NAME — so same-name rows behind different
+//filters (the same-name twins) shared ONE entry: the second row's children clobbered the first's, in
+//the applier, in getOptions/getStorageOptions and across the save round-trip. Keys are now
+//TermRowKey (value + filterId) with Terms::relatedValuesForTerm(): exact hit,
+//else the (name,-1) entry (the applier writes engine-shape input unqualified and the list stamps
+//its host afterwards — that bind flow must keep finding the loaded children), else empty.
+void TestAll::testRelatedValuesPerTermRowKeying()
+{
+	// --- the flagship: twin rows with OWN children through the applier ---------------------------
+	// x@11 keep=true and x@12 keep=false in one storage tree. Pre-fix both landed on the key "x"
+	// and only the LAST row's children survived (silent clobber); the value strings were identical
+	// so even the TERMS dedup risk lurked behind it (strict equality keeps the terms).
+	Json::Value row11(Json::objectValue);
+	row11["variable"]["name"]		= "x";
+	row11["variable"]["types"].append("scale");
+	row11["variable"]["filterId"]	= 11;
+	row11["keep"]					= true;
+	Json::Value row12(Json::objectValue);
+	row12["variable"]["name"]		= "x";
+	row12["variable"]["types"].append("scale");
+	row12["variable"]["filterId"]	= 12;
+	row12["keep"]					= false;
+	Json::Value twinRows(Json::arrayValue);
+	twinRows.append(row11);
+	twinRows.append(row12);
+
+	Terms::RelatedValuesPerTerm applierOut;
+	Terms twins{ twinRows, "variable", "", applierOut, false, true };
+	QCOMPARE(twins.size(), size_t{2});										//both rows parsed
+	QCOMPARE(applierOut.size(), 2);											//and kept SEPARATE - the clobber is gone
+	QCOMPARE(applierOut.value(TermRowKey(tq("x"), 11)).value(tq("keep")).asBool(), true);
+	QCOMPARE(applierOut.value(TermRowKey(tq("x"), 12)).value(tq("keep")).asBool(), false);
+
+	// --- generation: each twin row aggregates its OWN children (engine AND storage shape) --------
+	Json::Value engine = twins.getOptions(applierOut, "variable", "", false, true, false);
+	QCOMPARE(engine["value"].size(), 2u);
+	QCOMPARE(engine["value"][0]["keep"].asBool(), true);
+	QCOMPARE(engine["value"][1]["keep"].asBool(), false);
+	QCOMPARE(engine["value"][0]["variable"][0].asString(), "x");			//Term::toJson keeps the component array (no useValueAndType here)
+	QCOMPARE(engine["value"][1]["variable"][0].asString(), "x");			//same name, different children
+
+	Json::Value storage = twins.getStorageOptions(applierOut, "variable", "", false, true, false);
+	QCOMPARE(storage["value"].size(), 2u);
+	QCOMPARE(storage["value"][0]["keep"].asBool(), true);
+	QCOMPARE(storage["value"][1]["keep"].asBool(), false);
+	QCOMPARE(storage["value"][0]["variable"]["filterId"].asInt(), 11);
+	QCOMPARE(storage["value"][1]["variable"]["filterId"].asInt(), 12);
+
+	//save round-trip stays lossless per row (parse -> regenerate byte-equal):
+	Terms::RelatedValuesPerTerm reparsedRelated;
+	Terms reparsed(storage, "variable", "", reparsedRelated, false, true);
+	Json::Value storageAgain = reparsed.getStorageOptions(reparsedRelated, "variable", "", false, true, false);
+	QCOMPARE(storageAgain.toStyledString(), storage.toStyledString());
+
+	// --- no cross-twin bleed: a stamped term never sees the OTHER twin's children ----------------
+	Term x11(tq("x"), columnType::scale);	x11.setFilterId(11);
+	Term x12(tq("x"), columnType::scale);	x12.setFilterId(12);
+	Terms::RelatedValuesPerTerm only11;
+	QMap<QString, Json::Value> kids11;
+	kids11[tq("keep")] = Json::Value(true);
+	only11[TermRowKey(tq("x"), 11)] = kids11;
+	QCOMPARE(Terms::relatedValuesForTerm(only11, x11).value(tq("keep")).asBool(), true);
+	QVERIFY(Terms::relatedValuesForTerm(only11, x12).isEmpty());			//the (x,12) row gets NOTHING from (x,11)
+
+	// --- the bind flow keeps working: applier wrote (x,-1), the list stamped host 11 --------------
+	// (engine-shape input carries no provenance; ListModel::_setAllowedType stamps after the parse,
+	// so the stamped term must still find the unqualified children through the fallback leg.)
+	Term unq(tq("x"), columnType::scale);
+	Terms::RelatedValuesPerTerm legacySeed;
+	legacySeed[TermRowKey(tq("x"), -1)] = kids11;
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, unq).value(tq("keep")).asBool(), true);		//exact (x,-1) hit
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, x11).value(tq("keep")).asBool(), true);		//(x,11) miss -> (x,-1) fallback
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, x12).value(tq("keep")).asBool(), true);		//fallback is namespace-blind ONLY for the never-qualified key
+	//an exact key always wins over the fallback:
+	legacySeed[TermRowKey(tq("x"), 12)] = QMap<QString, Json::Value>{{ tq("keep"), Json::Value(false) }};
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, x11).value(tq("keep")).asBool(), true);		//x@11 -> (x,-1) = true
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, x12).value(tq("keep")).asBool(), false);	//x@12 -> exact = false
+
+	// --- legacy equivalence: same-name rows in one ENGINE tree share the single (x,-1) entry -----
+	//(the wire carries no provenance - last row wins exactly like the old name key did)
+	Json::Value engineTwins(Json::arrayValue);
+	Json::Value engineRowA(Json::objectValue);	engineRowA["variable"]	= "x";	engineRowA["keep"]	= true;
+	Json::Value engineRowB(Json::objectValue);	engineRowB["variable"]	= "x";	engineRowB["keep"]	= false;
+	engineTwins.append(engineRowA);
+	engineTwins.append(engineRowB);
+	Terms::RelatedValuesPerTerm engineRelated;
+	Terms fromEngine{ engineTwins, "variable", "", engineRelated, false, true };
+	QCOMPARE(engineRelated.size(), 1);										//ONE (x,-1) key, as before the fix
+	QCOMPARE(Terms::relatedValuesForTerm(engineRelated, fromEngine.terms()[0]).value(tq("keep")).asBool(), false);	//last write wins, for BOTH rows
+
+	// --- TermRowKey identity helpers ------------------------------------------------------------
+	QCOMPARE(TermRowKey(tq("x"), 11).asTerm().filterId(), 11);
+	QCOMPARE(TermRowKey(tq("x"), 11).asTerm().value(), tq("x"));
+	QCOMPARE(TermRowKey(tq("x"), -1).asTerm().filterId(), -1);
+	QVERIFY(TermRowKey(tq("x"), -1) != TermRowKey(tq("x"), 11));
+	QVERIFY(TermRowKey(tq("x"), 11) < TermRowKey(tq("x"), 12));				//QMap order: name first, filterId tiebreak
+	QVERIFY(TermRowKey(tq("a"), 99) < TermRowKey(tq("b"), 0));
+
+	//the unqualified-key cleanup rule of setUpRowControls (name wildcard for -1 keys, exact for
+	//qualified ones) holds through Terms::containsValue(asTerm()):
+	Terms model;
+	model.add(x11);
+	QVERIFY(model.containsValue(TermRowKey(tq("x"), 11).asTerm()));			//exact twin present
+	QVERIFY(!model.containsValue(TermRowKey(tq("x"), 12).asTerm()));			//the other twin is NOT present
+	QVERIFY(model.containsValue(TermRowKey(tq("x"), -1).asTerm()));			//-1 key = name wildcard
+}
+
+// NO stamp migration - the fallback rules must carry every released file
+//forever, and the Storage format must not create a new failure mode when a loaded filterId
+//is stale: the engine-side walk degrades it to the same host-bound fallback, never a crash and never
+//a phantom slice (the ids survive restamp - see testApplierAcceptsEngineAndStorageShapes and the
+//qml twin test for the survival half; ListModel restamp ownership is testRestampOwnershipRuleKeepsForeignStamps).
+void TestAll::testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	Column * col = a->column("contNormal");
+	QVERIFY2(col && col->type() != columnType::unknown, "debug.csv must contain a typed contNormal");
+	const std::string qualified = col->name() + "." + columnTypeToString(col->type());
+
+	Filter * primaryFilter = a->defaultFilter();
+	QVERIFY(primaryFilter);
+	a->encoder().setCurrentNames(a->getColumnTypesMap());	//remint like provideAndUpdateDataSet would, before minting the expected token
+	ColumnEncoder::setCurrentEncoder(a->shownEncoder());	//the legacy fallback anchor, as provideAndUpdateDataSet would
+	const std::string legacyToken = primaryFilter->columnEncoder()->encode(qualified);
+	QVERIFY2(legacyToken != qualified, "sanity: the token must actually be minted");
+
+	//prepareMultiDataSetRun encodes the tree IN PLACE, so every leg needs a fresh copy of the
+	//released-format option tree: plain names, {value, types}, .meta WITHOUT any provenance keys
+	//and no .filterIds anywhere (exactly what an old file's options generate once the all-`-1`
+	//parse runs through the Engine generator).
+	auto releasedTree = [&col]()
+	{
+		Json::Value released(Json::objectValue);
+		released["dependent"]				= Json::Value(Json::objectValue);
+		released["dependent"]["value"]		= Json::Value(Json::arrayValue);
+		released["dependent"]["value"].append(col->name());
+		released["dependent"]["types"]		= Json::Value(Json::arrayValue);
+		released["dependent"]["types"].append(columnTypeToString(col->type()));
+		released[".meta"]["dependent"]["shouldEncode"] = true;	//no dataSetId/filterId: they never shipped
+		return released;
+	};
+
+	//one bridge for all legs (per-call construction with the same pid is not the tested pattern)
+	DataBridge bridge(ProcessInfo::currentPID());
+
+	// --- (1) the released tree through the full run preparation: every node inherits the
+	//         resolver's dataset-level fallback (the shown-filter VIEW).
+	Json::Value released = releasedTree();
+
+	const DataBridge::MultiDataSetRunPlan plan1 = bridge.prepareMultiDataSetRun(released, a->id(), "", "releasedTreeTest");
+
+	//the engine walk reshapes {value,types} into the flat R contract (same read as the sidecar-queue test):
+	QCOMPARE(QString::fromStdString(released["dependent"][0].asString()), QString::fromStdString(legacyToken));	//encoded through the shown-filter fallback
+	QVERIFY(!released.isMember(ColumnEncoder::FILTERIDS_MEMBER));															//nothing to strip, nothing appeared
+	QStringList queued1;
+	for (const Json::Value & id : plan1.multiDataSetJson["ids"])
+		queued1 << QString::fromStdString(id.asString());
+	QCOMPARE(queued1, QStringList() << QString::number(primaryFilter->id()));												//own slice only, no phantom
+
+	// --- (2) a LOADED stale stamp reaching the engine (Storage carried x@999999 verbatim, the
+	//         generator emits it positionally): the positional miss must fall back exactly like
+	//         the null position - same token as (1) - and the dead id must not queue a slice.
+	Json::Value staleStamp = releasedTree();
+	staleStamp[".filterIds"]["dependent"].append(999999);	//dead filter id (never existed in this db)
+
+	const DataBridge::MultiDataSetRunPlan plan2 = bridge.prepareMultiDataSetRun(staleStamp, a->id(), "", "deadStampTest");
+
+	QCOMPARE(QString::fromStdString(staleStamp["dependent"][0].asString()), QString::fromStdString(legacyToken));	//shown-filter fallback, not a crash, not a wrong view
+	QStringList queued2;
+	for (const Json::Value & id : plan2.multiDataSetJson["ids"])
+		queued2 << QString::fromStdString(id.asString());
+	QCOMPARE(queued2, QStringList() << QString::number(primaryFilter->id()));												//the dead id is skipped, no phantom slice
+	QVERIFY(!queued2.contains("999999"));
+
+	// --- (3) a scalar (option-level) dead stamp behaves identically (the combobox/host shape).
+	Json::Value staleScalar = releasedTree();
+	staleScalar[".filterIds"]["dependent"] = 999999;
+
+	const DataBridge::MultiDataSetRunPlan plan3 = bridge.prepareMultiDataSetRun(staleScalar, a->id(), "", "deadScalarTest");
+
+	QCOMPARE(QString::fromStdString(staleScalar["dependent"][0].asString()), QString::fromStdString(legacyToken));
+	QStringList queued3;
+	for (const Json::Value & id : plan3.multiDataSetJson["ids"])
+		queued3 << QString::fromStdString(id.asString());
+	QVERIFY(!queued3.contains("999999"));																					//dead scalar stamp queues nothing either
+}
+
+// the legacy-prefix result decoder. Released .jasp files (archive < 7.0.0) can
+//persist `JaspColumn_<i>_Encoded` tokens inside stored results; at load the shim materializes
+//that namespace from the CURRENT dataset columns (same pure mint, released default prefix) and
+//sweeps the results tree only. Honest limitations, pinned here: unchanged columns decode,
+//indices outside the mint (deleted columns) stay raw, and a churned column set can only
+//ever resolve index-by-index (order changed ⟹ different name or raw - best effort by design,
+//never a crash). Read-side only: nothing registers into the global decode table.
+// repack a zip while replacing (or adding) whole text entries - used to turn a
+//current-format archive into a released-format fixture (manifest downgrade + crafted
+//analyses.json) without faking the internal.sqlite the importer insists on.
+static bool _rewriteZipReplacingEntries(const QString & src, const QString & dst, const QMap<QString, QByteArray> & replacements)
+{
+	struct archive * in = archive_read_new();
+	archive_read_support_format_zip(in);
+
+	if(archive_read_open_filename(in, qPrintable(src), 16384) != ARCHIVE_OK)
+	{
+		Log::log() << "_rewriteZipReplacingEntries: open src failed: " << archive_error_string(in) << std::endl;
+		archive_read_free(in);
+		return false;
+	}
+
+	struct archive * out = archive_write_new();
+	archive_write_set_format_zip(out);
+
+	if(archive_write_open_filename(out, qPrintable(dst)) != ARCHIVE_OK)
+	{
+		Log::log() << "_rewriteZipReplacingEntries: open dst failed: " << archive_error_string(out) << std::endl;
+		archive_read_free(in);
+		archive_write_free(out);
+		return false;
+	}
+
+	bool ok = true;
+	struct archive_entry * entry = nullptr;
+
+	while(archive_read_next_header(in, &entry) == ARCHIVE_OK)
+	{
+		const QString name = tq(archive_entry_pathname(entry));
+
+		if(replacements.contains(name))
+		{
+			const QByteArray content = replacements.value(name);
+
+			struct archive_entry * outEntry = archive_entry_new();
+			archive_entry_set_pathname(	outEntry, qPrintable(name));
+			archive_entry_set_size(		outEntry, content.size());
+			archive_entry_set_filetype(	outEntry, AE_IFREG);
+			archive_entry_set_perm(		outEntry, 0644);
+
+			ok = ok && archive_write_header(out, outEntry) == ARCHIVE_OK
+				&& archive_write_data(out, content.constData(), content.size()) == la_ssize_t(content.size());
+
+			if(!ok) Log::log() << "_rewriteZipReplacingEntries: replace-write failed for " << fq(name).c_str() << ": " << archive_error_string(out) << std::endl;
+
+			archive_entry_free(outEntry);
+			archive_read_data_skip(in);
+		}
+		else
+		{
+			ok = ok && archive_write_header(out, entry) == ARCHIVE_OK;
+			if(!ok) Log::log() << "_rewriteZipReplacingEntries: copy-header failed for " << fq(name).c_str() << ": " << archive_error_string(out) << std::endl;
+
+			char buff[64 * 1024];
+			la_ssize_t bytesRead;
+
+			while(ok && (bytesRead = archive_read_data(in, buff, sizeof(buff))) > 0)
+			{
+				ok = archive_write_data(out, buff, bytesRead) == bytesRead;
+				if(!ok) Log::log() << "_rewriteZipReplacingEntries: write failed for " << fq(name).c_str() << ": " << archive_error_string(out) << std::endl;
+			}
+
+			if(bytesRead < 0)
+			{ Log::log() << "_rewriteZipReplacingEntries: read failed for " << fq(name).c_str() << ": " << archive_error_string(in) << std::endl; ok = false; }
+		}
+	}
+
+	archive_write_close(out);
+	archive_write_free(out);
+	archive_read_free(in);
+
+	return ok;
+}
+
+void TestAll::testLegacyResultTokenDecoder()
+{
+	QVERIFY(_newPkgWithDataSet());
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	const ColumnEncoder::colTypeMap names = ds->getColumnTypesMap();
+	QVERIFY(!names.empty());
+
+	//tokens of the released namespace (class default prefix, no dataset segment):
+	const std::string bareToken	= ColumnEncoder::tokenForNameInNames(names, "contNormal", ColumnEncoder::LEGACY_DEFAULT_PREFIX);
+	const std::string qualToken	= ColumnEncoder::tokenForNameInNames(names, "contNormal.scale", ColumnEncoder::LEGACY_DEFAULT_PREFIX);
+	QVERIFY2(!bareToken.empty() && !qualToken.empty(), "debug.csv must yield legacy tokens for contNormal");
+	const std::string deadToken	= std::string(ColumnEncoder::LEGACY_DEFAULT_PREFIX) + "999999_Encoded";	//beyond any mint: a column long deleted
+
+	//the current D-shaped token - the legacy sweep must not even look at it (different prefix):
+	const std::string dToken = ColumnEncoder::tokenForNameInNames(names, "contNormal", "JASPColumn_D1_F1_");
+	QVERIFY(!dToken.empty());
+
+	auto resultsTree = [&](const std::string & bare, const std::string & qual, const std::string & dead, const std::string & dshape)
+	{
+		Json::Value entry(Json::objectValue);
+		Json::Value table(Json::objectValue);
+		table["title"]										= "Descriptives of " + bare;		//token embedded in running text
+		table["cells"][0]["content"][0]						= bare;
+		table["cells"][0]["content"][1]						= qual;
+		table["cells"][0]["note"]							= dead;
+		table["cells"][0]["future"]							= dshape;
+		entry["results"][0]									= table;
+		entry["options"]["ignored"]["value"][0]	= bare;										//NOT a results tree - must stay untouched by the results-only sweep
+		return entry;
+	};
+
+	// --- (1) the released-file gate (archive 6.x < 7.0.0) decodes the results tree ----------------
+	Json::Value entry = resultsTree(bareToken, qualToken, deadToken, dToken);
+	Analyses::decodeLegacyResultTokens(entry, Version("6.0.0"));
+
+	QCOMPARE(entry["results"][0]["cells"][0]["content"][0].asString(), std::string("contNormal"));							//bare token -> original name
+	QCOMPARE(entry["results"][0]["cells"][0]["content"][1].asString(), std::string("contNormal"));							//qualified token -> bare name too (released decode semantics)
+	QCOMPARE(entry["results"][0]["title"].asString(), std::string("Descriptives of contNormal"));							//embedded occurrences sweep like the released decodeJson
+	QCOMPARE(entry["results"][0]["cells"][0]["note"].asString(), deadToken);													//outside the mint -> raw
+	QCOMPARE(entry["results"][0]["cells"][0]["future"].asString(), dToken);													//current-namespace token untouched
+	QCOMPARE(entry["options"]["ignored"]["value"][0].asString(), bareToken);													//and only the results tree is swept
+
+	// --- (2) single-writer rule: the shim materialized NOTHING into the global table ---------
+	QCOMPARE(tq(ColumnEncoder::decode(bareToken)), tq(bareToken));															//live decode stays strict
+	QVERIFY(!ColumnEncoder::shouldDecode(bareToken));
+
+	// --- (3) the gate: this branch's own files (7.x) are never swept --------------------------------
+	Json::Value entryOwn = resultsTree(bareToken, qualToken, deadToken, dToken);
+	Analyses::decodeLegacyResultTokens(entryOwn, JASPExporter::jaspArchiveVersion);
+	QCOMPARE(entryOwn["results"][0]["cells"][0]["content"][0].asString(), bareToken);										//byte-identical, still raw tokens
+	QCOMPARE(entryOwn["results"][0]["cells"][0]["content"][1].asString(), qualToken);
+
+	//an unknown (empty) version predates the archive field: best effort, so it decodes
+	Json::Value entryUnknown = resultsTree(bareToken, qualToken, deadToken, dToken);
+	Analyses::decodeLegacyResultTokens(entryUnknown, Version());
+	QCOMPARE(entryUnknown["results"][0]["cells"][0]["content"][0].asString(), std::string("contNormal"));
+
+	// --- (4) churn: drop a column that sorts BEFORE contNormal - its old token now indexes a
+	//         different mint slot. Best effort means exactly this: never contNormal again (it is
+	//         misattributed to whatever lives there now or raw), and never a crash. The dataset
+	//         must not have changed since save for the decode to be truthful - documented loudly.
+	ColumnEncoder::colTypeMap churned = names;
+	QVERIFY(churned.erase("contBinom") == 1);																				//alphabetically before contNormal
+	Json::Value entryChurned = resultsTree(bareToken, qualToken, deadToken, dToken);
+	ColumnEncoder::decodeJsonLegacyTokens(entryChurned["results"], churned);
+	QVERIFY(entryChurned["results"][0]["cells"][0]["content"][0].asString() != "contNormal");	//the old token no longer truthfully means contNormal
+																																	//reaching this line at all is the no-crash contract.
+}
+
+// the upgrade path end to end over a RELEASED-format .jasp. A real current-build
+//archive is repacked with a released manifest (archive 6.0.0) and a released-shape analyses.json:
+//plain-name option arrays (no {value,types}), a dynamicModule that is not installed here (must be
+//skipped as today), and a report entry whose persisted results hold genuine bare-prefix tokens
+//for the CURRENT column order (unchanged columns) plus a dead index (a churned-away column).
+//Load through the real loader loop: tokens resolve, dead stays raw, no crash, no error. Re-save:
+//our own envelope - results carry no live legacy tokens any more and the options member is the
+//Storage generator's output (a module-backed option-binding file loop is not constructible in
+//this module-free test binary; the Storage save/reload equivalence itself is pinned by
+//testStorageTermShapeAndRoundTrip and the twin round trip in tst_generatedOptionsJsonAware.qml).
+//Reload of the re-saved tree at archive 7: the legacy gate skips it and the results are
+//byte-identical (lossless).
+void TestAll::testReleasedFormatFileUpgradesOnLoad()
+{
+	// --- the legacy tokens for the debug.csv column order (the dataset the fixture will carry) ----
+	{
+		QVERIFY(_newPkgWithDataSet());
+	}
+	const ColumnEncoder::colTypeMap names = _pkg->dataSet()->getColumnTypesMap();
+	const std::string tokNormal	= ColumnEncoder::tokenForNameInNames(names, "contNormal", ColumnEncoder::LEGACY_DEFAULT_PREFIX);
+	const std::string tokGender	= ColumnEncoder::tokenForNameInNames(names, "facGender",  ColumnEncoder::LEGACY_DEFAULT_PREFIX);
+	const std::string tokGone	= std::string(ColumnEncoder::LEGACY_DEFAULT_PREFIX) + "424242_Encoded";	//dead index: a column churned away long ago
+	QVERIFY2(!tokNormal.empty() && !tokGender.empty(), "the fixture dataset must yield legacy tokens for contNormal/facGender");
+
+	// --- hand over to a real app context -------------------------------------------------------------
+	//MainWindow owns PreferencesModel/Upgrader/Analyses/DataSetPackage (the report Analysis ctor
+	//and the upgrader step need them) and re-creates the session dir, so everything fixture-side
+	//is built AFTER it, exactly like the CLI sync-chain tests do their open().
+	DatabaseInterface::closeInterfaces();	//as TestAll::cleanup does - the DatabaseInterface is not a child of the package
+	delete _pkg;
+	_pkg = nullptr;
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	// --- the staged current-format archive (same debug.csv dataset) ----------------------------------
+	{
+		CSVImporter importer;
+		importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), DataSetPackage::pkg()->createDataSet(), [](int){});
+	}
+	QVERIFY(DataSetPackage::pkg()->dataSet() && DataSetPackage::pkg()->dataSet()->column("contNormal"));
+
+	const std::string stageFile = TempFiles::createSpecific("mdslegacy", "stage.jasp");
+	JASPExporter::createSnapshot("mdslegacy_snapshot_");
+	JASPExporter().saveDataSet(stageFile, [](int){});
+	QVERIFY2(QFileInfo::exists(tq(stageFile)), "staged archive must be written");
+
+	// --- crafted released-format analyses.json ---------------------------------------------------
+	Json::Value entry(Json::objectValue);
+	entry["id"]			= 0;
+	entry["name"]		= "legacyReport";
+	entry["title"]		= "legacyReport";
+	entry["isReport"]	= true;
+	entry["status"]		= "complete";
+	entry["options"]["variables"].append("contNormal");				//released plain-name form
+	entry["options"]["variables"].append("facGender");
+	Json::Value table(Json::objectValue);
+	table["title"]					= "Summary of " + tokNormal;
+	table["cells"][0]["content"]	= tokGender;
+	table["cells"][1]["content"]	= tokGone;
+	entry["results"]["items"][0]	= table;				//results is an object root (setResults reads its .meta; real files always are)
+
+	Json::Value moduleEntry(Json::objectValue);						//module absent from this binary: cleanly skipped
+	moduleEntry["id"]				= 1;
+	moduleEntry["name"]				= "Descriptives";
+	moduleEntry["title"]			= "noModuleHere";
+	moduleEntry["status"]			= "complete";
+	moduleEntry["dynamicModule"]["name"]	= "jaspDoesNotHaveThis";
+	moduleEntry["dynamicModule"]["id"]		= "legacyAnalysis";
+	moduleEntry["options"]["variables"].append("contNormal");
+
+	Json::Value doc(Json::objectValue);
+	doc["analyses"].append(entry);
+	doc["analyses"].append(moduleEntry);
+	doc["meta"] = Json::objectValue;
+
+	// --- repack with a released manifest ----------------------------------------------------------
+	QMap<QString, QByteArray> replacements;
+	replacements["analyses.json"]	= tq(doc.toStyledString()).toUtf8();
+	replacements["manifest.json"]	= "{\n\t\"jaspArchiveVersion\" : \"6.0.0\",\n\t\"jaspVersion\" : \"0.96.1\"\n}\n";
+
+	const QString fixtureFile = tq(TempFiles::createSpecific("mdslegacy", "released.jasp"));
+	QVERIFY2(_rewriteZipReplacingEntries(tq(stageFile), fixtureFile, replacements), "fixture repack failed");
+
+	const ManifestInfo fixtureManifest = ArchiveReader::readManifest(fq(fixtureFile));
+	QCOMPARE(tq(fixtureManifest.jaspArchiveVersion), QString("6.0.0"));
+	QCOMPARE(tq(fixtureManifest.jaspVersion), QString("0.96.1"));
+
+	// --- import the released-format file (the same sync importer the open-flow runs) -------------------
+	DataSetPackage::pkg()->reset();
+	JASPImporter::loadDataSet(fq(fixtureFile), [](int){});
+	QCOMPARE(DataSetPackage::pkg()->archiveVersion().major(), 6u);
+	QVERIFY2(DataSetPackage::pkg()->dataSet() && DataSetPackage::pkg()->dataSet()->column("contNormal"), "the fixture dataset must come back");
+
+	// --- the real loader loop, gated with the file's archive version -----------------------------------
+	bool errorFound = false;
+	std::stringstream errorMsg;
+	mw->_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, nullptr, DataSetPackage::pkg()->archiveVersion());
+
+	//the missing-module entry reports the (expected) module error - same as opening such a file in
+	//the real app; nothing else may error and nothing may crash.
+	QVERIFY2(!errorFound || tq(errorMsg.str()).contains("Module"), qPrintable(tq(errorMsg.str())));
+	QCOMPARE(mw->_analyses->count(), 1);																				//report entry loaded, module entry skipped as today
+
+	const std::string afterLoad = mw->_analyses->get(0)->results().toStyledString();
+	QVERIFY2(afterLoad.find(tokNormal) == std::string::npos, "the legacy contNormal token must have decoded at load");
+	QVERIFY2(afterLoad.find(tokGender) == std::string::npos, "the legacy facGender token must have decoded at load");
+	QVERIFY2(afterLoad.find("contNormal") != std::string::npos && afterLoad.find("facGender") != std::string::npos, "the decoded names are present");
+	QVERIFY2(afterLoad.find(tokGone) != std::string::npos, "the dead-index token stays raw, no crash");
+
+	// --- re-save: our own envelope ---------------------------------------------------------------------
+	const Json::Value resaved = mw->_analyses->asJson();
+	const std::string resavedDump = resaved.toStyledString();
+	QVERIFY(resavedDump.find(tokNormal) == std::string::npos);															//what we save carries no live legacy tokens...
+	QVERIFY(resavedDump.find(tokGone) != std::string::npos);																//...only the raw dead one survives verbatim
+	QVERIFY(resaved["analyses"][0].isMember("options"));																	//the save path emits the (Storage-generated) options member
+
+	// --- reload the re-saved tree at archive 7: gate skips, results lossless -----------------------------
+	mw->_analyses->clear();
+	bool error2 = false;
+	std::stringstream errorMsg2;
+	mw->_analyses->loadAnalysesFromJaspFileJson(resaved["analyses"], resaved["meta"], error2, errorMsg2, nullptr, JASPExporter::jaspArchiveVersion);
+
+	QVERIFY2(!error2, qPrintable(tq(errorMsg2.str())));
+	QCOMPARE(mw->_analyses->count(), 1);
+	QCOMPARE(mw->_analyses->get(0)->results().toStyledString(), afterLoad);												//byte-equal through the save/reload cycle
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//Deleting MainWindow destroys its PreferencesModel, and the teardown path can leave a lazy
+	//BARE PreferencesModelBase behind - later tests in this binary install their model through
+	//the `if(!PreferencesModel::prefs()) new PreferencesModel(this)` guard (testSyncKeepMissingColumns
+	//et al.), which trips the base ctor's assert against a leftover plain base. Take whatever is
+	//there (virtual dtor resets the singleton) and hand them the guarded real model, parented to
+	//TestAll so it lives until the next cleanup just like theirs.
+	delete PreferencesModelBase::preferences();
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+
+void TestAll::testLoadFilteredDataFilterFirstProvenance()
+{
+	//DataBridge::updateOptionsAccordingToMeta loadFilteredData block: since the sidecar flip the
+	//anchor is the option's scalar `.filterIds` sidecar node (globally unique filter id, implies
+	//its dataset); the .meta filterId/dataSetId stamps are dead input - they lie here on purpose.
+	//b is made smaller than a: a dataSetId-anchored lookup would index a's 99 rows against b's
+	//short filter vector (unchecked out-of-bounds read), the sidecar-anchored one cannot.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	b->setRowCount(5);
+	b->runFilters();
+
+	Filter * bFilter = b->shownFilter();
+	QVERIFY(bFilter);
+	boolvec keepFive(5, true);
+	keepFive[1] = false;						//rows 2 of 5 filtered out
+	bFilter->setFilterVector(keepFive);
+
+	QVERIFY(a->rowCount() > 5);					//the mismatched sizes the old code would run past
+	QCOMPARE(b->rowCount(), 5);
+
+	DataBridge bridge(ProcessInfo::currentPID());
+
+	Json::Value options(Json::objectValue);
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["loadFilteredData"]["column"]	= a->column(0)->name();
+	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "NoSuchFilterName";	//forces the provenance path
+
+	//1) Cross-dataset provenance (a LYING dataSetId stamp, sidecar id lives in b): the sidecar is
+	//the anchor, the dead meta stamp cannot re-point anything. The old dataSetId-first behaviour
+	//would anchor on a, fail the name lookup and mix a's rows with b's short vector; the sidecar
+	//path never mixes the two (no OOB read, values computed over b).
+	options[".meta"]["filtered"]["dataSetId"]	= a->id();
+	options[".meta"]["filtered"]["filterId"]	= -1;
+	options[".filterIds"]["filtered"]			= bFilter->id();
+	bridge.updateOptionsAccordingToMeta(options);
+	QCOMPARE(options["filtered"]["rowIndices"].size(), 4u);	//5 rows of b minus the one b filters out
+
+	//2) Shown elsewhere, sidecar still decisive: re-anchor the request at a (the name path would
+	//stay on a); the sidecar id must still resolve to b - and the LYING meta dataSetId changes
+	//nothing.
+	ws->setShownDataSet(a->id());
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["dataSetId"]	= 987654;
+	bridge.updateOptionsAccordingToMeta(options);
+	QCOMPARE(options["filtered"]["rowIndices"].size(), 4u);
+	QCOMPARE(options["filtered"]["values"].size(), 4u);
+
+	//3) Legacy option: no sidecar scalar anywhere -> the old name-based path on the dataset the
+	//request anchors at (shown), unchanged. The dead meta dataSetId stays (and lies): from the
+	//flip on it is never consulted.
+	Filter * aFilter = a->createFilter("keepAllButFirst", true);
+	QVERIFY(aFilter);
+	boolvec keepN(a->rowCount(), true);
+	keepN[0] = false;
+	aFilter->setFilterVector(keepN);
+
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "keepAllButFirst";
+	options[".filterIds"].removeMember("filtered");				//no sidecar node -> name path
+	ws->setShownDataSet(a->id());								//the name path resolves in the anchored (shown) dataset
+	bridge.updateOptionsAccordingToMeta(options);
+	QCOMPARE(options["filtered"]["rowIndices"].size(), static_cast<Json::ArrayIndex>(a->rowCount()) - 1);
+	QCOMPARE(options["filtered"]["rowIndices"][0].asInt(), 2);	//row 1 filtered out, so it starts at 2
+
+	//4) Dead sidecar id AND an unresolvable filter name: nothing left to honour - the option keeps
+	//its current values, no crash.
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "NoSuchFilterName";
+	options[".filterIds"]["filtered"]							= 987654;
+	bridge.updateOptionsAccordingToMeta(options);
+	QVERIFY(!options["filtered"].isMember("rowIndices"));
+	QVERIFY(!options["filtered"].isMember("values"));
+}
+
+void TestAll::testPrepareMultiDataSetRunPrimarySliceKey()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+	QVERIFY(a->defaultFilter());
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	Json::Value options(Json::objectValue);
+
+	//A primary dataset with its default filter: "primary" carries that filter id and is a real key
+	//of the queued ids.
+	const DataBridge::MultiDataSetRunPlan withData = bridge.prepareMultiDataSetRun(options, a->id(), "", "primarySliceKeyTest");
+	const std::string primary = std::to_string(a->defaultFilter()->id());
+
+	QVERIFY2(withData.multiDataSetJson.isMember("primary"), "primary must be present when a primary filter exists");
+	QCOMPARE(withData.multiDataSetJson["primary"].asString(), primary);
+	QCOMPARE(withData.multiDataSetJson["ids"][0].asString(), primary);
+
+	//No dataset at all (empty workspace): there is no primary filter, so the member must be ABSENT,
+	//not "". jaspBase's runJaspResults keys on !is.null: an "" would surface as a non-NULL
+	//primarySliceKey attribute that is not a key of any slice.
+	while (ws->shownDataSet())
+		ws->deleteShownDataSet();
+
+	const DataBridge::MultiDataSetRunPlan empty = bridge.prepareMultiDataSetRun(options, -1, "", "primarySliceKeyTest");
+	QVERIFY2(!empty.multiDataSetJson.isMember("primary"), "no primary filter: the primary member must be absent, not empty");
+	QCOMPARE(empty.multiDataSetJson["ids"].size(), 0u);
+}
+
+namespace {
+
+// Minimal selection host for the provider/referencedDataSets tests: the registry is
+// host-type-agnostic, everything the provider and the reference computation need
+// comes through the JASPControl::selectedSelectionFilter() virtual. QPointer-guarded so a test
+// can delete a dataset under a host and watch the reference drop out instead of dangling.
+class TestSelectionHost : public JASPControl
+{
+public:
+	explicit TestSelectionHost(Filter * filter = nullptr) : JASPControl(), _filter(filter) {}
+	Filter			* selectedSelectionFilter() const override	{ return _filter; }
+	void			  setFilter(Filter * filter)					{ _filter = filter; }
+
+private:
+	QPointer<Filter>  _filter;
+};
+
+}
+
+void TestAll::testAnalysisBaseUsesDataSetWhenAware()
+{
+	// attached form required before references steer behaviour, and the
+	//references are component state - registered selection hosts (the TestSelectionHost seam,
+	//see testAnalysisProviderAggregatesSelectionHosts), not stamped mirror meta.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet   * a  = ws->shownDataSet();
+	QVERIFY(a && a->defaultFilter());
+
+	CSVImporter importer;
+	DataSet   * b  = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->defaultFilter());
+	QVERIFY2(b->id() != a->id(), "second dataset must have its own id");
+
+	AnalysisForm form;
+	AnalysisBase analysis(&form);
+	form._initialized = true;
+	form.registerDataSetSelectionOption("dependent", new TestSelectionHost(b->defaultFilter()));
+	form.registerDataSetSelectionOption("covariate", new TestSelectionHost(a->defaultFilter()));
+
+	//Not aware and unbound: the legacy "applies to any dataset" semantics (reports etc.):
+	QCOMPARE(analysis.usesDataSet(a->id()), true);
+
+	//Aware: exactly the datasets the components reference are in use, and every other is
+	//not - the "unbound applies to all" shortcut must not swallow that (C: guards).
+	analysis.setMultiDataSetAware(true);
+	QCOMPARE(analysis.usesDataSet(a->id()), true);			//referenced through the second host
+	QCOMPARE(analysis.usesDataSet(b->id()), true);			//the first host's dataset (b)
+	QCOMPARE(analysis.usesDataSet(4242), false);			//no component references it
+
+	//pre-attach (no form at all) a host-claiming analysis is impossible, and options parked
+	//before attach claim NOTHING:
+	AnalysisBase parked;
+	parked.setMultiDataSetAware(true);
+	parked.setPendingOptions(Json::Value(Json::objectValue));	//the pre-attach parking path (Analyses::create)
+	QVERIFY2(!parked.usesDataSet(b->id()), "without an attached form the analysis must not claim a dataset");
+}
+
+void TestAll::testAnalysisBaseDataSpecWhenAware()
+{
+	//dataSpec() for a multi-dataset aware analysis must come from the datasets its
+	//COMPONENTS reference (registered selection hosts / typed term provenance /
+	//own filter), not from dataSet() - which an aware analysis deliberately refuses (and
+	//Desktop::Analysis logs about). Before this the aware branch was dead code: the early return
+	//on !data already yielded "", so the results header showed nothing about the data.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+	QVERIFY(a->defaultFilter());
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->defaultFilter());
+
+	// dataSpec() reads component state - simulate the attach (see
+	//testAnalysisBaseReferencedDataSets) and drive the references through a selection host.
+	AnalysisForm form;
+	AnalysisBase analysis(&form);
+	form._initialized = true;
+
+	analysis.setFilterId(a->defaultFilter()->id());						//the analysis runs ON a...
+	TestSelectionHost * host = new TestSelectionHost(b->defaultFilter());	//...and a host serves b
+	form.registerDataSetSelectionOption("dependent", host);
+
+	//Not aware: bit-identical legacy behaviour - the base dataSet() is nullptr, so is the spec
+	//(the aware branch must not change anything on this path, not even call dataSet()):
+	QCOMPARE(analysis.dataSpec(), QString(""));
+
+	//Aware: own dataset first, then the referenced ones (deduped), " + " joined:
+	analysis.setMultiDataSetAware(true);
+	const QString spec = analysis.dataSpec();
+
+	QVERIFY2(spec == a->title() + " + " + b->title(),
+			 qPrintable(QString("dataSpec should name both referenced datasets, got: '%1'").arg(spec)));
+
+	//A reference whose filter dies contributes nothing (and must not print a bare separator) -
+	//the dead-id rule: stale provenance goes raw, it keeps no dead dataset claimed:
+	Filter * named = b->createFilter("SpecMeAway");
+	QVERIFY(named);
+	host->setFilter(named);
+	QCOMPARE(analysis.dataSpec(), a->title() + " + " + b->title());		//still b, via the named filter
+
+	b->removeFilter(named);												//Filter dies -> host and id go null
+	QCOMPARE(analysis.dataSpec(), a->title());
+
+	// pre-attach the spec defers to "" - pending state never names datasets:
+	AnalysisBase parked;
+	parked.setMultiDataSetAware(true);
+	parked.setPendingOptions(Json::Value(Json::objectValue));
+	QCOMPARE(parked.dataSpec().toStdString(), std::string());
+
+	//And with nothing referenced at all the spec is simply empty:
+	AnalysisForm emptyForm;
+	AnalysisBase emptyAnalysis(&emptyForm);
+	emptyForm._initialized = true;
+	emptyAnalysis.setMultiDataSetAware(true);
+	QCOMPARE(emptyAnalysis.dataSpec(), QString(""));
+
+	delete host;
+}
+
+void TestAll::testAnalysisBaseReferencedDataSets()
+{
+	// references are computed ON DEMAND from component state (typed term
+	//provenance + registered selection hosts + the analysis' own filter), reported only once the
+	//form has attached (pending JSON before setAnalysisUp is never read for behaviour). Attach is
+	//simulated here by flipping the form's initialized flag (no QML controls in the C++
+	//harness); the real attach/apply-once semantics are pinned by the qml harness
+	//(tst_generatedOptionsJsonAware.qml::test_pending_json_applied_once_and_stamps_never_read).
+	// This pin was re-armed from the old fabricated-meta version: ids are REAL filters now
+	//(the computation resolves every filterId through the Workspace, so made-up pairs cannot
+	//enter the map - the old "dataSetId without filterId" meta node has no component analogue).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet   * a  = ws->shownDataSet();
+	QVERIFY(a && a->defaultFilter());
+
+	CSVImporter importer;
+	DataSet   * b  = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->defaultFilter());
+
+	a->addFilter();						//a named filter on a, shown on a
+	Filter * aNamed   = a->shownFilter();
+	Filter * aDefault = a->defaultFilter();
+	QVERIFY2(aNamed && aNamed != aDefault, "addFilter must give a distinct named filter");
+
+	AnalysisForm form;
+	AnalysisBase analysis(&form);
+	form._initialized = true;
+
+	TestSelectionHost * hostA = new TestSelectionHost(aNamed);
+	TestSelectionHost * hostB = new TestSelectionHost(b->defaultFilter());
+	form.registerDataSetSelectionOption("hostA", hostA);
+	form.registerDataSetSelectionOption("hostB", hostB);
+
+	std::map<int, int> refs = analysis.referencedDataSets();
+
+	QCOMPARE(refs.size(), size_t(2));
+	QCOMPARE(refs[a->id()], aNamed->id());					//first host wins for its dataset
+	QCOMPARE(refs[b->id()], b->defaultFilter()->id());
+
+	//a second filter of a dataset already referenced does not add a dataset (the map stays one
+	//entry per dataset, first-seen wins - matching the old walk's keep-the-first-pair rule):
+	TestSelectionHost * hostA2 = new TestSelectionHost(aDefault);
+	form.registerDataSetSelectionOption("hostA2", hostA2);
+	refs = analysis.referencedDataSets();
+	QCOMPARE(refs.size(), size_t(2));
+	QCOMPARE(refs[a->id()], aNamed->id());
+
+	//the analysis' own filter is part of what it runs on (c) - already a here, so no
+	//growth; every consumer dedups against the primary anyway:
+	analysis.setFilterId(b->defaultFilter()->id());
+	refs = analysis.referencedDataSets();
+	QCOMPARE(refs.size(), size_t(2));
+
+	//The plain base class is never aware; Desktop::Analysis derives it from the module entry:
+	QCOMPARE(analysis.multiDataSetAware(), false);
+
+	//an uninitialized form references NOTHING (the gate, attach half):
+	AnalysisForm unattachedForm;
+	AnalysisBase unattached(&unattachedForm);
+	unattached.setPendingOptions(Json::Value(Json::objectValue));
+	QCOMPARE(unattached.referencedDataSets().size(), size_t{0});
+
+	//The gate, the pre-attach half: options PARKED on a formless analysis (the
+	//Analyses::create path) reference NOTHING until the form attaches:
+	AnalysisBase parked;
+	parked.setPendingOptions(Json::Value(Json::objectValue));
+	QCOMPARE(parked.referencedDataSets().size(), size_t{0});
+
+	delete hostA;
+	delete hostB;
+	delete hostA2;
+}
+
+void TestAll::testDataSetFilterIdsSurviveStorageReload()
+{
+	//Opening a .jasp restores internal.sqlite verbatim (ArchiveReader) and Workspace::dbLoad
+	//enumerates db().dataSetIds(), calling DataSet::dbLoad(id) per dataset - ids are rowids of
+	//the restored file, not reassigned. This pins that invariant (the premise on which
+	//Analyses::remapSavedProvenance was removed): a reload hands back identical dataset and
+	//filter ids, so provenance saved against them resolves without any remapping.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	DataSet * first = ws->shownDataSet();
+	QVERIFY(first);
+	DataSet * second = ws->createDataSet();
+	QVERIFY(second);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), second, [](int){});
+	Filter * named = second->createFilter("KeepMyId", true);
+	QVERIFY(named);
+
+	const int idFirst	= first->id(),
+			  idSecond	= second->id(),
+			  defFirst	= first->defaultFilter()->id(),
+			  defSecond = second->defaultFilter()->id(),
+			  namedId	= named->id();
+
+	QVERIFY(idFirst != idSecond);
+
+	//Drop the package (its workspace owns the Workspace singleton) and reopen the same storage
+	//the way opening a .jasp does: a fresh Workspace reading the (restored) database.
+	delete _pkg;
+	_pkg = nullptr;
+
+	Workspace reopen;
+	reopen.dbLoad();
+
+	DataSet * reFirst	= reopen.dataSetById(idFirst);
+	DataSet * reSecond	= reopen.dataSetById(idSecond);
+	QVERIFY(reFirst);
+	QVERIFY(reSecond);
+
+	QCOMPARE(reFirst->defaultFilter()->id(),	defFirst);
+	QCOMPARE(reSecond->defaultFilter()->id(),	defSecond);
+
+	//dbLoad materialises EVERY stored filter eagerly while the file opens - no showFilter
+	//priming, no lazy attach needed. The row is attached to, not replaced by,
+	//exactly the id saved provenance refers to.
+	QCOMPARE(DatabaseInterface::singleton()->filterGetId(idSecond, "KeepMyId"), namedId);
+	QVERIFY2(reSecond->filter(namedId) != nullptr, "the named filter must be live right after reopen (eager dbLoad)");
+	QVERIFY2(reSecond->filter(fq("KeepMyId")) != nullptr, "the named filter must be live by name too");
+	QCOMPARE(reSecond->filters().size(), size_t(2));	//default + KeepMyId, attached at their old ids
+	QCOMPARE(reSecond->filter(fq("KeepMyId"))->id(), namedId);
+	QCOMPARE(reopen.filterById(namedId), reSecond->filter(namedId));
+
+	//The dropdown the aware selection offers lists live filters only - after the eager load it
+	//contains the reopened named filter, so it is selectable again (agent1 m4).
+	bool namedInDropDown = false;
+	for(const QVariant & entry : reopen.dataSetFilterDropDownList())
+		if(entry.toMap().value("value").toString() == QString::number(namedId))
+			namedInDropDown = true;
+	QVERIFY2(namedInDropDown, "dataSetFilterDropDownList must offer the reopened named filter");
+
+	//A selection option value (a filter id as string) resolves to the very same filter in the
+	//reopened workspace - which is all save/load round-tripping needs from these ids.
+	Filter * reNamed = reSecond->showFilter(fq("KeepMyId"));
+	QVERIFY(reNamed);
+	QCOMPARE(reNamed->id(), namedId);
+	QVERIFY(reopen.filterById(namedId) == reNamed);
+
+	//The lazy db-fallback of Workspace::filterById stays as safety net for rows that never went
+	//through dbLoad (e.g. written by another process): a bare db row, no live object, must still
+	//materialise to exactly its own id (this half was unpinned before - agent1 m5).
+	const int rawId = DatabaseInterface::singleton()->filterInsert(reFirst->id(), "TRUE", DEFAULT_FILTER_GEN, "{}", "", "RawRowFilter");
+	QVERIFY(rawId > 0);
+	QVERIFY2(reFirst->filter(rawId) == nullptr, "a raw db row has no live filter yet");
+	Filter * lazily = reopen.filterById(rawId);
+	QVERIFY(lazily != nullptr);
+	QCOMPARE(lazily->id(), rawId);
+	QVERIFY(lazily->data() == reFirst);
+}
+
+void TestAll::testDataSetSelectionSurfaceMap()
+{
+	// option values stay filter ids on the wire, but syntax text carries
+	//human strings only and resolves by EXACT lookup against the live workspace - no parsing,
+	//no numeric-id path. Fixture: "Alpha" (default only), "Second" (+ named "KeepMyId"),
+	//a dataset titled "42" (a number is a title here, nothing more) and one titled exactly
+	//like another pair's dropdown label (the collision the precedence rule is about).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * second = ws->createDataSet();
+	QVERIFY(second);
+	importer.loadDataSet(fq(csv), second, [](int){});
+	second->setTitle("Second");
+	Filter * named = second->createFilter("KeepMyId", true);
+	QVERIFY(named);
+
+	DataSet * numeric = ws->createDataSet();
+	QVERIFY(numeric);
+	importer.loadDataSet(fq(csv), numeric, [](int){});
+	numeric->setTitle("42");
+
+	DataSet * shadow = ws->createDataSet();
+	QVERIFY(shadow);
+	importer.loadDataSet(fq(csv), shadow, [](int){});
+	shadow->setTitle("Second - KeepMyId");   //equal to second's named-filter label
+
+	const QMap<QString, int> surface = ws->datasetSelectionSurfaceMap();
+
+	//Bare title -> default filter; dropdown label -> its filter:
+	QCOMPARE(surface.value("Alpha"), alpha->defaultFilter()->id());
+	QCOMPARE(surface.value("Second"), second->defaultFilter()->id());
+	QCOMPARE(surface.value("Second - KeepMyId"), shadow->defaultFilter()->id());   //bare title WINS the collision (logged)
+	QCOMPARE(surface.value("42"), numeric->defaultFilter()->id());                 //a number is only ever a title
+
+	//The exact-match resolver agrees with the map, and there is no id path: "1" resolves only
+	//if a dataset is titled "1" (none is), so a dataset/filter id written into syntax fails:
+	int		 filterId	= -1;
+	QString  error;
+
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", Json::Value("Second - KeepMyId"), filterId, error) && filterId == shadow->defaultFilter()->id(),
+			 qPrintable(QString("the shadowing title must resolve to its own dataset, got %1 (%2)").arg(filterId).arg(error)));
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", Json::Value("Second - " + fq(second->defaultFilter()->title())), filterId, error) && filterId == second->defaultFilter()->id(),
+			 qPrintable(QString("the default filter's own label must resolve too, got %1 (%2)").arg(filterId).arg(error)));
+
+	filterId = 12345;
+	QVERIFY2(!ws->resolveDataSetSelectionValue("dataSetA", Json::Value(std::to_string(alpha->defaultFilter()->id())), filterId, error) && filterId == -1,
+			 "a bare filter/dataset id is not syntax anymore: the numeric-id acceptance is gone");
+	QVERIFY2(error.contains("available:"), qPrintable(QString("the rejection must list what IS selectable, got: %1").arg(error)));
+	QVERIFY2(error.contains("Alpha") && error.contains("Second - KeepMyId"), qPrintable(QString("the listing must name the datasets, got: %1").arg(error)));
+
+	//Desktop-shaped {types,value}: a plain string/int inside is unwrapped, anything else is
+	//rejected with the direct-title hint (the old unhelpful error replaced):
+	Json::Value shaped(Json::objectValue);
+	shaped["types"]	= "unknown";
+	shaped["value"] = "42";
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", shaped, filterId, error) && filterId == numeric->defaultFilter()->id(),
+			 qPrintable(QString("{types,value} with a plain title inside must unwrap, got %1 (%2)").arg(filterId).arg(error)));
+
+	shaped["value"] = 42;   //int is equally a plain value
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", shaped, filterId, error) && filterId == numeric->defaultFilter()->id(),
+			 "{types,value} with a plain int inside must unwrap too");
+
+	shaped["value"] = Json::Value(Json::arrayValue);
+	shaped["value"].append("42");
+	filterId = 999;
+	QVERIFY2(!ws->resolveDataSetSelectionValue("dataSetA", shaped, filterId, error) && filterId == -1, "a non-plain value must be rejected");
+	QVERIFY2(error.contains("pass the dataset title directly"), qPrintable(QString("the rejection must hint the surface contract, got: %1").arg(error)));
+
+	Json::Value empty(Json::objectValue);
+	empty["types"]	= "unknown";
+	empty["value"]	= "";
+	QVERIFY2(!ws->resolveDataSetSelectionValue("dataSetB", empty, filterId, error) && error.startsWith("The dataset selection option 'dataSetB'"),
+			 "an empty selection fails loudly, naming the option");
+
+	//Reverse direction: bound id -> surface string (bare for default, label for named,
+	//empty for nothing/dead id - never an id leaking back into syntax text):
+	QCOMPARE(ws->datasetSelectionSurface(alpha->defaultFilter()->id()), QString("Alpha"));
+	QCOMPARE(ws->datasetSelectionSurface(second->defaultFilter()->id()), QString("Second"));
+	QCOMPARE(ws->datasetSelectionSurface(-1),							 QString(""));
+	QCOMPARE(ws->datasetSelectionSurface(987654),						 QString(""));
+
+	const QString namedSurface = ws->datasetSelectionSurface(named->id());
+	QCOMPARE(namedSurface, QString("Second - KeepMyId"));   //the second dataset's own named filter
+
+	//The map is temporary BY DESIGN: always built from the live workspace, so a rename needs no
+	//cache invalidation anywhere (the syntax surface leans on this):
+	alpha->setTitle("Alpha2");
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", Json::Value("Alpha2"), filterId, error) && filterId == alpha->defaultFilter()->id(),
+			 "a renamed dataset resolves under its new title immediately");
+	QVERIFY2(!ws->resolveDataSetSelectionValue("dataSetA", Json::Value("Alpha"), filterId, error),
+			 "the old title is gone from the surface immediately");
+}
+
+void TestAll::testQualifiedColumnRefParseRenderRoundTrip()
+{
+	// the surface grammar - pure parse/render, no workspace. Quoting
+	//is honest and roundtrip-safe: dots never need escaping (the separator only acts OUTSIDE
+	//quotes), and inside a segment exactly two escapes exist (\" and \\) - a backslash before
+	//anything else is a parse error, so a name's rendering can never be ambiguous.
+	QString error;
+	QualifiedColumnRef ref;
+
+	//The grammar levels: full form, dataset form, and the bare production (recognized here so
+	//callers can tell it apart, but never resolved by the helpers).
+	QVERIFY2(QualifiedColumnRef::parse("\"Alpha\".\"Keep\".\"Score\"(\"scale\")", ref, error), qPrintable(error));
+	QVERIFY(ref.isFullyQualified() && !ref.isBare());
+	QCOMPARE(ref.dataSetName,	QString("Alpha"));
+	QCOMPARE(ref.filterName,	QString("Keep"));
+	QCOMPARE(ref.columnName,	QString("Score"));
+	QCOMPARE(ref.typeName,		QString("scale"));	//canonical spelling
+	QCOMPARE(ref.render(),		QString("\"Alpha\".\"Keep\".\"Score\"(\"scale\")"));	//byte-stable
+
+	QVERIFY2(QualifiedColumnRef::parse("\"Alpha\".\"Score\"", ref, error), qPrintable(error));
+	QVERIFY(!ref.isBare() && !ref.isFullyQualified());
+	QCOMPARE(ref.dataSetName,	QString("Alpha"));
+	QCOMPARE(ref.filterName,	QString());
+	QCOMPARE(ref.columnName,	QString("Score"));
+	QCOMPARE(ref.render(),		QString("\"Alpha\".\"Score\""));
+
+	QVERIFY2(QualifiedColumnRef::parse("\"Score\"", ref, error), qPrintable(error));
+	QVERIFY(ref.isBare());
+	QCOMPARE(ref.columnName,	QString("Score"));
+
+	QVERIFY2(QualifiedColumnRef::parse("Score", ref, error), qPrintable(error));
+	QVERIFY(ref.isBare());
+	QCOMPARE(ref.columnName,	QString("Score"));
+
+	//Bare input is never split on dots (a bare name is the callers' whole business):
+	QVERIFY2(QualifiedColumnRef::parse("x.scale", ref, error), qPrintable(error));
+	QVERIFY(ref.isBare());
+	QCOMPARE(ref.columnName,	QString("x.scale"));
+	QVERIFY2(QualifiedColumnRef::parse("A.\"B\"", ref, error), qPrintable(error));	//unquoted first segment = bare input
+	QVERIFY(ref.isBare());
+	QCOMPARE(ref.columnName,	QString("A.\"B\""));
+
+	//Roundtrip render->parse for tricky names, via the full form (the render of a bare ref is
+	//the quoted column alone - the UNQUOTED passthrough is renderQualifiedColumnRef's job):
+	const QStringList trickyNames = {
+		"with.dots.in.it",
+		"He said \"hi\"",
+		"back\\slash",
+		"both \" and \\ mixed",
+		"Datāset ✓ ünïcode",
+		"ends with dot.",
+		".starts with one",
+		"multi\nline\tname",
+		" - separator looking name",
+	};
+	for(const QString & name : trickyNames)
+	{
+		QualifiedColumnRef built;
+		built.dataSetName	= "D.S";
+		built.filterName	= "F\"F";
+		built.columnName	= name;
+		built.typeName		= "scale";
+
+		const QString rendered = built.render();
+		QualifiedColumnRef parsed;
+		QString parseError;
+		QVERIFY2(QualifiedColumnRef::parse(rendered, parsed, parseError),
+				 qPrintable("roundtrip failed for '" + name + "': rendered '" + rendered + "' - " + parseError));
+		QVERIFY2(parsed.isFullyQualified(), qPrintable("roundtrip lost the qualification of '" + name + "'"));
+		QCOMPARE(parsed.dataSetName,	QString("D.S"));
+		QCOMPARE(parsed.filterName,		QString("F\"F"));
+		QCOMPARE(parsed.columnName,		name);
+		QCOMPARE(parsed.typeName,		QString("scale"));
+	}
+
+	//" renders as \" and \ as \\ (the input here is: a " b \ c):
+	QCOMPARE(QualifiedColumnRef::escapeSegment("a\"b\\c"), QString("a\\\"b\\\\c"));
+
+	//Whitespace around separators is tolerated (the in-code scanner wants this):
+	QVERIFY2(QualifiedColumnRef::parse(" \"A\" . \"B\" ( \"scale\" ) ", ref, error), qPrintable(error));
+	QCOMPARE(ref.dataSetName,	QString("A"));
+	QCOMPARE(ref.columnName,	QString("B"));
+	QCOMPARE(ref.typeName,		QString("scale"));
+
+	//The type segment is case-insensitive and normalizes to the canonical spelling:
+	QVERIFY2(QualifiedColumnRef::parse("\"A\"(\"NOMINALTEXT\")", ref, error), qPrintable(error));
+	QCOMPARE(ref.typeName, QString("nominalText"));
+
+	//Malformed shapes - all rejected with a message, never a throw:
+	struct Bad { const char * text; const char * errorMustContain; };
+	const std::vector<Bad> bad = {
+		{ "",								"empty"							},
+		{ "   ",							"empty"							},
+		{ "\"A",							"unterminated"					},
+		{ "\"A\\",							"escape"						},
+		{ "\"A\\nB\"",						"escape"						},
+		{ "\"A\"x",							"unexpected"					},
+		{ "\"A\".",							"quoted segment"				},
+		{ "\"A\".\"B\".\"C\".\"D\"",		"at most three"					},
+		{ "\"A\"(\"scale\"",				"')'"							},
+		{ "\"A\"(scale)",					"quoted"						},
+		{ "\"A\"(\"nonsense\")",			"unknown column type"			},
+		{ "\"A\"(\"scale\") trailing",		"unexpected text"				},
+	};
+	for(const Bad & b : bad)
+	{
+		QualifiedColumnRef parsed;
+		QString parseError;
+		QVERIFY2(!QualifiedColumnRef::parse(b.text, parsed, parseError),
+				 qPrintable(QString("'%1' must not parse").arg(b.text)));
+		QVERIFY2(parseError.contains(b.errorMustContain),
+				 qPrintable(QString("'%1' rejected with '%2', which lacks '%3'").arg(b.text).arg(parseError).arg(b.errorMustContain)));
+	}
+}
+
+void TestAll::testQualifiedColumnRefResolveAgainstWorkspace()
+{
+	// resolution against the live Workspace (the typed error
+	//formats). Fixture: "Alpha" (default + named "F0" + "Extra"), "Beta" (default + named
+	//"KeepMyId" + "Shared"), "Gamma" (default + a second "Shared" for the ambiguity
+	//rejection) - contNormal exists in every dataset, the same-name-in-two-filters flagship
+	//and the duplicate-column-across-datasets case included.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0		= alpha->createFilter("F0", true);
+	Filter * alphaExtra		= alpha->createFilter("Extra", true);
+	Filter * alphaAsFilter	= alpha->createFilter("Beta", true);	//a filter named like a DATASET (title precedence)
+	QVERIFY(alphaF0 && alphaExtra && alphaAsFilter);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep	= beta->createFilter("KeepMyId", true);
+	Filter * betaShared	= beta->createFilter("Shared", true);
+	QVERIFY(betaKeep && betaShared);
+
+	DataSet * gamma = ws->createDataSet();
+	QVERIFY(gamma);
+	importer.loadDataSet(fq(csv), gamma, [](int){});
+	gamma->setTitle("Gamma");
+	Filter * gammaShared = gamma->createFilter("Shared", true);
+	QVERIFY(gammaShared);
+
+	const std::string col = "contNormal";
+	QVERIFY(alpha->column(col) && beta->column(col) && gamma->column(col));
+
+	ResolvedQualifiedColumn resolved;
+	QString error;
+
+	//QVERIFY-style failure inside a void helper (the resolve lambda below returns a value,
+	//so the bare-return macros must not expand inside it):
+	auto parseRef = [&](const QString & text, QualifiedColumnRef & ref)
+	{
+		QString parseError;
+		if(!QualifiedColumnRef::parse(text, ref, parseError))
+			QFAIL(qPrintable("parse failed for " + text + ": " + parseError));
+	};
+
+	auto resolve = [&](const QString & text) -> QualifiedRefError
+	{
+		QualifiedColumnRef ref;
+		parseRef(text, ref);
+		return ws->resolveQualifiedColumnRef(ref, resolved, error);
+	};
+
+	//Full form - and the flagship: the SAME column addressed through two different filters of
+	//ONE dataset resolves to the same (dataset, column) but DISTINCT filterIds (which is what
+	//mints distinct tokens under the per-filter views at run):
+	QCOMPARE(resolve("\"Alpha\".\"F0\".\"contNormal\""),		QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	alpha->id());
+	QCOMPARE(resolved.filterId,		alphaF0->id());
+	QCOMPARE(resolved.columnName,	QString::fromStdString(col));
+	QCOMPARE(resolved.type,			alpha->column(col)->type());
+
+	QCOMPARE(resolve("\"Alpha\".\"Extra\".\"contNormal\""),		QualifiedRefError::none);
+	QCOMPARE(resolved.filterId,		alphaExtra->id());
+	QVERIFY(alphaF0->id() != alphaExtra->id());
+
+	//"DS"."Column" -> the dataset's default filter:
+	QCOMPARE(resolve("\"Alpha\".\"contNormal\""),				QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	alpha->id());
+	QCOMPARE(resolved.filterId,		alpha->defaultFilter()->id());
+
+	//"Filter"."Column" with a unique filter name across all loaded datasets:
+	QCOMPARE(resolve("\"KeepMyId\".\"contNormal\""),			QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	beta->id());
+	QCOMPARE(resolved.filterId,		betaKeep->id());
+
+	//Duplicate column names across datasets resolve to their own dataset each:
+	QCOMPARE(resolve("\"Alpha\".\"contNormal\""),	QualifiedRefError::none);
+	const int alphaDataSetId = resolved.dataSetId;
+	QCOMPARE(resolve("\"Beta\".\"contNormal\""),	QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	beta->id());
+	QVERIFY(alphaDataSetId != resolved.dataSetId);
+
+	//The type segment WINS over the lookup; absent it is the column's current type:
+	const columnType actualType = alpha->column(col)->type();
+	const columnType overrideType = actualType == columnType::scale ? columnType::ordinal : columnType::scale;
+	QCOMPARE(resolve(QString("\"Alpha\".\"contNormal\"(\"%1\")").arg(tq(columnTypeToString(overrideType)))),	QualifiedRefError::none);
+	QCOMPARE(resolved.type, overrideType);
+	QCOMPARE(resolve("\"Alpha\".\"contNormal\"(\"scale\")"),	QualifiedRefError::none);	//case-insensitive acceptance
+	QCOMPARE(resolved.type, columnType::scale);
+
+	//Dataset-title precedence over filter names: "Beta" is a dataset title AND a filter name
+	//(alphaAsFilter) - the title wins, always, exactly like the selection surface's precedence:
+	QCOMPARE(resolve("\"Beta\".\"contNormal\""),				QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	beta->id());
+	QCOMPARE(resolved.filterId,		beta->defaultFilter()->id());
+
+	//The internal DEFAULT_FILTER spelling resolves inside the full form...
+	QCOMPARE(resolve("\"Alpha\".\"DEFAULT_FILTER\".\"contNormal\""), QualifiedRefError::none);
+	QCOMPARE(resolved.filterId,		alpha->defaultFilter()->id());
+	//...but as a bare filter name it is inherently ambiguous (every dataset has one):
+	QVERIFY2(resolve("\"DEFAULT_FILTER\".\"contNormal\"") == QualifiedRefError::ambiguousFilterName,
+			 qPrintable("the default-filter name is shared by all datasets, got: " + error));
+	QVERIFY(error.contains("Alpha") && error.contains("Beta") && error.contains("Gamma"));
+
+	//Ambiguity rejection lists the candidate datasets (the typed error format):
+	QVERIFY2(resolve("\"Shared\".\"contNormal\"") == QualifiedRefError::ambiguousFilterName,
+			 qPrintable("a filter name used twice must be rejected, got: " + error));
+	QVERIFY2(error.contains("Beta") && error.contains("Gamma") && !error.contains("Alpha"),
+			 qPrintable("the rejection must list exactly the candidate datasets, got: " + error));
+	QVERIFY2(error.contains("\"Beta\".\"Shared\".\"contNormal\""),
+			 qPrintable("the rejection should hint the fixing full form, got: " + error));
+
+	//Every missing-piece rejection is its own kind:
+	QVERIFY2(resolve("\"Nope\".\"F0\".\"contNormal\"") == QualifiedRefError::unknownDataSet,
+			 qPrintable("unknown dataset, got: " + error));
+	QVERIFY(error.contains("Alpha") && error.contains("Gamma"));	//lists what IS loaded
+	QVERIFY2(resolve("\"Alpha\".\"Nope\".\"contNormal\"") == QualifiedRefError::unknownFilterInDataSet,
+			 qPrintable("unknown filter in dataset, got: " + error));
+	QVERIFY2(resolve("\"Nope\".\"contNormal\"") == QualifiedRefError::filterNameMatchesNothing,
+			 qPrintable("neither dataset title nor filter name, got: " + error));
+	QVERIFY2(resolve("\"Alpha\".\"contNope\"") == QualifiedRefError::unknownColumn,
+			 qPrintable("unknown column, got: " + error));
+	QVERIFY(error.contains("contNormal"));	//the rejection lists the columns that DO exist
+
+	//Bare references (quoted or not) are refused here - the context fallback is the callers':
+	QVERIFY2(resolve("contNormal") == QualifiedRefError::unqualifiedReference, qPrintable(error));
+	QVERIFY2(resolve("\"contNormal\"") == QualifiedRefError::unqualifiedReference, qPrintable(error));
+	QCOMPARE(resolved.dataSetId, -1);	//every rejection leaves the output fully reset
+	QCOMPARE(resolved.filterId,  -1);
+}
+
+void TestAll::testQualifiedColumnRefRenderMinimal()
+{
+	// the context-aware minimal render - plain-name passthrough inside the
+	//context's default namespace, the shortest still-resolvable form outside it, and every
+	//emitted form roundtrips through parse+resolve to the exact (dataSetId, filterId, column)
+	//it was built from. Fixture as in ...ResolveAgainstWorkspace.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0 = alpha->createFilter("F0", true);
+	QVERIFY(alphaF0);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep	= beta->createFilter("KeepMyId", true);
+	Filter * betaShared	= beta->createFilter("Shared", true);
+	QVERIFY(betaKeep && betaShared);
+
+	DataSet * gamma = ws->createDataSet();
+	QVERIFY(gamma);
+	importer.loadDataSet(fq(csv), gamma, [](int){});
+	gamma->setTitle("Gamma");
+	QVERIFY(gamma->createFilter("Shared", true));
+
+	const std::string col = "contNormal";
+	QVERIFY(alpha->column(col) && beta->column(col));
+
+	const int alphaDefault = alpha->defaultFilter()->id();
+	const int betaDefault	= beta->defaultFilter()->id();
+
+	auto render = [&](int contextFilterId, int filterId, columnType type) -> QString
+	{
+		return ws->renderQualifiedColumnRef(contextFilterId, filterId, col, type);
+	};
+
+	//Inside the default namespace: the PLAIN unquoted name (byte-identical to today's
+	//own-dataset code; bare resolution itself stays with the caller):
+	QCOMPARE(render(alphaDefault, alphaDefault, columnType::unknown), QString("contNormal"));
+	QCOMPARE(render(alphaF0->id(), alphaF0->id(), columnType::unknown), QString("contNormal"));
+
+	//Same dataset, other filter: the unique-filter form (F0's name is unique):
+	QCOMPARE(render(alphaDefault, alphaF0->id(), columnType::unknown), QString("\"F0\".\"contNormal\""));
+
+	//Back to the own dataset's default filter from another filter: the "DS"."Col" form
+	//(a default filter never needs its name spelled out):
+	QCOMPARE(render(alphaF0->id(), alphaDefault, columnType::unknown), QString("\"Alpha\".\"contNormal\""));
+
+	//Another dataset's default filter: "DS"."Col".
+	QCOMPARE(render(alphaDefault, betaDefault, columnType::unknown), QString("\"Beta\".\"contNormal\""));
+
+	//Another dataset's uniquely named filter: "F"."Col".
+	QCOMPARE(render(alphaDefault, betaKeep->id(), columnType::unknown), QString("\"KeepMyId\".\"contNormal\""));
+
+	//A filter name that is NOT unique (Shared lives in Beta and Gamma): the full form.
+	QCOMPARE(render(alphaDefault, betaShared->id(), columnType::unknown), QString("\"Beta\".\"Shared\".\"contNormal\""));
+
+	//The type segment only when explicitly asked for:
+	QCOMPARE(render(alphaDefault, betaDefault, columnType::scale), QString("\"Beta\".\"contNormal\"(\"scale\")"));
+	QCOMPARE(render(alphaDefault, betaKeep->id(), columnType::ordinal), QString("\"KeepMyId\".\"contNormal\"(\"ordinal\")"));
+
+	//No context at all (-1): never a bare form - everything qualifies minimally.
+	QCOMPARE(render(-1, alphaDefault, columnType::unknown), QString("\"Alpha\".\"contNormal\""));
+
+	//A dead or absent filter id renders empty and fails loudly downstream (the
+	//datasetSelectionSurface doctrine) - never a bare form, never a made-up name:
+	QCOMPARE(render(alphaDefault, 999999, columnType::unknown), QString());
+	QCOMPARE(render(alphaDefault, -1, columnType::unknown), QString());
+
+	//Every emitted qualified form roundtrips: parse + resolve lands on the very tuple.
+	const QList<QPair<int, QString>> qualified = {
+		{ alphaF0->id(),		render(alphaDefault, alphaF0->id(), columnType::unknown) },
+		{ alphaDefault,			render(alphaF0->id(), alphaDefault, columnType::unknown) },
+		{ betaDefault,			render(alphaDefault, betaDefault, columnType::unknown) },
+		{ betaKeep->id(),		render(alphaDefault, betaKeep->id(), columnType::unknown) },
+		{ betaShared->id(),		render(alphaDefault, betaShared->id(), columnType::unknown) },
+		{ alphaDefault,			render(-1, alphaDefault, columnType::unknown) },
+	};
+	for(const auto & target : qualified)
+	{
+		QualifiedColumnRef ref;
+		QString error;
+		QVERIFY2(QualifiedColumnRef::parse(target.second, ref, error), qPrintable("minimal form did not parse: " + target.second + " - " + error));
+		ResolvedQualifiedColumn resolved;
+		QVERIFY2(ws->resolveQualifiedColumnRef(ref, resolved, error) == QualifiedRefError::none,
+				 qPrintable("minimal form did not resolve: " + target.second + " - " + error));
+		QCOMPARE(resolved.filterId, target.first);
+		QCOMPARE(resolved.columnName, QString::fromStdString(col));
+	}
+}
+
+void TestAll::testQualifiedColumnRefScanInCode()
+{
+	// the in-code scanner. Feeds R code text with tricky names and checks what
+	//is found (byte ranges + parsed segments) and - just as important - what is NOT: bare
+	//names (quoted or not) are never references, and surface forms inside R comments or R
+	//string literals are user text, not references.
+	auto scan = [](const std::string & code) { return QualifiedColumnRef::scanText(code); };
+
+	//One ref inside plain R code; bare names around it are not references:
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("contNormal > mean(\"Beta\".\"contNormal\") + 3");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.dataSetName,	QString("Beta"));
+		QCOMPARE(found[0].ref.filterName,	QString());
+		QCOMPARE(found[0].ref.columnName,	QString("contNormal"));
+		QVERIFY(found[0].ref.isBare() == false);
+		QCOMPARE(std::string("contNormal > mean(\"Beta\".\"contNormal\") + 3").substr(found[0].begin, found[0].end - found[0].begin), std::string("\"Beta\".\"contNormal\""));
+	}
+
+	//The bare production is never a reference - unquoted AND quoted (the quoted bare is an R
+	//string literal, exactly what the scanner skips it as):
+	QVERIFY(scan("contNormal").empty());
+	QVERIFY(scan("\"contNormal\"").empty());
+	QVERIFY(scan("x <- \"contNormal\" + contNormal2").empty());
+
+	//Full form with the type tail, mid-expression:
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("if (\"Beta\".\"Keep\".\"contNormal\"(\"scale\") > 3) 1 else 2");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.dataSetName,	QString("Beta"));
+		QCOMPARE(found[0].ref.filterName,	QString("Keep"));
+		QCOMPARE(found[0].ref.columnName,	QString("contNormal"));
+		QCOMPARE(found[0].ref.typeName,		QString("scale"));
+	}
+
+	//Whitespace tolerance (the grammar's contract, which the scanner wants):
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("sum( \"Beta\" . \"contNormal\" ( \"scale\" ) )");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.typeName, QString("scale"));
+	}
+
+	//Several refs in one text, found left to right with disjoint ranges:
+	{
+		const std::string code = "\"Alpha\".\"x\" + \"Beta\".\"y\" * \"Gamma\".\"F\".\"z\"";
+		const std::vector<QualifiedRefOccurrence> found = scan(code);
+		QCOMPARE(found.size(), size_t(3));
+		QCOMPARE(found[0].ref.dataSetName, QString("Alpha"));
+		QCOMPARE(found[1].ref.dataSetName, QString("Beta"));
+		QCOMPARE(found[2].ref.dataSetName, QString("Gamma"));
+		QCOMPARE(found[2].ref.filterName,  QString("F"));
+		for(size_t i = 0; i < found.size(); ++i)
+		{
+			QVERIFY(found[i].begin < found[i].end);
+			QCOMPARE(code.substr(found[i].begin, found[i].end - found[i].begin).find('"'), size_t(0)); //starts at a quote
+			if(i > 0)
+				QVERIFY(found[i - 1].end <= found[i].begin); //disjoint, ordered
+		}
+	}
+
+	//R string literals hide their content: a surface form inside one is user text, and the
+	//bare-quoted string literal right before a real ref must not swallow it:
+	{
+		QVERIFY(scan("warning(\"use \\\"B\\\" and \\\"x\\\" to refer\")").empty());					//escaped quotes inside a literal
+		const std::vector<QualifiedRefOccurrence> found = scan("paste0(\"B\", \"Beta\".\"x\")");	//"B" is a literal, the second is a ref
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.dataSetName, QString("Beta"));
+	}
+	QVERIFY(scan("x <- 'say \"B\".\"x\" here'").empty());											//single-quoted literal hides it too
+	QVERIFY(scan("# \"B\".\"x\" in a comment\ncontNormal").empty());								//comment hides it
+
+	//Tricky names survive the scan: escapes and unicode inside segments (the strict parse
+	//validates the candidate, so the scanner cannot return something parse rejects):
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("mean(\"F\\\"F\".\"Datāset ✓\")");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.dataSetName, QString("F\"F"));
+		QCOMPARE(found[0].ref.columnName,  QString("Datāset ✓"));
+	}
+
+	//Malformed shapes are not references - and a 4-segment shape must not rescan as a shifted
+	//3-segment ref:
+	QVERIFY(scan("\"A\".").empty());
+	QVERIFY(scan("\"A\".\"B\".\"C\".\"D\"").empty());
+	QVERIFY(scan("\"A\\qB\".\"x\"").empty());		//invalid escape: R string content, not our grammar
+
+	//A ref at the very start and very end of the text:
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("\"B\".\"x\"");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].begin, size_t(0));
+		QCOMPARE(found[0].end, std::string("\"B\".\"x\"").size());
+	}
+}
+
+void TestAll::testWorkspaceReferencedFilterIdsInCode()
+{
+	// the desktop-side scan that stamps the transient `referencedFilterIds`
+	//sidecar onto filter/compute requests. Fixture as in ...ResolveAgainstWorkspace.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0 = alpha->createFilter("F0", true);
+	QVERIFY(alphaF0);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	auto scanRefs = [&](const std::string & code, QString * error = nullptr, QualifiedRefError * kind = nullptr)
+	{
+		return ws->referencedFilterIdsInCode(code, error, kind);
+	};
+
+	//A single outward reference - the referenced filter's id, nothing else:
+	{
+		const std::set<int> ids = scanRefs("contNormal > mean(\"Beta\".\"contNormal\")");
+		QCOMPARE(ids, std::set<int>({ beta->defaultFilter()->id() }));
+	}
+
+	//Distinct refs collect distinctly; the same filter twice dedups:
+	{
+		const std::set<int> ids = scanRefs("\"Beta\".\"KeepMyId\".\"contNormal\" + \"Beta\".\"KeepMyId\".\"contGamma\" + \"Alpha\".\"F0\".\"contNormal\"");
+		QCOMPARE(ids, std::set<int>({ betaKeep->id(), alphaF0->id() }));
+	}
+
+	//Bare names are NOT references (the context filter's own namespace):
+	QVERIFY(scanRefs("contNormal + contGamma > 3").empty());
+	QVERIFY(scanRefs("\"contNormal\" + contNormal").empty());
+
+	//A qualified SELF-reference (the context filter itself) IS a reference and lands in the
+	//sidecar: the engine skips queueing it (own context = the host-bound fallback namespace) but the
+	//membership contract stays uniform:
+	QCOMPARE(scanRefs("\"Alpha\".\"F0\".\"contNormal\" > 0"), std::set<int>({ alphaF0->id() }));
+
+	//Unresolvable refs contribute nothing, are not silent, and report the typed first error:
+	//a 2-segment name matches no dataset title and no unique filter name, so the kind is
+	//filterNameMatchesNothing (unknownDataSet is the full-form kind, see the resolve test).
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		const std::set<int> ids = scanRefs("\"Nope\".\"contNormal\" + \"Beta\".\"contNormal\"", &error, &kind);
+		QCOMPARE(ids, std::set<int>({ beta->defaultFilter()->id() }));	//the resolvable one still counts
+		QCOMPARE(kind, QualifiedRefError::filterNameMatchesNothing);
+		QVERIFY2(error.contains("Nope"), qPrintable(error));
+	}
+
+	//Pure-bare code: no ids, no error:
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		QVERIFY(scanRefs("contNormal > 3", &error, &kind).empty());
+		QCOMPARE(kind, QualifiedRefError::none);
+		QVERIFY(error.isEmpty());
+	}
+}
+
+void TestAll::testQualifiedColumnCandidates()
+{
+	// the editor-side catalog + validation surface of the qualified grammar.
+	//qualifiedColumnCandidates(contextFilterId) is what the pickers/autocomplete in
+	//FilterWindow (context = the edited filter) and the compute editors (context = the
+	//selected compute/input filter) are fed: every column of every filter of every
+	//loaded dataset, rendered through renderQualifiedColumnRef against the context - the
+	//context's own columns bare (that namespace IS the host-bound fallback), everything else the
+	//minimal qualified surface form (ambiguous filter names force the full 3-segment form).
+	//Fixture as in testWorkspaceReferencedFilterIdsInCode.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0 = alpha->createFilter("F0", true);
+	Filter * alphaTwin = alpha->createFilter("Twin", true);
+	QVERIFY(alphaF0 && alphaTwin);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	Filter * betaTwin = beta->createFilter("Twin", true);
+	QVERIFY(betaKeep && betaTwin);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	auto candidateFor = [&](const QVariantList & candidates, int filterId, const QString & columnName) -> QVariantMap
+	{
+		for(const QVariant & entry : candidates)
+		{
+			QVariantMap map = entry.toMap();
+			if(map["filterId"].toInt() == filterId && map["columnName"].toString() == columnName)
+				return map;
+		}
+		return QVariantMap();
+	};
+
+	//--- Context = the edited filter (the FilterWindow wiring) ----------------------------
+	const QVariantList candidates = ws->qualifiedColumnCandidates(alphaF0->id());
+	QVERIFY(!candidates.isEmpty());
+
+	//The context's own columns are the ONLY bare ones: the edited filter is the bare-name
+	//fallback namespace BY DEFINITION ("no fallback selection UI" - there is nothing to
+	//select, the context is the filter being edited).
+	{
+		const QVariantMap own = candidateFor(candidates, alphaF0->id(), "contNormal");
+		QVERIFY(!own.isEmpty());
+		QCOMPARE(own["code"].toString(), QString("contNormal"));
+		QCOMPARE(own["isBare"].toBool(), true);
+
+		for(const QVariant & entry : candidates)
+		{
+			const QVariantMap map = entry.toMap();
+			QCOMPARE(map["isBare"].toBool(), map["filterId"].toInt() == alphaF0->id());
+		}
+	}
+
+	//Outward refs are the minimal valid surface form (render rule), verbatim what
+	//insertion puts into the editor; the ambiguous filter name forces the full 3-segment form:
+	QCOMPARE(candidateFor(candidates, beta->defaultFilter()->id(), "contNormal")["code"].toString(), QString("\"Beta\".\"contNormal\""));
+	QCOMPARE(candidateFor(candidates, betaKeep->id(),				"contNormal")["code"].toString(), QString("\"KeepMyId\".\"contNormal\""));	//unique name across datasets
+	QCOMPARE(candidateFor(candidates, betaTwin->id(),				"contNormal")["code"].toString(), QString("\"Beta\".\"Twin\".\"contNormal\""));	//"Twin" exists in both datasets
+	QCOMPARE(candidateFor(candidates, alphaTwin->id(),				"contNormal")["code"].toString(), QString("\"Alpha\".\"Twin\".\"contNormal\""));
+
+	//Ordering: the context's own dataset first, the rest after (the picker's "here" section).
+	{
+		int lastAlpha = -1, firstBeta = candidates.size();
+		for(int i = 0; i < candidates.size(); ++i)
+			if(candidates[i].toMap()["dataSetTitle"].toString() == "Alpha")
+				lastAlpha = i;
+			else
+				firstBeta = std::min(firstBeta, i);
+		QVERIFY(lastAlpha >= 0 && firstBeta < candidates.size() && lastAlpha < firstBeta);
+	}
+
+	//Every emitted code round-trips through parse+resolve to exactly the entry it was offered
+	//for (the picker's whole point: insert verbatim, resolve later at run); bare codes are the
+	//context fallback and deliberately resolve to nothing here.
+	for(const QVariant & entry : candidates)
+	{
+		const QVariantMap map = entry.toMap();
+		const QString code = map["code"].toString();
+		QVERIFY(!code.isEmpty());
+
+		if(map["isBare"].toBool())
+			continue;
+
+		QualifiedColumnRef parsed;
+		QString error;
+		QVERIFY2(QualifiedColumnRef::parse(code, parsed, error), qPrintable(error));
+
+		ResolvedQualifiedColumn resolved;
+		QCOMPARE(ws->resolveQualifiedColumnRef(parsed, resolved, error), QualifiedRefError::none);
+		QCOMPARE(resolved.filterId,		map["filterId"].toInt());
+		QCOMPARE(resolved.columnName,	map["columnName"].toString().toStdString());
+	}
+
+	//--- No context: nothing is bare (the compute panel before an input filter is picked) ----
+	for(const QVariant & entry : ws->qualifiedColumnCandidates(-1))
+		QCOMPARE(entry.toMap()["isBare"].toBool(), false);
+
+	//--- filterIdByName: the compute editors' context resolution ----------------------
+	QCOMPARE(ws->filterIdByName(alpha->id(), "DEFAULT_FILTER"), alpha->defaultFilter()->id());	//Column::computeFilter's empty spelling
+	QCOMPARE(ws->filterIdByName(alpha->id(), "F0"),				alphaF0->id());
+	QCOMPARE(ws->filterIdByName(alpha->id(), "NoSuchFilter"),	-1);
+	QCOMPARE(ws->filterIdByName(-1,			"F0"),				-1);
+
+	//--- qualifiedRefErrorInCode: the scanner as editor-side live validation ------------
+	//Bare names are never errors (their fallback is the editor's context, not this helper's
+	//business), resolvable outward refs are clean, unresolvable ones give the typed first
+	//error - the same message the engine fails the run with.
+	QVERIFY(ws->qualifiedRefErrorInCode("contNormal > 3 & contGamma < 10").isEmpty());
+	QVERIFY(ws->qualifiedRefErrorInCode("contNormal > mean(\"Beta\".\"contNormal\")").isEmpty());
+	QVERIFY(ws->qualifiedRefErrorInCode("contNormal > mean(\"Beta\".\"Twin\".\"contNormal\")").isEmpty());
+
+	const QString error = ws->qualifiedRefErrorInCode("contNormal > mean(\"Nope\".\"contNormal\")");
+	QVERIFY2(error.contains("Nope"), qPrintable(error));
+	QVERIFY2(ws->qualifiedRefErrorInCode("mean(\"Alpha\".\"Nope\".\"contNormal\")").contains("Nope"), qPrintable(ws->qualifiedRefErrorInCode("mean(\"Alpha\".\"Nope\".\"contNormal\")")));
+}
+
+void TestAll::testPrepareSliceRunScript()
+{
+	// the engine-side consumption of the transient `referencedFilterIds` sidecar
+	//Unit-tested here because rbridge_prepareSliceRunScript is pure C++
+	//(scan, resolve, encode, queue - it calls no R); the out-of-process end-to-end behaviour is
+	//pinned in TestEngine's slice tests. Fixture as in testWorkspaceReferencedFilterIdsInCode.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0 = alpha->createFilter("F0", true);
+	QVERIFY(alphaF0);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	Filter * own = alpha->defaultFilter();
+	QVERIFY(own->columnEncoder());
+
+	std::string											prepared, error;
+	std::vector<DataBridge::MultiDataSetSlice>			slices;
+
+	auto prepare = [&](const std::string & code, const std::vector<int> & referencedFilterIds)
+	{
+		return rbridge_prepareSliceRunScript(code, own, ws, referencedFilterIds, prepared, slices, error);
+	};
+
+	//(d) Non-aware code: byte-identical to the pre-Phase-7 encode. The legacy pass encoded
+	//through the process-global current encoder, which for a non-aware run was anchored at the
+	//run's own filter view - so encoding the same text through that view here IS the legacy
+	//output, and prepare must reproduce it exactly (no rewrites, no wrapper, same view).
+	{
+		const std::string code = "contNormal > 3 & contGamma < 10";
+
+		ColumnEncoder::setCurrentEncoder(own->columnEncoder());	//the legacy anchoring
+		const std::string legacy = rbridge_encodeColumnNamesInScript(code);	//nullptr -> the global
+		ColumnEncoder::setCurrentEncoder(nullptr);
+
+		QVERIFY2(prepare(code, {}), qPrintable(QString::fromStdString(error)));
+		QCOMPARE(prepared, legacy);
+		QVERIFY(prepared.find("contNormal") == std::string::npos);	//bare names became tokens
+		QVERIFY(prepared.find(own->columnEncoder()->encode("contNormal")) != std::string::npos);
+
+		//The queue is just the own slice, LAST, with the columns the bare pass found:
+		QCOMPARE(slices.size(), size_t(1));
+		QCOMPARE(slices.back().filterId,	own->id());
+		QCOMPARE(slices.back().dataSetId,	alpha->id());
+		QCOMPARE(slices.back().cols, ColumnEncoder::colsPlusTypes({ {"contNormal", alpha->column("contNormal")->type()},
+																	{"contGamma", alpha->column("contGamma")->type()} }));
+	}
+
+	//(a) A qualified outward reference: the surface form becomes the REFERENCED filter's view
+	//token, the foreign slice is queued first (per sidecar order) with exactly the referenced
+	//columns, and the own slice stays last.
+	{
+		const std::string code = "contNormal > mean(\"Beta\".\"KeepMyId\".\"contNormal\")";
+		const std::string betaToken = betaKeep->columnEncoder()->encode("contNormal");
+
+		QVERIFY2(prepare(code, { betaKeep->id() }), qPrintable(QString::fromStdString(error)));
+		QVERIFY(prepared.find(betaToken) != std::string::npos);
+		QVERIFY(prepared.find("\"Beta\"") == std::string::npos);	//surface form gone from R-visible code
+
+		QCOMPARE(slices.size(), size_t(2));
+		QCOMPARE(slices[0].filterId,	betaKeep->id());	//foreign first, in sidecar order
+		QCOMPARE(slices[0].dataSetId,	beta->id());
+		QCOMPARE(slices[0].cols,		ColumnEncoder::colsPlusTypes({ {"contNormal", beta->column("contNormal")->type()} }));
+		QCOMPARE(slices[1].filterId,	own->id());			//own slice LAST (the setup read pops it)
+		QCOMPARE(slices[1].dataSetId,	alpha->id());
+	}
+
+	//(c) A reference outside the sidecar is a stale request: loud, typed, no guessing.
+	{
+		QVERIFY(!prepare("contNormal > mean(\"Beta\".\"KeepMyId\".\"contNormal\")", {}));
+		QVERIFY2(error.find("did not list as a referenced slice") != std::string::npos, qPrintable(QString::fromStdString(error)));
+		QVERIFY2(error.find("KeepMyId") != std::string::npos, qPrintable(QString::fromStdString(error)));
+	}
+
+	//(c) An unresolvable reference fails the run loudly with the typed message.
+	{
+		QVERIFY(!prepare("contNormal > mean(\"Nope\".\"contNormal\")", {}));
+		QVERIFY2(error.find("does not resolve") != std::string::npos, qPrintable(QString::fromStdString(error)));
+		QVERIFY2(error.find("Nope") != std::string::npos, qPrintable(QString::fromStdString(error)));
+	}
+
+	//(a) A qualified SELF-reference (resolved to the run's own filter) rides the own slice:
+	//rewritten into the own context's token (the host-bound fallback namespace) and its column IS read
+	//into the own data frame (the bare pass cannot see it), no foreign frame queued for it even
+	//when the sidecar lists it.
+	{
+		const std::string code			= "\"Alpha\".\"F0\".\"contNormal\" > 3";
+		const std::string selfToken		= alphaF0->columnEncoder()->encode("contNormal");
+
+		std::string										preparedSelf, errorSelf;
+		std::vector<DataBridge::MultiDataSetSlice>		slicesSelf;
+
+		QVERIFY2(rbridge_prepareSliceRunScript(code, alphaF0, ws, { alphaF0->id() }, preparedSelf, slicesSelf, errorSelf),
+				 qPrintable(QString::fromStdString(errorSelf)));
+		QVERIFY(preparedSelf.find(selfToken) != std::string::npos);
+		QCOMPARE(slicesSelf.size(), size_t(1));	//only the own slice, and it carries the referenced column
+		QCOMPARE(slicesSelf[0].filterId, alphaF0->id());
+		QCOMPARE(slicesSelf[0].cols, ColumnEncoder::colsPlusTypes({ {"contNormal", alpha->column("contNormal")->type()} }));
+	}
+
+	//(a) Two foreign filters: one slice each, sidecar order, columns attributed per filter.
+	{
+		const std::string code = "mean(\"Beta\".\"KeepMyId\".\"contGamma\") + mean(\"Beta\".\"KeepMyId\".\"contNormal\") + mean(\"Alpha\".\"F0\".\"contNormal\")";
+
+		QVERIFY2(prepare(code, { betaKeep->id(), alphaF0->id() }), qPrintable(QString::fromStdString(error)));
+
+		QCOMPARE(slices.size(), size_t(3));
+		QCOMPARE(slices[0].filterId, betaKeep->id());
+		QCOMPARE(slices[0].cols.size(), size_t(2));	//contGamma + contNormal
+		QCOMPARE(slices[1].filterId, alphaF0->id());
+		QCOMPARE(slices[1].cols.size(), size_t(1));
+		QCOMPARE(slices[2].filterId, own->id());	//own last
+	}
+}
+
+void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
+{
+	// the bridge hands the raw options JSON of the current parse to
+	//the form; a selection host that registers after the parse (async ComponentsList
+	//instantiation) resolves its own option out of that pending JSON and stashes the resulting
+	//filter id on the form at registration time, before its DropDown ever binds (
+	//the stash replaces the old direct mirror write; RowControls consumes it at the option
+	//control's first bind, which then drives the host exactly like a desktop dropdown would).
+	//Driven through the C++ API here; the QML lifecycle side (register on late instantiation,
+	//prune on destroy) is pinned in tst_dataSetSelectionVariablesList.qml.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	DataSet * second = ws->createDataSet();
+	QVERIFY(second);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), second, [](int){});
+	second->setTitle("Second");
+	Filter * named = second->createFilter("KeepMyId", true);
+	QVERIFY(named);
+
+	//The AnalysisForm ctor connects to PreferencesModelBase::preferences(); let it lazily create
+	//a PLAIN base there and the PreferencesModel-based tests later in this binary could no longer
+	//install their own model (the base ctor asserts on an existing singleton). Hand them the
+	//guarded real one, exactly like testSyncKeepMissingColumns does:
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+
+	AnalysisForm form;
+	AnalysisBase analysis(&form);   //parenting is how AnalysisBase picks up _analysisForm
+	form.setAnalysis(&analysis);
+	Json::Value raw(Json::objectValue);
+	raw["dataSetA"]	= "Second - KeepMyId";
+	raw["dataSetB"]	= "NoSuchDataSet";
+	form.setPendingDataSetSelectionRawValues(raw);
+
+	//Nothing registered yet, nothing applied:
+	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
+	QVERIFY(form.resolvedSelectionOptionValue("dataSetA").isNull());
+
+	JASPControl * earlyHost = new JASPControl();
+	form.registerDataSetSelectionOption("dataSetA", earlyHost);
+
+	QCOMPARE(form.dataSetSelectionOptionNames(), QStringList({ "dataSetA" }));
+	QCOMPARE(form.resolvedSelectionOptionValue("dataSetA").asString(), std::to_string(named->id()));   //resolved+stashed at registration
+
+	//A late host only ever touches its own option - the unresolvable dataSetB stays untouched
+	//(its DropDown will hold whatever it gets pending) - but registers anyway, so
+	//the NEXT parse translates it properly:
+	JASPControl * laterHost = new JASPControl();
+	form.registerDataSetSelectionOption("dataSetB", laterHost);
+	QVERIFY(form.resolvedSelectionOptionValue("dataSetB").isNull());
+	QVERIFY(form.dataSetSelectionOptionNames().contains("dataSetB"));
+
+	//Request boundary: a fresh parse replaces the pending JSON wholesale (and clears the stash -
+	//a previous parse's leftovers must not leak into this one); re-registering the same
+	//(host, option) is a no-op and nothing gets applied out of thin air:
+	form.setPendingDataSetSelectionRawValues(Json::Value());
+	QVERIFY(form.resolvedSelectionOptionValue("dataSetA").isNull());	//the stash is per-request too
+	form.registerDataSetSelectionOption("dataSetB", laterHost);
+	QVERIFY(form.resolvedSelectionOptionValue("dataSetB").isNull());
+
+	//Dead hosts drop out at read time - the bridge never demands a value for an option nobody
+	//owns anymore (the old findChildren scan got this half right, the registry must not regress
+	//it):
+	delete earlyHost;
+	QStringList names = form.dataSetSelectionOptionNames();
+	QVERIFY(!names.contains("dataSetA"));
+	QVERIFY(names.contains("dataSetB"));
+
+	delete laterHost;
+	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
+}
+
+void TestAll::testDeadControlsArePrunedFromFormCaches()
+{
+	// (chunk-4 finding #1): JASPControl::componentComplete registers every
+	//static-branch control on the form (AnalysisForm::addControl), but nothing unregistered -
+	//destroying such a control after setup left raw pointers in _controls, and in
+	//_dependsOrderedCtrls once a bind pass had run over them. The next pass (setAnalysisUp,
+	//bindTo, clearFormErrors, filterByNameDone, usedVariables) dereferenced freed memory:
+	//deterministic SEGV (reproduced in tst_dataSetSelectionVariablesList.qml pre-fix, which now
+	//drives the same cycle through the real QML lifecycle). The form prunes on the control's
+	//destroyed signal now, wired at the addControl chokepoint.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);   //AnalysisForm's ctor touches preferences(), same guard as testSelectionRegistryLateHostAppliesPendingValue
+
+	AnalysisForm form;
+	AnalysisBase analysis(&form);   //parenting is how AnalysisBase picks up _analysisForm
+	form.setAnalysis(&analysis);
+
+	JASPControl * keeper = new JASPControl();
+	keeper->setName("keeper");
+	form.addControl(keeper);
+
+	JASPControl * doomed = new JASPControl();
+	doomed->setName("doomed");
+	form.addControl(doomed);
+
+	QCOMPARE(form.getControl("keeper"), keeper);
+	QCOMPARE(form.getControl("doomed"), doomed);
+
+	//complete the form the way Form.qml's Component.onCompleted does: the setAnalysisUp pass
+	//pushes every registered control into _dependsOrderedCtrls, so after this the doomed control
+	//dangles in BOTH caches once destroyed.
+	emit form.formCompletedSignal();
+	QVERIFY2(form.initialized(), "the dummy analysis must have completed the setup pass");
+
+	delete doomed;   //~QObject fires destroyed() - the form must drop it from every container
+
+	QVERIFY2(!form.getControl("doomed"), "a destroyed control must not resolve from the form cache anymore");
+	QCOMPARE(form.getControl("keeper"), keeper);
+
+	//the passes that used to walk the freed pointers:
+	form.clearFormErrors();
+	form.clearFormWarnings();
+	form.filterByNameDone(1, "someFilter", "");
+	QVERIFY(form.usedVariables().empty());
+	form.optionMeta(false);   //walks _dependsOrderedCtrls
+
+	//the freed option name is reusable: the pruned entry must not resurface as a bogus
+	//"2 controls have the same name" collision:
+	JASPControl * revived = new JASPControl();
+	revived->setName("doomed");
+	form.addControl(revived);
+	QCOMPARE(form.getControl("doomed"), revived);
+
+	//and the full bind pass (setOptions -> setAnalysisUp -> _setUpModels/_setUp/bindTo) must
+	//survive with the revived control, then with everything dead:
+	form.setOptions(QVariantMap({ { "someOption", true } }));
+
+	delete keeper;
+	delete revived;
+	form.clearFormErrors();
+	QVERIFY(!form.getControl("keeper"));
+	QVERIFY(!form.getControl("doomed"));
+}
+
+void TestAll::testSelectionHostRegistryIntrospection()
+{
+	// the form's selection-host registry is introspectable (count + list in
+	//registration order) and unregisters EAGERLY on destruction - this is the interface
+	//AnalysisBase (as VariableInfoProvider over the registered selected filters) aggregates
+	//over, so its shape and lifecycle are pinned here, host-type-agnostic.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);   //AnalysisForm's ctor touches preferences(), see above
+
+	AnalysisForm form;
+	AnalysisBase analysis(&form);
+	form.setAnalysis(&analysis);
+
+	QCOMPARE(form.selectionHostCount(), 0);
+	QVERIFY(form.selectionHosts().isEmpty());
+
+	JASPControl * hostA = new JASPControl();
+	JASPControl * hostB = new JASPControl();
+	form.registerDataSetSelectionOption("optionA", hostA);
+	form.registerDataSetSelectionOption("optionB", hostB);
+
+	QCOMPARE(form.selectionHostCount(), 2);
+	const QList<JASPControl *> hosts = form.selectionHostControls();
+	QCOMPARE(hosts.indexOf(hostA), 0);					//registration order is the list order
+	QCOMPARE(hosts.indexOf(hostB), 1);
+
+	//re-registering the same (host, option) does not duplicate; a second option on the SAME
+	//host counts as one host (the registry is of hosts, the names accessor stays per-option):
+	form.registerDataSetSelectionOption("optionA", hostA);
+	QCOMPARE(form.selectionHostCount(), 2);
+	form.registerDataSetSelectionOption("optionA2", hostA);
+	QCOMPARE(form.selectionHostCount(), 2);
+	QCOMPARE(form.dataSetSelectionOptionNames().count(), 3);
+
+	//explicit unregister (option rename path, HostFilterSelection::setOption) drops the entry:
+	form.unregisterDataSetSelectionOption("optionA2", hostA);
+	QCOMPARE(form.selectionHostCount(), 2);
+	QCOMPARE(form.dataSetSelectionOptionNames(), QStringList({ "optionA", "optionB" }));
+
+	//eager unregister on destruction - no read-time wait, no dangling host handed to the aggregate:
+	delete hostB;
+	QCOMPARE(form.selectionHostCount(), 1);
+	QCOMPARE(form.selectionHostControls(), QList<JASPControl *>({ hostA }));
+
+	delete hostA;
+	QCOMPARE(form.selectionHostCount(), 0);
+	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
+}
+
+void TestAll::testAnalysisProviderAggregatesSelectionHosts()
+{
+	// the analysis' VariableInfoProvider aggregates over the form's selection-
+	//host registry - resolved PER USE (no encoder/filter pointer is ever cached: Filter views
+	//lazy-attach and die with the filter). 0 hosts ⟹ the analysis' own filter answers
+	//(the host-bound fallback), 1 distinct filter ⟹ that filter IS the namespace, >1 ⟹ merged
+	//union in which same-name columns from different filters COEXIST and encoder/model honestly
+	//return nullptr. selectionNamespaceChanged() fires when the aggregate moves (register,
+	//unregister, host switch - the switch half is pinned in qmlTests against a real host).
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);   //AnalysisForm's ctor touches preferences()
+
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	DataSet   * a  = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	//A second dataset from the SAME csv: every column name lives in both datasets, so the merged
+	//union has a collision for each name - the "both visible, distinct" case.
+	CSVImporter importer;
+	DataSet   * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY2(b->id() != a->id() && b->columnCount() > 0, "second dataset must be a real second namespace");
+
+	a->addFilter();						//a named filter on a, shown on a
+	Filter * aNamed   = a->shownFilter();
+	Filter * aDefault = a->defaultFilter();
+	Filter * bDefault = b->defaultFilter();
+	QVERIFY2(aNamed && aNamed != aDefault, "addFilter must give a distinct named filter");
+	QVERIFY(bDefault && bDefault != aNamed);
+
+	AnalysisForm	form;
+	AnalysisBase	analysis(&form);
+	form.setAnalysis(&analysis);
+
+	// --- 0 hosts: fallback to the analysis' own filter ------------------------------------------
+	analysis.setFilterId(aDefault->id());
+	QVERIFY(analysis.selectedSelectionFilters().isEmpty());
+	QVERIFY(!analysis.selectionNamespaceIsMerged());
+	QVERIFY2(analysis.columnEncoder() == aDefault->columnEncoder(), "0 hosts must answer with the analysis filter's live view");
+	QCOMPARE(analysis.selectionNamespaceVariableNames(), aDefault->provideInfo(varInfoType::VariableNames).toStringList());
+
+	// --- 1 host: that filter IS the namespace (not the analysis' own one) ------------------------
+	TestSelectionHost * hostA = new TestSelectionHost(aNamed);
+	QSignalSpy namespaceSpy(&analysis, &AnalysisBase::selectionNamespaceChanged);
+	form.registerDataSetSelectionOption("hostA", hostA);
+
+	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 1);
+	QVERIFY(analysis.columnEncoder() == aNamed->columnEncoder());
+	QVERIFY(analysis.columnEncoder() != aDefault->columnEncoder());
+	QVERIFY(analysis.providerModel() == aNamed->providerModel());
+	QCOMPARE(analysis.selectionNamespaceVariableNames(), aNamed->provideInfo(varInfoType::VariableNames).toStringList());
+	QVERIFY(!analysis.selectionNamespaceIsMerged());
+	QCOMPARE(namespaceSpy.count(), 1);						//registry change reaches the provider
+
+	//two hosts on the SAME filter are still ONE namespace (the aggregate dedups by filter):
+	TestSelectionHost * hostSame = new TestSelectionHost(aNamed);
+	form.registerDataSetSelectionOption("hostSame", hostSame);
+	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 1);
+	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList({ aNamed->id() }));
+	QVERIFY(!analysis.selectionNamespaceIsMerged());
+	QCOMPARE(namespaceSpy.count(), 2);						//registry changed (MAYBE semantics: the
+															//aggregate itself did not - consumers
+															//re-read, they do not trust a diff)
+
+	// --- 2 distinct filters: merged union, collisions coexist ------------------------------------
+	TestSelectionHost * hostB = new TestSelectionHost(bDefault);
+	form.registerDataSetSelectionOption("hostB", hostB);
+	QCOMPARE(namespaceSpy.count(), 3);
+	QVERIFY(analysis.selectionNamespaceIsMerged());
+	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList({ aNamed->id(), bDefault->id() }));	//registration order
+
+	//merged means NO single namespace: encoder and model honestly say nullptr:
+	QVERIFY(analysis.columnEncoder() == nullptr);
+	QVERIFY(analysis.providerModel() == nullptr);
+
+	//b is the same csv as a: every name comes through two distinct filters and appears twice -
+	//both visible, the terms' filterId tells them apart downstream:
+	const QStringList base = tq(a->getColumnNames());
+	QVERIFY(base.size() > 0);
+	const QStringList merged = analysis.selectionNamespaceVariableNames();
+	QCOMPARE(merged.size(), base.size() * 2);
+	for(const QString & name : base)
+		QCOMPARE(merged.count(name), 2);
+
+	//per-name requests scan the hosts in registration order and answer with the first hit
+	//(documented merged-view rule - consumers needing precision use a specific host):
+	QVERIFY(analysis.provideInfo(varInfoType::VariableType, base.first()).isValid());
+	QVERIFY(!analysis.provideInfo(varInfoType::VariableType, tq("NoSuchColumnHere")).isValid());
+
+	// --- live re-resolution, nothing cached --------------------------------------------------------
+	//hostB moves onto aNamed: the aggregate collapses back to the single namespace WITHOUT any
+	//re-registration, purely through the per-use virtual:
+	hostB->setFilter(aNamed);
+	QVERIFY(!analysis.selectionNamespaceIsMerged());
+	QVERIFY(analysis.columnEncoder() == aNamed->columnEncoder());
+	hostB->setFilter(bDefault);
+	QVERIFY(analysis.selectionNamespaceIsMerged());
+
+	//eager unregister immediately shrinks the aggregate again:
+	delete hostB;
+	QCOMPARE(namespaceSpy.count(), 4);
+	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList({ aNamed->id() }));
+	delete hostSame;
+	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 1);
+	delete hostA;
+	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 0);
+
+	//back to the fallback; and with the analysis filter gone as well the provider is silent:
+	QVERIFY(analysis.columnEncoder() == aDefault->columnEncoder());
+	analysis.setFilterId(-1);								//no filter by that id ⟹ _filter nulls
+	QVERIFY(analysis.columnEncoder() == nullptr);
+	QVERIFY(analysis.selectionNamespaceVariableNames().isEmpty());
+	QVERIFY(!analysis.provideInfo(varInfoType::DataAvailable).toBool());
+}
+
+void TestAll::testTermFilterIdIsPartOfIdentity()
+{
+	// Term carries the id of the filter it was selected through (-1 =
+	//unqualified) as INTERNAL typed state, and it is part of identity. Flagship case: two terms
+	//named "TestInts" from two different filters must never compare equal and must coexist in
+	//one Terms; lookups distinguish stamped terms but keep the host-bound fallback (an unqualified
+	//lookup matches on name alone, so every pre-existing name-based flow keeps working).
+	Term plain(tq("TestInts"), columnType::scale);
+	QCOMPARE(plain.filterId(), -1);						//fresh terms are unqualified
+
+	Term inA(plain);		inA.setFilterId(11);
+	Term inAcopy(plain);	inAcopy.setFilterId(11);	//same everything, separately built
+	Term inB(plain);		inB.setFilterId(12);
+
+	QVERIFY(plain == Term(tq("TestInts"), columnType::scale));	//-1 == -1: legacy equality unchanged
+	QVERIFY(inA   == inAcopy);
+	QVERIFY(inA   != inB);									//the flagship: same name, other filter
+	QVERIFY(inA   != plain);								//equality is strict, -1 included:
+	QVERIFY(plain != inA);									//qualified and unqualified are different facts
+
+	//interaction terms: components compare as a set (always did), the term-level filterId must agree:
+	Term interA(QStringList({"x", "y"}));		interA.setFilterId(11);
+	Term interAotherOrder(QStringList({"y", "x"}));	interAotherOrder.setFilterId(11);
+	Term interB(QStringList({"x", "y"}));			interB.setFilterId(12);
+	QVERIFY(interA == interAotherOrder);
+	QVERIFY(interA != interB);
+
+	//operator< is a total order over the identity, so ordered containers keep both terms apart
+	//(Terms::indexesFromTerms leans on this):
+	QVERIFY(inA < inB);
+	QVERIFY(!(inB < inA));
+	QVERIFY(!(plain < plain));
+
+	//qHash is consistent with operator==: QHash/QSet hold same-name terms of two filters apart:
+	QHash<Term, int> byHash;
+	byHash.insert(inA, 1);
+	byHash.insert(inB, 2);
+	QCOMPARE(byHash.size(), 2);
+	QCOMPARE(byHash.value(inA), 1);
+	QCOMPARE(byHash.value(inB), 2);
+
+	//one Terms container, same name through two filters (the flagship containment):
+	Terms terms;
+	terms.add(inA);
+	terms.add(inB);
+	QCOMPARE(terms.size(), size_t(2));				//both survive the uniqueness check
+	QVERIFY(terms.containsValue(inA));
+	QVERIFY(terms.containsValue(inB));
+	QVERIFY(terms.indexOfValue(inA) >= 0 && terms.indexOfValue(inB) >= 0);
+	QVERIFY(terms.indexOfValue(inA) != terms.indexOfValue(inB));
+	Term inC(plain);	inC.setFilterId(13);
+	QVERIFY(!terms.containsValue(inC));				//a third filter is NOT in there
+	QVERIFY(terms.containsValue(plain));			//unqualified lookup matches by name
+	QVERIFY(terms.containsValue("TestInts"));		//the QString overload stays a name lookup
+	QVERIFY(!terms.containsValue("NoSuchColumn"));
+
+	//adding an exact stamped twin is still a duplicate (no second entry), and an unqualified
+	//insert UPDATES the stamped entry in place - it never demotes it to -1:
+	terms.add(Term(inA));
+	QCOMPARE(terms.size(), size_t(2));
+	terms.add(plain);
+	QCOMPARE(terms.size(), size_t(2));
+	for(const Term &t : terms)
+		QVERIFY(t.filterId() != -1);				//the stamps survived the unqualified insert
+
+	//remove() finds by identity: removing one filter's copy leaves the other one alone and the
+	//value map reindexes:
+	terms.remove(inA);
+	QCOMPARE(terms.size(), size_t(1));
+	QVERIFY(!terms.containsValue(inA));
+	QVERIFY(terms.containsValue(inB));
+	QCOMPARE(terms.indexOfValue(inB), 0);
+
+	//container equality inherits the strictness:
+	Terms tA, tB;
+	tA.add(inA);	tB.add(inB);
+	QVERIFY(tA != tB);
+
+	//ordered containers keep both stamped copies apart (operator< tiebreak; Terms::indexesFromTerms
+	//and the std::map<Term,...> inside it lean on exactly this):
+	std::map<Term, int> ordered;
+	ordered[inA] = 0;
+	ordered[inB] = 1;
+	QCOMPARE(ordered.size(), size_t(2));
+	QCOMPARE(ordered[inA], 0);
+	QCOMPARE(ordered[inB], 1);
+
+	//combination terms carry the source filter when uniform (interaction components share the
+	//term-level filterId) and stay unqualified when the sources mix:
+	Term x(tq("x"), columnType::nominal);		x.setFilterId(11);
+	Term y(tq("y"), columnType::nominal);		y.setFilterId(11);
+	Terms uniform;
+	uniform.add(x);
+	uniform.add(y);
+	Terms crossed = uniform.crossCombinations();
+	QVERIFY(crossed.size() > 1);
+	for(const Term &t : crossed)
+		QCOMPARE(t.filterId(), 11);
+	Term way = uniform.wayCombinations(2).at(0);
+	QCOMPARE(way.components().size(), size_t(2));	//the interaction product itself
+	QCOMPARE(way.filterId(), 11);
+
+	Term yOther(tq("y"), columnType::nominal);	yOther.setFilterId(12);
+	Terms mixed;
+	mixed.add(x);
+	mixed.add(yOther);
+	Terms mixedProducts = mixed.crossCombinations();
+	bool sawQualified = false, sawInteraction = false;
+	for(const Term &t : mixedProducts)
+	{
+		if(t.components().size() > 1)
+		{
+			sawInteraction = true;
+			QCOMPARE(t.filterId(), -1);				//mixed provenance cannot claim one source
+		}
+		else
+			sawQualified = t.filterId() >= 0;		//the single-term combinations keep theirs
+	}
+	QVERIFY(sawInteraction);
+	QVERIFY(sawQualified);
+
+	//NO wire field yet (serialization is Phase 3): the json of a stamped term is
+	//byte-identical to the unqualified one, and parsing options yields unqualified terms.
+	QCOMPARE(tq(inA.toJson().toStyledString()), tq(plain.toJson().toStyledString()));
+	Json::Value stamped = inA.toJson();
+	QVERIFY(!stamped.isMember("filterId"));
+	Term reparsed(stamped, "value", "", inA.types());
+	QCOMPARE(reparsed.filterId(), -1);
+	QVERIFY(reparsed == plain);
+}
+
+void TestAll::testJaspArchiveVersionBlocksOlderBuilds()
+{
+	// the archive version written into every manifest is 7.0.0 (major).
+	//JASPImporter::isCompatible blocks an older build on `archiveMajor > their own major`, so
+	//aware .jasp files (filter-id selections, eagerly materialised per-file filters) cannot be
+	//half-read by a pre-feature JASP; the same build round trips its own files.
+	QVERIFY(_newPkgWithDataSet());
+
+	const std::string jaspFile = TempFiles::createSpecific("mdsarchiveversion", "temp.jasp");
+
+	Json::Value compareMe = _pkg->dataSet()->jsonForCompare();
+	JASPExporter::createSnapshot("mdsarchiveversion_snapshot_");
+	JASPExporter().saveDataSet(jaspFile, [](int){});
+
+	const ManifestInfo manifest = ArchiveReader::readManifest(jaspFile);
+	//Version::asString minimises (trailing zeroes dropped), so the manifest reads "7": compare
+	//as Versions, which is exactly what JASPImporter::isCompatible does with it.
+	QVERIFY2(Version(manifest.jaspArchiveVersion) == JASPExporter::jaspArchiveVersion
+	         && Version(manifest.jaspArchiveVersion).major() == 7,
+	         qPrintable(QString("manifest should carry the 7.0.0 archive version, got: %1")
+	                    .arg(tq(manifest.jaspArchiveVersion))));
+
+	//Same-build round trip: the importer's own gate must accept what this build wrote...
+	_pkg->reset();
+	JASPImporter::loadDataSet(jaspFile, [](int){});
+	QVERIFY2(_pkg->dataSet(), "same-build round trip must open");
+	QVERIFY2(_pkg->dataSet()->jsonForCompare() == compareMe, "same-build round trip must preserve the dataset");
+	QCOMPARE(_pkg->archiveVersion().major(), 7);
+
+	//...and the gate's direction is the MAJOR comparison that blocks older builds (a 6.x build
+	//reading this file sees 7 > 6 and refuses; the other direction stays readable):
+	QVERIFY(Version("7.0.0").major() > Version("6.0.0").major());
 }
 
 void TestAll::testFilterRemoveFilter()
@@ -946,6 +6173,69 @@ void TestAll::testFilterRemoveFilter()
 	QVERIFY(ds->filter("testRemoveMe") == nullptr);
 
 	ds->runFilters(); //must still be safe after removal (the dangling-pointer regression would crash here)
+}
+
+void TestAll::testRunFiltersColumnAware()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	Column * scaleCol	= ds->column("contNormal");
+	Column * otherCol	= ds->column("contGamma");
+	Column * nominalCol	= ds->column("facGender");
+	QVERIFY2(scaleCol && otherCol && nominalCol, "debug.csv must contain contNormal, contGamma and facGender");
+	QVERIFY2(nominalCol->hasLabels() && nominalCol->labelsNonEmptyCount() >= 2, "facGender must have at least 2 labels");
+
+	// --- Named filter: columnUsed() must come from the columns scanned out of the R filter ---
+	Filter * f = ds->createFilter("testColumnAware", true);
+	QVERIFY(f);
+	f->setRFilter(scaleCol->name() + " > 0"); //setRFilter runs rescanForColumns()
+	QVERIFY2(f->columnUsed(tq(scaleCol->name())),	"R filter referencing a column must report it as used");
+	QVERIFY2(!f->columnUsed(tq(otherCol->name())),	"R filter must not report an unrelated column as used");
+
+	f->setInvalidated(false);
+	QVERIFY2(!f->invalidated(), "precondition: filter starts fresh");
+
+	//An edit to an unrelated column must NOT re-run (invalidate) the filter.
+	ds->runFilters(tq(otherCol->name()));
+	QVERIFY2(!f->invalidated(), "runFilters with an unrelated column must not invalidate the filter");
+
+	//An edit to a used column must invalidate it.
+	ds->runFilters(tq(scaleCol->name()));
+	QVERIFY2(f->invalidated(), "runFilters with a used column must invalidate the filter");
+
+	//Unknown editor (empty column name) must invalidate everything (the old blanket behaviour).
+	f->setInvalidated(false);
+	ds->runFilters();
+	QVERIFY2(f->invalidated(), "runFilters without a column must invalidate all filters");
+
+	// --- Default filter: label-filtered columns must be reported as used ---
+	//A value edit can move a row between label levels without changing the generated filter
+	//code, so Filter::columnUsed() must also look at the active label filters (its _labelGen
+	//branch). Named filters have no label generator and must not pick up this path.
+	Filter * def = ds->defaultFilter();
+	QVERIFY(def);
+	QVERIFY2(!nominalCol->hasLabelFilter(), "precondition: no label filter active on facGender yet");
+	QVERIFY2(!def->columnUsed(tq(nominalCol->name())), "without an active label filter the column must not count as used");
+
+	nominalCol->setLabelAllowFilter(0, false);
+	QVERIFY2(nominalCol->hasLabelFilter(), "deactivating a label must activate the label filter");
+
+	QVERIFY2(def->columnUsed(tq(nominalCol->name())), "default filter must treat label-filtered columns as used");
+	QVERIFY2(!f->columnUsed(tq(nominalCol->name())), "named filters must not pick up the label-filter path");
+
+	//The label-filtered column must drive runFilters for the default filter only.
+	def->setInvalidated(false);
+	f->setInvalidated(false);
+
+	ds->runFilters(tq(otherCol->name()));
+	QVERIFY2(!def->invalidated(), "editing a column without label filter must not invalidate the default filter");
+
+	ds->runFilters(tq(nominalCol->name()));
+	QVERIFY2(def->invalidated(),	"editing a label-filtered column must invalidate the default filter");
+	QVERIFY2(!f->invalidated(),		"editing a label-filtered column must not invalidate a named filter that does not use it");
 }
 
 void TestAll::testSyncerExportModifyReimportChangesDetected()
@@ -1061,6 +6351,98 @@ void TestAll::testFilterRevisionInvalidatedRoundTrip()
 	QVERIFY2(revision >= 0, "revision must stay an integer revision, not the invalidated flag");
 
 	dbi.filterDelete(filterId);
+}
+
+void TestAll::testSyncKeepMissingColumns()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Importer::syncDataSet reads the preferences singleton; nothing else in the tests creates one.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+	QVERIFY(PreferencesModel::prefs());
+
+	//syncDataSet asks permission through checkDoSync; with no MainWindow around nothing answers it and
+	//the signal would return a default-constructed false, aborting every sync below.
+	connect(DataSetPackage::pkg(), &DataSetPackage::checkDoSync, this, &TestAll::_checkDoSyncFake, Qt::DirectConnection);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	auto writeCsv = [&](const QString & name, const QByteArray & content)
+	{
+		QString path = tempDir.filePath(name);
+		QFile	file(path);
+		if(!file.open(QIODevice::WriteOnly))
+			return QString();
+		file.write(content);
+		file.close();
+		return path;
+	};
+
+	const QString	abc	= writeCsv("abc.csv",	"a,b,c\n1,2,3\n"),
+					ab	= writeCsv("ab.csv",	"a,b\n4,5\n"),
+					pq	= writeCsv("pq.csv",	"p,q\n6,7\n");
+
+	QVERIFY(!abc.isEmpty() && !ab.isEmpty() && !pq.isEmpty());
+
+	auto freshDataSetFrom = [&](const QString & csv)
+	{
+		DataSet * ds = _pkg->createDataSet();
+		_pkg->workspace()->setShownDataSet(ds);
+
+		CSVImporter importer;
+		importer.loadDataSet(fq(csv), ds, [](int){});
+		return ds;
+	};
+
+	//Without the preference a column that is gone from the new data file is removed.
+	{
+		PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(false);
+
+		DataSet * ds = freshDataSetFrom(abc);
+		QCOMPARE(ds->columnCount(), 3);
+
+		CSVImporter syncer;
+		syncer.syncDataSet(fq(ab), ds, [](int){});
+
+		QCOMPARE(ds->columnCount(), 2);
+		QVERIFY(!ds->column("c"));
+	}
+
+	//With the preference that same column is kept instead of removed.
+	{
+		PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(true);
+
+		DataSet * ds = freshDataSetFrom(abc);
+		QCOMPARE(ds->columnCount(), 3);
+
+		CSVImporter syncer;
+		syncer.syncDataSet(fq(ab), ds, [](int){});
+
+		QCOMPARE(ds->columnCount(), 3);
+		QVERIFY(ds->column("c"));
+
+		//Syncing on against a file that shares no column at all keeps every one of them: p and q are added
+		//next to a, b and c rather than taking their place, so the data holds the union of both files. That
+		//union keeps growing for as long as one session goes on synchronizing, which is why each data file
+		//normally gets a JASP process of its own.
+		CSVImporter syncer2;
+		syncer2.syncDataSet(fq(pq), ds, [](int){});
+
+		QCOMPARE(ds->columnCount(), 5);
+		QVERIFY(ds->column("a"));
+		QVERIFY(ds->column("b"));
+		QVERIFY(ds->column("c"));
+		QVERIFY(ds->column("p"));
+		QVERIFY(ds->column("q"));
+	}
+
+	PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(false);
+
+	//The singleton registers globally (PreferencesModelBase::_singleton) and is parented to this
+	//test, so it would survive this test and then make MainWindow's own PreferencesModel assert.
+	delete PreferencesModel::prefs();
 }
 
 void TestAll::testFileSyncerFullAsyncFlow()
@@ -1354,6 +6736,1736 @@ void TestAll::testCloseWorkspaceAndDataSets()
 bool TestAll::_checkDoSyncFake()
 {
 	return true;
+}
+
+bool TestAll::_writeTextFile(const QString & path, const QByteArray & contents)
+{
+	QFile file(path);
+	if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+		return false;
+	return file.write(contents) == contents.size();
+}
+
+//No modules are loaded in this backendless test process, so every module-backed analysis in a jasp
+//file reports that its module is missing and the batch run exits non-zero for that alone. Anything
+//else in the report means the chain under test actually went wrong.
+bool TestAll::_batchErrorsAreOnlyMissingModules(MainWindow * mw)
+{
+	for(const QString & error : mw->_batchResult.errors)
+		if(!error.contains("Module is not available"))
+		{
+			qWarning() << "Unexpected batch error:" << error;
+			return false;
+		}
+
+	return true;
+}
+
+//Constructs a full MainWindow the way the command line sees it and detaches exitSignal from
+//QApplication::exit (which the constructor wires up and which would quit the test event loop),
+//returning a spy on the signal instead. The spy is parented to nothing; delete it after use.
+QSignalSpy * TestAll::_newMainWindowWithExitSpy(MainWindow *& mw)
+{
+	//A previous MainWindow teardown took the whole session directory (and its database) with it,
+	//while MainWindow wants to create its own DatabaseInterface in there again.
+	TempFiles::init(ProcessInfo::currentPID());
+
+	//Keep the QML engine and the R engines out of the test process: the data/sync chain under test
+	//does not need them (no backend at all, though the tests do run under a display), and both add
+	//many threads (sqlite contention, JS garbage collection) that make the test flaky. See
+	//backendlessTestMode() in mainwindow.cpp.
+	qputenv("JASP_TEST_BACKENDLESS", "1");
+
+	//Other tests may have left the global PreferencesModel singleton behind; the MainWindow wants
+	//to construct its own, and a second one asserts.
+	delete PreferencesModel::prefs();
+
+	QCoreApplication::setApplicationName("JASPTest"); //so checkForUpdates() stays out of the way
+
+	try
+	{
+		//In batch mode, because that is what the command-line chain under test is: since #6318 the
+		//chain ends in finishBatchRun(), which returns right away when the window was not started
+		//for a batch, so without this nothing ever exits.
+		mw = new MainWindow(nullptr, true);
+	}
+	catch(const std::exception & e)
+	{
+		std::cerr << "MainWindow construction threw: " << e.what() << std::endl;
+		throw;
+	}
+
+	//The MainWindow listens for the interactive CSV preview; with no delimiter preset the importers
+	//would then block this (GUI) thread on an answer that can never come (regression guard: the
+	//per-test init() resets it to '\0').
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(',');
+
+	disconnect(mw, &MainWindow::exitSignal, mw, nullptr); //keep every other listener, lose only qApp
+
+	return new QSignalSpy(mw, &MainWindow::exitSignal);
+}
+
+void TestAll::testCliSyncExportChainFromFreshWorkspace()
+{
+	//A genuine JASP file from the test library, so the chain runs against a real saved document:
+	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp");
+
+	QVERIFY(QFileInfo::exists(jaspPath));
+
+	//The sync data holds exactly the columns of that file (in its order), so synchronizing
+	//replaces them without adding or deleting any: this pins the plain open -> sync -> exit chain.
+	const QByteArray syncCsvData =
+		"V1,contNormal,contGamma,contBinom,contExpon,contWide,contNarrow,contOutlier,contcor1,contcor2,"
+		"facGender,facExperim,facFive,facFifty,facOutlier,debString,debMiss1,debMiss30,debMiss80,debMiss99,"
+		"debBinMiss20,debNaN,debNaN10,debInf,debCollin1,debCollin2,debCollin3,debEqual1,debEqual2,debSame,unicode\n"
+		"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,sixteen,17,18,19,20,21,22,23,24,25,26,27,28,29,thirty\n"
+		"31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,fortysix,47,48,49,50,51,52,53,54,55,56,57,58,59,sixty\n";
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//A scratch folder inside JASP's own session directory: QTemporaryDir can trigger a permission
+	//dialog on some systems, while TempFiles already has a session dir set up by
+	//_newMainWindowWithExitSpy. The MainWindow teardown removes the session dir, so no manual
+	//cleanup of the folder or its file is needed.
+	const QString	syncCsv		= QString::fromStdString(TempFiles::createTmpFolder()) + "/syncdata.csv";
+
+	QVERIFY(_writeTextFile(syncCsv, syncCsvData));
+
+	//The results page finished loading before the command line triggers the file open, and nothing
+	//has been loaded into the workspace yet. Note that _open's dataset check still passes, because
+	//JASP startup itself creates an empty dataset; the chain therefore binds the *loaded* dataset
+	//only after the open has finalized, which is exactly what chain(..., resetDataSet=true) does.
+	mw->_resultsJsInterface->setResultsLoaded(true);
+
+	mw->open(jaspPath, syncCsv, "", false);
+
+	//The open -> synchronize chain should finish by exiting JASP, and complain about nothing but the
+	//modules this process does not have:
+	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
+	QVERIFY(_batchErrorsAreOnlyMissingModules(mw));
+	QCOMPARE(exitSpy->first().first().toInt(), mw->_batchResult.errors.isEmpty() ? 0 : 1);
+
+	//And the workspace should hold the synchronized data:
+	DataSet * synced = DataSetPackage::pkg()->dataSet();
+	QVERIFY(synced);
+	QVERIFY(synced->column("contNormal"));
+
+	try
+	{
+		delete exitSpy;
+		delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+	}
+	catch(const std::exception & e)
+	{
+		std::cerr << "MainWindow teardown threw: " << e.what() << std::endl;
+		throw;
+	}
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+void TestAll::testCliSyncExportWaitsForAnalysesToSettle()
+{
+	//Regression for the export capturing the intermediate emptied results: synchronizing can
+	//schedule analysis refreshes deferred, and a refresh that starts *after* the export began
+	//wipes the results page to its empty in-between state while the export is capturing it.
+	//The export must therefore wait until the analyses have stopped changing status. Without a
+	//webview the exported HTML itself cannot be checked here, so this test simulates the wipe by
+	//flipping an analysis' status right after the export was queued and verifies the export only
+	//starts once the analysis is finished again.
+	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp");
+
+	QVERIFY(QFileInfo::exists(jaspPath));
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//Short-circuit the exporter's wait for the (nonexistent) webview: prepForExport is emitted from
+	//the exporter thread and only the QML results page would answer it, so answer it here instead.
+	connect(mw->_resultsJsInterface, &ResultsJsInterface::prepForExport, mw->_resultsJsInterface, &ResultsJsInterface::exportPrepFinished, Qt::QueuedConnection);
+
+	const QString	syncCsv		= QString::fromStdString(TempFiles::createTmpFolder()) + "/syncdata.csv",
+					outHtml		= QString::fromStdString(TempFiles::createTmpFolder()) + "/results.html";
+
+	QVERIFY(_writeTextFile(syncCsv, "V1\n1\n2\n"));
+
+	mw->_resultsJsInterface->setResultsLoaded(true);
+
+	mw->open(jaspPath, syncCsv, outHtml, false);
+
+	//The open -> synchronize chain queues an export that waits for the analyses:
+	QTRY_VERIFY_WITH_TIMEOUT(mw->_waitingEvent != nullptr, 30000);
+	QVERIFY(!mw->_waitingEvent->isStarted()); //the settle-debounce guarantees it cannot start this early
+
+	//In backendless mode the module-backed analyses from the jasp file are skipped, so inject a
+	//report-style analysis (created without a module, and never run: Analysis::run ignores reports):
+	Json::Value analysisData;
+	analysisData["id"]		= 1;
+	analysisData["title"]	= "SettleTest";
+	analysisData["isReport"]= true;
+	analysisData["status"]	= "complete";
+	Analysis * analysis = mw->_analyses->createFromJaspFileEntry(analysisData, nullptr);
+	QVERIFY(analysis);
+	QVERIFY(mw->_analyses->allFinished());
+
+	//Simulate a refresh starting (status Complete -> Empty, like Analysis::run() does) right after
+	//the export was queued: the pending start must be postponed until the analyses finish again:
+	analysis->setStatus(Analysis::Empty);
+	QVERIFY(mw->_waitingEvent); //not consumed by a premature start
+	QVERIFY(!mw->_waitingEvent->isStarted());
+
+	analysis->setStatus(Analysis::Complete);
+
+	//Only now may the export start, which is visible as the waiting event being taken over:
+	QTRY_VERIFY_WITH_TIMEOUT(mw->_waitingEvent == nullptr, 10000);
+
+	//The exporter waits for the (nonexistent) webview to deliver the HTML, and ResultsJsInterface::
+	//exportHTML resets the ready flag right before that wait; keep setting it so the exporter sees
+	//it ready no matter when exactly its wait starts (it dies with mw):
+	QTimer * readySetter = new QTimer(mw);
+	readySetter->setInterval(100);
+	connect(readySetter, &QTimer::timeout, this, [](){ DataSetPackage::pkg()->setAnalysesHTMLReady(); });
+	readySetter->start();
+
+	//The export finishing is what exits JASP, again complaining about nothing but the missing modules:
+	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
+	QVERIFY(_batchErrorsAreOnlyMissingModules(mw));
+	QCOMPARE(exitSpy->first().first().toInt(), mw->_batchResult.errors.isEmpty() ? 0 : 1);
+	QVERIFY(QFileInfo::exists(outHtml));
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+void TestAll::testCliSyncExportChainFailsOnBadDataFile()
+{
+	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp");
+
+	QVERIFY(QFileInfo::exists(jaspPath));
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//A scratch folder inside JASP's own session directory: QTemporaryDir can trigger a permission
+	//dialog on some systems, while TempFiles already has a session dir set up by
+	//_newMainWindowWithExitSpy. The MainWindow teardown removes the session dir, so no manual
+	//cleanup of the folder or its file is needed.
+	const QString	bogusData	= QString::fromStdString(TempFiles::createTmpFolder()) + "/bogus.xlsx";
+
+	QVERIFY(_writeTextFile(bogusData, "this is not a spreadsheet\n"));
+
+	mw->_resultsJsInterface->setResultsLoaded(true);
+
+	mw->open(jaspPath, bogusData, "", false);
+
+	//A failed synchronization must exit JASP with a non-zero code instead of continuing as if the
+	//synchronization had succeeded:
+	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
+	QVERIFY(exitSpy->first().first().toInt() != 0);
+
+	//...and for the right reason: the modules missing from this backendless process already make the
+	//run non-zero, so check the import failure is actually in the report.
+	QVERIFY2(!mw->_batchResult.errors.filter("Could not import data").isEmpty(),
+			 qPrintable("Batch errors: " + mw->_batchResult.errors.join(" | ")));
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+// =====================================================================================
+// ScriptConstructor regression tests
+// =====================================================================================
+
+namespace
+{
+	struct FixedColumnTypeProvider : public ScriptColumnTypeProvider
+	{
+		strintmap types;
+		int columnType(const std::string & name) const override
+		{
+			auto it = types.find(name);
+			return it == types.end() ? 1 : it->second;
+		}
+	};
+
+	Json::Value colNode(const std::string & name, int typeUser = -1, int typeDrop = -1, const std::string & dataSetName = "", const std::string & filterName = "")
+	{
+		Json::Value v;
+		v["nodeType"]			= "Column";
+		v["columnName"]			= name;
+		v["columnTypeUser"]		= typeUser;
+		v["columnTypeDrop"]		= typeDrop;
+
+		// an outward node carries its source slice (dataset title + optional
+		//filter name) - the serialization contract ScriptNodeColumn::toJson/fromJson implement.
+		if(!dataSetName.empty())
+			v["dataSetName"] = dataSetName;
+		if(!filterName.empty())
+			v["filterName"] = filterName;
+
+		return v;
+	}
+
+	Json::Value numNode(double val)
+	{
+		Json::Value v;
+		v["nodeType"] = "Number";
+		v["value"] = val;
+		return v;
+	}
+
+	Json::Value boolNode(bool val)
+	{
+		Json::Value v;
+		v["nodeType"] = "Boolean";
+		v["value"] = val ? "TRUE" : "FALSE";
+		return v;
+	}
+
+	Json::Value strNode(const std::string & text)
+	{
+		Json::Value v;
+		v["nodeType"] = "String";
+		v["text"] = text;
+		return v;
+	}
+
+	Json::Value opNode(const std::string & op, const Json::Value & left, const Json::Value & right, bool vertical = false)
+	{
+		Json::Value v;
+		v["nodeType"]		= vertical ? "OperatorVertical" : "Operator";
+		v["operator"]		= op;
+		v["leftArgument"]	= left;
+		v["rightArgument"]	= right;
+		return v;
+	}
+
+	Json::Value funcArg(const std::string & name, const stringvec & keys, const Json::Value & argument)
+	{
+		Json::Value a;
+		a["name"] = name;
+		a["dropKeys"] = Json::arrayValue;
+		for(const std::string & k : keys)
+			a["dropKeys"].append(k);
+		a["argument"] = argument;
+		return a;
+	}
+
+	Json::Value funcNode(const std::string & name, std::initializer_list<Json::Value> args)
+	{
+		Json::Value v;
+		v["nodeType"]		= "Function";
+		v["functionName"]	= name;
+		v["arguments"]		= Json::arrayValue;
+		for(const Json::Value & a : args)
+			v["arguments"].append(a);
+		return v;
+	}
+
+	Json::Value rowFuncNode(const std::string & name, std::initializer_list<std::string> droppedJsonStrings)
+	{
+		Json::Value v;
+		v["nodeType"]		= "RowFunction";
+		v["functionName"]	= name;
+		v["droppedItems"]	= Json::arrayValue;
+		for(const std::string & s : droppedJsonStrings)
+			v["droppedItems"].append(s);
+		return v;
+	}
+
+	Json::Value formulas(std::initializer_list<Json::Value> nodes)
+	{
+		Json::Value v;
+		v["formulas"] = Json::arrayValue;
+		for(const Json::Value & n : nodes)
+			v["formulas"].append(n);
+		return v;
+	}
+
+	std::string compact(const Json::Value & v)
+	{
+		Json::StreamWriterBuilder b;
+		b["indentation"] = "";
+		std::string s = Json::writeString(b, v);
+		while(!s.empty() && (s.back() == '\n' || s.back() == '\r' || s.back() == ' '))
+			s.pop_back();
+		return s;
+	}
+
+	QStringList keyList(const stringvec & keys)
+	{
+		QStringList out;
+		for(const std::string & k : keys)
+			out << tq(k);
+		return out;
+	}
+}
+
+void TestAll::testScriptConstructorDefaultFilterJson()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.fromJson(std::string(DEFAULT_FILTER_JSON));
+
+	QCOMPARE(model.formulaCount(), 0);
+	QCOMPARE(model.toString(), std::string(DEFAULT_FILTER_JSON));
+	QVERIFY(model.checkCompleteness());
+}
+
+void TestAll::testScriptConstructorGoldenR()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"]	= 1; // scale
+	provider.types["contBinom"]		= 1;
+	provider.types["group"]			= 3; // nominal
+	provider.types["ord"]			= 2; // ordinal
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	auto checkR = [&](const Json::Value & tree, const std::string & expected)
+	{
+		model.fromJson(tree);
+		QCOMPARE(model.toR(), expected);
+	};
+
+	// Column resolves through the provider (no user/drop override) -> ".scale"
+	checkR(formulas({colNode("contNormal")}), "contNormal.scale\n");
+
+	// Arithmetic operator with a literal
+	checkR(formulas({opNode("+", colNode("contNormal"), numNode(5))}), "(contNormal.scale + 5)\n");
+
+	// Empty right slot becomes "null"
+	checkR(formulas({opNode("+", colNode("contNormal"), Json::nullValue)}), "(contNormal.scale + null)\n");
+
+	// mean() gains ", na.rm=TRUE"
+	checkR(formulas({funcNode("mean", {funcArg("values", {"number"}, colNode("contNormal"))})}), "mean(contNormal.scale, na.rm=TRUE)\n");
+
+	// abs() has no na.rm
+	checkR(formulas({funcNode("abs", {funcArg("values", {"number"}, colNode("contNormal"))})}), "abs(contNormal.scale)\n");
+
+	// Empty function argument becomes "NULL"
+	checkR(formulas({funcNode("round", {funcArg("y", {"number"}, colNode("contNormal")), funcArg("n", {"number"}, Json::nullValue)})}), "round(contNormal.scale, NULL)\n");
+
+	// ifelse with boolean + numbers
+	checkR(formulas({funcNode("ifelse", {funcArg("test", {"boolean"}, boolNode(true)), funcArg("then", {"boolean","string","number"}, numNode(1)), funcArg("else", {"boolean","string","number"}, numNode(2))})}), "ifelse(TRUE, 1, 2)\n");
+
+	// String literal is single-quoted
+	checkR(formulas({strNode("hello")}), "'hello'\n");
+
+	// String literal escaping: quotes and backslashes must reach R escaped
+	checkR(formulas({strNode("it's a \\ test")}), "'it\\'s a \\\\ test'\n");
+
+	// Nested boolean expression
+	checkR(formulas({opNode("&", opNode(">", colNode("contNormal"), numNode(0)), opNode("<", colNode("contBinom"), numNode(10)))}), "((contNormal.scale > 0) & (contBinom.scale < 10))\n");
+
+	// Vertical (fraction) operator serialises differently but generates the same R shape
+	checkR(formulas({opNode("/", colNode("contNormal"), numNode(2), true)}), "(contNormal.scale / 2)\n");
+
+	// RowFunction only emits filled entries and appends NaRm
+	{
+		Json::StreamWriterBuilder b; b["indentation"] = "";
+		std::string aJson = compact(colNode("contNormal"));
+		std::string bJson = compact(colNode("contBinom"));
+		checkR(formulas({rowFuncNode("rowMean", {aJson, "null", bJson})}), "rowMeanNaRm(contNormal.scale, contBinom.scale)\n");
+	}
+
+	// Column with an explicit user type override ignores the provider
+	checkR(formulas({colNode("group", 2)}), "group.ordinal\n");
+
+	// %|% conditional operator in filter mode
+	checkR(formulas({opNode("%|%", opNode(">", colNode("contNormal"), numNode(0)), colNode("group"))}), "((contNormal.scale > 0) %|% group.nominal)\n");
+
+	// sqrt (operator-bar-only function) wraps a single number argument
+	checkR(formulas({funcNode("sqrt", {funcArg("value(s)", {"number"}, colNode("contNormal"))})}), "sqrt(contNormal.scale)\n");
+
+	// ! (operator-bar-only function) wraps a single boolean argument
+	checkR(formulas({funcNode("!", {funcArg("logical(s)", {"boolean"}, boolNode(true))})}), "!(TRUE)\n");
+}
+
+void TestAll::testScriptConstructorQualifiedOutwardToR()
+{
+	// ScriptNodeColumn::toR emits the FULL qualified surface form
+	//("Dataset"."Filter"."Column"("Type")) for outward nodes (_dataSetName set), composed
+	//from the RESOLVED slice (Workspace::fullQualifiedColumnRef) - the owner refinement on
+	//The constructor's output is visible R code, so every outward reference uses
+	//the full surface grammar (picker cut != output cut). Own-dataset nodes stay
+	//byte-identical (pinned by testScriptConstructorGoldenR's payloads, which must not move).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha);
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	//The provider deliberately claims a WRONG type for contNormal: outward nodes must not
+	//consult it (it only knows the own dataset's columns) - the source type comes from the
+	//referenced dataset's column, or from the node's user type override.
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 3;	//nominal - a lie for the outward refs below
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	//(a) Dataset-level outward reference (no filter name): the full form with the default
+	//filter's internal DEFAULT_FILTER spelling, the type segment from the LIVE source column
+	//(scale, NOT the provider's lie), unwrapped.
+	model.fromJson(formulas({colNode("contNormal", -1, -1, "Beta")}));
+	QCOMPARE(model.toR(), std::string("\"Beta\".\"DEFAULT_FILTER\".\"contNormal\"(\"scale\")\n"));
+
+	//(b) Named-filter outward reference:
+	model.fromJson(formulas({colNode("contNormal", -1, -1, "Beta", "KeepMyId")}));
+	QCOMPARE(model.toR(), std::string("\"Beta\".\"KeepMyId\".\"contNormal\"(\"scale\")\n"));
+
+	//(c) The user type override wins for both the type segment and the wrapping:
+	model.fromJson(formulas({colNode("contNormal", 2, -1, "Beta")}));
+	QCOMPARE(model.toR(), std::string("as.integer(\"Beta\".\"DEFAULT_FILTER\".\"contNormal\"(\"ordinal\"))\n"));
+
+	//(d) Outward nodes nest like bare ones (operator composition):
+	model.fromJson(formulas({opNode(">", colNode("contNormal", -1, -1, "Beta", "KeepMyId"), numNode(0))}));
+	QCOMPARE(model.toR(), std::string("(\"Beta\".\"KeepMyId\".\"contNormal\"(\"scale\") > 0)\n"));
+
+	//(e) The emitted code is exactly what the request builders scan: the constructor
+	//output's references resolve to the referenced filter's id - the referencedFilterIds
+	//sidecar is stamped from this very text, so a qualified constructor output needs no
+	//further builder machinery:
+	QCOMPARE(ws->referencedFilterIdsInCode(model.toR()), std::set<int>({ betaKeep->id() }));
+
+	//(f) Every emitted reference also parses and resolves back to the same slice and column:
+	for(const QualifiedRefOccurrence & occurrence : QualifiedColumnRef::scanText(model.toR()))
+	{
+		ResolvedQualifiedColumn resolved;
+		QString error;
+		QCOMPARE(ws->resolveQualifiedColumnRef(occurrence.ref, resolved, error), QualifiedRefError::none);
+		QCOMPARE(resolved.filterId, betaKeep->id());
+		QCOMPARE(resolved.columnName, std::string("contNormal"));
+	}
+
+	//(g) A stale dataset title degrades LOUDLY, not silently: toR keeps emitting the stored
+	//names (compose-from-stored when the title no longer resolves) and the scan reports the
+	//typed unknownDataSet error - the loud surface, no tombstoning.
+	beta->setTitle("Beta2");
+	model.fromJson(formulas({colNode("contNormal", -1, -1, "Beta")}));
+	QCOMPARE(model.toR(), std::string("\"Beta\".\"DEFAULT_FILTER\".\"contNormal\"\n"));
+	{
+		QString error;
+		QVERIFY(ws->referencedFilterIdsInCode(model.toR(), &error).empty());
+		QVERIFY2(error.contains("No loaded dataset is titled 'Beta'"), qPrintable(error));
+	}
+	beta->setTitle("Beta");
+
+	//(h) Serialization roundtrip: dataSetName + filterName survive toJson -> fromJson, and
+	//cloneEmpty keeps the outward stamp (the palette spawns drag nodes through cloneEmpty).
+	{
+		ScriptNodeColumn original("contNormal", 2);
+		original.setDataSetName("Beta");
+		original.setFilterName("KeepMyId");
+
+		Json::Value json = original.toJson();
+		QVERIFY(json.isMember("dataSetName"));
+		QVERIFY(json.isMember("filterName"));
+
+		ScriptNode * parsed = ScriptNode::fromJson(json);
+		QVERIFY(parsed);
+		auto * column = dynamic_cast<ScriptNodeColumn*>(parsed);
+		QVERIFY(column);
+		QCOMPARE(column->dataSetName(), std::string("Beta"));
+		QCOMPARE(column->filterName(), std::string("KeepMyId"));
+		QCOMPARE(column->columnTypeUser(), 2);
+		ScriptNode::deleteTree(parsed);
+
+		ScriptNode * clone = original.cloneEmpty();
+		auto * cloneColumn = dynamic_cast<ScriptNodeColumn*>(clone);
+		QVERIFY(cloneColumn);
+		QCOMPARE(cloneColumn->dataSetName(), std::string("Beta"));
+		QCOMPARE(cloneColumn->filterName(), std::string("KeepMyId"));
+		QCOMPARE(cloneColumn->columnTypeUser(), 2);
+		ScriptNode::deleteTree(clone);
+	}
+
+	//(i) Own-dataset nodes are untouched by the outward branch: the provider is consulted
+	//again (the lie above now shows through - the golden payloads stay byte-identical).
+	model.fromJson(formulas({colNode("contNormal")}));
+	QCOMPARE(model.toR(), std::string("as.character(contNormal.nominal)\n"));
+}
+
+void TestAll::testQualifiedRefInvalidatedByFilterRename()
+{
+	// invalidation kind "renamed": a qualified reference is held BY NAME, so
+	//renaming the referenced filter invalidates every editor holding it - WITHOUT any edit
+	//on their side. The relay is Filter::nameChanged -> Workspace::filterNameChanged (the
+	//default filter's name never changes, so it never relays); the scanner reports the
+	//typed unknownFilterInDataSet error naming the missing slice (the same message the
+	//engine fails the run with). Loud and reversible: renaming back clears the error again
+	//(no tombstoning).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	const QString code = "contGamma > mean(\"Beta\".\"KeepMyId\".\"contNormal\")";
+
+	//Clean while the referenced filter still answers to its name:
+	QCOMPARE(ws->qualifiedRefErrorInCode(code), QString(""));
+
+	//The rename relays to the workspace (the editors' invalidation hook):
+	QSignalSpy renameRelay(ws, &Workspace::filterNameChanged);
+	betaKeep->setName("RenamedKeep");
+	QCOMPARE(renameRelay.count(), 1);
+	QCOMPARE(renameRelay.first().first().toInt(), beta->id());
+
+	//And the same code - untouched - now reports the first typed error, naming the slice:
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		QVERIFY(ws->referencedFilterIdsInCode(code.toStdString(), &error, &kind).empty());
+		QCOMPARE(kind, QualifiedRefError::unknownFilterInDataSet);
+		QVERIFY2(error.contains("KeepMyId") && error.contains("no filter named"), qPrintable(error));
+		QCOMPARE(ws->qualifiedRefErrorInCode(code), error);
+	}
+
+	//Reversible, no tombstone: the old name is simply resolvable again.
+	betaKeep->setName("KeepMyId");
+	QCOMPARE(ws->qualifiedRefErrorInCode(code), QString(""));
+
+	//And the relay is per-event, not once-only: a second rename relays again.
+	QSignalSpy renameRelay2(ws, &Workspace::filterNameChanged);
+	betaKeep->setName("RenamedAgain");
+	QCOMPARE(renameRelay2.count(), 1);
+	QCOMPARE(renameRelay2.first().first().toInt(), beta->id());
+	betaKeep->setName("KeepMyId");
+	QCOMPARE(ws->qualifiedRefErrorInCode(code), QString(""));
+
+	//The default filter's DEFAULT_FILTER spelling stays resolvable throughout (the relay
+	//only concerns named filters; the default filter's name is the internal constant):
+	QCOMPARE(ws->qualifiedRefErrorInCode("contGamma > mean(\"Beta\".\"DEFAULT_FILTER\".\"contNormal\")"), QString(""));
+}
+
+void TestAll::testQualifiedRefInvalidatedByDataSetUnload()
+{
+	// invalidation kind "unloaded": deleting a dataset whose slices are
+	//referenced elsewhere invalidates those references loudly - the scanner reports the
+	//typed unknownDataSet error naming the title (the same message the engine fails the
+	//run with); references to OTHER datasets stay clean (only the missing slice errs).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	const QString betaRef = "contGamma > mean(\"Beta\".\"KeepMyId\".\"contNormal\")";
+	const QString alphaRef = "contGamma > mean(\"Alpha\".\"contNormal\")";
+
+	QCOMPARE(ws->qualifiedRefErrorInCode(betaRef), QString(""));
+	QCOMPARE(ws->qualifiedRefErrorInCode(alphaRef), QString(""));
+
+	//Unload "Beta": the deletion is announced on the workspace (the editors' invalidation
+	//hook), and the references into it die with it - typed, naming the title:
+	const int betaId = beta->id();	//beta itself is deleted by the unload
+	QSignalSpy removedSpy(ws, &Workspace::dataSetRemoved);
+	ws->setShownDataSet(beta);
+	ws->deleteShownDataSet();
+	QCOMPARE(removedSpy.count(), 1);
+	QCOMPARE(removedSpy.first().first().toInt(), betaId);
+
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		QVERIFY(ws->referencedFilterIdsInCode(betaRef.toStdString(), &error, &kind).empty());
+		QCOMPARE(kind, QualifiedRefError::unknownDataSet);
+		QVERIFY2(error.contains("No loaded dataset is titled 'Beta'"), qPrintable(error));
+		QCOMPARE(ws->qualifiedRefErrorInCode(betaRef), error);
+	}
+
+	//Unrelated references survive the unload untouched (no collateral invalidation):
+	QCOMPARE(ws->qualifiedRefErrorInCode(alphaRef), QString(""));
+}
+
+void TestAll::testQualifiedRefInvalidatedByColumnChurn()
+{
+	// invalidation kind "churned": a referenced column that is renamed away
+	//(a sync, an edit - the real churn paths emit Workspace::datasetChanged with
+	//changeNameColumns, which the editors' validator watches) invalidates references to it:
+	//the scanner reports the typed unknownColumn error naming the column (the same message
+	//the engine fails the run with). A reference to a still-existing column stays clean.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	Column * churned = beta->column("contNormal");
+	QVERIFY(churned);
+
+	const QString churnRef = "contGamma > mean(\"Beta\".\"KeepMyId\".\"contNormal\")";
+	const QString stableRef = "contGamma > mean(\"Beta\".\"KeepMyId\".\"contGamma\")";
+
+	QCOMPARE(ws->qualifiedRefErrorInCode(churnRef), QString(""));
+	QCOMPARE(ws->qualifiedRefErrorInCode(stableRef), QString(""));
+
+	//The churn: the column's live name moves away from the referenced one.
+	QVERIFY(churned->setName("contNormalChurned"));
+
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		QVERIFY(ws->referencedFilterIdsInCode(churnRef.toStdString(), &error, &kind).empty());
+		QCOMPARE(kind, QualifiedRefError::unknownColumn);
+		QVERIFY2(error.contains("contNormal") && error.contains("no column named"), qPrintable(error));
+		QCOMPARE(ws->qualifiedRefErrorInCode(churnRef), error);
+	}
+
+	//And the reference to the untouched column of the same slice is unaffected:
+	QCOMPARE(ws->qualifiedRefErrorInCode(stableRef), QString(""));
+}
+
+void TestAll::testQualifiedTermComponentsParseTyped()
+{
+	// The single JSON->Terms parse chokepoint
+	//(Terms(json)/Term(json)) resolves STRING term components that ARE qualified surface
+	//forms into typed terms - bare name + filterId (ids only). Bare
+	//components stay context-fallback byte-identically.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	Filter * betaShared = beta->createFilter("Shared", true);
+	QVERIFY(betaKeep && betaShared);
+
+	DataSet * gamma = ws->createDataSet();
+	QVERIFY(gamma);
+	importer.loadDataSet(fq(csv), gamma, [](int){});
+	gamma->setTitle("Gamma");
+	Filter * gammaShared = gamma->createFilter("Shared", true);
+	QVERIFY(gammaShared);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal") && gamma->column("contNormal"));
+
+	const int betaDefaultId = beta->defaultFilter()->id();
+
+	Terms::RelatedValuesPerTerm allControlValues;
+
+	//(a) The flagship: same-name column via two filters in ONE list - the qualified one
+	//parses to the typed twin, the bare one stays -1 (the list would stamp it on intake).
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("contNormal");
+		values.append("\"Beta\".\"contNormal\"");
+		option["value"] = values;
+		Json::Value types(Json::arrayValue);
+		types.append("scale");
+		types.append("scale");
+		option["types"] = types;
+
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(2));
+		QCOMPARE(parsed.at(0).value(), QString("contNormal"));
+		QCOMPARE(parsed.at(0).filterId(), -1);						//bare: untouched
+		QCOMPARE(parsed.at(1).value(), QString("contNormal"));		//the plain name, not the surface form
+		QCOMPARE(parsed.at(1).filterId(), betaDefaultId);			//the resolved slice (ids only)
+		QCOMPARE(parsed.at(1).type(), columnType::scale);			//positional type kept (no segment)
+
+		//The twins are distinct terms in one list (strict equality):
+		QVERIFY(parsed.at(0) != parsed.at(1));
+	}
+
+	//(b) The ("Type") segment wins over the positional type
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"Beta\".\"contNormal\"(\"ordinal\")");
+		option["value"] = values;
+		Json::Value types(Json::arrayValue);
+		types.append("scale");
+		option["types"] = types;
+
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(1));
+		QCOMPARE(parsed.at(0).filterId(), betaDefaultId);
+		QCOMPARE(parsed.at(0).type(), columnType::ordinal);
+	}
+
+	//(c) The 2-segment unique-filter form and the bare pass-through:
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"KeepMyId\".\"contNormal\"");
+		values.append("contGamma");			//bare, untouched
+		values.append("a.b");				//no reference at all (unquoted dots): untouched
+		option["value"] = values;
+
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(3));
+		QCOMPARE(parsed.at(0).filterId(), betaKeep->id());
+		QCOMPARE(parsed.at(0).value(), QString("contNormal"));
+		QCOMPARE(parsed.at(1).filterId(), -1);
+		QCOMPARE(parsed.at(1).value(), QString("contGamma"));
+		QCOMPARE(parsed.at(2).filterId(), -1);
+		QCOMPARE(parsed.at(2).value(), QString("a.b"));
+	}
+
+	//(d) Unresolvable references fail the parse LOUDLY with the typed message: the
+	//2-segment form reports filterNameMatchesNothing, the full form unknownDataSet:
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"Nope\".\"contNormal\"");
+		option["value"] = values;
+
+		std::string message;
+		try { Terms parsed(option, "value", "", allControlValues, false, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("'Nope' matches no loaded dataset title and no filter name") != std::string::npos, message.c_str());
+
+		Json::Value fullForm(Json::objectValue);
+		Json::Value fullValues(Json::arrayValue);
+		fullValues.append("\"Nope\".\"SomeFilter\".\"contNormal\"");
+		fullForm["value"] = fullValues;
+
+		message.clear();
+		try { Terms parsed(fullForm, "value", "", allControlValues, false, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("No loaded dataset is titled 'Nope'") != std::string::npos, message.c_str());
+	}
+
+	//(e) Ambiguity is a rejection listing the candidate datasets:
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"Shared\".\"contNormal\"");
+		option["value"] = values;
+
+		std::string message;
+		try { Terms parsed(option, "value", "", allControlValues, false, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("several datasets") != std::string::npos && message.find("Beta") != std::string::npos && message.find("Gamma") != std::string::npos, message.c_str());
+	}
+
+	//(f) A uniform-qualified interaction row parses as ONE term stamped with the shared slice,
+	//its components the bare names:
+	{
+		Json::Value optionValue(Json::arrayValue);
+		Json::Value row(Json::arrayValue);
+		row.append("\"Beta\".\"contNormal\"");
+		row.append("\"Beta\".\"contGamma\"");
+		optionValue.append(row);
+
+		Terms parsed(optionValue, "components", "", allControlValues, true, false);
+		QCOMPARE(parsed.size(), size_t(1));
+		QCOMPARE(parsed.at(0).filterId(), betaDefaultId);
+		QCOMPARE(parsed.at(0).components(), QStringList({"contNormal", "contGamma"}));
+	}
+
+	//(g) Mixed provenance in one term is a loud typed error - a term carries ONE filterId,
+	//and uniformly stamping it would re-route the bare component's data:
+	{
+		Json::Value optionValue(Json::arrayValue);
+		Json::Value row(Json::arrayValue);
+		row.append("contNormal");					//bare
+		row.append("\"Beta\".\"contNormal\"");		//qualified
+		optionValue.append(row);
+
+		std::string message;
+		try { Terms parsed(optionValue, "components", "", allControlValues, true, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("mixes the bare component") != std::string::npos, message.c_str());
+
+		//and so do two references into DIFFERENT slices:
+		Json::Value optionValue2(Json::arrayValue);
+		Json::Value row2(Json::arrayValue);
+		row2.append("\"Beta\".\"contNormal\"");
+		row2.append("\"Alpha\".\"contNormal\"");
+		optionValue2.append(row2);
+
+		message.clear();
+		try { Terms parsed(optionValue2, "components", "", allControlValues, true, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("different datasets/filters") != std::string::npos, message.c_str());
+	}
+
+	//(h) Storage roundtrip: the typed terms serialize with their ids and the applier
+	//parses them back to the same typed state - the parse direction and the file format
+	//agree (the re-parse of emitted scripts lands in the same chokepoint).
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("contNormal");
+		values.append("\"Beta\".\"contNormal\"");
+		values.append("\"KeepMyId\".\"contNormal\"");
+		option["value"] = values;
+
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(3));
+
+		Json::Value storage(Json::objectValue);
+		Json::Value storageValues(Json::arrayValue);
+		for (const Term & term : parsed)
+			storageValues.append(term.toJsonStorage());
+		storage["value"] = storageValues;
+
+		Terms reparsed(storage, "value", "", allControlValues, false, false);
+		QCOMPARE(reparsed.size(), size_t(3));
+		QCOMPARE(reparsed.at(0).filterId(), -1);
+		QCOMPARE(reparsed.at(1).filterId(), betaDefaultId);
+		QCOMPARE(reparsed.at(2).filterId(), betaKeep->id());
+		QCOMPARE(reparsed.at(1).value(), QString("contNormal"));
+	}
+}
+
+void TestAll::testQualifiedTermEmissionMinimalFormsAndReparse()
+{
+	// RSyntax term emission renders terms stamped OUTSIDE the emission context
+	//(the analysis' own filter, FormulaSource::contextFilterIdFor / RSyntax's form filter) as
+	//the qualified minimal forms; the formula text parser keeps them VERBATIM, and the
+	//re-parse resolves through the applier into typed terms with filterIds again.
+	//Unstamped (-1) and own-context terms stay byte-identical legacy emissions.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	const int contextId		= alpha->defaultFilter()->id();
+	const int betaDefaultId	= beta->defaultFilter()->id();
+
+	//(a) Unstamped and own-context: the legacy bare emission, byte-identical - the ".type"
+	//suffix spelling and everything else untouched (qualification never fires for -1/own).
+	QCOMPARE(FormulaParser::transformToFormulaTerm(Term(QStringList{"contNormal"}, columnTypeVec{columnType::scale}),
+													Json::Value("scale"), ':', false, contextId),
+			QString("contNormal.scale"));
+
+	Term ownContext(QStringList{"contNormal"}, columnTypeVec{columnType::scale});
+	ownContext.setFilterId(contextId);
+	QCOMPARE(FormulaParser::transformToFormulaTerm(ownContext, Json::Value("scale"), ':', false, contextId),
+			QString("contNormal.scale"));
+
+	//(b) A foreign default-filter stamp: the dataset-title minimal form (no filter segment),
+	//backtick-wrapped by the R-name guard like any non-syntactic name (so the script stays
+	//R-parseable), and the ".type" bare suffix is NOT appended - the form owns its ("type")
+	//segment, appending the bare spelling would poison the type-wins rule at re-parse.
+	Term foreignDefault(QStringList{"contNormal"}, columnTypeVec{columnType::scale});
+	foreignDefault.setFilterId(betaDefaultId);
+	QCOMPARE(FormulaParser::transformToFormulaTerm(foreignDefault, Json::Value("scale"), ':', false, contextId),
+			QString("`\"Beta\".\"contNormal\"(\"scale\")`"));
+
+	//(c) A foreign named-filter stamp whose filter name is unique across loaded datasets: the
+	//"F"."Col" minimal form. (Beta's default + KeepMyId: no ambiguity.)
+	Term foreignNamed(QStringList{"contNormal"}, columnTypeVec{columnType::scale});
+	foreignNamed.setFilterId(betaKeep->id());
+	QCOMPARE(FormulaParser::transformToFormulaTerm(foreignNamed, Json::Value("scale"), ':', false, contextId),
+			QString("`\"KeepMyId\".\"contNormal\"(\"scale\")`"));
+
+	//(d) Interaction terms qualify EVERY component with the term's one filterId (uniform);
+	//the separator join is untouched.
+	Term interaction(QStringList{"contNormal", "contExpo"}, columnTypeVec{columnType::scale, columnType::scale});
+	interaction.setFilterId(betaDefaultId);
+	QCOMPARE(FormulaParser::transformToFormulaTerm(interaction, Json::Value("scale"), ':', false, contextId),
+			QString("`\"Beta\".\"contNormal\"(\"scale\")` : `\"Beta\".\"contExpo\"(\"scale\")`"));
+
+	//(e) The addQuotes path (extra-option list() emission): the qualified form's inner quotes
+	//are escaped for the R string literal; bare components keep the legacy verbatim wrap.
+	QCOMPARE(FormulaParser::transformToFormulaTerm(foreignDefault, Json::Value("scale"), ':', true, contextId),
+			QString("\"\\\"Beta\\\".\\\"contNormal\\\"(\\\"scale\\\")\""));
+	QCOMPARE(FormulaParser::transformToFormulaTerm(ownContext, Json::Value("scale"), ':', true, contextId),
+			QString("\"contNormal.scale\""));
+
+	//(f) Re-parse: the formula text parser keeps a qualified form VERBATIM as the component
+	//(its own ("type") segment included), separators inside quotes never split, and the bare
+	//".type"-suffixed path is byte-identical legacy. Then the applier resolves the
+	//verbatim component into the typed term again - the full emission->re-parse roundtrip.
+	{
+		//The backtick-wrapped emission from (b) is exactly what lands in formula text:
+		Terms reparsed = FormulaParser::parseTerm(QString("`\"Beta\".\"contNormal\"(\"scale\")`"), nullptr);
+		QCOMPARE(reparsed.size(), size_t(1));
+		QCOMPARE(reparsed.at(0).components().length(), 1);
+		QCOMPARE(reparsed.at(0).components()[0], QString("\"Beta\".\"contNormal\"(\"scale\")"));
+
+		//applier direction: the verbatim component resolves to the typed term (ids only):
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"Beta\".\"contNormal\"(\"scale\")");
+		option["value"] = values;
+		Terms::RelatedValuesPerTerm allControlValues;
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(1));
+		QCOMPARE(parsed.at(0).value(), QString("contNormal"));
+		QCOMPARE(parsed.at(0).filterId(), betaDefaultId);
+		QCOMPARE(parsed.at(0).type(), columnType::scale);	//the segment wins over the lookup
+
+		//A separator INSIDE quotes never splits: a filter named 'We:ird' survives the ':'
+		//interaction split and resolves against its live filter.
+		Filter * betaWeird = beta->createFilter("We:ird", true);
+		QVERIFY(betaWeird);
+		Terms weird = FormulaParser::parseTerm(QString("`\"We:ird\".\"contNormal\"` : contNormal.scale"), nullptr);
+		QCOMPARE(weird.size(), size_t(1));
+		QCOMPARE(weird.at(0).components().length(), 2);
+		QCOMPARE(weird.at(0).components()[0], QString("\"We:ird\".\"contNormal\""));
+		//bare components keep the legacy split behavior byte-identically: the separator's
+		//padding spaces are NOT trimmed (only the whole term string ever was).
+		QCOMPARE(weird.at(0).components()[1], QString(" contNormal"));
+
+		QCOMPARE(FormulaParser::parseTerm(QString("contNormal.scale"), nullptr).at(0).type(), columnType::scale);
+	}
+
+	//(g) the cross-host COPY composed end-to-end through the emitters
+	//and the applier. A copy arrives as a Storage per-term object carrying the SOURCE
+	//filterId (the bindTo/applier half is pinned by test_crossHostBindTo_typedCopyKeepsSourceStamp
+	//+ testRestampOwnershipRuleKeepsForeignStamps); this pins the emission half: emitting under
+	//the DESTINATION context renders the source's qualified minimal form, and re-parse + applier
+	//restore the SOURCE stamp - the destination context never wins, the copy never re-stamps.
+	{
+		Json::Value storageOption(Json::objectValue);
+		Json::Value storageValue(Json::arrayValue);
+		storageValue.append(Json::Value(Json::objectValue));
+		storageValue[0]["name"]		= "contNormal";
+		storageValue[0]["filterId"]	= betaKeep->id();			//the source host's stamp, as bindTo delivered it
+		storageValue[0]["types"]	= Json::Value(Json::arrayValue);
+		storageValue[0]["types"].append("scale");
+		storageOption["value"]		= storageValue;
+		Terms::RelatedValuesPerTerm copiedRelated;
+		Terms copied(storageOption, "value", "", copiedRelated, false, false);
+		QCOMPARE(copied.size(), size_t(1));
+		QCOMPARE(copied.at(0).filterId(), betaKeep->id());		//the copy keeps the source stamp through the applier
+
+		//emission under the DESTINATION context (alpha's default filter, NOT the stamp):
+		const QString emitted = FormulaParser::transformToFormulaTerm(copied.at(0), Json::Value("scale"), ':', false, contextId);
+		QCOMPARE(emitted, QString("`\"KeepMyId\".\"contNormal\"(\"scale\")`"));
+
+		//re-parse of the emitted script text + applier: the SOURCE filterId comes back:
+		Terms reparsedText = FormulaParser::parseTerm(emitted, nullptr);
+		QCOMPARE(reparsedText.size(), size_t(1));
+		Json::Value reOption(Json::objectValue);
+		Json::Value reValues(Json::arrayValue);
+		reValues.append(reparsedText.at(0).components()[0].toStdString());	//what the applier sees in the parsed option
+		reOption["value"] = reValues;
+		Terms::RelatedValuesPerTerm reRelated;
+		Terms restored(reOption, "value", "", reRelated, false, false);
+		QCOMPARE(restored.size(), size_t(1));
+		QCOMPARE(restored.at(0).filterId(), betaKeep->id());	//the source stamp, never the destination context
+		QVERIFY2(restored.at(0) == copied.at(0), "the copied term survives emission + re-parse as the same typed term");
+	}
+}
+
+void TestAll::testScriptConstructorCompleteness()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// Complete boolean formula passes both checks
+	model.fromJson(formulas({opNode(">", colNode("a"), numNode(0))}));
+	QVERIFY(model.checkCompleteness());
+	QVERIFY(model.allBoolean());
+
+	// Missing right operand -> incomplete
+	model.fromJson(formulas({opNode(">", colNode("a"), Json::nullValue)}));
+	QVERIFY(!model.checkCompleteness());
+
+	// Arithmetic root is complete but not boolean -> cannot be a filter root
+	model.fromJson(formulas({opNode("+", colNode("a"), numNode(1))}));
+	QVERIFY(model.checkCompleteness());
+	QVERIFY(!model.allBoolean());
+
+	// Optional ("?") parameters do not block completeness
+	{
+		Json::Value box = funcNode("BoxCoxAuto", {
+			funcArg("y", {"number"}, colNode("a")),
+			funcArg("?predictor", {"number"}, Json::nullValue),
+			funcArg("?groupSize", {"number"}, Json::nullValue),
+			funcArg("method", {"string"}, strNode("loglik")),
+			funcArg("lower", {"number"}, numNode(0)),
+			funcArg("upper", {"number"}, numNode(1)),
+			funcArg("shift", {"number"}, numNode(0)),
+			funcArg("continuityAdjustment", {"boolean"}, boolNode(true))});
+		model.fromJson(formulas({box}));
+		QVERIFY(model.checkCompleteness());
+	}
+
+	// RowFunction is complete when at least one slot is filled
+	{
+		std::string aJson = compact(colNode("a"));
+		model.fromJson(formulas({rowFuncNode("rowSum", {"null", aJson})}));
+		QVERIFY(model.checkCompleteness());
+
+		model.fromJson(formulas({rowFuncNode("rowSum", {"null"})}));
+		QVERIFY(!model.checkCompleteness());
+	}
+}
+
+void TestAll::testScriptConstructorRoundTrip()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	// Deterministic pseudo-random trees: fromJson -> toString -> fromJson -> toString must be idempotent.
+	// This guarantees that loading a stored constructor JSON and saving it again never loses or reorders
+	// information, which is what .jasp file round-trips rely on.
+
+	const std::vector<std::string> columnNames	= {"contNormal", "contBinom", "group", "ord", "text"};
+	const std::vector<std::string> operators	= {"+", "-", "*", "/", "^", "%%", "==", "!=", "<", "<=", ">", ">=", "&", "|", "%|%"};
+	const std::vector<std::string> functions	= {"abs", "sd", "var", "sum", "prod", "zScores", "min", "max", "mean", "sign", "round", "length", "median", "ifelse", "hasSubstring", "is.na", "log", "exp", "BoxCox", "cut", "replaceNA"};
+	const std::vector<std::string> rowFunctions	= {"rowMean", "rowSum", "rowSD", "rowVariance", "rowMedian", "rowMin", "rowMax"};
+
+	std::function<Json::Value(std::mt19937 &, int)> makeNode = [&](std::mt19937 & rng, int depth) -> Json::Value
+	{
+		std::uniform_int_distribution<int> pick(0, 99);
+		std::uniform_int_distribution<int> colPick(0, static_cast<int>(columnNames.size()) - 1);
+		std::uniform_int_distribution<int> opPick(0, static_cast<int>(operators.size()) - 1);
+		std::uniform_int_distribution<int> funcPick(0, static_cast<int>(functions.size()) - 1);
+		std::uniform_int_distribution<int> rowPick(0, static_cast<int>(rowFunctions.size()) - 1);
+		std::uniform_real_distribution<double> numDist(-100.0, 100.0);
+
+		int kind = pick(rng);
+
+		if(depth <= 0)
+		{
+			// Leaves only at max depth
+			int leaf = kind % 4;
+			if(leaf == 0) return colNode(columnNames[colPick(rng)]);
+			if(leaf == 1) return numNode(numDist(rng));
+			if(leaf == 2) return boolNode(kind % 2 == 0);
+			return strNode("s" + std::to_string(kind));
+		}
+
+		if(kind < 30)
+			return colNode(columnNames[colPick(rng)]);
+		if(kind < 45)
+			return numNode(numDist(rng));
+		if(kind < 52)
+			return boolNode(kind % 2 == 0);
+		if(kind < 58)
+			return strNode("s" + std::to_string(kind));
+		if(kind < 78)
+			return opNode(operators[opPick(rng)], makeNode(rng, depth - 1), makeNode(rng, depth - 1));
+		if(kind < 90)
+		{
+			const std::string & fn = functions[funcPick(rng)];
+			const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn);
+			Json::Value args = Json::arrayValue;
+			if(def)
+				for(const ScriptParamDef & p : def->params)
+				{
+					bool fill = (pick(rng) % 10) < 7;
+					args.append(funcArg(p.optional ? "?" + p.name : p.name, p.dropKeys, fill ? makeNode(rng, depth - 1) : Json::nullValue));
+				}
+			Json::Value v;
+			v["nodeType"] = "Function";
+			v["functionName"] = fn;
+			v["arguments"] = args;
+			return v;
+		}
+
+		// RowFunction with a couple of filled slots serialised as embedded JSON strings
+		int slotCount = 1 + (kind % 3);
+		std::vector<std::string> dropped;
+		for(int i = 0; i < slotCount; i++)
+			dropped.push_back((pick(rng) % 10) < 6 ? compact(makeNode(rng, depth - 1)) : std::string("null"));
+		if(std::all_of(dropped.begin(), dropped.end(), [](const std::string & s){ return s == "null"; }))
+			dropped[0] = compact(colNode(columnNames[colPick(rng)]));
+
+		Json::Value v;
+		v["nodeType"] = "RowFunction";
+		v["functionName"] = rowFunctions[rowPick(rng)];
+		v["droppedItems"] = Json::arrayValue;
+		for(const std::string & s : dropped)
+			v["droppedItems"].append(s);
+		return v;
+	};
+
+	ScriptConstructorModel model;
+
+	for(int seed = 0; seed < 300; seed++)
+	{
+		std::mt19937 rng(seed);
+		std::uniform_int_distribution<int> formulaCount(0, 3);
+
+		Json::Value tree;
+		tree["formulas"] = Json::arrayValue;
+		int n = formulaCount(rng);
+		for(int i = 0; i < n; i++)
+			tree["formulas"].append(makeNode(rng, 3));
+
+		model.fromJson(tree);
+		std::string first = model.toString();
+
+		model.fromJson(first);
+		std::string second = model.toString();
+
+		if(first != second)
+			QFAIL(("Round-trip not idempotent for seed " + std::to_string(seed) + ":\nfirst:  " + first + "\nsecond: " + second).c_str());
+
+		// The re-parsed tree must also be parseable without throwing and keep the same formula count.
+		QCOMPARE(model.formulaCount(), n);
+	}
+}
+
+void TestAll::testScriptConstructorUndo()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	QUndoStack stack;
+	model.setUndoStack(&stack);
+
+	QCOMPARE(model.formulaCount(), 0);
+
+	// Insert a node -> one undo command
+	ScriptNode * node = new ScriptNodeOperator(">", false);
+	model.insertNode(node, DropTarget::root());
+	QCOMPARE(model.formulaCount(), 1);
+	QCOMPARE(stack.count(), 1);
+
+	// Undo removes it, redo brings it back
+	stack.undo();
+	QCOMPARE(model.formulaCount(), 0);
+	stack.redo();
+	QCOMPARE(model.formulaCount(), 1);
+
+	// Clear -> another command
+	model.clear();
+	QCOMPARE(model.formulaCount(), 0);
+	QCOMPARE(stack.count(), 2);
+
+	stack.undo();
+	QCOMPARE(model.formulaCount(), 1);
+}
+
+void TestAll::testScriptConstructorGobble()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// Start with a single column formula at the root: contNormal
+	model.fromJson(formulas({colNode("contNormal")}));
+	QCOMPARE(model.formulaCount(), 1);
+
+	// Drop a ">" operator with no specific target. It should absorb ("gobble")
+	// the existing column as its left operand, leaving the right slot empty.
+	ScriptNode * op = new ScriptNodeOperator(">", false);
+	model.insertNode(op, DropTarget::none());
+
+	QCOMPARE(model.formulaCount(), 1);
+
+	auto * rootOp = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+	QVERIFY(rootOp != nullptr);
+	QCOMPARE(rootOp->op(), std::string(">"));
+
+	auto * leftCol = dynamic_cast<ScriptNodeColumn*>(rootOp->leftChild());
+	QVERIFY(leftCol != nullptr);
+	QCOMPARE(leftCol->columnName(), std::string("contNormal"));
+	QVERIFY(rootOp->rightChild() == nullptr);
+
+	// R code reflects the gobble: (contNormal.scale > null)
+	QCOMPARE(model.toR(), std::string("(contNormal.scale > null)\n"));
+}
+
+void TestAll::testScriptConstructorLeftMostEmpty()
+{
+	// The dataset is not used directly, but opening it creates the session database that
+	// cleanup() closes (all model-level tests follow this pattern).
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// --- Operator with two empty slots: consecutive no-target drops fill left, then right ---
+	ScriptNode * plus = new ScriptNodeOperator("+", false);
+	model.insertNode(plus, DropTarget::none());
+	QCOMPARE(model.formulaCount(), 1);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op != nullptr);
+		auto * left = dynamic_cast<ScriptNodeColumn*>(op->leftChild());
+		QVERIFY(left != nullptr);
+		QCOMPARE(left->columnName(), std::string("contNormal"));
+		QVERIFY(op->rightChild() == nullptr);
+	}
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("(contNormal.scale + contNormal.scale)\n"));
+
+	// --- Function arguments fill in ascending order, skipping non-accepting slots ---
+	// ifelse's first argument wants booleans, so a number column must land in the second one.
+	model.fromJson(formulas({funcNode("ifelse", {
+		funcArg("test",	{"boolean"},					Json::nullValue),
+		funcArg("then",	{"boolean","string","number"},	Json::nullValue),
+		funcArg("else",	{"boolean","string","number"},	Json::nullValue)})}));
+	QCOMPARE(model.formulaCount(), 1);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func != nullptr);
+		QVERIFY(func->arguments()[0].value == nullptr); // test (booleans only): skipped
+		QVERIFY(func->arguments()[1].value != nullptr); // then: filled
+		QVERIFY(func->arguments()[2].value == nullptr);
+	}
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("ifelse(NULL, contNormal.scale, contNormal.scale)\n"));
+
+	// --- Topmost formula wins: the first formula with an accepting empty slot gets the drop ---
+	model.fromJson(formulas({
+		opNode("+", colNode("contNormal"), Json::nullValue),
+		opNode("+", colNode("contNormal"), Json::nullValue)}));
+	QCOMPARE(model.formulaCount(), 2);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * first = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		auto * second = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(1));
+		QVERIFY(first != nullptr);
+		QVERIFY(second != nullptr);
+		QVERIFY(first->rightChild() != nullptr);  // topmost formula was filled
+		QVERIFY(second->rightChild() == nullptr);
+	}
+
+	// --- Row functions fill their slots left to right ---
+	model.fromJson(formulas({}));
+	auto * rowMean = new ScriptNodeRowFunction("rowMean");
+	rowMean->addChild(nullptr); // the palette clone starts with one empty slot
+	model.insertNode(rowMean, DropTarget::none());
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("rowMeanNaRm(contNormal.scale, contNormal.scale)\n"));
+
+	// --- Gobble is still preferred when no empty slot anywhere accepts the node ---
+	model.fromJson(formulas({colNode("contNormal")}));
+	ScriptNode * op = new ScriptNodeOperator(">", false);
+	model.insertNode(op, DropTarget::none());
+	QCOMPARE(model.formulaCount(), 1);
+	auto * rootOp = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+	QVERIFY(rootOp != nullptr);
+	QVERIFY(dynamic_cast<ScriptNodeColumn*>(rootOp->leftChild()) != nullptr); // absorbed
+	QVERIFY(rootOp->rightChild() == nullptr);
+}
+
+void TestAll::testScriptConstructorAllowedColumnTypes()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	auto isAllowed = [&model](ScriptNode * node, int type)
+	{
+		const std::vector<int> allowed = model.allowedColumnTypes(node);
+		return std::find(allowed.begin(), allowed.end(), type) != allowed.end();
+	};
+
+	// Root column: unconstrained, all three types allowed.
+	model.fromJson(formulas({colNode("contNormal")}));
+	{
+		const std::vector<int> allowed = model.allowedColumnTypes(model.formulaAt(0));
+		QCOMPARE(allowed.size(), size_t(3));
+		QVERIFY(isAllowed(model.formulaAt(0), 1));
+		QVERIFY(isAllowed(model.formulaAt(0), 2));
+		QVERIFY(isAllowed(model.formulaAt(0), 3));
+	}
+
+	// Column in a numeric operator slot (+): only scale.
+	model.fromJson(formulas({opNode("+", colNode("contNormal"), numNode(1))}));
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op);
+		const std::vector<int> allowed = model.allowedColumnTypes(op->leftChild());
+		QCOMPARE(allowed.size(), size_t(1));
+		QVERIFY(isAllowed(op->leftChild(), 1));
+	}
+
+	// Column in a comparison operator slot (>): scale and ordinal.
+	model.fromJson(formulas({opNode(">", colNode("contNormal"), numNode(0))}));
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op);
+		const std::vector<int> allowed = model.allowedColumnTypes(op->leftChild());
+		QCOMPARE(allowed.size(), size_t(2));
+		QVERIFY(isAllowed(op->leftChild(), 1));
+		QVERIFY(isAllowed(op->leftChild(), 2));
+	}
+
+	// Column in a numeric function argument (mean): only scale.
+	model.fromJson(formulas({funcNode("mean", {funcArg("values", {"number"}, colNode("contNormal"))})}));
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func);
+		const std::vector<int> allowed = model.allowedColumnTypes(func->childAt(0));
+		QCOMPARE(allowed.size(), size_t(1));
+		QVERIFY(isAllowed(func->childAt(0), 1));
+	}
+
+	// Column in a string function argument (hasSubstring): ordinal and nominal.
+	model.fromJson(formulas({funcNode("hasSubstring", {funcArg("string", {"string"}, colNode("text")), funcArg("substring", {"string"}, strNode("a"))})}));
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func);
+		const std::vector<int> allowed = model.allowedColumnTypes(func->childAt(0));
+		QCOMPARE(allowed.size(), size_t(2));
+		QVERIFY(isAllowed(func->childAt(0), 2));
+		QVERIFY(isAllowed(func->childAt(0), 3));
+	}
+}
+
+void TestAll::testScriptConstructorRowFunctionFreeSlot()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::ComputedColumn);
+
+	// Add a row function at the root (a freshly created one starts with a single empty slot).
+	auto * rowFunc = new ScriptNodeRowFunction("rowMean");
+	rowFunc->addChild(nullptr);
+	model.insertNode(rowFunc, DropTarget::root());
+	QCOMPARE(rowFunc->childCount(), 1);
+	QVERIFY(rowFunc->childAt(0) == nullptr);
+
+	// Fill the empty slot; a trailing empty slot must appear so more columns can be added.
+	auto * col = new ScriptNodeColumn("contNormal");
+	model.insertNode(col, DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, 0, {"number"}, false, false});
+	QCOMPARE(rowFunc->childCount(), 2);
+	QVERIFY(rowFunc->childAt(0) != nullptr);
+	QVERIFY(rowFunc->childAt(1) == nullptr);
+
+	// Fill that one too; another trailing empty slot appears.
+	auto * col2 = new ScriptNodeColumn("contBinom");
+	model.insertNode(col2, DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, 1, {"number"}, false, false});
+	QCOMPARE(rowFunc->childCount(), 3);
+	QVERIFY(rowFunc->childAt(1) != nullptr);
+	QVERIFY(rowFunc->childAt(2) == nullptr);
+
+	// The trailing empty slot must not leak into the generated R code.
+	QCOMPARE(model.toR(), std::string("rowMeanNaRm(contNormal.scale, contBinom.scale)"));
+}
+
+void TestAll::testScriptConstructorRobustJson()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// Garbage (e.g. a corrupt .jasp file) must neither throw nor crash: parse failure -> empty tree.
+	model.fromJson(std::string("this is definitely not json {"));
+	QCOMPARE(model.formulaCount(), 0);
+	QCOMPARE(model.toR(), std::string(""));
+
+	// A formula with a non-string nodeType is skipped; valid formulas next to it survive.
+	model.fromJson(std::string(
+		"{\"formulas\":["
+		"{\"nodeType\":123},"
+		"{\"nodeType\":\"Number\",\"value\":3},"
+		"{\"nodeType\":\"Column\",\"columnName\":\"a\",\"columnTypeUser\":\"bogus\",\"columnTypeDrop\":null}"
+		"]}"));
+	QCOMPARE(model.formulaCount(), 2);
+	QCOMPARE(model.toR(), std::string("3\n& a.scale\n"));
+
+	// A RowFunction with a mistyped dropped item gets an empty slot instead of exploding.
+	model.fromJson(std::string(
+		"{\"formulas\":[{\"nodeType\":\"RowFunction\",\"functionName\":\"rowMean\",\"droppedItems\":[42,\"null\"]}]}"));
+	QCOMPARE(model.formulaCount(), 1);
+	QVERIFY(!model.checkCompleteness());
+
+	// A mistyped function argument is skipped without shifting the values of the arguments after it.
+	model.fromJson(std::string(
+		"{\"formulas\":[{\"nodeType\":\"Function\",\"functionName\":\"round\",\"arguments\":["
+		"null,"
+		"{\"name\":\"y\",\"dropKeys\":[\"number\"],\"argument\":{\"nodeType\":\"Number\",\"value\":3.5}},"
+		"{\"name\":\"n\",\"dropKeys\":[\"number\"],\"argument\":{\"nodeType\":\"Number\",\"value\":1}}"
+		"]}]}"));
+	QCOMPARE(model.formulaCount(), 1);
+	QCOMPARE(model.toR(), std::string("round(3.5, 1)\n"));
+}
+
+void TestAll::testScriptConstructorFunctionPalette()
+{
+	auto paletteNames = [](ScriptConstructorMode mode)
+	{
+		QStringList names;
+		for(const ScriptFunctionDef & def : ScriptConstructorRegistry::instance().functionsForMode(mode))
+			names << tq(def.name);
+		names.sort();
+		return names;
+	};
+
+	// The deleted FilterWindow.qml functionModel (its row functions come from rowFunctions(), and
+	// sqrt and ! live in the operator bar).
+	QStringList filterPalette = { "abs", "sd", "var", "sum", "prod", "zScores", "min", "max", "mean", "sign", "round", "length", "median",
+												   "ifelse", "hasSubstring", "is.na" };
+	filterPalette.sort();
+	QCOMPARE(paletteNames(ScriptConstructorMode::Filter), filterPalette);
+
+	// The deleted ComputeColumnWindow.qml functionModel, used by both column modes.
+	QStringList columnPalette = { "abs", "sd", "var", "sum", "prod", "zScores", "min", "max", "mean", "sign", "round", "length", "median",
+												   "log", "log2", "log10", "logb", "exp", "fishZ", "invFishZ", "logit", "invLogit",
+												   "BoxCox", "BoxCoxAuto", "invBoxCox", "powerTransform", "powerTransformAuto", "YeoJohnson", "YeoJohnsonAuto", "Johnson",
+												   "cut", "replaceNA", "ifElse", "hasSubstring", "is.na",
+												   "normalDist", "tDist", "chiSqDist", "fDist", "binomDist", "negBinomDist", "geomDist", "poisDist",
+												   "betaDist", "unifDist", "gammaDist", "expDist", "logNormDist", "weibullDist" };
+	columnPalette.sort();
+	QCOMPARE(paletteNames(ScriptConstructorMode::ComputedColumn),	columnPalette);
+	QCOMPARE(paletteNames(ScriptConstructorMode::ComputedDataSet),	columnPalette);
+}
+
+void TestAll::testScriptConstructorNumberLiteralText()
+{
+	ScriptNodeLiteral		lit(ScriptNode::Type::Number);	// outlives the view and its items
+	ScriptConstructorView	view;
+
+	const std::vector<std::pair<double, QString>> cases = {
+		{ 123456789,		"123456789"		},
+		{ 0.123456789,	"0.123456789"	},
+		{ -2.5,			"-2.5"				},
+		{ 3,				"3"					}
+	};
+
+	for(const auto & [value, text] : cases)
+	{
+		lit.setNumberValue(value);
+		ScriptNodeItem * item = view.makeNodeItem(&lit, &view);
+
+		QQuickItem * input = nullptr;
+		for(QQuickItem * child : item->childItems())
+			if(QByteArray(child->metaObject()->className()) == "QQuickTextInput")
+				input = child;
+		QVERIFY(input);
+		QCOMPARE(input->property("text").toString(), text);
+
+		// The editor writes its text back into the model when it loses focus.
+		QMetaObject::invokeMethod(input, "editingFinished");
+		QVERIFY2(lit.numberValue() == value, qPrintable(QString("%1 became %2").arg(text).arg(lit.numberValue(), 0, 'g', 17)));
+	}
+}
+
+void TestAll::testScriptConstructorModeDropKeys()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptNodeOperator split("%|%", false);
+	QCOMPARE(keyList(split.slotDropKeys(0, ScriptConstructorMode::Filter)),			QStringList({"boolean"}));
+	QCOMPARE(keyList(split.slotDropKeys(0, ScriptConstructorMode::ComputedColumn)),	QStringList({"number"}));
+	QCOMPARE(keyList(split.slotDropKeys(0, ScriptConstructorMode::ComputedDataSet)),	QStringList({"number"}));
+	QCOMPARE(keyList(split.slotDropKeys(1, ScriptConstructorMode::ComputedColumn)),	QStringList({"string", "boolean"}));
+
+	// A scale column dropped on a computed column's %|% fills its left slot and stays scale.
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::ComputedColumn);
+	model.insertNode(new ScriptNodeOperator("%|%", false),	DropTarget::root());
+	model.insertNode(new ScriptNodeColumn("contNormal"),	DropTarget::none());
+	QCOMPARE(model.formulaCount(), 1);
+	QCOMPARE(model.toR(), std::string("(contNormal.scale %|% null)"));
+}
+
+void TestAll::testScriptConstructorMirroredKeys()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	const ScriptConstructorMode filter = ScriptConstructorMode::Filter;
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(filter);
+
+	// An empty == accepts anything on either side...
+	auto * eq = new ScriptNodeOperator("==", false);
+	model.insertNode(eq, DropTarget::root());
+	QCOMPARE(keyList(eq->slotDropKeys(0, filter)), QStringList({"boolean", "string", "number"}));
+
+	// ...but once the right side holds a string, the left side only takes strings.
+	auto * text = new ScriptNodeLiteral(ScriptNode::Type::String);
+	text->setStringValue("abc");
+	model.insertNode(text, DropTarget{DropTarget::Kind::OperatorRight, eq, 1, eq->slotDropKeys(1, filter), false, true});
+	QCOMPARE(keyList(eq->slotDropKeys(0, filter)), QStringList({"string"}));
+
+	ScriptNodeLiteral number(ScriptNode::Type::Number);
+	QVERIFY(!DropTarget({DropTarget::Kind::OperatorLeft, eq, 0, eq->slotDropKeys(0, filter), false, true}).accepts(&number, filter));
+
+	// A scale column still fits, as a type that compares with strings (like the old JASPColumn.qml).
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("(contNormal.ordinal == 'abc')\n"));
+
+	// The mirroring works in both directions: a scale column on the left of != wants numbers.
+	model.fromJson(formulas({opNode("!=", colNode("contNormal", -1, 1), Json::nullValue)}));
+	auto * ne = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+	QVERIFY(ne);
+	QCOMPARE(keyList(ne->slotDropKeys(1, filter)), QStringList({"number"}));
+}
+
+void TestAll::testScriptConstructorLengthAcceptsBooleans()
+{
+	// One registry entry serves both modes, so the filter accepts booleans here as well.
+	for(ScriptConstructorMode mode : {ScriptConstructorMode::Filter, ScriptConstructorMode::ComputedColumn})
+	{
+		ScriptNodeFunction	length("length");
+		ScriptNodeLiteral	truth(ScriptNode::Type::Boolean);
+		QVERIFY(DropTarget({DropTarget::Kind::FunctionArg, &length, 0, length.slotDropKeys(0, mode), false, true}).accepts(&truth, mode));
+	}
+}
+
+void TestAll::testScriptConstructorDragKeepsFormulaRows()
+{
+	QStandardItemModel		columns;	// outlives the view, which listens to it
+	ScriptConstructorView	view;
+	view.setSize(QSizeF(800, 400));
+	view.ensureChromeBuilt();
+	view.setColumnsModel(&columns);
+
+	auto * number = new ScriptNodeLiteral(ScriptNode::Type::Number);
+	view.model()->insertNode(number, DropTarget::root());
+	view.refresh();
+
+	// The formula row showing `number` (a direct child of the script column), if any.
+	auto rowItem = [&]() -> ScriptNodeItem *
+	{
+		for(QQuickItem * scriptColumn : view.scriptArea()->childItems())
+			for(QQuickItem * child : scriptColumn->childItems())
+				if(auto * item = qobject_cast<ScriptNodeItem*>(child); item && item->node() == number)
+					return item;
+		return nullptr;
+	};
+
+	ScriptNodeItem * item = rowItem();
+	QVERIFY(item);
+
+	// A relayout during the drag (a resize, the hint growing a line, ...) leaves the formula at the cursor.
+	const QPointF grab = item->mapToScene(QPointF(1, 1));
+	view.startDragExisting(item, grab);
+	view.dragMove(grab + QPointF(150, 100));
+	const QPointF dragged = item->position();
+	view.setWidth(view.width() + 20);
+	QCOMPARE(item->position(), dragged);
+
+	// A columns-model change rebuilds the palette, which cancels the drag: the formula gets a row again,
+	// and relayouts after the dragged item is deleted must not touch it.
+	columns.appendRow(new QStandardItem("x"));
+	QTRY_VERIFY(rowItem() != nullptr);
+	QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+	view.setWidth(view.width() + 20);
+	QVERIFY(rowItem() != nullptr);
 }
 
 

@@ -34,7 +34,9 @@
 TableViewBase::TableViewBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
-	_controlType = ControlType::TableView;
+	_controlType		= ControlType::TableView;
+	// The R value of a table is always the whole table (a list of columns), never the terms of its source.
+	_useTermsInRSyntax	= false;
 }
 
 void TableViewBase::setUpModel()

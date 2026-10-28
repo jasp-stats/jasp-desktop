@@ -4,6 +4,88 @@ var aiBridge = null;
 var currentSignals = null;
 var streamHasContent = false;
 
+// Message-log integrity:
+// deep-chat rebuilds its entire chat view from the `history` property whenever
+// a reactive style property is reassigned (theme / avatar changes), dropping
+// live messages. We therefore keep _msgLog as the canonical conversation and
+// route every property swap through _applyProps(), which restores the log
+// first. _syncMsgLog() snapshots the live view after every state change.
+var _chatEl = null;
+var _msgLog = [];
+// Property changes deferred while a stream is active (rebuilding mid-stream
+// would kill the in-flight streaming bubble); applied on stream end.
+var _pendingProps = null;
+
+function _syncMsgLog() {
+  if (!_chatEl) return null;
+  try {
+    var msgs = _chatEl.getMessages();
+    if (msgs) _msgLog = msgs;
+    return msgs;
+  } catch (e) {
+    console.warn("chat-bridge: could not sync message log:", e);
+    return null;
+  }
+}
+
+function _applyProps(newProps) {
+  var apply = function () {
+    if (!_chatEl) return;
+    // Snapshot the LIVE view right before the rebuild — deep-chat rebuilds
+    // its message view from the `history` property on any reactive property
+    // change, dropping anything not in it. Restoring the just-taken snapshot
+    // keeps the conversation across the rebuild (the restore re-fires
+    // onMessage with isHistory:true — we have no onMessage listener, so that
+    // is harmless).
+    var live = _syncMsgLog();
+    try {
+      if (live && live.length) _chatEl.history = live;
+    } catch (e) {
+      console.warn("chat-bridge: could not restore message log:", e);
+    }
+    for (var key in newProps) {
+      try {
+        if (key === "hostStyle") {
+          // Inline styles on the host element — these beat deep-chat's own
+          // one-shot :host rule (background-color:#fff / border) and don't
+          // trigger a rebuild.
+          for (var p in newProps.hostStyle) _chatEl.style[p] = newProps.hostStyle[p];
+          continue;
+        }
+        _chatEl[key] = newProps[key];
+      } catch (e) {
+        console.warn("chat-bridge: could not apply " + key + ":", e);
+      }
+    }
+    if (typeof _chatEl.scrollToBottom === "function") _chatEl.scrollToBottom();
+    _syncMsgLog();
+  };
+  if (_isStreaming) {
+    // Defer until the stream ends — merge so a theme change followed by an
+    // avatar change (or vice versa) both survive.
+    _pendingProps = Object.assign({}, _pendingProps || {}, newProps);
+    return;
+  }
+  apply();
+}
+
+function _handleThemeUpdate(name) {
+  if (typeof window.applyChatTheme !== "function") {
+    console.warn("chat-bridge: chat-themes.js not loaded");
+    return;
+  }
+  _applyProps(window.applyChatTheme(name || "lightTheme"));
+}
+
+// Property changes that arrived while a stream was active are applied when
+// the stream ends (see _applyProps).
+function _flushPendingApply() {
+  if (!_pendingProps) return;
+  var pending = _pendingProps;
+  _pendingProps = null;
+  _applyProps(pending);
+}
+
 // Table enhancement is deferred until stream ends to avoid flickering
 // and autoscroll disruption during partial table rendering.
 var _isStreaming = false;
@@ -82,19 +164,23 @@ document.addEventListener("DOMContentLoaded", function () {
         _isStreaming = false;
         if (currentSignals) {
           currentSignals.onClose();
+          // Snapshot the completed exchange — the theme/avatar applyProps
+          // relies on this being fresh.
+          _syncMsgLog();
         } else {
-          var chat = document.querySelector("deep-chat");
-          if (chat) {
-            chat.clearMessages();
-            if (window._introBuf) {
-              chat.addMessage({ text: window._introBuf, role: "ai" });
-            }
+          // Auto-intro stream finished — replace the primer only if we have
+          // intro text; never wipe an existing conversation.
+          if (_chatEl && window._introBuf) {
+            _chatEl.clearMessages();
+            _chatEl.addMessage({ text: window._introBuf, role: "ai" });
           }
           window._introBuf = "";
+          _syncMsgLog();
         }
         // Keep currentSignals alive — tool-call loops may emit more onOpen/onClose.
         // Run table enhancement now that the stream is fully complete.
         _scheduleEnhance();
+        _flushPendingApply();
       });
 
       aiBridge.onStreamError.connect(function (errorMsg) {
@@ -113,31 +199,45 @@ document.addEventListener("DOMContentLoaded", function () {
           } catch (e) {
             console.warn("chat-bridge: error in onClose:", e);
           }
+          _syncMsgLog();
         } else {
-          var chat = document.querySelector("deep-chat");
-          if (chat) {
-            chat.clearMessages();
-            chat.addMessage({ text: errorMsg, role: "ai" });
-          }
+          // No active handler — append the error as a message; never wipe
+          // the conversation.
+          if (_chatEl) _chatEl.addMessage({ text: errorMsg, role: "ai" });
           window._introBuf = "";
+          _syncMsgLog();
         }
         currentSignals = null;
         _scheduleEnhance();
+        _flushPendingApply();
       });
 
       aiBridge.onClearChat.connect(function () {
         console.log("chat-bridge: onClearChat — clearing deep-chat UI");
         currentSignals = null;
-        var chat = document.querySelector("deep-chat");
-        if (chat) {
-          chat.clearMessages();
-          chat.addMessage({ text: "Starting up…", role: "ai" });
+        if (_chatEl) {
+          _chatEl.clearMessages();
+          _chatEl.addMessage({ text: "Starting up…", role: "ai" });
+          _syncMsgLog();
         }
         window._introBuf = "";
       });
 
       console.log("chat-bridge: aiBridge connected, setting up deep-chat");
       setupDeepChat();
+      // Theme: pull the initial value, then react to live switches from QML.
+      // After setupDeepChat so the element exists when the async callback
+      // with the initial theme name arrives.
+      if (aiBridge.getChatTheme) {
+        aiBridge.getChatTheme(function (name) {
+          _handleThemeUpdate(name);
+        });
+      }
+      if (aiBridge.chatThemeUpdated) {
+        aiBridge.chatThemeUpdated.connect(function (name) {
+          _handleThemeUpdate(name);
+        });
+      }
     });
   } else {
     console.error("chat-bridge: window.qt.webChannelTransport not available");
@@ -150,6 +250,7 @@ function setupDeepChat() {
     console.warn("chat-bridge: <deep-chat> element not found");
     return;
   }
+  _chatEl = chat;
 
   chat.connect = {
     stream: true,
@@ -160,6 +261,10 @@ function setupDeepChat() {
       );
 
       currentSignals = signals;
+
+      // The user message was just rendered — snapshot immediately so a theme
+      // switch that lands before/without a stream close still keeps it.
+      _syncMsgLog();
 
       signals.stopClicked.listener = function () {
         console.log("chat-bridge: stop clicked");
@@ -179,7 +284,8 @@ function setupDeepChat() {
     },
   };
 
-  // Theme-aware AI avatar
+  // Theme-aware AI avatar (initial) — routed through _applyProps so the
+  // message log survives the view rebuild.
   if (aiBridge.aiIconPath) {
     var avatars = chat.avatars || {};
     avatars.ai = {
@@ -199,20 +305,7 @@ function setupDeepChat() {
         avatar: { width: "30px", height: "30px", alignSelf: "center" },
       },
     };
-    chat.avatars = avatars;
-  }
-
-  // Reassigning chat.avatars makes deep-chat rebuild its message view from the
-  // `history` property, which drops messages added at runtime (streaming / addMessage).
-  // Persist the live conversation into `history` first so it survives the rebuild.
-  function applyAvatars(newAvatars) {
-    try {
-      var msgs = chat.getMessages();
-      if (msgs && msgs.length) chat.history = msgs;
-    } catch (e) {
-      console.warn("chat-bridge: could not preserve messages:", e);
-    }
-    chat.avatars = newAvatars;
+    _applyProps({ avatars: avatars });
   }
 
   // React to persona changes
@@ -225,7 +318,7 @@ function setupDeepChat() {
         avatar: { width: "32px", height: "32px", alignSelf: "center" },
       },
     };
-    applyAvatars(avatars);
+    _applyProps({ avatars: avatars });
   });
 
   // React to user avatar changes
@@ -238,7 +331,7 @@ function setupDeepChat() {
         avatar: { width: "30px", height: "30px", alignSelf: "center" },
       },
     };
-    chat.avatars = avatars;
+    _applyProps({ avatars: avatars });
   }
 
   aiBridge.userAvatarUpdated.connect(function (newPath) {
@@ -254,7 +347,7 @@ function setupDeepChat() {
     } else {
       delete avatars.user; // let deep-chat use its default
     }
-    applyAvatars(avatars);
+    _applyProps({ avatars: avatars });
   });
 
   console.log("chat-bridge: deep-chat handler configured");

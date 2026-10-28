@@ -25,6 +25,7 @@
 #include "controls/sourceitem.h"
 #include "controls/rowcontrols.h"
 #include "controls/jasplistcontrol.h"
+#include "filter.h"
 
 ListModel::ListModel(JASPListControl* listView) 
 	: QAbstractTableModel(listView)
@@ -120,6 +121,90 @@ void ListModel::_setAllowedType(Term& term) const
 				term.setType(realType);
 		}
 	}
+
+	// (ORIGIN-AUTHORITATIVE): the destination stamp is GONE. A term that
+	//enters a list without an origin STAYS -1 forever: -1 is not "origin-less" but a reference
+	//into the provider WITHOUT host selection, resolved at use time through this list's own
+	//host-bound fallback chain (its selection host, else the analysis' own filter else the shown filter) - so the
+	//engine-side provenance of such a term follows THAT provider's changes automatically
+	//(BoundControlBase::generatedHostFilter re-reads it per send), and no list may re-route it
+	//by stamping its own namespace onto it. Stamps are born only at origins: a pool's available
+	//universe birth-stamps its fresh dataset terms with the pool's own resolution
+	//(ListModel::getSourceTerms), qualified references and Storage term objects carry theirs,
+	//and a pick/drag copies the term - origin riding along - unchanged.
+}
+
+int ListModel::_currentSelectionFilterId() const
+{
+	if (!_listView)
+		return -1;
+
+	//Only an EXPLICIT selection host qualifies a term (the fallback for a control
+	//with no host is the analysis-wide VariableInfo — legacy behaviour, and legacy terms stay
+	//-1). resolvedSelectionHost() (local relation resolution, the walk is deleted)
+	//reports nullptr exactly in that fallthrough case. The filter is read through the host's own
+	//selection VariableInfo provider at use time - never cached (the lazy-attach landmine).
+	JASPControl *	host	= _listView->resolvedSelectionHost();
+	Filter			*	filter	= host ? dynamic_cast<Filter *>(host->ownedSelectionVarInfo()->provider()) : nullptr;
+
+	return filter && filter->id() >= 0 ? filter->id() : -1;
+}
+
+Terms ListModel::reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse)
+{
+	// the signal-driven provider update (replaces the deleted restamp walk).
+	//Called from the assigned models' availableTermsResetHandler with the participation key
+	//their pool reported and the pool's rebuilt (birth-stamped) universe. See
+	//termFollowsProviderChange for the participation rule.
+	Terms vanished;
+
+	int row = 0;
+	for (Term & term : _terms)
+	{
+		if (termFollowsProviderChange(term.filterId(), filterIdToUpdate))
+		{
+			if (newUniverse.containsValue(term.value()))	//NAME-ONLY on purpose: the key already pre-selected the provenance
+			{
+				//Survivor: REPLACED BY the delivered universe term - the replacement carries
+				//the provider's current stamp and fresh type, so no in-place re-point happens
+				//(and a same-name column of the new universe can never inherit a stale id).
+				//The filter part is the same identity class as the name in a rename, so the
+				//row-scoped maps re-key exactly like the rename flow does
+				//(ListModelTermsAssigned::changeTerm).
+				const TermRowKey oldKey = TermRowKey::ofTerm(term);
+
+				term = newUniverse.at(size_t(newUniverse.indexOfValue(term.value())));
+
+				const TermRowKey newKey = TermRowKey::ofTerm(term);
+				if (newKey != oldKey)
+				{
+					if (_rowControlsMap.contains(oldKey))
+						_rowControlsMap.insert(newKey, _rowControlsMap.take(oldKey));
+					if (_rowControlsValues.contains(oldKey))
+						_rowControlsValues.insert(newKey, _rowControlsValues.take(oldKey));
+				}
+
+				//Not silent: dataChanged folds into termsChanged (ListModel ctor), so the
+				//bound control's consumers re-read the live state (the generated sidecar is
+				//built from the model per send).
+				QModelIndex modelIndex = index(row, 0);
+				emit dataChanged(modelIndex, modelIndex);
+			}
+			else
+				vanished.add(term);		//the provider dropped the column: the reference dies
+		}
+		row++;
+	}
+
+	return vanished;
+}
+
+QStringList ListModel::termProvenanceForTest() const
+{
+	QStringList out;
+	for(const Term & term : _terms)
+		out << term.value() + "@" + QString::number(term.filterId());
+	return out;
 }
 
 Term ListModel::_checkTermType(const Term &term) const
@@ -170,7 +255,7 @@ void ListModel::_connectSourceControls(SourceItem* sourceItem)
 	for (const QString & controlName : sourceItem->usedControls())
 		for (const Term & term : terms)
 		{
-			JASPControl * control = sourceModel->getRowControl(term.value(), controlName);
+			JASPControl * control = sourceModel->getRowControl(TermRowKey::ofTerm(term), controlName);	// exact row identity
 			if (control)
 			{
 				BoundControl * boundControl = control->boundControl();
@@ -193,7 +278,30 @@ Terms ListModel::getSourceTerms()
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
 		_connectSourceControls(sourceItem);
-		termsAvailable.add(terms);
+
+		// (ORIGIN-AUTHORITATIVE, FIX 1): a pool's dataset universe is born HERE.
+		//Fresh dataset columns carry no origin yet, so they take the stamp of the resolution
+		//THIS pool serves them through (_currentSelectionFilterId: the pool's own selection
+		//host, else its source chain, else -1 = the default provider) - that stamp IS origin
+		//(a) of the corrected model: picking/dragging the term out of the pool copies it, so
+		//the pick carries the pool's origin with it. Terms arriving from a source LIST are
+		//mirrored references that already carry their own origin and are never touched; a
+		//hostless pool's resolution is -1, so the non-aware world stays all-(-1) byte-identical.
+		if (sourceItem->isAnalysisDataSet())
+		{
+			const int birthStamp = _currentSelectionFilterId();
+			Terms stamped;
+			for (const Term & term : terms)
+			{
+				Term birth(term);
+				if (birth.filterId() < 0)
+					birth.setFilterId(birthStamp);
+				stamped.add(birth);
+			}
+			termsAvailable.add(stamped);
+		}
+		else
+			termsAvailable.add(terms);
 	});
 	
 	return termsAvailable;
@@ -216,14 +324,19 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 		{
 			if (startRow <= row)
 			{
-				if (!_rowControlsMap.contains(term.value()))
+				// the map key is the row's IDENTITY (value + filterId): same-name
+				//twins behind different filters get their own RowControls, and each row loads its
+				//own children through Terms::relatedValuesForTerm() (exact key, (name,-1) fallback
+				//for values loaded unqualified before the list stamped its host).
+				const TermRowKey key = TermRowKey::ofTerm(term);
+				if (!_rowControlsMap.contains(key))
 				{
 					RowControls* rowControls = new RowControls(this, _rowComponent);
-					_rowControlsMap[term.value()] = rowControls;
-					rowControls->initValues(row, term, _rowControlsValues[term.value()]);
+					_rowControlsMap[key] = rowControls;
+					rowControls->initValues(row, term, Terms::relatedValuesForTerm(_rowControlsValues, term));
 				}
 				else
-					_rowControlsMap[term.value()]->resetValues(row, term, _rowControlsValues[term.value()]);
+					_rowControlsMap[key]->resetValues(row, term, Terms::relatedValuesForTerm(_rowControlsValues, term));
 			}
 
 			row++;
@@ -231,15 +344,18 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 	}
 	
 	// Disconnect and delete all controls that are not used anymore
-	QStringList removedKeys;
-	for (const QString& key : _rowControlsMap.keys())
-		if (!terms().containsValue(key))
+	QList<TermRowKey> removedKeys;
+	for (const TermRowKey& key : _rowControlsMap.keys())
+		// term-aware presence check - a twin key only survives while a term with
+		//that SAME (name, filterId) is still in the list (unqualified keys keep the name-only
+		//wildcard lookup).
+		if (!terms().containsValue(key.asTerm()))
 		{
 			_rowControlsMap[key]->disconnectAndDeleteControls();
 			removedKeys.append(key);
 		}
 
-	for (const QString& key : removedKeys)
+	for (const TermRowKey& key : removedKeys)
 		_rowControlsMap.remove(key);
 }
 
@@ -250,7 +366,7 @@ Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
 	for (const Term& term : _terms)
 	{
 		QMap<QString, Json::Value> componentValues;
-		RowControls* rowControls = _rowControlsMap.value(term.value());
+		RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));	// exact row identity
 		if (rowControls)
 		{
 			const QMap<QString, JASPControl*>& controlsMap = rowControls->getJASPControlsMap();
@@ -265,28 +381,49 @@ Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
 			}
 		}
 
-		result[term.value()] = componentValues;
+		result[TermRowKey::ofTerm(term)] = componentValues;
 	}
 
 	return result;
 }
 
+RowControls *ListModel::getRowControls(const QString &key) const
+{
+	// name-only access resolves through the model, first row term carrying that
+	//name wins (the legacy single-entry-per-name behavior); twins are reached exactly via the
+	//TermRowKey overload.
+	for (const Term& term : _terms)
+		if (term.value() == key)
+			return _rowControlsMap.value(TermRowKey::ofTerm(term));
+
+	return nullptr;
+}
+
 JASPControl *ListModel::getRowControl(const QString &key, const QString &name) const
 {
-	JASPControl* control = nullptr;
+	// see getRowControls(const QString&) - name lookup lands on the first row of
+	//that name, the TermRowKey overload is the exact one.
+	for (const Term& term : _terms)
+		if (term.value() == key)
+			return getRowControl(TermRowKey::ofTerm(term), name);
 
+	return nullptr;
+}
+
+JASPControl *ListModel::getRowControl(const TermRowKey &key, const QString &name) const
+{
 	RowControls* rowControls = _rowControlsMap.value(key);
 	if (rowControls)
 	{
 		const QMap<QString, JASPControl*>& controls = rowControls->getJASPControlsMap();
 		if (controls.contains(name))
-			control = controls[name];
+			return controls[name];
 	}
 
-	return control;
+	return nullptr;
 }
 
-bool ListModel::addRowControl(const QString &key, JASPControl *control)
+bool ListModel::addRowControl(const TermRowKey &key, JASPControl *control)
 {
 	return _rowControlsMap.contains(key) ? _rowControlsMap[key]->addJASPControl(control) : false;
 }
@@ -552,8 +689,9 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 
 	case ListModel::RowComponentRole:
 	{
-		QString termStr = term.value();
-		return _rowControlsMap.contains(termStr) ? QVariant::fromValue(_rowControlsMap[termStr]->getRowObject()) : QVariant();
+		// exact row identity, so twin rows each hand out their own row object
+		RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));
+		return rowControls ? QVariant::fromValue(rowControls->getRowObject()) : QVariant();
 	}
 		
 	case ListModel::ColumnPreviewRole:
@@ -613,7 +751,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 		Terms controlTerms;
 		for (const Term& term : result)
 		{
-			RowControls* rowControls = _rowControlsMap.value(term.value());
+			RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));	// exact row identity
 			if (rowControls)
 			{
 				JASPControl* control = rowControls->getJASPControl(useThisControl);

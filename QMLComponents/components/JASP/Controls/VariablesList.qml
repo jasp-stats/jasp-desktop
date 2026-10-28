@@ -50,6 +50,10 @@ import JASP
     \li \b showVariableTypeIcon (bool) - Display variable type icons. Default: true.
     \li \b source (var) - Source for populating the VariablesList. Per default it will be all variables. Can be set to an id or a name (or a combination) of other controls having variables.
     \li \b rowComponent (Component) - QML component for custom row controls. Can be used to add e.g. a CheckBox for each variable in the VariablesList.
+    \li \b dataSetSelectionOption (string) - Name of the option carrying this list's dataset/filter selection (a filter id). The list then gets its own FilterSelect dropdown and its own variable-info
+        provider: several lists of one form can select different datasets at the same time. Declaring it is what makes the analysis multiDataSetAware (the only declaration there is:
+        Description.qml has no multiDataSetAware property any more). Default: "" (no selection; the list
+        inherits the namespace of the available list its items come from, else the analysis-wide one).
     \endlist
 
     \section1 Inherited Properties
@@ -222,6 +226,27 @@ VariablesListBase
 		textFormat		: variablesList.textFormat
 	}
 
+	// Per-list dataset/filter selection: one reusable FilterSelect, created exactly
+	// when this list declares a dataSetSelectionOption (so an unnamed bound control can never
+	// exist) - the same Loader discipline as TextArea's. The list then owns its namespace:
+	// two lists of one form can select two datasets, and every term entering the list is stamped
+	// with its selection (ListModel::_setAllowedType).
+	Loader
+	{
+		id					: filterSelectLoader
+		active				: variablesList.selectionAvailable
+		sourceComponent		: filterSelectComponent
+		anchors.left		: parent.left
+		anchors.right		: parent.right
+		anchors.top			: itemTitle.bottom
+	}
+
+	Component
+	{
+		id:	filterSelectComponent
+		FilterSelect { host: variablesList }
+	}
+
 	Text
 	{
 		anchors.top		: parent.top
@@ -236,9 +261,9 @@ VariablesListBase
 	Rectangle
 	{
 		id				: itemRectangle
-		anchors.top		: itemTitle.bottom
+		anchors.top		: filterSelectLoader.active ? filterSelectLoader.bottom : itemTitle.bottom
 		anchors.left	: parent.left
-		height			: variablesList.height - itemTitle.height
+		height			: variablesList.height - itemTitle.height - (filterSelectLoader.active ? filterSelectLoader.height : 0)
 		width			: parent.width
 		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
 		border.width	: 1

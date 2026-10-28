@@ -91,6 +91,10 @@ if(NOT FLATPAK_USED)
       QuickControls2Impl
       QmlWorkerScript
       QuickWidgets
+      # Private headers of QQuickText/QQuickRectangle/QQuickTextInput/QQuickImage (script
+      # constructor leaf items) and QQuickCheckBox:
+      QuickPrivate
+      QuickTemplates2Private
   )
   if(NOT USE_QT_STATIC_LIBS)
     find_package(
@@ -99,6 +103,7 @@ if(NOT FLATPAK_USED)
                WebChannel
                Svg
                Network
+               NetworkAuth
                HttpServer
                Xml
                Sql
@@ -122,6 +127,7 @@ else()
                Svg
                Sql
                Network
+               NetworkAuth
                HttpServer
                Xml
                DBus
@@ -132,7 +138,9 @@ else()
                QuickControls2
                QuickControls2Impl
                QmlWorkerScript
-               QuickWidgets)
+               QuickWidgets
+               QuickPrivate
+               QuickTemplates2Private)
 
   find_package(
     Qt6WebEngineQuick
@@ -275,8 +283,10 @@ if(WIN32 AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   find_package(freexl 2.0.99 REQUIRED)
   find_package(libsodium 1.0.20 REQUIRED)
 
-  copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h)
-  copy_rtools_header(RTOOLS_LIBRDATA_H		rdata.h			${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h)
+  set(LIBREADSTAT_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/rtools/include/readstat")
+  set(LIBRDATA_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/rtools/include/rdata")
+  copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${LIBREADSTAT_INCLUDE_DIRS}/readstat.h)
+  copy_rtools_header(RTOOLS_LIBRDATA_H		rdata.h			${LIBRDATA_INCLUDE_DIRS}/rdata.h)
 
   find_rtools_dll_path(RTOOLS_ZLIB_DLL            "zlib1.dll")
   find_rtools_dll_path(RTOOLS_MSYS_DLL            "msys-2.0.dll")

@@ -25,6 +25,7 @@
 #include <QMap>
 #include <QSet>
 #include <QAbstractItemModel>
+#include <QPointer>
 
 #include "jasplistcontrol.h"
 #include "variableinfo.h"
@@ -66,6 +67,10 @@ public:
 	SourceItem(JASPListControl* _listControl = nullptr);
 
 	ListModel*				sourceListModel()					{ return _sourceListModel;					}
+	///< The available-items control this source draws from (nullptr for values-/rSource-/native
+	/// model-driven sources and until _findModelAndControl resolves it). The semantic edge a list
+	/// uses to inherit its dataset namespace (see JASPListControl::resolvedSelectionHost).
+	JASPListControl *		sourceListControl()					{ return _sourceListControl;				}
 	const QString&			rowControlName()			const	{ return _rowControlName;					}
 	const QStringList&		sourceFilter()				const	{ return _sourceFilter;						}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;			}
@@ -114,8 +119,9 @@ private:
 	Terms							_values;
 	bool							_isValuesSource				= false;
 	bool							_isRSource					= false;
-	ListModel			*			_sourceListModel			= nullptr;
-	QAbstractItemModel	*			_sourceNativeModel			= nullptr;
+	// Guarded: these models belong to other controls, which a form's teardown may destroy before this source item disconnects from them
+	QPointer<ListModel>				_sourceListModel;
+	QPointer<QAbstractItemModel>	_sourceNativeModel;
 	int								_nativeModelRole			= Qt::DisplayRole;
 	bool							_isDataSetVariables			= false,
 									_combineWithOtherModels		= false,

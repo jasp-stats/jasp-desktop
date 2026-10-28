@@ -43,10 +43,52 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 	connect(this, &JASPControl::formIsKnown, this, &JASPListControl::whenFormIsKnown);
 }
 
+JASPListControl * JASPListControl::relatedNamespaceList()
+{
+	//The explicit `source:` edge: the first source item that names an actual list control
+	//(the direct relation read the deleted walk hopped through). nullptr until a
+	//source control resolves (setup timing, or values-/rSource-driven lists).
+	for (SourceItem * sourceItem : _sourceItems)
+		if (JASPListControl * sourceControl = sourceItem->sourceListControl())
+			return sourceControl;
+
+	return nullptr;
+}
+
+JASPControl * JASPListControl::resolvedSelectionHost()
+{
+	// follow the RELATION chain hop by hop (explicit `source:` first, else the
+	//related available list) until a list is an ACTIVE selection host - it serves its own subtree
+	//and everyone it feeds (host-bound) - or the chain runs out. Keeping the source edge
+	//ahead of the own-host check preserves the old semantic main path: a list that declares
+	//where its variables come from follows that control, dependency over visuals. The deleted
+	//walk's recursion and its `visited` cycle-guard machinery are gone: relations are declared
+	//statically in QML and acyclic, the hop cap only keeps a cyclically-wired (broken) form
+	//from spinning and ends it where the old guard ended too - no host, no dependency, the
+	//analysis-level namespace serves.
+	JASPListControl * list = this;
+
+	for (int hop = 0; hop < 32; ++hop)
+	{
+		JASPListControl * next = list->relatedNamespaceList();
+
+		if (!next)
+			return list->ownedSelectionVarInfo() ? static_cast<JASPControl *>(list) : nullptr;
+
+		list = next;
+	}
+
+	return nullptr;
+}
+
 void JASPListControl::whenFormIsKnown(AnalysisForm * form)
 {
 	if (!form) return;
-	if (model())				model()->setVarInfo(form->varInfo());
+	if (model())
+	{
+		VariableInfo * varInfo = resolvedVarInfo();
+		if (varInfo) model()->setVarInfo(varInfo);
+	}
 }
 
 
@@ -61,8 +103,9 @@ void JASPListControl::setUpModel()
 		// dynamic row-components, which get it via whenFormIsKnown), this is the only place
 		// where it is wired up; without it, e.g. getVariableRealType() would always return
 		// 'unknown', wrongly making every column look like its type was manually changed.
-		if (form())
-			model()->setVarInfo(form()->varInfo());
+		VariableInfo * varInfo = resolvedVarInfo();
+		if (varInfo)
+			model()->setVarInfo(varInfo);
 	}
 
 	emit modelChanged();
@@ -246,7 +289,7 @@ bool JASPListControl::hasNativeSource() const
 	return _sourceItems.size() == 1 && _sourceItems[0]->isNativeModel();
 }
 
-bool JASPListControl::addRowControl(const QString &key, JASPControl *control)
+bool JASPListControl::addRowControl(const TermRowKey &key, JASPControl *control)
 {
 	return model() ? model()->addRowControl(key, control) : false;
 }
@@ -430,8 +473,8 @@ bool JASPListControl::checkLevelsConstraints()
 
 	if ((_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed) && model())
 	{
-		if (!model()->varInfo() && form())
-			model()->setVarInfo(form()->varInfo());
+		if (!model()->varInfo())
+			model()->setVarInfo(resolvedVarInfo());
 		checked = _checkLevelsConstraints();
 	}
 

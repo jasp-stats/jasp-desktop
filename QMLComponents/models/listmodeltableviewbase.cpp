@@ -454,9 +454,16 @@ JASPControl *ListModelTableViewBase::getRowControl(const QString &key, const QSt
 	else								return nullptr;
 }
 
-bool ListModelTableViewBase::addRowControl(const QString &key, JASPControl *control)
+JASPControl *ListModelTableViewBase::getRowControl(const TermRowKey &key, const QString &name) const
 {
-	_itemControls[key][control->name()] = control;
+	// tableview rows are keyed by the row-index string the control carried at
+	//registration (context property rowIndex, filterId -1): forward the name part unchanged.
+	return getRowControl(key.name(), name);
+}
+
+bool ListModelTableViewBase::addRowControl(const TermRowKey &key, JASPControl *control)
+{
+	_itemControls[key.name()][control->name()] = control;	// index string from the row key
 
 	if (control->controlType() == JASPControl::ControlType::TextField)
 	{

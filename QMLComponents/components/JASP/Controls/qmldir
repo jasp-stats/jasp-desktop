@@ -64,6 +64,8 @@ SetSeed 1.0 SetSeed.qml
 SubjectivePriors 1.0 SubjectivePriors.qml
 TabView 1.0 TabView.qml
 JAGSTextArea 1.0 JAGSTextArea.qml
+QualifiedColumnPicker 1.0 QualifiedColumnPicker.qml
+QualifiedColumnValidator 1.0 QualifiedColumnValidator.qml
 
 # Internal / Helper Controls
 AssignButton 1.0 AssignButton.qml

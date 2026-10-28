@@ -169,8 +169,8 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool
 	entry->_icon			= fq(icon());
 	entry->_title			= fq(title());
 	entry->_function		= fq(function());
-	entry->_requiresData	= _useDefaultRequiresData ? requiresDataDefault : requiresData();
-	entry->_preloadData		= _useDefaultPreloadData  ? preloadDataDefault  : preloadData();
+	entry->_requiresData	= _useDefaultRequiresData 		? requiresDataDefault 		: requiresData();
+	entry->_preloadData		= _useDefaultPreloadData			? preloadDataDefault		: preloadData();
 
 	entry->_isEnabled		= _enabled;
 	entry->_isAnalysis		= _entryType == EntryType::analysis;

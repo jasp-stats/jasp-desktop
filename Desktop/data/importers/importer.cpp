@@ -17,13 +17,16 @@
 //
 #include "importer.h"
 #include "qutils.h"
+#include "columnutils.h"
 #include "log.h"
 #include <QVariant>
+#include <QScopeGuard>
 #include "../datasetpackage.h"
 #include "timers.h"
 #include <QThreadPool>
 #include <queue>
 #include "data/asyncloader.h"
+#include "gui/preferencesmodel.h"
 
 Importer::Importer() 
 {
@@ -68,7 +71,8 @@ public:
 					_importColumn->getColumnType(),
 					_importColumn->allEmptyValuesAsStrings(),
 					DataSetPackage::thresholdScale(),
-					DataSetPackage::orderByValueByDefault());
+					DataSetPackage::orderByValueByDefault(),
+					_importColumn->valuesUseLocale());
 		
 		_importColumn->finish(!_progressCells);
 	}
@@ -110,7 +114,6 @@ void Importer::loadDataSet(const std::string &locator, DataSet * dataSet, std::f
 	int64_t timeBeginS = Utils::currentSeconds();
 	_progressCallback=progressCallback;
 	
-
 	_synching = false;
 
 	JASPTIMER_RESUME(Importer::loadDataSet loadFile);
@@ -187,6 +190,16 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 {
 	Log::log() << "[Importer::syncDataSet] START: locator=" << locator << ", dataSetId=" << (dataSet ? dataSet->id() : -1) << std::endl;
 
+	//Everything this function changes in `dataSet` comes from the data file, not from the user. Marking
+	//the dataset as synching for the duration keeps those changes from counting as manual edits (which
+	//would switch the external synching right back off). Scoped, because loadFile below can throw.
+	struct SynchingGuard
+	{
+		DataSet * dataSet;
+		SynchingGuard(DataSet * dataSet) : dataSet(dataSet)	{ if(dataSet) dataSet->setSynchingData(true);	}
+		~SynchingGuard()									{ if(dataSet) dataSet->setSynchingData(false);	}
+	} synchingGuard(dataSet);
+
 					_synching			= true;
 					_progressCallback	= progress;
 	int64_t			timeBeginS		= Utils::currentSeconds();
@@ -204,6 +217,9 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 	if(! emit DataSetPackage::pkg()->checkDoSync())
 	{
 		Log::log() << "[Importer::syncDataSet] checkDoSync returned false, aborting" << std::endl;
+		delete _importDataSet;	//was loaded just above; free it so this aborted sync doesn't leak it
+		_importDataSet	= nullptr;
+		_synching		= false;
 		return;
 	}
 	Log::log() << "[Importer::syncDataSet] checkDoSync returned true, continuing" << std::endl;
@@ -258,7 +274,8 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 			if(dataSetColumn->isColumnDifferentFromStringLookUps(
 				importColumn->title(),
 				importColumn->size(),
-				[&importColumn](size_t r){ return importColumn->valueLookup(r); }, 
+				[&importColumn](size_t r){ return importColumn->valueLookupAsShown(r); },
+				[&importColumn](size_t r, double & number){ return ColumnUtils::getDoubleValue(importColumn->valueLookup(r), number, importColumn->valuesUseLocale()); }, //Just like Column::setValues reads it
 				[&importColumn](size_t r){ return importColumn->labelLookup(r); }, 
 				importColumn->allEmptyValuesAsStrings()
 				))
@@ -285,21 +302,24 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 		if(oldColumns.count(col))
 			oldColQ.push(col);
 	
+	//prefs() is absent when the importer runs without the GUI (unit tests, headless use);
+	bool keepMissingColsWhenSyncing = PreferencesModel::prefs() && PreferencesModel::prefs()->keepMissingColsWhenSyncing();
+
 	for(ImportColumn * newColumn : newColumns)
 	{
 		Log::log() << "New column " << newColumn->name() << std::endl;
-		
-		Column			* dataSetColumn	= oldColQ.size() > 0 ? oldColQ.front() : dataSet->createColumn(newColumn->name());
+
+		Column			* dataSetColumn	= (!keepMissingColsWhenSyncing && oldColQ.size() > 0) ? oldColQ.front() : dataSet->createColumn(newColumn->name());
 		InitColumnTask	* task			= new InitColumnTask(newColumn, dataSetColumn, totalCellsCallback);
-		
+
 		connect(newColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
-		
-		if(oldColQ.size() > 0 && oldColQ.front() == dataSetColumn)
+
+		if(!keepMissingColsWhenSyncing && oldColQ.size() > 0 && oldColQ.front() == dataSetColumn)
 		{
 			changeNameColumns[dataSetColumn->name()] = newColumn->name();
 			oldColQ.pop();
 		}
-		
+
 		tasks		.push_back(task);
 		_waitingFor	.insert(newColumn);
 		oldColumns	.erase(dataSetColumn); //cause were replacing it with whatever the new column is
@@ -323,10 +343,23 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 
 	for (Column * oldCol : oldColumns) //already checked for not being computed column at creation list
 	{
-		Log::log() << "Column deleted " << oldCol->name() << std::endl;
+		if (keepMissingColsWhenSyncing)
+		{
+			//getColumnIndex() gives the column's position in the full dataset, which can exceed
+			//newColumnOrder's size (it holds the imported columns plus any missing ones already re-inserted
+			//here). Clamp to [0, size] so the insert iterator stays valid; out of range means append.
+			int i = dataSet->getColumnIndex(oldCol->name());
+			if (i < 0 || i > int(newColumnOrder.size()))
+				i = int(newColumnOrder.size());
+			newColumnOrder.insert(newColumnOrder.begin() + i, oldCol->name());
+		}
+		else
+		{
+			Log::log() << "Column deleted " << oldCol->name() << std::endl;
 
-		missingColumns.push_back(oldCol->name());
-		dataSet->removeColumn(oldCol->name());
+			missingColumns.push_back(oldCol->name());
+			dataSet->removeColumn(oldCol->name());
+		}
 	}
 	
 	emit dataSet->datasetChanged(dataSet->id(), tq(changedColumns), tq(missingColumns), tq(changeNameColumns), rowCountChanged, newColumns.size() > 0);
@@ -334,7 +367,7 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 	if(newColumnOrder.size() > 0)
 		dataSet->columnsReorder(newColumnOrder);
 	
-	DataSetPackage::pkg()->setManualEdits(false);
+	dataSet->setManualEdits(false); //On the synched dataset itself, which is not necessarily the shown one
 	delete _importDataSet;
 	
 	int64_t totalS = (Utils::currentSeconds() - timeBeginS);

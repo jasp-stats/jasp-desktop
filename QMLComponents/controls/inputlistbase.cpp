@@ -52,7 +52,7 @@ void InputListBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 
 	Terms::RelatedValuesPerTerm allControlValues;
-	Terms terms(value, Json::nullValue, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues);
+	Terms terms(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues);
 
 	_inputModel->initTerms(terms, allControlValues);
 }
@@ -104,9 +104,53 @@ void InputListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
+	setBoundValue(createEngineValue());
+}
+
+// the live input terms exactly as the write path puts them in the control's own
+//value (row-component lists keep the optionKey discipline through the single
+//Terms::getOptions row serialization - the mirror deletion folded the shuffle into it).
+Json::Value InputListBase::createEngineValue() const
+{
+	if (!_inputModel)
+		return Json::Value(Json::arrayValue);
+
 	const Terms terms = _inputModel->terms();
 
-	Json::Value options = hasRowComponent() ? terms.getOptionsWithRelatedValues(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), false)
-											: terms.getValuesOptions();
-	setBoundValue(options);
+	return hasRowComponent() ? terms.getOptions(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false)["value"]
+							 : terms.getValuesOptions();
+}
+
+// the file shape - rows of the row-bearing variant carry the per-term objects
+//{name, filterId?, types} under the optionKey (see the header note; Terms::getStorageOptions),
+//non-row lists keep today's plain string values.
+Json::Value InputListBase::createStorageValue() const
+{
+	if (!_inputModel)
+		return Json::Value(Json::arrayValue);
+
+	const Terms terms = _inputModel->terms();
+
+	return hasRowComponent() ? terms.getStorageOptions(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false)["value"]
+							 : terms.getValuesOptions();
+}
+
+// positional per-term sidecar (schema: BoundControlTerms::createFilterIds).
+Json::Value InputListBase::createFilterIds() const
+{	if (!_control->encodeValue() || !_inputModel)
+		return Json::nullValue;
+
+	const int			hostId	= generatedHostFilterId();
+
+	Json::Value ids(Json::arrayValue);
+	bool		any				= false;
+
+	for (const Term& term : _inputModel->terms())
+	{
+		const int id = term.filterId() >= 0 ? term.filterId() : hostId;
+		any = any || id >= 0;
+		ids.append(id >= 0 ? Json::Value(id) : Json::Value());
+	}
+
+	return any ? ids : Json::nullValue;
 }

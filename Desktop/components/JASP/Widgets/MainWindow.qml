@@ -25,14 +25,17 @@ Window
 {
     id:					mainWindowRoot
     title:				mainWindow.windowTitle
-	visible:			true
+	visible:			!mainWindow.startedForBatch
 	width:				1280
 	height:				720
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				mainWindow.hadFatalError ? jaspTheme.red : jaspTheme.white
 	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
 	minimumHeight:		400 * jaspTheme.uiScale
-	visibility:			!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized
+	visibility:			mainWindow.startedForBatch ? Window.Hidden : (!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized)
+
+	//Keep unattended workers hidden on the normal platform: the minimal platform used by --hide
+	//does not support the results view on all operating systems.
 
 	onVisibleChanged:
 		if(!visible)
@@ -53,6 +56,11 @@ Window
 
 		if(close.accepted)
 			mainWindow.closeWindows();
+	}
+
+	function startTutorial()
+	{
+		onboardingOverlay.start(preferencesModel.onboardingStep)
 	}
 
 	function toggleFullScreen()
@@ -89,12 +97,26 @@ Window
 		return (a + n) % n;
 	}
 
+	//This DropArea must stay a plain sibling *before* the contents below, at the default z.
+	//Qt hands a drag to the topmost DropArea that accepts it, and this one accepts anything
+	//(it sets no keys), so as soon as it sits on top it swallows every drag inside the app as well
+	//- the drag & drop of a variable from one VariablesList to another included. Being declared
+	//first and at z 0 makes it the bottom-most one, so it only gets the drags nothing else wants.
 	DropArea
 	{
-		id: drop
-		enabled: true
-		anchors.fill: parent
-		onDropped: (drop) => mainWindow.openURLFile(drop.text)
+		id:				drop
+		enabled:		true
+		anchors.fill:	parent
+
+		onDropped: (drop) =>
+		{
+			if (mainWindow.openURLFile(drop.text))
+				drop.accepted = true
+			warningRect.droppingText = false
+		}
+
+		onExited:	warningRect.droppingText = false
+		onEntered:	(drag) => warningRect.droppingText = drag.hasText
 	}
 
 	Item
@@ -103,36 +125,65 @@ Window
 		
 		Rectangle
 		{
+			id:				warningRect
 			z:				1
-			visible:		mainWindow.hadFatalError
-			color:			jaspTheme.red
+			color:			"transparent"
 			opacity:		0.75
 			anchors.fill:	parent
+
+			//Both colours this rectangle can take are states, so a drop can never strand it on the wrong
+			//one: the state is a binding, and dropping simply clears droppingText again.
+			property bool droppingText: false
+
+			state: droppingText ? "droppingData" : (mainWindow.hadFatalError ? "fatalError" : "")
+
+			states: [
+					State {
+						name: "droppingData"
+						PropertyChanges {
+							warningRect {
+								color: jaspTheme.blueLighter
+							}
+						}
+					},
+					State {
+						name: "fatalError"
+						PropertyChanges {
+							warningRect {
+								color: jaspTheme.red
+							}
+						}
+					}
+				]
+
+			transitions: [
+					Transition {
+						ColorAnimation { properties: "color"; duration: 150; easing.type: Easing.InOutQuad }
+					}
+				]
 		}
 
-		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S", Qt.Key_Save];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.saveAsKeyPressed();					sequences: ["Ctrl+Shift+S", Qt.Key_SaveAs];						context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];							context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S", "Save"];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.saveAsKeyPressed();					sequences: ["Ctrl+Shift+S"];								context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: { ribbon.showFileMenuPressed(); mainWindow.openKeyPressed();}
-																				sequences: ["Ctrl+O"];											context: Qt.ApplicationShortcut; }
-		//This is now redo! Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: ["Ctrl+Y", Qt.Key_Reload];							context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.zoomInKeyPressed();					sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();					sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0", Qt.Key_Zoom];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.refreshKeyPressed();					sequences: ["Ctrl+R", Qt.Key_Refresh];							context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindowRoot.close();							sequences: ["Ctrl+Q", Qt.Key_Close];							context: Qt.ApplicationShortcut; }
+																				sequences: ["Ctrl+O"];										context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: [fileMenuModel.syncShortcut];											context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.zoomInKeyPressed();					sequences: ["Zoom In", "Ctrl+\+", "Ctrl+\="];	context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();					sequences: ["Zoom Out", "Ctrl+\-"];			context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0", "Zoom"];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.refreshKeyPressed();					sequences: ["Ctrl+R", "Refresh"];							context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindowRoot.close();							sequences: ["Ctrl+Q", "Close"];								context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: fileMenuModel.close();							sequences: ["Ctrl+W"];											}
-		Shortcut { onActivated: mainWindow.toggleChat();								sequences: ["Ctrl+J"];									enabled: preferencesModel.aiEnabled }
-		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M", Qt.Key_F11];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindowRoot.changeFocusToFileMenu();			sequences: ["Home",   Qt.Key_Home, Qt.Key_Menu];				}
-		Shortcut { onActivated: mainWindow.setLanguage(0);						sequences: ["Ctrl+1"];											context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.setLanguage(1);						sequences: ["Ctrl+2"];											context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.undo();								sequences: ["Ctrl+Z", Qt.Key_Undo];								context: Qt.ApplicationShortcut; }
-		Shortcut { onActivated: mainWindow.redo();								sequences: ["Ctrl+Shift+Z", "Ctrl-Y", Qt.Key_Redo];				context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.toggleChat();						sequences: ["Ctrl+J"];										enabled: preferencesModel.aiEnabled }
+		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M", "F11"];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindowRoot.changeFocusToFileMenu();			sequences: ["Home", "Menu"];				}
+		Shortcut { onActivated: mainWindow.undo();								sequences: ["Ctrl+Z", "Undo"];								context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: mainWindow.redo();								sequences: ["Ctrl+Shift+Z", "Ctrl+Y", "Redo"];				context: Qt.ApplicationShortcut; }
 
-        Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(false, true);}  sequences: ["Ctrl+Shift+U"];                     context: Qt.ApplicationShortcut; }
-        Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(true, false);}  sequences: ["Ctrl+Shift+R"];                     context: Qt.ApplicationShortcut; }
-        Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(true, true);}   sequences: ["Ctrl+Shift+D"];                     context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(false, true);}  sequences: ["Ctrl+Shift+U"];						context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(true, false);}  sequences: ["Ctrl+Shift+R"];						context: Qt.ApplicationShortcut; }
+		Shortcut { onActivated: { dynamicModules.refreshDeveloperModule(true, true);}   sequences: ["Ctrl+Shift+D"];						context: Qt.ApplicationShortcut; }
 
 
 		RibbonBar
@@ -315,6 +366,15 @@ Window
 		id:					chatToggleButton
 		z:					99
 		visible:			preferencesModel.aiEnabled
+		// How many welcome-page footer rows stack below this corner:
+		// "Visit the website" and "Ask a question" (both need external
+		// links allowed — or a PRO build — and the question link also a
+		// non-empty questionsUrl), plus "Enterprise Support" in community
+		// builds. Drives the bottom clearance below.
+		property int footerRows:	((mainWindow.externalLinksEnabled || PRO) ? 1 : 0)
+							+	(((mainWindow.externalLinksEnabled || PRO) && mainWindow.questionsUrl !== "") ? 1 : 0)
+							+	(!PRO ? 1 : 0)
+
 		width:				45 * preferencesModel.uiScale
 		height:				45 * preferencesModel.uiScale
 		opacity:			mainWindow.aiChatVisible && mainWindow.chatWindowActive ? 1.0 : 0.55
@@ -332,7 +392,12 @@ Window
 			right:			parent.right
 			bottom:			parent.bottom
 			rightMargin:	jaspTheme.scrollbarBoxWidthBig + 15 * preferencesModel.uiScale
-			bottomMargin:	mainWindow.welcomePageVisible ?  85 * preferencesModel.uiScale : jaspTheme.scrollbarBoxWidthBig + 3 * preferencesModel.uiScale
+			// 85 clears the multi-row footer of stock builds; when only one
+			// row remains (locked-down clients with empty question/contact
+			// URLs) 45 sits right above it.
+			bottomMargin:	mainWindow.welcomePageVisible
+						? (footerRows > 1 ? 85 : 45) * preferencesModel.uiScale
+						: jaspTheme.scrollbarBoxWidthBig + 3 * preferencesModel.uiScale
 		}
 
 		MouseArea
@@ -344,5 +409,47 @@ Window
 			onClicked:		mainWindow.toggleChat()
 		}
 	}
+	
+	Tutorial
+	{
+		id: 	onboardingOverlay
+		z: 		1000
+
+		steps:
+		[
+			{
+				target:		ribbon,
+				title:		qsTr("Data and Analysis Section"),
+				text:		qsTr("This is the main entry point for the Data and Analysis menu."),
+				placement:	"bottom"
+			},
+			{
+				target:		filemenu,
+				title:		qsTr("File Menu and Preferences"),
+				text:		qsTr("Clicking the hamburger button in the upper left corner opens/closes this file menu and preferences interface, used to open and save files, and to configure JASP global preferences."),
+				placement:	"right",
+				onEnter:	function() { fileMenuModel.visible = true;  },
+				onExit:		function() { fileMenuModel.visible = false; }
+			},
+			{
+				target:		modulesMenu,
+				title:		qsTr("Modules Library"),
+				text:		qsTr("This is where you can manage analytics modules. In the list on the far right of this area, you can enable/disable installed modules, and you can also manage all available modules from the online modules store on the left."),
+				placement:	"left",
+				onEnter:	function() { modulesMenu.opened = true;  },
+				onExit:		function() { modulesMenu.opened = false; }
+			},
+			{
+				target:		chatToggleButton,
+				title:		qsTr("AI Assistant"),
+				text:		qsTr("Click the robot icon here or press Ctrl+J to bring up the AI chat panel.Detailed AI settings can be found in the preferences menu."),
+				placement:	"top"
+			}
+		]
+	}
+	
+	Component.onCompleted:
+		if (!preferencesModel.onboardingCompleted)
+			startTutorial()
 
 }

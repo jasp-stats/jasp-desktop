@@ -40,6 +40,7 @@ class DataSet : public DataSetBaseNode
 	Q_PROPERTY(QString				dataFile					READ dataFileQ					WRITE setDataFileQ				NOTIFY dataFileChanged					)
 	//Q_PROPERTY(QJsonValue			databaseJson				READ databaseJsonQ				WRITE setDatabaseJsonQ			NOTIFY databaseJsonChanged				)
 	Q_PROPERTY(bool					dataFileSynch				READ dataFileSynch				WRITE setDataFileSynch			NOTIFY dataFileSynchChanged				)
+	Q_PROPERTY(bool					manualEdits					READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged				) ///< Was the data changed by hand, so that the data file no longer describes it?
 	Q_PROPERTY(long					dataFileTimestamp			READ dataFileTimestamp			WRITE setDataTimestamp			NOTIFY dataTimestampChanged				)
 	Q_PROPERTY(int					columnsLabelFilteredCount	READ columnsLabelFilteredCount									NOTIFY columnsLabelFilteredCountChanged	)
 	Q_PROPERTY(Filter	*			shownFilter					READ shownFilter												NOTIFY shownFilterChanged				)
@@ -72,6 +73,10 @@ public:
 			void			showFilter(Filter * filter);
 			Filter *		showFilter(const std::string & filterName);
 			Filter *		showFilter(const QString & filterName);
+			///< Attach to an existing db filter row that has no live object yet (a reopened .jasp
+			///< materialises only default filters). Returns the filter, or nullptr when the row
+			///< is gone or it is the default filter (which is always live).
+			Filter *		loadStoredFilter(const std::string & name);
 			Columns		&	columns()			const		{ return	const_cast<Columns&>(_columns);	}
     const	EmptyValues *	emptyValues()       const		{ return	_emptyValues; }
 			EmptyValues *	emptyValues()					{ return	_emptyValues; }
@@ -88,6 +93,10 @@ public:
 	
 			int				id()					const { return _dataSetId;				}
 			bool			dataFileSynch()			const { return _dataFileSynch;			}
+			///Was *this* dataset changed by hand, so that its data file no longer describes it? Per dataset, because another one can be shown, and edited, in the meantime.
+			bool			manualEdits()									const	{ return _manualEdits;							}
+			///Was the synching switched off because *this* dataset was edited by hand? Only then may undoing those edits switch it back on again.
+			bool			synchTurnedOffByManualEdits()					const	{ return _synchTurnedOffByManualEdits;			}
 			
 	const	std::string &	dataFilePath()			const { return _dataFilePath;			}
 			bool			dataFileCanHaveLabels() const;
@@ -129,8 +138,16 @@ public:
 			void			insertColumn(			size_t			index,	bool alterDataSetTable = true);
 			Column		*	createColumn(			const std::string &	name, columnType columnType = columnType::unknown);
 			Column		*	createComputedColumn(	const std::string & name, columnType type		= columnType::unknown, computedColumnType desiredType = computedColumnType::analysis, int analysisId = -1);
+			///< The canonical mint of this dataset: bookkeeping only
+			///< (setCurrentNames/updateColumnTypesOnly/currentNames). It answers no full-string
+			///< encode/decode - encode through a filter view (shownEncoder()/Filter::columnEncoder()),
+			///< decode through the context-free global table (ColumnEncoder::decode())..
 			ColumnEncoder	&	encoder()			{ return *_encoder; }
 	const	ColumnEncoder	&	encoder()	const	{ return *_encoder; }
+			///< Compat shim (the old "the dataset's encoder"): the VIEW of this dataset's shown
+			///< filter - the namespace in which its column names are minted for the current
+			///< request/UI context. nullptr only when no filter (and no default) exists yet.
+			ColumnEncoder	*	shownEncoder();
 			DataSetSyncer	&	syncer()			{ return *_syncer; }
 	const	DataSetSyncer	&	syncer()	const	{ return *_syncer; }
 			int				getColumnIndex(	const	std::string &	name	) const;
@@ -169,22 +186,26 @@ public:
 			size_t			getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 			stringvec		getColumnNames();
 			colTypeMap		getColumnTypesMap();
-			void			setupEncoderPrefix();
 			
 
 			void			setDataFile(		const std::string & dataFilePath);
 			void			setDataTimestamp(	long timestamp);
 			void			setDatabaseJson(	const Json::Value & databaseJson);
 			void			setDataFileSynch(	bool synchronizing);
+			void			setManualEdits(		bool manualEdits);
 			bool			synchingData()		const { return _synchingDataNow; }
-			void			startSynching(		bool synchImmediately = true);
+			///While this is on the data is being replaced by the contents of the data file, so the changes that causes are not edits by the user.
+			void			setSynchingData(	bool synching)	{ _synchingDataNow = synching; }
 			
 			void			emitColumnChanged(		const QString		& name);
 
 			void			setDataFile( const std::string & dataFilePath, long timestamp)	{ _dataFilePath	= dataFilePath;	_dataFileTimestamp = timestamp; dbUpdate(); }
 			void			setDatabaseJson(	const std::string & databaseJson)	{ Json::Reader().parse(databaseJson, _database); dbUpdate(); }
+			///What the csv preview chose for dataFilePath (see CsvPreviewModel), so that synchronising it reads it the same way again:
+			///its delimiter ('\0' detects it) and the BCP 47 name of the locale its numbers are written in ("" reads them like the interface does)
 			char			csvDelimiter()		const								{ return _csvDelimiter; }
-			void			setCsvDelimiter(	char delimiter)						{ _csvDelimiter		= delimiter;			dbUpdate(); }
+	const	std::string	&	importLocale()		const								{ return _importLocale; }
+			void			setCsvChoices(		char delimiter, const std::string & importLocale)	{ _csvDelimiter	= delimiter; _importLocale = importLocale; dbUpdate(); }
 
 			void			setColumnCount(	size_t colCount);
 			void			setRowCount(	size_t rowCount, bool alsoLoadData = true);
@@ -256,6 +277,7 @@ signals:
 			void			dataFileChanged();
 			void			databaseJsonChanged();
 			void			dataFileSynchChanged();
+			void			manualEditsChanged();
 			void			dataTimestampChanged();
 			void			columnsLabelFilteredCountChanged();
 			void			refreshAllAnalyses(Filter * f);
@@ -267,9 +289,7 @@ signals:
 			void			filtersCountChanged();
 			void			shownFilterChanged(DataSet * data);
 			void			filterRemoved(Filter * f);
-			void			synchronizeStart(DataSet *);
-			void			synchronizeDo(DataSet *);
-			void			syncRequired(int dataSetId, DataSet * dataSet, QString locator, QString extension, QString databaseJson);
+			void			syncRequired(DataSet * dataSet, QString locator, QString extension, QString databaseJson);
 			void			labelChanged(		const Column * column, QString originalLabel, QString newLabel);
 			QString			askPassword(	QString title, QString message);
 			bool			showYesNo(		QString title, QString message);
@@ -283,14 +303,11 @@ signals:
 			
 public slots:
 			void			refresh(bool doColumnsToo = true);
-			void			runFilters();
+			void			runFilters(const QString & editedColumn = QString());
 			void			handleColumnChanged(		const Column * column);
 			void			handleLabelsReordered(		const Column * column);
 			bool			setColumnTypes(stringset columnIndexes, columnType newColumnType);
 			void			filterByNameDone(int dataSetID, const QString & name, const QString & error);
-			void			synchronize();
-			void			synchronizeFromDatabase();
-			void			synchronizeFromDataFile();
 			
 
 public:
@@ -314,6 +331,7 @@ private slots:
 													QMap<QString, QString>	changeNameColumns,
 													bool					rowCountChanged,
 													bool					hasNewColumns);
+			void			handleUndoCleanChanged(	bool clean);		///< Undone all the way back to the point where the data matched its data file? Then the synching can go back on.
 
 public:
 	static QVariant			getDataSetViewLines(bool up, bool left, bool down, bool right)									;
@@ -346,8 +364,13 @@ private:
 	std::string				_dataFilePath,
 							_title;
 	bool					_dataFileSynch			= false,
-							_synchingDataNow		= false;
+							_synchingDataNow		= false,
+							//Neither of these is stored in the database: they describe this session's editing,
+							//and the second one only means anything together with this session's undo stack.
+							_manualEdits			= false,
+							_synchTurnedOffByManualEdits = false;
 	char					_csvDelimiter			= '\0';
+	std::string				_importLocale			= "";
 	Json::Value				_database				= Json::nullValue;
 	static stringset		_defaultEmptyvalues;	// Default empty values if workspace do not have its own empty values (used for backward compatibility)
 	std::string				_description;

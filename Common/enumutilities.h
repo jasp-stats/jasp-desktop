@@ -163,10 +163,14 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 			std::vector<std::string> enumNameValue(stringUtils::split(tokenString, '='));
 			enumName = enumNameValue[0];
 			//inxMap = static_cast<T>(enumNameValue[1]);
-#ifdef JASP_USES_QT_HERE
-			if(stringUtils::trim(enumNameValue[1]) == "Qt::UserRole")	inxMap = static_cast<T>(Qt::UserRole);
+			//Qt::UserRole is 0x0100 in the Qt ABI, so resolve it textually and unconditionally.
+			//Do NOT put this behind JASP_USES_QT_HERE: that would be an ODR violation, because
+			//Common (built without Qt) and CommonData (built with Qt) both instantiate
+			//generateEnumMap<int32_t>. The linker keeps only one of those weak definitions, and
+			//when the Qt-less one wins, "name = Qt::UserRole" in dataenums.h makes std::stoll
+			//throw std::invalid_argument from a static initializer (= abort on dlopen).
+			if(stringUtils::trim(enumNameValue[1]) == "Qt::UserRole")	inxMap = static_cast<T>(256);
 			else
-#endif
 			if (std::is_unsigned<T>::value)		inxMap = static_cast<T>(std::stoull(enumNameValue[1], 0, 0));
 			else								inxMap = static_cast<T>(std::stoll(enumNameValue[1], 0, 0));
 		}

@@ -25,7 +25,7 @@
 using namespace Modules;
 
 RibbonButton::RibbonButton(QObject * parent)
-	: _enabled(true), _special(true), _separator(true)
+	: _enabled(true), _remember(false), _special(true), _separator(true) //Separators are pure decoration: they are neither selectable nor part of the remembered selection, so they must stay enabled and outside of it
 {
 	static int separatorCount = 0;
 
@@ -213,13 +213,15 @@ void RibbonButton::setEnabled(bool enabled)
 
 	if(DynamicModules::dynMods())
 	{
-		if(!isSpecial())
-		{
-			if(enabled)	DynamicModules::dynMods()->loadModule(_module->name());
-			else		DynamicModules::dynMods()->unloadModule(_module->name());
-		}
+		//We only load here and never unload: deselecting a module should merely hide it from the ribbon, not destroy anything.
+		//DynamicModules::unloadModule removes any running analyses of the module (through dynamicModuleUnloadBegin) and is reserved for actually uninstalling or replacing a module.
+		if(enabled && !isSpecial())
+			DynamicModules::dynMods()->loadModule(_module->name());
 
-		emit DynamicModules::dynMods()->moduleEnabledChanged(nameQ(), enabled);
+		//Only buttons that participate in the remembered selection (modules and the R-console) may touch it;
+		//specials such as the data-buttons change enabled-state constantly and would otherwise pollute the stored selection.
+		if(_remember)
+			emit DynamicModules::dynMods()->moduleEnabledChanged(nameQ(), enabled);
 	}
 }
 

@@ -30,6 +30,11 @@ void DataSetSyncer::startFileSyncing(const QString & filePath)
 	if(_fileWatcher && _fileWatcher->files().contains(absPath))
 	{
 		_dataSet->setDataFile(absPath.toStdString(), fi.lastModified().toSecsSinceEpoch());
+		//The watcher can still be in place while the synching itself was turned off (a manual edit does
+		//exactly that, see DataSet::setManualEdits), so turn it back on instead of doing nothing.
+		_dataSet->setDataFileSynch(true);
+
+		doSync(); //The file might've actually changed in the meantime while this was ignored, so let's sync to be sure we are up to date/data
 		return;
 	}
 
@@ -187,12 +192,12 @@ void DataSetSyncer::doSync()
   else
   {
     Log::log() << "[DataSetSyncer::doSync] File sync detected" << std::endl;
-    locator		= QString::fromStdString(_dataSet->dataFilePath());
+	locator		= QString::fromStdString(_dataSet->dataFilePath());
     extension	= QFileInfo(locator).suffix();
   }
 
   Log::log() << "[DataSetSyncer::doSync] Emitting syncRequired: datasetId=" << _dataSet->id() << ", locator=" << locator.toStdString() << ", extension=" << extension.toStdString() << std::endl;
-  emit syncRequired(_dataSet->id(), _dataSet, locator, extension, dbJson);
+  emit syncRequired(_dataSet, locator, extension, dbJson);
   Log::log() << "[DataSetSyncer::doSync] syncRequired emitted" << std::endl;
 }
 

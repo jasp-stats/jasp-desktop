@@ -20,10 +20,10 @@ Head over to our [issue tracker](https://github.com/jasp-stats/jasp-issues/issue
 
 One of the best ways that you can support the JASP project is by citing it (given below in BiBTeX format)
 
-    @MISC{JASP2025,
+    @MISC{JASP2026,
       AUTHOR = {{JASP Team}},
 
-      TITLE  = {{JASP (Version 0.98.1)[Computer software]}}
+      TITLE  = {{JASP (Version 0.99.0)[Computer software]}}
       YEAR   = {2026},
       URL    = {https://jasp-stats.org/}
     }

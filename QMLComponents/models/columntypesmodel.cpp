@@ -19,6 +19,7 @@
 #include "columntypesmodel.h"
 #include "variableinfo.h"
 #include "qutils.h"
+#include "jasptheme.h"
 
 columnTypeVec ColumnTypesModel::_allTypes;
 
@@ -60,7 +61,7 @@ QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
 	{
 	case TypeRole:				return int(_types[index.row()]);
 	case DisplayRole:			return QColumnUtils::getTypeFriendly(_types[index.row()]);
-	case MenuImageSourceRole:	return getIconFilename(_types[index.row()], varIconType::DefaultIconType);
+	case MenuImageSourceRole:	return JaspTheme::currentIconPath() + getIconFilename(_types[index.row()], varIconType::DefaultIconType);
 	case IsEnabledRole:			return true;
 	case IsSeparatorRole:		return false;
 	case JSFunctionRole:
@@ -117,7 +118,7 @@ QStringList ColumnTypesModel::iconList() const
 		return result;
 
 	for (columnType type : _types)
-		result.push_back(getIconFilename(type, varIconType::InactiveIconType));
+		result.push_back(JaspTheme::currentIconPath() + getIconFilename(type, varIconType::InactiveIconType));
 
 	return result;
 }

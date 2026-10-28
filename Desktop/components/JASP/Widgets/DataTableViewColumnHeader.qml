@@ -184,12 +184,6 @@ Rectangle
 			{
 				columnModel.chosenColumn	= columnIndex;
 				columnModel.visible			= true;
-
-				if(dataSetModel.columnUsedInEasyFilter(columnIndex))
-				{
-					filterModel.showEasyFilter = true
-					filterModel.filterVisible = true
-				}
 			}
 
 		}

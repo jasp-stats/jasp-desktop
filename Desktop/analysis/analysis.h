@@ -23,6 +23,8 @@
 #include "enginedefinitions.h"
 
 #include <set>
+#include <deque>
+#include <vector>
 #include "analysisbase.h"
 #include "qutils.h"
 #include "modules/dynamicmodules.h"
@@ -85,6 +87,9 @@ public:
 	void				rewriteImages();
 	bool				isColumnFreeOrMine(const QString & columnName)				const override;
 	DataSet		*		dataSet()													const override;
+	///< Complaint logged by the single-dataset API when the analysis is multi-dataset aware
+	///  (they refuse rather than answer about one arbitrary dataset - see their implementations).
+	void				_noSingleDataSet(const char * what)							const;
 
 	void				setRFile(const std::string &file)							{ _rfile = file;								}
 	void				setRSources(const Json::Value& rSources);
@@ -95,7 +100,7 @@ public:
 	void				setErrorInResults(const std::string	& msg);
 
 	Json::Value			editOptionsOfPlot(		const std::string & uniqueName, bool emitError = true);
-	void				setEditOptionsOfPlot(	const std::string & uniqueName, const Json::Value & editOptions);
+	Json::Value			editOptionsOfPlotFromEdits(const std::string & uniqueName);
 	bool				checkAnalysisEntry();
 
 	QVariant			getConstant(const QString& key, const QVariant& defaultValue) const override;
@@ -104,6 +109,8 @@ public:
 
 	const	Json::Value		&	results()			const				{ return _results;							}
 	const	Json::Value		&	userData()			const				{ return _userData;							}
+	const	Json::Value		&	plotEdits()			const				{ return _plotEdits;						}
+				void			setPlotEdits(const Json::Value & edits)				{ _plotEdits = edits;						}
 	const	std::string		&	name()				const	override	{ return _name;								}
 	const	std::string		&	qml()				const				{ return _qml;								}
 	const	std::string		&	title()				const	override	{ return _title;							}
@@ -122,7 +129,13 @@ public:
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
-			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && !_isReport;	}
+			///< an analysis only dispatches with an INITIALIZED form - the run
+			///< request is generated from component state (Analysis::createAnalysisRequestJson),
+			///< and before the form has attached through setAnalysisUp there is no component state
+			///< to generate from: the pending JSON parks and the run defers (stays Empty, the next
+			///< sync pass dispatches once the form is up). A form-less analysis (QML load failed)
+			///< never runs - "no analysis, no state case", as before.
+			bool				shouldRun();
 			bool				isReport()			const				{ return _isReport;						}
 			void				setReport(bool report)					{ _isReport = report;							}
 			bool				beingTranslated()						{ return _beingTranslated;					};
@@ -134,7 +147,11 @@ public:
 			void				reloadForm()				override;
 			void				exportResults()				override;
 			void				remove();
-			Json::Value			asJSON(bool withRSources = false)	const;
+			// the saved options are the GENERATED Engine tree (component-owned state)
+	//with the transient `.filterIds` sidecar stripped - today's file shape minus the dev-era
+	//provenance stamps (never shipped: no stamp migration). Generation walks the controls, so
+	//this is not a const read any more (the applyToAll/JS callers hold non-const pointers anyway).
+	Json::Value			asJSON(bool withRSources = false);
 			void				checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);
 			void				loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status);
 			Json::Value			createAnalysisRequestJson();
@@ -220,10 +237,38 @@ private:
 	void					processResultsForDependenciesToBeShown();
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const	Json::Value & results, const std::string & uniqueName,			Json::Value & editOptions);
-	bool					_setEditOptionsOfPlot(		Json::Value & results, const std::string & uniqueName, const	Json::Value & editOptions);
+	bool					_updatePlotField(			Json::Value & results, const std::string & uniqueName, const std::string & fieldName, const Json::Value & value);
+	bool					_getPlotDimensions(const Json::Value & results, const std::string & uniqueName, int & width, int & height) const;
 	void					storeUserDataEtc();
 	void					fitOldUserDataEtc();
-	bool					updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root);
+
+	// Stores the user's edit as a merge patch ("editOptionsDiff") relative to
+	// the engine's editOptions of the last run. Only what the user actually
+	// changed is kept; engine-derived values (axis labels, breaks) never enter
+	// the patch so they stay fresh after a re-run with reordered data.
+	void					_storePlotEditDiff(			const std::string & uniqueName, const Json::Value & submittedEditOptions);
+
+	// Converts a legacy plotEdits entry (a full editOptions snapshot from an
+	// older .jasp file) into the diff format, on the first real run after
+	// loading: only subtrees the engine does not produce itself (user additions
+	// such as references) are salvaged into the patch.
+	void					_migrateLegacyPlotEdit(		const std::string & uniqueName, const Json::Value & engineEditOptions);
+
+	// Phase 1: stamp saved sizes into fresh engine results and refresh the
+	// diff base; migrates legacy entries. Returns names of plots needing an
+	// engine re-render (non-empty patch or changed dimensions).
+	std::set<std::string>		applyPlotEdits();
+
+	// Phase 2: batch-trigger engine re-edits: materializes editOptions from the
+	// fresh results plus the stored patch and sends them as an "interactive"
+	// edit, or sends a plain "resize" for size-only restores.
+	// This is a separate flow from user-initiated queueing (_editQueue).
+	void					applyPlotReEdits(const std::set<std::string> & plotNames);
+	
+	// Dispatches a single image-edit to the engine. Called from the
+	// user-edit queue (editImage) and from applyPlotReEdits (batch re-edits).
+	void					_dispatchEditImage(const Json::Value &options);
+	
 	void					checkForRSources();
 	void					clearRSources();
 	void					initAnalysis();
@@ -238,10 +283,28 @@ protected:
 								_resultsMeta		= Json::nullValue,
 								_imgResults			= Json::nullValue,
 								_userData			= Json::nullValue,
+								// Per edited plot: {"editOptionsDiff": <merge patch against the
+								// engine's last-run editOptions, see applyPlotEdits>,
+								// "editOptionsBase": <the engine's last-run editOptions>,
+								// "width"/"height": <user-set size>, and, for entries from
+								// older .jasp files that have not been migrated yet, the legacy
+								// full snapshot under "editOptions".}
+								_plotEdits			= Json::nullValue,
 								_imgOptions			= Json::nullValue,
 								_progress			= Json::nullValue,
 								_oldUserData		= Json::nullValue,
 								_oldMetaData		= Json::nullValue;
+	// Tracks which in-flight imageEdited responses belong to
+	// applyPlotReEdits (batch) rather than user-initiated edits.
+	// When set, imageEdited does NOT update _plotEdits (re-edits
+	// are just re-rendering already-stored edits).
+	std::set<std::string>		_pendingReEdits;
+	std::deque<Json::Value>		_editQueue; // Serializes user-initiated image edits: only one dispatched at a time, the rest queue up
+	// True while imagesRewritten feeds rewritten results into setResults. Those
+	// results contain the engine's accumulated edits (plots are re-rendered
+	// from their edited objects), so they must not become the diff base for new
+	// patches: applyPlotEdits skips base capture and legacy migration meanwhile.
+	bool						_inImagesRewrite	= false;
 	std::string					_preUpgraderVersion	= "0";
 
 
@@ -259,8 +322,18 @@ private:
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
 								_optionsFromDifferentVersion	= false,
-								_storedWithoutState				= false,
-								_tryToFixNotes					= false,
+								_storedWithoutState			= false,
+								// True while restored plotEdits still contain legacy full
+								// editOptions snapshots from an older .jasp file. These cannot
+								// be migrated at load time (the results in the file are polluted
+								// with the same overrides), so needsRefresh() stays true until
+								// the first refresh, whose fresh results provide the diff base
+								// for the migration (see applyPlotEdits).
+								_plotEditsNeedRefresh		= false,
+								// True while results are restored from a .jasp file; setResults must not
+								// dispatch engine re-edits then (see loadResultsUserdataAndRSourcesFromJASPFile).
+								_restoringFromJaspFile		= false,
+								_tryToFixNotes				= false,
 
 								_hasReport					= false,
 								_beingTranslated			= false,

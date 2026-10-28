@@ -22,31 +22,27 @@
 #include "exporters/resultexporter.h"
 #include "exporters/jaspexporter.h"
 #include "dataset.h"
+#include "datasetpackage.h"
 #include "log.h"
 
 #include <QTimer>
-#include "fileevent.h"
 #include "processinfo.h"
 #include "utilities/appdirs.h"
-#include "exporters/dataexporter.h"
-#include "exporters/jaspexporter.h"
-#include "exporters/resultexporter.h"
+#include "fileeventrouter.h"
 
-
-void FileEvent::setSyncDataSet(DataSet * ds)			
+void FileEvent::setDataSet(DataSet * ds)
 { 
-	_syncDataSet = ds; 
-	Log::log() << "[FileEvent::setSyncDataSet] Set syncDataSet to: " << (ds ? QString::number(ds->id()) : "NULL") << std::endl; 
+	_dataSet = ds;
+	_dataSetId = ds ? ds->id() : -1; //snapshot now, while ds is still alive
+	Log::log() << "[FileEvent::setDataSet] Set dataSet to: " << (ds ? QString::number(ds->id()) : "NULL") << std::endl;
 }
 
-DataSet * FileEvent::syncDataSet() const
+DataSet * FileEvent::dataSet() const
 {
-	DataSet * result = _syncDataSet ? static_cast<DataSet*>(_syncDataSet.data()) : nullptr;
-	Log::log() << "[FileEvent::syncDataSet] Returning: " << (result ? QString::number(result->id()) : "NULL") << std::endl;
-	return result;
+	return _dataSet;
 }
 
-FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
+FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode, bool routeThroughFileMenu)
 	: QObject(parent), _operation(fileMode)
 {
 	switch (_operation)
@@ -56,6 +52,22 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	case FileEvent::FileGenerateData:	_exporter = new DataExporter(false);	break;
 	case FileEvent::FileSave:			_exporter = new JASPExporter();			break;
 	default:							_exporter = nullptr;					break;
+	}
+
+	// UI-initiated file operations are routed through the registered FileEventRouter (usually the
+	// FileMenu, which forwards to the MainWindow handlers). The data-syncer path
+	// (AsyncLoader::onSyncRequired) runs headless and in unit tests where no router exists, so it
+	// opts out (routeThroughFileMenu == false) and drives the event through the loader itself.
+	// Never let the routing fail silently.
+	if (routeThroughFileMenu)
+	{
+		if (FileEventRouter::current())
+		{
+			connect(this, &FileEvent::started,		FileEventRouter::current(), &FileEventRouter::startFileEvent);
+			connect(this, &FileEvent::completed,	FileEventRouter::current(), &FileEventRouter::finalizeFileEvent, Qt::QueuedConnection);
+		}
+		else
+			Log::log() << "[FileEvent] routeThroughFileMenu requested but no FileEventRouter is registered; started/completed will have no UI handler for this event." << std::endl;
 	}
 }
 
@@ -115,27 +127,79 @@ bool FileEvent::setPath(const QString & path)
 
 }
 
+void FileEvent::starts()
+{
+	Log::log() << "File Event Starts: " << getProgressMsg().toStdString() << std::endl;
+
+	if (isStarted())
+	{
+		Log::log() << "Try to start event '" << getProgressMsg().toStdString() << "', but it was already started!" << std::endl;
+		return;
+	}
+
+	_status = FileEventStatus::Started;
+
+	emit started();
+}
+
 void FileEvent::setComplete(bool success, const QString & message, bool cancelled)
 {
-	_completed	= true;
+	Log::log() << "File Event Completed: " << getProgressMsg().toStdString() << std::endl;
+
+	if (isCompleted())
+	{
+		Log::log() << "Try to set complete event '" << getProgressMsg().toStdString() << "', but it was already completed!" << std::endl;
+		return;
+	}
+	_status     = FileEventStatus::Completed;
 	_success	= success;
-	_message	= message;
 	_cancelled	= cancelled;
+	_message	= message;
 
 	Log::log() << "[FileEvent::setComplete] operation=" << _operation << ", success=" << success << ", message=" << message.toStdString() << std::endl;
 
-	emit completed(this);
+	emit completed();
 }
 
-void FileEvent::chain(FileEvent *event)
+void FileEvent::cleanUp()
 {
-	_chainedTo = event;
-	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
+	emit finalized();
+	deleteLater();
+}
+
+
+void FileEvent::chain(FileEvent *event, bool resetDataSet)
+{
+	if (isStarted())
+	{
+		if (isCompleted())
+			Log::log() << "Event " << getProgressMsg().toStdString() << " is completed before Event " << event->getProgressMsg().toStdString() << " was completed" << std::endl;
+		else // The `this` event is already started, but it should wait for `event`to be finalized before being set to be completed
+			connect(event, &FileEvent::finalized, this, [this, event]() { setComplete(event->isSuccessful(), event->message(), event->isCancelled()); });
+	}
+	else
+		connect(event, &FileEvent::finalized, this, [this, event, resetDataSet]() {
+			if (event->isSuccessful())
+			{
+				if (resetDataSet && DataSetPackage::pkg()->hasDataSet())
+					setDataSet(DataSetPackage::pkg()->dataSet());
+				starts();
+			}
+			else
+				setComplete(false, event->message(), event->isCancelled());
+		} );
 }
 
 bool FileEvent::isExample() const
 {
 	return path().startsWith(AppDirs::examples());
+}
+
+void FileEvent::setSilent(bool newSilent)
+{
+	//Deliberately not _cancelled: silent only suppresses the message box, while cancelled also means
+	//the user aborted and the workspace they still have must survive.
+	_silent = newSilent;
 }
 
 bool FileEvent::autoSaveExists()
@@ -227,9 +291,3 @@ QString FileEvent::getProgressMsg() const
 
 	return tr("Processing File"); //This will never show up on screen right?
 }
-
-void FileEvent::setSilent(bool newSilent)
-{
-	_cancelled = newSilent;
-}
-

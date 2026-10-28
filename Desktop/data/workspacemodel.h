@@ -13,6 +13,7 @@ class WorkspaceModel : public QObject
 
 public:
 	explicit WorkspaceModel(QObject *parent = nullptr);
+	~WorkspaceModel() override { if(_singleton == this) _singleton = nullptr; } ///< the singleton must not dangle: a second MainWindow constructing its own would throw (same pattern as FileMenu::_singleton)
 
 	static WorkspaceModel* singleton() { return _singleton; }
 

@@ -827,196 +827,9 @@ msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
 msgstr "Definir unha columna mediante código de R"
 
-msgctxt "FilterWindow|"
-msgid "mean"
-msgstr "Media"
-
-msgctxt "FilterWindow|"
-msgid "returns number of elements in y"
-msgstr "Devolve o número de elementos de y"
-
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
 msgstr "Calcular columna"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a geometric distribution with specified probability prob"
-msgstr ""
-"Xera datos dunha distribución Xeométrica coa probabilidade (Prob) indicada"
-
-msgctxt "FilterWindow|"
-msgid "standard deviation"
-msgstr "Desvío padrón"
-
-msgctxt "FilterWindow|"
-msgid "summation"
-msgstr "Suma"
-
-msgctxt "FilterWindow|"
-msgid "rounds y to n decimals"
-msgstr "Arredonda y a n decimais"
-
-msgctxt "ComputeColumnWindow|"
-msgid "break your data up in numBreaks levels"
-msgstr "Separa os teus datos en niveles de numBreaks"
-
-msgctxt "ComputeColumnWindow|"
-msgid "exponential"
-msgstr "Exponencial"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a chi-squared distribution with degrees of freedom df "
-"and non-centrality parameter ncp"
-msgstr ""
-"Xera datos dunha distribución Khi-cadrado cos graos de liberdade (gl) e "
-"parámetro de non centrado (ncp)"
-
-msgctxt "ComputeColumnWindow|"
-msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
-"Substitúe calquera valor ausente (NA) da columna polo valor de replaceWith"
-
-msgctxt "ComputeColumnWindow|"
-msgid "natural logarithm"
-msgstr "Logaritmo natural"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr "Xera datos dunha distribución Poisson coa frecuencia (lambda) indicada"
-
-msgctxt "FilterWindow|"
-msgid "median"
-msgstr "Mediana"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a beta distribution with specified shapes alpha and beta"
-msgstr ""
-"Xera datos dunha distribución Beta cos parámetros de forma (alfa e beta) "
-"indicados"
-
-msgctxt "FilterWindow|"
-msgid "variance"
-msgstr "Varianza"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr ""
-"Xera datos dunha distribución Gamma cos parámetros (de forma e escala) "
-"indicados"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from an exponential distribution with specified rate"
-msgstr "Xera datos dunha distribución Exponencial coa taxa indicada"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 2 logarithm"
-msgstr "Logaritmo en base 2"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a uniform distribution between min and max"
-msgstr "Xera datos dunha distribución Uniforme entre Min e Max"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
-"correlations, numbers between -1 and 1 to the real line"
-msgstr ""
-"Transformación Z de Fisher (i.e. a inversa da tanxente hiperbólica) para "
-"transformar correlacións, números entre -1 e 1, á recta real"
-
-msgctxt "FilterWindow|"
-msgid "if-else statement"
-msgstr "Enunciado se-entón"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from t distribution with degrees of freedom df and non-"
-"centrality parameter ncp"
-msgstr ""
-"Xera datos dunha distribución t cos graos de liberdade (gl) e parámetro de "
-"non centrado (ncp)"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from an F distribution with specified degrees of freedoms "
-"df1, df2 and non-centrality parameter ncp"
-msgstr ""
-"Xera datos dunha distribución F cos graos de liberdade (gl1, gl2) e o "
-"parámetro de non centrado (ncp) indicados"
-
-msgctxt "FilterWindow|"
-msgid "product of values"
-msgstr "Produto de valores"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Weibull distribution with specified shape and scale"
-msgstr ""
-"Xera datos dunha distribución Weibull cos parámetros (de forma e escala) "
-"indicados"
-
-msgctxt "ComputeColumnWindow|"
-msgid "logarithm of y in 'base'"
-msgstr "Logaritmo de y en 'base'"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
-"real numbers to numbers between -1 and 1"
-msgstr ""
-"Inversa da transformación Z de Fisher (i.e. a tanxente hiperbólica) para "
-"transformar números reais a números entre -1 e 1"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a negative binomial distribution with specified trials "
-"and probability prob"
-msgstr ""
-"Xera datos dunha distribución Binomial Negativa cos ensaios e a "
-"probabilidade (Prob) indicados"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a log-normal distribution with specified logarithmic "
-"mean meanLog and standard deviation sdLog"
-msgstr ""
-"Xera datos dunha distribución Log-Normal coa media logarítmica (meanLog) e o "
-"desvío padrón (sdLog) indicados"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 10 logarithm"
-msgstr "Logaritmo en base 10"
-
-msgctxt "FilterWindow|"
-msgid "returns minimum of values"
-msgstr "Devolve o mínimo dos valores"
-
-msgctxt "FilterWindow|"
-msgid "returns maximum of values"
-msgstr "Devolve o máximo dos valores"
-
-msgctxt "FilterWindow|"
-msgid "absolute value"
-msgstr "Valor absoluto"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a binomial distribution with specified trials and "
-"probability prob"
-msgstr ""
-"Xera datos dunha distribución Binomial cos ensaios e a probabilidade (Prob) "
-"indicados"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Gaussian distribution with specified mean and standard "
-"deviation sd"
-msgstr ""
-"Xera datos dunha distribución Normal coa media e o desvío padrón (sd) "
-"indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
@@ -1162,97 +975,6 @@ msgstr "&lt; %1"
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
 msgstr "O valor debera ser "
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Power (2^3 returns 8)"
-msgstr "Potencia (2^3 devolve 8)"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Division"
-msgstr "División"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Multiplication"
-msgstr "Multiplicación"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Inequality: %1"
-msgstr "Desigualdade: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Equality: %1"
-msgstr "Igualdade: %1"
-
-msgctxt "OperatorSelector|"
-msgid "returns logicals and can be the root of a filter formula"
-msgstr "devolve os valores lóxicos e pode ser a raíz dunha fórmula de filtrado"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Or: %1"
-msgstr "Ou: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "not: %1"
-msgstr "non: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Módulo: devolve o resto dun cociente. 3%2 devolve 1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than: %1"
-msgstr "Maior que: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than or equal to: %1"
-msgstr "Maior que ou igual a: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Subtraction"
-msgstr "Resta"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Square root"
-msgstr "Raíz cadrada"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "And: %1"
-msgstr "E: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Addition"
-msgstr "Suma"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than: %1"
-msgstr "Menor que: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than or equal to: %1"
-msgstr "Menor que ou igual a: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "Separar: aplica un filtro a cada subgrupo por separado"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Not: %1"
-msgstr "Non: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "returns logicals"
-msgstr "devolve os valores lóxicos"
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
@@ -1511,10 +1233,6 @@ msgstr "'-columna "
 msgctxt "PrefsData|"
 msgid "Select custom editor"
 msgstr "Escoller o editor persoal"
-
-msgctxt "PrefsData|"
-msgid "Use default spreadsheet editor"
-msgstr "Utilizar o editor de follas de cálculo por defecto"
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
@@ -1860,29 +1578,6 @@ msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
 msgstr "2 filas compoñentes de %1 teñen o mesmo nome"
 
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code applied"
-msgstr "Código aplicado de columnas calculadas"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code clear(ed)"
-msgstr "Código despexado de columnas calculadas"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Only one formula per computed column allowed."
-msgstr "Só se permite unha fórmula por columna calculada."
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
-"Benvido ao configurador de columnas calculadas mediante Arrastrar e Soltar!"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
-"Por favor, introduce todos os argumentos (observar os campos marcados en "
-"vermello)."
-
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
 msgstr "Sincronizar con este Ficheiro de Datos"
@@ -2008,11 +1703,6 @@ msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
 msgstr "Categorías"
 
-msgctxt "DropTrash|"
-msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr ""
-"Verte aquí os anacos non desexados; fai clic dúas veces para eliminar todo"
-
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
@@ -2085,67 +1775,6 @@ msgstr "Eliminar columna"
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
 msgstr "Restablecer"
-
-msgctxt "ComputeColumnWindow|"
-msgid "absolute value"
-msgstr "Valor absoluto"
-
-msgctxt "ComputeColumnWindow|"
-msgid "standard deviation"
-msgstr "Desvío padrón"
-
-msgctxt "ComputeColumnWindow|"
-msgid "variance"
-msgstr "Varianza"
-
-msgctxt "ComputeColumnWindow|"
-msgid "summation"
-msgstr "Suma"
-
-msgctxt "ComputeColumnWindow|"
-msgid "product of values"
-msgstr "Produto de valores"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Standardizes the variable"
-msgstr "Tipifica a variable"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns minimum of values"
-msgstr "Devolve o mínimo dos valores"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns maximum of values"
-msgstr "Devolve o máximo dos valores"
-
-msgctxt "ComputeColumnWindow|"
-msgid "mean"
-msgstr "Media"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns the sign of values"
-msgstr "Devolve o signo dos valores"
-
-msgctxt "ComputeColumnWindow|"
-msgid "rounds y to n decimals"
-msgstr "Arredonda y a n decimais"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns number of elements in y"
-msgstr "Devolve o número de elementos de y"
-
-msgctxt "ComputeColumnWindow|"
-msgid "median"
-msgstr "Mediana"
-
-msgctxt "ComputeColumnWindow|"
-msgid "if-else statement"
-msgstr "Enunciado se-entón"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr ""
-"Devolve verdadeiro se a cadea contén unha subcadea, cando menos unha vez"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
@@ -2258,92 +1887,6 @@ msgstr "Inhabilitar as animacións"
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
 msgstr "Utilizar os diálogos de ficheiros propios"
-
-msgctxt "OperatorSelector|"
-msgid "Addition"
-msgstr "Suma"
-
-msgctxt "OperatorSelector|"
-msgid "Subtraction"
-msgstr "Resta"
-
-msgctxt "OperatorSelector|"
-msgid "Multiplication"
-msgstr "Multiplicación"
-
-msgctxt "OperatorSelector|"
-msgid "Division"
-msgstr "División"
-
-msgctxt "OperatorSelector|"
-msgid "Power (2^3 returns 8)"
-msgstr "Potencia (2^3 devolve 8)"
-
-msgctxt "OperatorSelector|"
-msgid "Square root"
-msgstr "Raíz cadrada"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Módulo: devolve o resto dunha división. 3%2 devolve 1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Equality: %1"
-msgstr "Igualdade: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Inequality: %1"
-msgstr "Desigualdade: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than: %1"
-msgstr "Menor que: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than or equal to: %1"
-msgstr "Menor que ou igual a: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than: %1"
-msgstr "Maior que: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than or equal to: %1"
-msgstr "Maior que ou igual a: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "And: %1"
-msgstr "E: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Or: %1"
-msgstr "Ou: %1"
-
-msgctxt "OperatorSelector|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "Separar: aplica un filtro a cada subgrupo por separado"
-
-msgctxt "FilterWindow|"
-msgid "Standardizes the variable"
-msgstr "Tipifica a variable"
-
-msgctxt "FilterWindow|"
-msgid "returns the sign of values"
-msgstr "Devolve o signo dos valores"
-
-msgctxt "FilterWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr ""
-"Devolve verdadeiro se a cadea contén unha subcadea, cando menos unha vez"
 
 msgctxt "FilterWindow|"
 msgid "Hide filter"
@@ -3139,45 +2682,6 @@ msgstr ""
 "comparacións maior/menor nin en operacións matemáticas; para iso trata de "
 "converter primeiro a ordinal ou escalar."
 
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Logit transform (i.e., the inverse of the standard logit function, or log-"
-"odds transform) converts numbers between 0 and 1 to the real line."
-msgstr ""
-"A transformación Logit (i.e., a inversa da función Logit estándar ou "
-"logaritmo da razón de probabilidades) converte números entre 0 e 1, aos da "
-"recta real."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse logit transform (i.e., the standard logit function) converts numbers "
-"on the real line to numbers between 0 and 1."
-msgstr ""
-"A transformación Logit inversa (i.e., a función Logit estándar) converte "
-"números da recta real en números entre 0 e 1."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
-"stabilize variance and attempt to make the data more normal distribution-"
-"like."
-msgstr ""
-"Transformación Box-Cox de dous parámetros (transforma valores maiores que -"
-"desprazamento) para estabilizar a varianza e obter datos máis semellantes "
-"aos dunha distribución Normal."
-
-msgctxt "ComputeColumnWindow|"
-msgid "Inverse two-parameter Box-Cox transform."
-msgstr "Inversa da transformación Box-Cox de dous parámetros."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
-"attempt to make the data more normal distribution-like."
-msgstr ""
-"Transformación Yeo-Johnson (transforma calquera valor real) para estabilizar "
-"a varianza e obter datos máis semellantes aos dunha distribución Normal."
-
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
 msgstr "Amosar os valores ausentes como: "
@@ -3390,8 +2894,8 @@ msgid "has selected module "
 msgstr "seleccionou módulo "
 
 msgctxt "CurrentDataFile|"
-msgid "Click on the file below to synchronize or use "
-msgstr "Fai clic no ficheiro de abaixo para sincronizar ou usar "
+msgid "Click on the file below to synchronize or use %1"
+msgstr "Fai clic no ficheiro de abaixo para sincronizar ou usar %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
@@ -4331,22 +3835,6 @@ msgctxt "ColumnModel|"
 msgid "Column definition"
 msgstr "Definición da columna"
 
-msgctxt "ComputeColumnWindow|"
-msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr "Devolve un vector booleano con VERDADEIRO para cada valor ausente de y"
-
-msgctxt "FilterWindow|"
-msgid ""
-"Combine with not-operator to filter out rows with missing values (NA) for a "
-"column."
-msgstr ""
-"Combinar con sen-operador para filtrar as filas con valores ausentes (NA) "
-"para unha columna."
-
-msgctxt "PrefsData|"
-msgid "External spreadsheet editor (for data synchronization)"
-msgstr "Editor externo de follas de cálculo (para sincronizar datos)"
-
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
@@ -4867,36 +4355,6 @@ msgctxt "PrefsResults|"
 msgid "Page size"
 msgstr "Tamaño de páxina"
 
-msgctxt "FilterConstructor|"
-msgid "Filter cleared\n"
-msgstr "Filtro eliminado\n"
-
-msgctxt "FilterConstructor|"
-msgid "Filter applied\n"
-msgstr "Filtro aplicado\n"
-
-msgctxt "FilterConstructor|"
-msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
-"Por favor, introduza tódolos argumentos (mira os campos marcados en "
-"vermello).\n"
-
-msgctxt "FilterConstructor|"
-msgid ""
-"Formula does not return a set of logical values, and therefore cannot be "
-"used in the filter.\n"
-msgstr ""
-"A fórmula non devolve un conxunto de valores lóxicos e por iso non pode "
-"usarse no filtro.\n"
-
-msgctxt "FilterConstructor|"
-msgid "Welcome to the drag and drop filter!\n"
-msgstr "Benvido ao filtro de arrastrar e soltar!\n"
-
-msgctxt "JASPColumn|"
-msgid "Click icon to change column type"
-msgstr "Fai clic na icona para cambiar o tipo de columna"
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "Campo nome-de-columna-está-libre"
@@ -5012,10 +4470,6 @@ msgstr "Escala de cinta (%): "
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
 msgstr "Establecer a escala da altura da cinta."
-
-msgctxt "JASPColumn|"
-msgid "Column description: "
-msgstr "Descripción de columna: "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
@@ -5197,34 +4651,6 @@ msgstr ""
 "O motor de JASP está executándose en modo de contorno seguro e só ten acceso "
 "a: "
 
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise mean"
-msgstr "Media por filas"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise sum"
-msgstr "Suma por filas"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise standard deviation"
-msgstr "Desvío padrón por filas"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise variance"
-msgstr "Varianza por filas"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise median"
-msgstr "Mediana por filas"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise minimum"
-msgstr "Mínimo por filas"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise maximum"
-msgstr "Máximo por filas"
-
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
 msgstr "Usar un ficheiro de configuración."
@@ -5248,34 +4674,6 @@ msgstr "Selecciona o ficheiro de configuración"
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
 msgstr "Selecciona o ficheiro de configuración."
-
-msgctxt "FilterWindow|"
-msgid "Rowwise mean"
-msgstr "Media por filas"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise sum"
-msgstr "Suma por filas"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise standard deviation"
-msgstr "Desvío padrón por filas"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise variance"
-msgstr "Varianza por filas"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise median"
-msgstr "Mediana por filas"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise minimum"
-msgstr "Mínimo por filas"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise maximum"
-msgstr "Máximo por filas"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
@@ -5579,56 +4977,6 @@ msgstr ""
 "\n"
 "Refrescar a análise?"
 
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform with an automatic determination of the shape "
-"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
-"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-"Transformación Box-Cox de dous parámetros con determinación automática do "
-"parámetro lambda de forma, de acordo con un dos tres métodos:'loglik', 'sd' "
-"ou 'movingRange'. A procura do lambda óptimo realízase só entre os límites "
-"'inferior' e 'superior'."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform (scale-invariant Box-Box; transforms values "
-"greater than -shift) to stabilize variance and attempt to make the data more "
-"normal distribution-like."
-msgstr ""
-"Transformación potencial de dous parámetros (Box-Cox invariante á escala; "
-"transforma valores maiores que -desprazamento) para estabilizar a varianza, "
-"e tratar de facer os datos máis semellantes á distribución Normal."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform with an automatic determination of the shape "
-"parameter lambda. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-"Transformación potencial de dous parámetros con determinación automática do "
-"parámetro lambda de forma. A procura do lambda óptimo realízase só entre os "
-"límites 'inferior' e 'superior'."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) with an automatic "
-"determination of the shape parameter lambda. The search for optimal lambda "
-"is bounded within 'lower' and 'upper' limits."
-msgstr ""
-"Transformación de Yeo-Johnson (transforma calquera valor real) con "
-"determinación automática do parámetro lambda de forma. A procura do lambda "
-"óptimo realízase só entre os límites 'inferior' e 'superior'."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Johnson transform (transforms any real values). The search for optimal "
-"parameter is bounded within 'lower' and 'upper' limits."
-msgstr ""
-"Transformación de Johnson (transforma calquera valor real). A procura do "
-"lambda óptimo realízase só entre os límites 'inferior' e 'superior'."
-
 msgctxt "PrefsAdvanced|"
 msgid "Module library URL: "
 msgstr "URL da biblioteca de módulos: "
@@ -5723,10 +5071,6 @@ msgstr "Liña horizontal"
 msgctxt "PlotEditingReferenceLines|"
 msgid "Vertical Line"
 msgstr "Liña vertical"
-
-msgctxt "PlotEditor|"
-msgid "References"
-msgstr "Referencias"
 
 msgctxt "ResultMenuModel|"
 msgid "Switch Static/Interactive Image"
@@ -6111,7 +5455,7 @@ msgstr "Vista previa de datos"
 
 msgctxt "CsvPreview|"
 msgid "Select Delimiter:"
-msgstr "Seleccionar delimitador:"
+msgstr "Delimitador:"
 
 msgctxt "CsvPreview|"
 msgid "Space"
@@ -6120,10 +5464,6 @@ msgstr "Espazo"
 msgctxt "CsvPreview|"
 msgid "Tab"
 msgstr "Tabulador"
-
-msgctxt "CsvPreview|"
-msgid "Advanced"
-msgstr "Avanzado"
 
 msgctxt "CsvPreview|"
 msgid "Load"
@@ -7410,7 +6750,7 @@ msgstr ""
 "capacidade, axustarase o conxunto de ferramentas e iso pode ter un efecto "
 "fervenza — por exemplo, habilitar unha capacidade ampla tamén pode habilitar "
 "automaticamente capacidades máis limitadas que agora estarían totalmente "
-"cubertas; e inhabilitar unha capacidade limitada pode facer que unha más "
+"cubertas; e inhabilitar unha capacidade limitada pode facer que unha máis "
 "ampla perda cobertura.\n"
 "\n"
 "---\n"
@@ -9259,84 +8599,80 @@ msgstr "Celas de Medidas Repetidas"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Select filter/data to use for this analysis"
-msgstr ""
+msgstr "Escoller filtro/datos para usar nesta análise"
 
 msgctxt "ComputeDataSetPanel|"
 msgid "Computed dataset"
-msgstr ""
+msgstr "Conxunto calculado de datos"
 
 msgctxt "ComputeDataSetPanel|"
 msgid "Input filter"
-msgstr ""
+msgstr "Filtro de entrada"
 
 msgctxt "ComputeDataSetPanel|"
 msgid "R code (produces a data.frame)"
-msgstr ""
+msgstr "Código de R (xera un data.frame)"
 
 msgctxt "ComputeDataSetPanel|"
 msgid "data.frame(x = someColumn * 2, y = anotherColumn)"
-msgstr ""
+msgstr "data.frame(x = algunhaColumna * 2, y = outraColumna)"
 
 msgctxt "ComputeDataSetPanel|"
 msgid "Apply computed dataset"
-msgstr ""
+msgstr "Aplicar conxunto calculado de datos"
 
 msgctxt "DataSetTabButton|"
 msgid "Computed dataset"
-msgstr ""
+msgstr "Conxunto calculado de datos"
 
 msgctxt "DataSetTabButton|"
 msgid "Delete dataset"
-msgstr ""
+msgstr "Eliminar conxunto de datos"
 
 #, qt-format
 msgctxt "DataSetTabButton|"
 msgid ""
 "Are you sure you want to delete the dataset '%1'? This cannot be undone."
 msgstr ""
+"Seguro que desexas eliminar o conxunto '%1' de datos? Isto non pode "
+"desfacerse."
 
-#, fuzzy
 msgctxt "DataSetTabButton|"
 msgid "Delete"
 msgstr "Eliminar"
 
-#, fuzzy
 msgctxt "DataSetTabButton|"
 msgid "Cancel"
 msgstr "Cancelar"
 
 msgctxt "DataTableView|"
 msgid "Showing: "
-msgstr ""
+msgstr "Amosar: "
 
 msgctxt "DataTableView|"
 msgid "Columnfilter"
-msgstr ""
+msgstr "FiltroColumna"
 
 msgctxt "FilterWindowTabButton|"
 msgid "Delete filter"
-msgstr ""
+msgstr "Eliminar filtro"
 
 msgctxt "FilterWindowTabButton|"
 msgid "Add filter"
-msgstr ""
+msgstr "Engadir filtro"
 
-#, fuzzy
 msgctxt "Column|"
 msgid "Filter"
 msgstr "Filtrar"
 
-#, fuzzy
 msgctxt "Column|"
 msgid "Value"
 msgstr "Valor"
 
-#, fuzzy
 msgctxt "Column|"
 msgid "Label"
 msgstr "Etiqueta"
 
-#, fuzzy
 msgctxt "DatabaseConnectionInfo|"
 msgid ""
 "JASP thinks it's connected to the database but the QSqlDatabase isn't "
@@ -9345,84 +8681,77 @@ msgstr ""
 "JASP cre que está conectado ao banco de datos, pero o QSqlDatabase non está "
 "aberto..."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DatabaseConnectionInfo|"
 msgid "Query failed with: '%1'"
 msgstr "A consulta fallou con: '%1'"
 
-#, fuzzy
 msgctxt "DatabaseConnectionInfo|"
 msgid "Query wasn't a SELECT-like statement and returned nothing."
 msgstr "A consulta non era un enunciado de tipo SELECT e non devolveu nada."
 
-#, fuzzy
 msgctxt "DatabaseConnectionInfo|"
 msgid "No active result found, maybe there is something wrong with your query?"
 msgstr ""
 "Non se atopou un resultado activo; se cadra hai algo mal na túa consulta?"
 
-#, fuzzy
 msgctxt "DatabaseConnectionInfo|"
 msgid "Database Password"
 msgstr "Contasinal do Banco de Datos"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DatabaseConnectionInfo|"
 msgid "The databaseconnection needs a password for user '%1'"
 msgstr ""
 "A conexión co banco de datos necesita un contrasinal para o usuario '%1'"
 
-#, fuzzy
 msgctxt "DatabaseConnectionInfo|"
 msgid "The databaseconnection needs a password"
 msgstr "A conexión co banco de datos necesita un contrasinal"
 
-#, fuzzy
 msgctxt "DatabaseConnectionInfo|"
 msgid "Connection failed"
 msgstr "Fallou a conexión"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DatabaseConnectionInfo|"
 msgid ""
 "Could not connect to database because of '%1', want to try a different "
 "password?"
 msgstr ""
-"Non se puido conectar co banco de datos debido a %1', queres probar un "
+"Non se puido conectar co banco de datos debido a %1'; queres probar un "
 "contrasinal distinto?"
 
 msgctxt "DatabaseConnectionInfo|"
 msgid "Database connection failed"
-msgstr ""
+msgstr "Fallou a conexión co banco de datos"
 
-#, fuzzy
 msgctxt "DatabaseConnectionInfo|"
 msgid "Could not connect to the database so synchronizing will be disabled."
 msgstr ""
-"Non se puido conectar co banco de datos polo que se inhabilitará a "
+"Non se puido conectar co banco de datos polo que se vai inhabilitar a "
 "sincronización."
 
 #, qt-format
 msgctxt "DataSet|"
 msgid "Originally created empty by %1 on %2"
-msgstr ""
+msgstr "Xerado orixinalmente baleiro por %1 en %2"
 
 #, qt-format
 msgctxt "DataSet|"
 msgid "Filter %1"
-msgstr ""
+msgstr "Filtro %1"
 
-#, fuzzy
 msgctxt "DataSet|"
 msgid "Changing column type failed"
 msgstr "Fallou o cambio do tipo de columna"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSet|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
 msgstr "A columna '%1' xerouse mediante unha análise e o seu tipo está fixado."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSet|"
 msgid ""
 "There are %1 total levels, of which %2 have a numeric value.\n"
@@ -9433,12 +8762,12 @@ msgstr ""
 "Como '%3' semella: %4\n"
 "%5"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSet|"
 msgid "Implicit missing values: %1"
 msgstr "Valores ausentes implícitos: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSet|"
 msgid ""
 "There are %1 total levels.\n"
@@ -9447,16 +8776,15 @@ msgstr ""
 "Hai %1 niveis en total.\n"
 "Como '%2' semella: %3"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSet|"
 msgid "Column %1"
 msgstr "Columna %1"
 
 msgctxt "Filter|"
 msgid "Some columns were removed from the data and your filter(s)!"
-msgstr ""
+msgstr "Elimináronse algunhas columnas dos datos e dos teus filtros!"
 
-#, fuzzy
 msgctxt "Filter|"
 msgid ""
 "Above you see the code that JASP generates for both value filtering and the "
@@ -9477,31 +8805,27 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "Default filter"
-msgstr ""
+msgstr "Filtro predeterminado"
 
-#, fuzzy
 msgctxt "QColumnUtils|"
 msgid "Scale"
 msgstr "Escala"
 
-#, fuzzy
 msgctxt "QColumnUtils|"
 msgid "Ordinal"
 msgstr "Ordinal"
 
-#, fuzzy
 msgctxt "QColumnUtils|"
 msgid "Nominal"
 msgstr "Nominal"
 
-#, fuzzy
 msgctxt "QColumnUtils|"
 msgid "Unknown"
 msgstr "Descoñecido"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this dataset..."
-msgstr ""
+msgstr "O procedemento rachou tratando de calcular este conxunto de datos..."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -9518,6 +8842,19 @@ msgid ""
 "You can find out more about JASP Services BV at <a href=\"%4\">our website</"
 "a>."
 msgstr ""
+"<h3>Contacto</h3>\n"
+"Os seguintes enlaces vante levar directamente ao rastrexador propio de "
+"asuntos da túa compañía.\n"
+"<ul><li><a href=\"%1\">Solicitudes de características</a>, para cando queres "
+"que se engada algo a JASP.</li><li><a href=\"%2\">Informes de fallos</a>, "
+"para cando unha característica en JASP non funciona como debera.</li><li><a "
+"href=\"%3\">Informes de accidentes</a>, para a desafortunada situación na "
+"que JASP deixa de funcionar.</li></ul>\n"
+"Desa forma estarás en contacto directo cos desenvolvedores de software de "
+"JASP.\n"
+"\n"
+"Podes atopar máis sobre Servizos de JASP BV no <a href=\"%4\">noso sitio "
+"web</a>."
 
 msgctxt "AllHelp|"
 msgid ""
@@ -9773,4 +9110,1692 @@ msgid ""
 "manually kill and engine by right-clicking it. \n"
 "This can be helpful if it stopped responding during some particularly heavy "
 "yet unnecessary calculation.\n"
+msgstr ""
+"\n"
+"\n"
+"Preferencias avanzadas\n"
+"======================\n"
+"\n"
+"Cos parámetros avanzados en JASP podes especificar as seguintes opcións:\n"
+"(Toda esta configuración conservarase tras reiniciar JASP.)\n"
+"\n"
+"## Opcións dos módulos\n"
+"\n"
+"### Lembrar módulos habilitados\n"
+"Se habilitaches esta opción, JASP lembrará que módulos están activados e "
+"vaise asegurar de que sigan dese xeito mesmo cando peches JASP. Así, "
+"supoñendo que `Estatísticos de resumo` estivera habilitado e JASP se "
+"pechase, tras volver abrir JASP vaise habilitar inmediatamente.\n"
+"\n"
+"### Modo de desenvolvedor\n"
+"\n"
+"Se habilitas isto, verás aparecer unha poucas opcións adicionais. Unha é "
+"\"Xerar ficheiros markdown para axuda\", que vai ignorar calquera ficheiro "
+"de axuda markdown para unha análise, e en troques vai só amosar o markdown "
+"xerado desde cada campo `info` de cada elemento qml e jaspObject. Outra "
+"opción é o campo \"URL da biblioteca de módulos\", que te permite cambiar a "
+"URL da aplicación web da biblioteca de módulos de JASP de [https://module-"
+"library.jasp-stats.org/](https://module-library.jasp-stats.org/) a unha "
+"instancia que se execute localmente.\n"
+"\n"
+"#### Módulo de desenvolvemento\n"
+"Ademais, amosará \"Módulo de desenvolvemento\", onde podes cargar un paquete "
+"de R instalado/restablecido con `renv`. Para iso, necesitas coñecer o nome "
+"do teu módulo (por exemplo: `jaspAnova`) e a biblioteca de R ou o `.libPath` "
+"que `renv` creou para ti. \n"
+"\n"
+"Para usar `renv` para instalar o teu paquete, primeiro fai `git clone` ou "
+"`git checkout` do código que desexes.\n"
+"Un exemplo usando `jaspAnova`:\n"
+"```bash\n"
+"# Nun terminal:\n"
+"git clone https://github.com/jasp-stats/jaspAnova\n"
+"cd jaspAnova\n"
+"R\n"
+"```\n"
+"Se aínda non tes `renv` instalado, podes obtelo executando `install."
+"packages('renv')`.\n"
+"Así, estamos no cartafol `jaspAnova` que acabamos de xerar, e entón en R:\n"
+"```R\n"
+"\n"
+"renv::restore(clean = TRUE)     # A biblioteca do proxecto énchese coas "
+"dependencias de renv.lock\n"
+"renv::install('.')              # Instala pkg local na biblioteca do "
+"proxecto\n"
+"\n"
+"message(\"Biblioteca do proxecto R para o modo desenvolvedor:\\n\", ."
+"libPaths()[1])\n"
+"```\n"
+"\n"
+"Isto vai presentar a biblioteca do proxecto que necesitas para executar o "
+"teu módulo. \n"
+"Asegúrate de copiala no campo de preferencias requirido e fai o mesmo para o "
+"nome do módulo.\n"
+"\n"
+"Como nota á marxe: Executar a primeira instrución `renv` para unha "
+"biblioteca de proxecto podería realmente activar `renv::init`, que pediría "
+"ao usuario que acepte xestionar algúns ficheiros para o usuario. Aí "
+"simplemente responde `Y`.\n"
+"\n"
+"#### Biblioteca temporal de proxecto\n"
+"Con frecuencia, a biblioteca predeterminada é tamén a biblioteca normal de R "
+"do usuario, por exemplo algo como \"C:/Users/A_User/AppData/Local/R/win-"
+"library/4.5\". Restaurar aí con `renv` pode estragar toda a biblioteca "
+"normal, xa que elimina e engade paquetes en base ao módulo de "
+"desenvolvemento que se estea instalando. Aínda que isto é moi rápido e "
+"acotío evita volver instalar cousas, pode non ser desexable.\n"
+"Un xeito sinxelo de evitar isto é indicar a `renv` que instale nun cartafol "
+"temporal, mantendo a súa biblioteca habitual tal como está.\n"
+"```R\n"
+".libPaths(tempdir())\n"
+"# Restablecer, instalar e presentar unha biblioteca de proxecto\n"
+"```\n"
+"En Windows obterías entón algo como: `C:/Users/A_User/AppData/Local/Temp/"
+"RtmpYN3aqC`\n"
+"\n"
+"#### Biblioteca dedicada de proxecto\n"
+"Por suposto, tamén poderías decidir xerar unha biblioteca dedicada de "
+"proxecto nalgún lugar e usala en troques de `tempdir()`, ou se o directorio "
+"temporal que xera non é accesible para JASP.\n"
+"Como exemplo, podes xerar un directorio nalgún lugar e pasarllo a `renv`.\n"
+"```R\n"
+".libPaths(\"~/jasp-renv-package-library\")\n"
+"```\n"
+"Isto vai cargar `jasp-renv-package-library` desde o teu cartafol inicial (o "
+"que o convertería en `/home/username/jasp-renv-package-library` en macOS/"
+"Linux ou `c:\\Users\\username\\jasp-renv-package-library` en Windows).\n"
+"Despois executa os anteriores `renv::restore` e `renv::install`.\n"
+"\n"
+"#### Instalar paquetes adicionais\n"
+"Ata que rematemos o modo de sintaxe para JASP, que agora está en beta, "
+"poderías querer usar `jaspTools` para executar análises en R. Podes "
+"simplemente executar `renv::install('jaspTools')` e vaise instalar na tua "
+"biblioteca de proxecto. O mesmo ocorre con calquera outro paquete que podas "
+"necesitar.\n"
+"\n"
+"Se instalaches outros paquetes durante o desenvolvemento, poderías querer "
+"engadilos ao ficheiro `renv.lock`, é doado. Porén, probablemente non queiras "
+"engadir tódolos paquetes cargados ao ficheiro `renv.lock`, polo que o "
+"executamos excluíndo algúns paquetes:\n"
+"```\n"
+"renv::snapshot(exclude=c('jaspTools'))\n"
+"```\n"
+"Se hai outros paquetes que non queres que se listen como unha dependencia, "
+"simplemente podes engadilos á lista `exclude`, pero `jaspTools` "
+"concretamente no debera ser unha dependencia dun jaspModule.\n"
+"\n"
+"#### Guía de renv\n"
+"Para entender máis sobre `renv`, deberías considerar ler a súa [guía de "
+"introdución](https://rstudio.github.io/renv/articles/renv.html). Vaiche "
+"explicar que é unha biblioteca de proxecto, e por que este sistema é útil en "
+"primeiro lugar.\n"
+"\n"
+"### Opcións do ficheiro de configuración\n"
+"\n"
+"Aquí podes seleccionar unha ruta a un ficheiro de configuración `toml` para "
+"JASP.\n"
+"Isto permíteche cargar previamente determinados módulos nun sistema, ou "
+"fixar algunhas opcións predeterminadas para análises concretas. Este "
+"ficheiro pode situarse no ordenador dun usuario ou vir dunha URL remota para "
+"a implantación no lugar de traballo.\n"
+"\n"
+"<details>\n"
+"<summary>Crear o teu propio ficheiro de configuración</summary>\n"
+"\n"
+"Para crear o teu propio ficheiro de configuración, xera un ficheiro `toml` "
+"nalgún lugar, por exemplo `my-first-jaspconfig.toml`. Un exemplo:\n"
+"```toml\n"
+"Format = \"0.1.0\"\n"
+"JASPVersion = \"0.19.3\"\n"
+"\n"
+"EnabledModules = [\"jaspAudit\",]\n"
+"OverrideCommon = [\"jaspAudit\", \"jaspMachineLearning\", "
+"\"jaspQualityControl\"]\n"
+"\n"
+"[Constants]\n"
+"rain = true\n"
+"\n"
+"[Modules.jaspAudit.Constants]\n"
+"high = 90\n"
+"medium = 50\n"
+"low = 40\n"
+"\n"
+"[Modules.jaspAudit.Analyses.auditClassicalWorkflow.Constants]\n"
+"high = 77 #Isto vai ter prioridade sobre as constantes varias do Módulo e "
+"globais de JASP\n"
+"low = 42\n"
+"\n"
+"[Modules.jaspAudit.Analyses.auditClassicalWorkflow.Options]\n"
+"min_precision_test = {Value = true, Lock = true} #Comentario\n"
+"materiality_test = false #Comentario\n"
+"min_precision_rel_val = 0.14\n"
+"materiality_rel_val = {Value = 0.02, Lock= true}\n"
+"```\n"
+"\n"
+"Estas constantes poden utilizarse polos desenvolvedores de módulos para "
+"trocar algunhas configuracións para usuarios concretos, e incorporalas sen "
+"problemas nos seus formularios de análises (ficheiros qml).\n"
+"Pódese acceder a elas do seguinte xeito:\n"
+"```qml\n"
+"x = form.getConstant(\"constant\", <default value if not defined>)\n"
+"```\n"
+"\n"
+"</details>\n"
+"\n"
+"### Claves de acceso persoal de GitHub\n"
+"Cando se instala un módulo dinámico, JASP usa R internamente para obter "
+"tódalas dependencias, e para iso solicita información de https://github.com; "
+"acotío isto funciona ben.\n"
+"Porén, alí teñen un limitador de velocidade, consulta https://docs.github."
+"com/en/rest/overview/resources-in-the-rest-api#rate-limiting, e iso pode "
+"provocar que falle a instalación do módulo.\n"
+"\n"
+"Para evitalo, engadimos algunhas opcións para xestionar unha denominada "
+"clave de acceso persoal, que despois pásase a R mediante unha variable de "
+"contorno chamada `GITHUB_PAT`. Isto tamén é moi útil para facer cousas en "
+"RStudio.\n"
+"\n"
+"Engadimos unha predeterminada que está dispoñible para R dentro de JASP, "
+"pero esta compártese con tódolos usuarios de JASP e, por iso, podería "
+"saturarse (nalgún momento). Nese caso, poderías querer engadir a túa "
+"propia.\n"
+"\n"
+"Isto pódese facer xerando unha nova clave para a túa conta de GitHub en "
+"https://github.com/settings/tokens/new e copiando despois o código "
+"resultante na configuración aquí en JASP, ou mediante o teu SO. Cando se "
+"fixa no teu SO, é posible que xa o fixeras para R; JASP vaino usar "
+"automaticamente cando estableces o valor \"the default\" (predeterminado).\n"
+"\n"
+"Por favor, *NON* des a esta clave de acceso persoal **ningún permiso** en "
+"absoluto, porque realmente non é necesario para o xeito no que se usa en "
+"JASP.\n"
+"\n"
+"Do contrario, podes establecelo especificamente en JASP desmarcando \"Usar "
+"PAT por defecto\" e copiando despois o teu código de clave no cadro de texto "
+"personalizado de GITHUB_PAT; isto é probablemente o máis doado se non sabes "
+"que é unha variable de contorno.\n"
+"\n"
+"## Opcións do rexistro\n"
+"\n"
+"### Rexistrar nun ficheiro\n"
+"Cando marcas isto, JASP comezará a rexistrar moitas das accións que realiza "
+"en ficheiros de rexistro.\n"
+"O rexistro é especialmente útil cando estás desenvolvendo o teu propio "
+"módulo, ou bates cun problema e queres comunicarte co equipo de "
+"desenvolvemento.\n"
+"Os rexistros poderían axudar a darnos unha idea da natureza do teu problema. "
+"Cae na conta de que é posible que necesites volver iniciar JASP para que "
+"comece o proceso de rexistro.\n"
+"O número no campo de entrada \"Máx. ficheiros rexistro a manter\" define "
+"cantos ficheiros de rexistro se conservarán como máximo para aforrar espazo "
+"en disco. Vaise eliminar calquera ficheiro de rexistro adicional, máis "
+"antigo.\n"
+"Os ficheiros pódense ver premendo \"Amosar rexistros\".\n"
+"\n"
+"\n"
+"## Opcións do motor\n"
+"JASP utiliza R en segundo plano para executar tódalas análises. Aquí podes "
+"cambiar cantos JASP se permite iniciar como máximo. Cando decides cantos "
+"motores máximos queres, é útil ter en conta que agora mesmo cada módulo está "
+"executado por un só motor. Polo tanto, ter 10 análises do módulo ANOVA non "
+"vai ir máis rápido por permitir un máximo de 10 motores. Mentres que "
+"executar 10 análises de 10 módulos irá *moito* máis rápido.\n"
+"\n"
+"### Contorno seguro\n"
+"En Windows tamén verá a cela \"Contorno seguro para Motores\". Cando está "
+"habilitada, isto vai illar o proceso do motor de tal xeito que nada do "
+"código que executemos en R poda facer nada co resto do teu sistema. Nin "
+"acceso á rede nin acceso a ficheiros do sistema.\n"
+"Isto é bo, porque dependemos de moitos paquetes de R de código aberto de "
+"terceiros de CRAN e GitHub. E aínda que non ouvimos de ataques á cadea de "
+"subministro a través do ecosistema de paquetes de R, cremos que é mellor "
+"evitar eses problemas na medida do posible.\n"
+"\n"
+"Ao desenvolver módulos de R (e polo tanto habilitar o \"Modo de "
+"desenvolvedor\"), isto vai estar inhabilitado de forma predeterminada, pois "
+"doutro xeito o motor no podería cargar o seu módulo de desenvolvemento.\n"
+"\n"
+"En macOS, o Sistema Operativo xa implementa cando menos un contorno seguro "
+"de acceso a ficheiros para as aplicacións, e vai pedir permiso antes de "
+"acceder a ficheiros fóra do seu \"JASP.app\". \n"
+"\n"
+"O mesmo acontece coa distribución flatpak de JASP en Linux, que en esencia é "
+"un contorno seguro que media o acceso a través de cadros de diálogo de "
+"ficheiros e similares. Aquí, porén, solicitamos acceso de lectura ao "
+"directorio de inicio para poder obter rutas normais lexibles polo usuario "
+"aos ficheiros recentes.\n"
+"Isto pódese inhabilitar por completo cambiando a configuración de JASP "
+"mediante `flatpak override org.jaspstats.JASP --nofilesystem=~`.\n"
+"\n"
+"\n"
+"### Amosar motores\n"
+"Isto abre unha xanela que os desenvolvedores usan para vixiar o que fai cada "
+"motor.\n"
+"Podería ser interesante ver que motores están ocupados e con que, aínda que "
+"o nivel de detalle non é moi alto. Porén, dáche a opción de rematar "
+"manualmente un motor facendo clic co botón dereito sobre el. \n"
+"Isto pode ser útil se deixou de responder durante algún cálculo "
+"particularmente pesado pero innecesario.\n"
+
+msgctxt "MainWindow|"
+msgid "All Files"
+msgstr "Tódolos ficheiros"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "%1 Files"
+msgstr "%1 ficheiros"
+
+msgctxt "MainWindow|"
+msgid "Save File"
+msgstr "Gardar ficheiro"
+
+msgctxt "PrefsAdvanced|"
+msgid "Sandbox folder:"
+msgstr "Cartafol do contorno seguro:"
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Browse to the folder used as home for the sandboxed Engines. This is where "
+"JASP stores logs, clipboard images and where sandboxed Engines may read and "
+"write files. Leave empty to use the default: JASP_Sandbox in your home-"
+"folder (chosen over Documents because that one tends to be synced by "
+"OneDrive)."
+msgstr ""
+"Navegar ata o cartafol utilizado como principal para os Motores de contorno "
+"seguro. Isto é onde JASP garda rexistros, imaxes de portapapeis e onde os "
+"Motores de contorno seguro poden ler e escribir ficheiros. Deixar baleiro "
+"para utilizar o predeterminado: JASP_Sandbox no teu cartafol principal "
+"(elixido mellor que Documentos porque este tende a estar sincronizado por "
+"OneDrive)."
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"The folder used as home for the sandboxed Engines. Leave empty to use the "
+"default: JASP_Sandbox in your home-folder."
+msgstr ""
+"O cartafol utilizado como principal para os Motores de contorno seguro. "
+"Deixar baleiro para utilizar o predeterminado: JASP_Sandbox no teu cartafol "
+"principal."
+
+msgctxt "ModulesMenu|"
+msgid "Drag to reorder the modules in the ribbon"
+msgstr "Arrastrar para reordenar os módulos na franxa"
+
+msgctxt "PreferencesModel|"
+msgid "Engine Sandbox directory changed"
+msgstr "Cambiou o directorio do contorno seguro da máquina"
+
+msgctxt "PreferencesModel|"
+msgid ""
+"The directory used by the Engine Sandbox has been changed, this will only "
+"take full effect after JASP is restarted."
+msgstr ""
+"O directorio utilizado polo Contorno seguro da Máquina foi cambiado; isto só "
+"vai ter un efecto completo despois de reiniciar JASP."
+
+msgctxt "Batch|"
+msgid "Batch"
+msgstr "Procesar"
+
+msgctxt "Batch|"
+msgid ""
+"Batch runs the analyses of a JASP file against other data files, so open a "
+"JASP file (or save your work as one) before running a batch."
+msgstr ""
+"Procesar executará as análises dun ficheiro de JASP con outros ficheiros de "
+"datos, por iso abre un ficheiro de JASP (ou garda o teu traballo nun) antes "
+"de executar un procesamento."
+
+msgctxt "Batch|"
+msgid ""
+"The workspace has changes that were not saved yet. A batch starts from the "
+"JASP file <i>as it is on disk</i>, so save it first if you want your latest "
+"changes to be used."
+msgstr ""
+"O espazo de traballo ten cambios que aínda non se gardaron. Un procesamento "
+"empeza desde un ficheiro de JASP <i>tal como está no disco</i>; por iso "
+"gárdao primeiro se queres que se utilicen os teus últimos cambios."
+
+msgctxt "Batch|"
+msgid "Every data file is run against the current JASP file:"
+msgstr "Cada ficheiro de datos execútase co ficheiro vixente de JASP:"
+
+msgctxt "Batch|"
+msgid "<no JASP file opened>"
+msgstr "<ningún un ficheiro aberto de JASP>"
+
+msgctxt "Batch|"
+msgid "Data files to run it against"
+msgstr "Ficheiros de datos cos que executalo"
+
+msgctxt "Batch|"
+msgid "Add files..."
+msgstr "Engadir ficheiros..."
+
+msgctxt "Batch|"
+msgid ""
+"Browse to the data files to run the JASP file against, you can select "
+"several at once."
+msgstr ""
+"Navegar ata os ficheiros de datos cos que executar o ficheiro de JASP; podes "
+"seleccionar varios á vez."
+
+msgctxt "Batch|"
+msgid "Add folder..."
+msgstr "Engadir cartafol..."
+
+msgctxt "Batch|"
+msgid ""
+"Browse to a folder holding data files. All data files in it and in its "
+"subfolders are listed, so you can deselect the ones you do not want. Files "
+"JASP cannot import (such as .jasp, .html and .pdf files) are skipped."
+msgstr ""
+"Navegar ata un cartafol que contén ficheiros de datos. Lístanse tódolos "
+"ficheiros de datos nel e nos seus subcartafoles, polo que podes non "
+"seleccionar os que non queiras. Os ficheiros que JASP non pode importar "
+"(como os ficheiros .jasp, .html e .pdf) omítense."
+
+msgctxt "Batch|"
+msgid "No data files yet."
+msgstr "Aínda sen ficheiros de datos."
+
+msgctxt "Batch|"
+msgid "no data files"
+msgstr "Sen ficheiros de datos"
+
+#, qt-format
+msgctxt "Batch|"
+msgid "%1 of %2 selected"
+msgstr "Seleccionado %1 de %2"
+
+msgctxt "Batch|"
+msgid "Remove this folder and its data files from the list"
+msgstr "Quitar da lista este cartafol e os seus ficheiros de datos"
+
+msgctxt "Batch|"
+msgid "Remove from the list"
+msgstr "Quitar da lista"
+
+msgctxt "Batch|"
+msgid "Results"
+msgstr "Resultados"
+
+msgctxt "Batch|"
+msgid "Output folder:"
+msgstr "Ficheiro de resultados:"
+
+msgctxt "Batch|"
+msgid ""
+"Browse to the folder the results should be written to. Leave it empty to "
+"write each result next to its own data file."
+msgstr ""
+"Navegar ata o cartafol no que deben anotarse os resultados. Deixalo baleiro "
+"para anotar cada resultado próximo ao seu propio ficheiro de datos."
+
+msgctxt "Batch|"
+msgid "Leave empty to write each result next to its own data file."
+msgstr ""
+"Deixalo baleiro para anotar cada resultado próximo ao seu propio ficheiro de "
+"datos."
+
+msgctxt "Batch|"
+msgid "Export the results as:"
+msgstr "Exportar os resultados como:"
+
+msgctxt "Batch|"
+msgid "HTML"
+msgstr "HTML"
+
+msgctxt "Batch|"
+msgid "PDF"
+msgstr "PDF"
+
+msgctxt "Batch|"
+msgid "JASP file"
+msgstr "Ficheiro de JASP"
+
+msgctxt "Batch|"
+msgid "Do not export"
+msgstr "No exportar"
+
+msgctxt "Batch|"
+msgid ""
+"Which kind of result is written per data file. \"Do not export\" only "
+"synchronizes and refreshes, which is a good way to check that a set of data "
+"files runs through without errors."
+msgstr ""
+"Que tipo de resultado se graba por ficheiro de datos. \"Non exportar\" só "
+"sincroniza e refresca, que é un bo xeito de comprobar que un conxunto de "
+"ficheiros de datos se executa sen erros."
+
+msgctxt "Batch|"
+msgid "Options"
+msgstr "Opcións"
+
+msgctxt "Batch|"
+msgid "Open a JASP window for each data file"
+msgstr "Abrir unha xanela de JASP por cada ficheiro de datos"
+
+msgctxt "Batch|"
+msgid ""
+"Show the JASP that is started and leave it open at the end instead of "
+"closing it, so you can look at the result. Every data file gets its own, all "
+"open at the same time, so a folder of twenty data files leaves you with "
+"twenty JASPs to close again. These JASPs also take the focus, where a batch "
+"that closes itself again leaves you working undisturbed."
+msgstr ""
+"Amosar o JASP que está iniciado e deixalo aberto ao final en troques de "
+"pechalo, así podes ver o resultado. Cada ficheiro de datos obtén o seu, "
+"todos se abren ao mesmo tempo, polo que un cartafol con vinte ficheiros de "
+"datos deixate con vinte JASPs para pechar outra vez. Estes JASPs tamén "
+"centran a atención, mentres un procesamento que se pecha a si mesmo outra "
+"vez te deixa traballando sen molestias."
+
+msgctxt "Batch|"
+msgid "Keep columns missing from the data file"
+msgstr "Manter as columnas ausentes do ficheiro de datos"
+
+msgctxt "Batch|"
+msgid ""
+"Keep the columns the JASP file uses but the data file does not have, with "
+"the data they already had, instead of removing them. The columns of the data "
+"file are then added next to the ones already there."
+msgstr ""
+"Manter as columnas que o ficheiro de JASP utiliza pero non ten o ficheiro de "
+"datos, cos datos que xa teñen, en troques de eliminalas. As columnas do "
+"ficheiro de datos engádense entón a continuación das que xa hai."
+
+msgctxt "Batch|"
+msgid "Run"
+msgstr "Executar"
+
+msgctxt "Batch|"
+msgid ""
+"This is what JASP runs, you can also use it from a terminal or a script:"
+msgstr ""
+"Isto é o que executa JASP; podes utilizalo a partir dun terminal ou dun "
+"guión:"
+
+msgctxt "Batch|"
+msgid "Copy"
+msgstr "Copiar"
+
+msgctxt "Batch|"
+msgid "Copied to the clipboard"
+msgstr "Copiado ao portapapeis"
+
+msgctxt "Batch|"
+msgid "Copy the commandline to the clipboard"
+msgstr "Copiar a liña de instrucións ao portapapeis"
+
+msgctxt "Batch|"
+msgid "Running..."
+msgstr "Executando..."
+
+msgctxt "Batch|"
+msgid "Run batch"
+msgstr "Executar procesamento"
+
+msgctxt "Batch|"
+msgid ""
+"Start JASP with the commandline above. Keep this JASP open while the batch "
+"runs."
+msgstr ""
+"Iniciar JASP coa liña de instrucións arriba. Manter este JASP aberto mentres "
+"se executa o procesamento."
+
+msgctxt "Batch|"
+msgid "Stop"
+msgstr "Deter"
+
+msgctxt "Batch|"
+msgid ""
+"Stop the running batch. The data files it already processed keep their "
+"results."
+msgstr ""
+"Deter a execución do procesamento. Os ficheiros de datos que xa procesou "
+"manteñen os seus resultados."
+
+msgctxt "Batch|"
+msgid "Clear output"
+msgstr "Borrar resultado"
+
+msgctxt "PrefsData|"
+msgid "Data synchronization"
+msgstr "Sincronización de datos"
+
+msgctxt "PrefsData|"
+msgid "Use default as external spreadsheet editor."
+msgstr "Utilizar o predeterminado como editor externo de follas de cálculo."
+
+msgctxt "PrefsData|"
+msgid "Synchronize when a new data file is dropped into JASP"
+msgstr "Sincronizar cando un ficheiro de datos novo se coloca en JASP"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Could not import data: %1"
+msgstr "Non se puideron importar datos: %1"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"Cannot analyse this file: imported %1 rows, but all data values are blank or "
+"marked as missing. Check the file and JASP's missing-value settings."
+msgstr ""
+"No se pode analizar este ficheiro: %1 filas importadas, pero tódolos valores "
+"dos datos están en branco ou marcados como ausentes. Comproba o ficheiro e a "
+"configuración de JASP para valores ausentes."
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Could not export results: %1"
+msgstr "No se poden exportar resultados: %1"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Validation error: %1"
+msgstr "Erro de validación: %1"
+
+msgctxt "MainWindow|"
+msgid "Timed out waiting for the batch data file to finish."
+msgstr ""
+"Esgotado o tempo de agarda para que remate o procesamento do ficheiro de "
+"datos."
+
+msgctxt "MainWindow|"
+msgid "There is no dataset to synchronize with."
+msgstr "Non hai conxunto de datos co que sincronizarse."
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "Unable to open template: %1"
+msgstr "Imposible abrir modelo: %1"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "JASP internal error: %1"
+msgstr "Erro interno de JASP: %1"
+
+msgctxt "AllHelp|"
+msgid ""
+"\n"
+"Batch\n"
+"=========\n"
+"\n"
+"Batch takes the JASP file you have open, swaps its data for another data "
+"file, waits for every analysis to finish and writes the results out again. "
+"Point it at data files, at whole folders, or at both, and it does that once "
+"per data file, which makes it useful for a monthly report, a set of "
+"measurements that arrives per subject, or any other situation where the "
+"analyses stay the same and only the data changes.\n"
+"\n"
+"Everything on this page is also available from the commandline, and the "
+"commandline that this page is going to run is shown at the bottom of it. So "
+"once a batch does what you want you can copy that line into a terminal or a "
+"script and run it there, for instance from a scheduled task. See [the "
+"commandline documentation](https://github.com/jasp-stats/jasp-desktop/blob/"
+"development/Docs/user-guide/command-line-batch-howto.md) for the options "
+"that are not on this page, such as the timeout and logging to a file.\n"
+"\n"
+"## What actually happens\n"
+"\n"
+"For each data file JASP:\n"
+"\n"
+"1. loads the JASP file, so every run starts from the same analyses and "
+"options;\n"
+"2. synchronizes the data with the data file, the way the *Synchronisation* "
+"button does inside JASP;\n"
+"3. waits until all analyses have finished refreshing on the new data;\n"
+"4. exports the results, unless you asked it not to;\n"
+"5. closes, unless you asked it to stay open.\n"
+"\n"
+"**Every data file gets its own JASP process.** JASP starts a fresh copy of "
+"itself per data file, so one file cannot influence the next: each one starts "
+"from the JASP file again.\n"
+"\n"
+"The JASP file is used *as it is on disk*, so save your workspace first if "
+"you made changes you want the batch to use. The JASP you are running the "
+"batch from must stay open while the batch runs, it is the one keeping track "
+"of it. If you would rather not have that, copy the commandline and run it "
+"from a terminal instead.\n"
+"\n"
+"## JASP file to run\n"
+"\n"
+"The JASP file you currently have open. Open (or save) the file whose "
+"analyses you want to run before starting a batch.\n"
+"\n"
+"## Data files to run it against\n"
+"\n"
+"Use *Add files...* to add data files, several at once if you like, and *Add "
+"folder...* to add all data files in a folder. A folder is searched "
+"recursively, so the data files in its subfolders are added as well. Anything "
+"JASP can import counts as a data file: `.csv`, `.txt`, `.tsv`, `.sav`, `."
+"zsav`, `.por`, `.xpt`, `.ods`, `.xls`, `.xlsx`, `.dta`, `.sas7bdat`, `."
+"sas7bcat`, `.rdata`, `.rds`, `.mwx` and `.mpx`.\n"
+"\n"
+"`.jasp`, `.html` and `.pdf` files are not data files, so a folder is allowed "
+"to also hold the results of an earlier run.\n"
+"\n"
+"The list shows every data file that can be run, also each one in the folders "
+"you added. Click a data file to deselect it when you do not want to run it, "
+"or click a folder to select or deselect all of its data files at once. A "
+"data file is listed only once, even when it is in more than one of the "
+"folders you added. To take a folder or a data file you added off the list "
+"again, hover over it and click the minus sign at its end.\n"
+"\n"
+"The folders are looked at again whenever you open this page and when you run "
+"the batch, so the data files that were put in them in the meantime are "
+"listed and selected as well.\n"
+"\n"
+"As long as all data files of a folder are selected, the commandline simply "
+"names the folder, so it also picks up data files that are put in that folder "
+"later on when you run the commandline yourself. Once one of them is "
+"deselected, the commandline names the selected data files one by one "
+"instead.\n"
+"\n"
+"## Results\n"
+"\n"
+"The result is named after the data file and written to the output folder, or "
+"next to the data file when you leave that empty:\n"
+"\n"
+"```\n"
+"measurements/january.csv   ->   reports/january.html\n"
+"```\n"
+"\n"
+"One thing to watch: the name is taken up to the **first** dot, not the last. "
+"A data file called `january.2026.csv` produces `january.html`, so a folder "
+"holding `january.2026.csv` and `january.2027.csv` would have them overwrite "
+"each other. Give such files a name without extra dots, or use a separate "
+"output folder per run.\n"
+"\n"
+"The folder a data file is in is not part of the name either: `2025/january."
+"csv` and `2026/january.csv` both produce `january.html`, so in a shared "
+"output folder the one that runs last overwrites the other. Leave the output "
+"folder empty to write every result next to its own data file.\n"
+"\n"
+"With \"Do not export\" JASP only synchronizes and refreshes. That is a good "
+"way to check that a set of data files runs through without errors.\n"
+"\n"
+"## Options\n"
+"\n"
+"*Open a JASP window for each data file* shows the JASP that is started and "
+"leaves it open at the end instead of closing it, so you can look at the "
+"result yourself. This works for a folder too, but do keep in mind what it "
+"means there: every data file gets its own JASP and they all stay open, so a "
+"folder of twenty data files leaves you with twenty JASPs running at the same "
+"time. They are also started all at once rather than one after the other, "
+"since none of them ever finishes on its own.\n"
+"\n"
+"Note that this is also the one case where the batch takes the focus: a JASP "
+"meant to stay open should be one you can get at. See *While it runs* below.\n"
+"\n"
+"*Keep columns missing from the data file* changes what happens to a column "
+"that the JASP file uses but the new data file does not have. Normally such a "
+"column is removed and the analyses using it report that their variable is "
+"gone. With this option the column is kept as it is, with the data it already "
+"had, so the analyses keep their variables, and the columns of the new data "
+"file are added next to the ones already there rather than taking their "
+"place.\n"
+"\n"
+"## While it runs\n"
+"\n"
+"Batch workers run in hidden windows, so you can keep working in JASP or "
+"another application. *Open a JASP window for each data file* opens visible "
+"windows for inspection instead.\n"
+"\n"
+"The output shows progress for each data file. An empty or invalid file, an "
+"analysis error, a failed export, or a timeout counts as a failure; "
+"processing continues with the next file. JASP warning messages are reported "
+"without opening a dialog. The template's original linked data file is not "
+"automatically reloaded: the selected batch data is used.\n"
+"\n"
+"At the end, errors and warnings are listed by data file, followed by the "
+"number of successful files, failed files, and distinct JASP warning messages "
+"per file. Raw runtime diagnostics (such as Chromium output) are shown "
+"separately and are not counted as warnings. An exported report can contain "
+"an analysis error and still count as a failed file. With *Open a JASP window "
+"for each data file*, the summary reports how many windows were launched; "
+"their analyses are not monitored for completion.\n"
+"\n"
+"*Stop* ends the batch; the data files it already processed keep their "
+"results.\n"
+msgstr ""
+"\n"
+"Procesamento\n"
+"============\n"
+"\n"
+"Procesamento toma o ficheiro de JASP que abriches, intercambia os seus datos "
+"a outro ficheiro de datos, agarda a que remate cada análise e anota os "
+"resultados outra vez. Diríxeo a ficheiros de datos, a cartafoles completos "
+"ou a ambos os dous, e vai facer isto cada vez por cada ficheiro de datos; "
+"isto faino útil para un informe mensual, un conxunto de medidas que se "
+"acadan por temática ou calquera outra situación na que a análise sexa a "
+"mesma e só cambien os datos.\n"
+"\n"
+"Todo nesa páxina está tamén dispoñible a partir da liña de instrucións, e a "
+"liña de instrucións que están a piques de executarse nesa páxina amósase ao "
+"final dela. Así, unha vez que un procesamento fai o que queres, podes copiar "
+"esa liña nun terminal ou nun guión e executalo aí, por exemplo desde unha "
+"tarefa planificada. Consulta [a documentación da liña de instrucións]"
+"(https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/user-guide/"
+"command-line-batch-howto.md) para as opcións que non están nesa páxina, como "
+"as do tempo de agarda e rexistro nun ficheiro.\n"
+"\n"
+"## O que acontece actualmente\n"
+"\n"
+"Para cada ficheiro de datos, JASP:\n"
+"\n"
+"1. carga o ficheiro de JASP, polo que cada execución empeza a partir das "
+"mesmas análises e opcións;\n"
+"2. sincroniza os datos co ficheiro de datos, do xeito no que o botón "
+"*Sincronización* o fai dentro de JASP;\n"
+"3. agarda ata que tódalas análises rematen de refrescarse cos novos datos;\n"
+"4. exporta os resultados, agás que solicites que non o faga;\n"
+"5. péchase, agás que solicites que permaneza aberto.\n"
+"\n"
+"**Cada ficheiro de datos ten o seu propio proceso de JASP.** JASP inicia "
+"unha copia limpa de si mesmo por cada ficheiro de datos, polo que un "
+"ficheiro non pode influír no seguinte: cada un empeza a partir do ficheiro "
+"de JASP outra vez.\n"
+"\n"
+"O ficheiro de JASP utilízase *tal como está no disco*, así que garda "
+"primeiro o teu espazo de traballo se fas cambios que utilice o procesamento. "
+"O JASP a partir do que estás executando o procesamento debe permanecer "
+"aberto mentres se executa o procesamento; é o seu rexistro de seguimento. Se "
+"non quixeras telo, copia a liña de instrucións e execútaa en troques a "
+"partir dun terminal.\n"
+"\n"
+"## Ficheiro de JASP a executar\n"
+"\n"
+"O ficheiro de JASP vixente que tes aberto. Abre (ou garda) o ficheiro cuxas "
+"análises queres executar antes de comezar un procesamento.\n"
+"\n"
+"## Ficheiros de datos cos que executalo\n"
+"\n"
+"Utiliza *Engadir ficheiros...* para engadir ficheiros de datos, se queres "
+"varios ao mesmo tempo, e * Engadir cartafol...* para engadir tódolos "
+"ficheiros de datos dun cartafol. Un cartafol inspecciónase de xeito "
+"recursivo, polo que os ficheiros de datos nos seus subcartafoles tamén se "
+"engaden. Todo o que JASP poda importar conta como un ficheiro de datos: `."
+"csv`, `.txt`, `.tsv`, `.sav`, `.zsav`, `.por`, `.xpt`, `.ods`, `.xls`, `."
+"xlsx`, `.dta`, `.sas7bdat`, `.sas7bcat`, `.rdata`, `.rds`, `.mwx` e `.mpx`.\n"
+"\n"
+"Os ficheiros `.jasp`, `.html` e `.pdf` non son ficheiros de datos, polo que "
+"se permite que un cartafol conteña tamén os resultados dunha execución "
+"anterior.\n"
+"\n"
+"A lista amosa cada ficheiro de datos que pode procesarse, e tamén cada un "
+"nos cartafoles que engades. Fai clic nun ficheiro de datos para non "
+"seleccionalo cando non queiras procesalo, ou fai clic nun cartafol para "
+"seleccionar ou non seleccionar tódolos seus ficheiros de datos ao mesmo "
+"tempo. Un ficheiro de datos só se lista unha vez, mesmo aínda que estea máis "
+"dunha vez nos cartafoles que engadas. Para quitar outra vez da lista un "
+"cartafol ou un ficheiro de datos que engadiches, colócate sobre el e fai "
+"clic no signo menos no seu final.\n"
+"\n"
+"Os cartafoles revísanse de novo sempre que abras esta páxina e cando "
+"executes o procesamento, polo que se listan e seleccionan tamén os ficheiros "
+"de datos que se coloquen neles entre tanto.\n"
+"\n"
+"Sempre que se seleccionan tódolos ficheiros de datos dun cartafol, a liña de "
+"instrucións simplemente designa o cartafol, polo que tamén colle ficheiros "
+"de datos que se poñen nese cartafol máis tarde ou cando executas a liña de "
+"instrucións por ti mesmo. Unha vez que un deles se desmarca, a liña de "
+"instrucións designa en troques os ficheiros seleccionados de datos un por "
+"un.\n"
+"\n"
+"## Resultados\n"
+"\n"
+"O resultado desígnase despois do ficheiro de datos e anótase no cartafol de "
+"saída de resultados, ou próximo ao ficheiro de datos cando deixas iso "
+"baleiro:\n"
+"\n"
+"```\n"
+"measurements/xaneiro.csv -> reports/xaneiro.html\n"
+"```\n"
+"\n"
+"Unha cousa a observar: o nome tómase ata o **primeiro** punto, non ata o "
+"último. Un ficheiro de datos denominado `xaneiro.2026.csv` xera `xaneiro."
+"html`, polo que un cartafol que ten `xaneiro.2026.csv` e `xaneiro.2027.csv` "
+"faría que se sobrescribisen un ao outro. Proporciona a eses ficheiros un "
+"nome con puntos adicionais, ou utiliza un cartafol distinto de saída de "
+"resultados por cada execución.\n"
+"\n"
+"O cartafol no que está un ficheiro de datos tampouco é parte do nome: `2025/"
+"xaneiro.csv` e `2026/xaneiro.csv` xeran ambos `xaneiro.html`, polo que nun "
+"cartafol compartido de saída de resultados o que se executa de último "
+"sobrescribe ao outro. Deixa o cartafol de saída de resultados baleiro para "
+"anotar cada resultado próximo ao seu propio ficheiro de datos.\n"
+"\n"
+"Con \"Non exportar\" JASP só se sincroniza e refresca. Ese é un bo xeito de "
+"comprobar que un conxunto de ficheiros de datos se procesa sen erros.\n"
+"\n"
+"## Opcións\n"
+"\n"
+"*Abrir unha xanela de JASP por cada ficheiro de datos* amosa o JASP que está "
+"iniciado e déixao aberto ao finalizar en troques de pechalo, polo que podes "
+"revisar o resultado por ti mesmo. Isto funciona tamén para un cartafol, pero "
+"cae na conta do que significa aquí: cada ficheiro de datos ten o seu propio "
+"JASP e van permanecer todos abertos, polo que un cartafol con vinte "
+"ficheiros de datos te deixa con vinte JASPs executándose ao mesmo tempo. "
+"Ademais todos se inician ao mesmo tempo en troques de un despois do outro, "
+"dado que ningún deles finaliza por si mesmo.\n"
+"\n"
+"Observa que ese tamén é o caso cando o procesamento centra a atención: un "
+"JASP pensado para ficar aberto debera ser un ao que podas acceder. Consulta "
+"máis abaixo *Mentres se executa*.\n"
+"\n"
+"*Manter as columnas ausentes do ficheiro de datos* cambia o que lle acontece "
+"a unha columna que utiliza un ficheiro de JASP, pero non ten o novo ficheiro "
+"de datos. Normalmente esa columna elimínase e as análises que a utilizan "
+"informan de que a súa variable perdeuse. Con esta opción, a columna mantense "
+"como está, cos datos que xa tiña, polo que as análises manteñen as súas "
+"variables, e as columnas do novo ficheiro de datos engádense a continuación "
+"das que xa están en troques de ocupar o seu lugar.\n"
+"\n"
+"## Mentres se executa\n"
+"\n"
+"Os operadores do procesamento execútanse en xanelas ocultas, polo que podes "
+"seguir traballando en JASP ou noutra aplicación. En troques, *Abrir unha "
+"xanela de JASP por cada ficheiro de datos* abre xanelas visibles para a súa "
+"inspección.\n"
+"\n"
+"O resultado amosa o progreso por cada ficheiro de datos. Un ficheiro baleiro "
+"ou incorrecto, un erro de análise, unha exportación errada ou un esgotamento "
+"de tempo contan como fallos; o procesamento continúa co seguinte ficheiro. "
+"As mensaxes de advertencia de JASP infórmanse sen que se abra un diálogo. O "
+"ficheiro de datos orixinal vencellado ao modelo non se volve cargar "
+"automaticamente: utilízanse os datos seleccionados do procesamento.\n"
+"\n"
+"Ao final, os erros e avisos lístanse por ficheiro de datos, seguidos polo "
+"número de ficheiros satisfactorios, ficheiros fallados e distintas mensaxes "
+"de aviso de JASP por ficheiro. Amósanse diagnósticos brutos do tempo de "
+"execución (como o resultado de Chromium) por separado, e non se contan como "
+"avisos. Un informe exportado pode conter un erro de análise e contar aínda "
+"como un ficheiro fallado. Con *Abrir unha xanela de JASP por cada ficheiro "
+"de datos*, os resumos informan cantas xanelas se iniciaron; as súas análises "
+"non se controla que se completen.\n"
+"\n"
+"*Deter* finaliza o procesamento; os ficheiros de datos que xa procesou "
+"manteñen os seus resultados.\n"
+
+msgctxt "BatchFileMenu|"
+msgid "Select the data files to run the JASP file against"
+msgstr "Seleccionar os ficheiros de datos cos que executar o ficheiro de JASP"
+
+msgctxt "BatchFileMenu|"
+msgid "Data Files"
+msgstr "Ficheiros de datos"
+
+msgctxt "BatchFileMenu|"
+msgid "Not a data file"
+msgstr "Ningún ficheiro de datos"
+
+#, qt-format
+msgctxt "BatchFileMenu|"
+msgid "JASP cannot import these files, so they were not added: %1"
+msgstr "JASP non pode importar eses ficheiros, polo que non se engadiron: %1"
+
+msgctxt "BatchFileMenu|"
+msgid "Select a folder holding data files to run the JASP file against"
+msgstr ""
+"Seleccionar un cartafol que contén os ficheiros de datos cos que executar o "
+"ficheiro de JASP"
+
+msgctxt "BatchFileMenu|"
+msgid "Select a folder for the results"
+msgstr "Seleccionar un cartafol para os resultados"
+
+msgctxt "BatchFileMenu|"
+msgid "A batch runs the analyses of a JASP file, so open (or save) one first."
+msgstr ""
+"Un procedemento executa as análises dun ficheiro de JASP, por iso abre (ou "
+"garda) primeiro un."
+
+msgctxt "BatchFileMenu|"
+msgid ""
+"Add the data files, or a folder holding them, to run the JASP file against."
+msgstr ""
+"Engadir os ficheiros de datos, ou un cartafol que os contén, para executalos "
+"co ficheiro de JASP."
+
+#, qt-format
+msgctxt "BatchFileMenu|"
+msgid "%1 does not exist anymore, remove it from the data files."
+msgstr "%1 xa non existe máis; elimínao dos ficheiros datos."
+
+msgctxt "BatchFileMenu|"
+msgid "Select at least one of the data files to run the JASP file against."
+msgstr ""
+"Selecciona un dos ficheiros de datos, cando menos, para executar co ficheiro "
+"de JASP."
+
+msgctxt "BatchFileMenu|"
+msgid "Cannot run batch"
+msgstr "Non pode executarse o procedemento"
+
+msgctxt "BatchFileMenu|"
+msgid "Stopping the batch..."
+msgstr "Detendo o procedemento..."
+
+msgctxt "BatchFileMenu|"
+msgid "The batch was stopped."
+msgstr "O procedemento detívose."
+
+msgctxt "BatchFileMenu|"
+msgid "The batch finished, all data files were processed."
+msgstr "O procedemento rematou; procesáronse tódolos ficheiros de datos."
+
+#, qt-format
+msgctxt "BatchFileMenu|"
+msgid ""
+"The batch finished with error code %1, see above for which data file(s) "
+"failed."
+msgstr ""
+"O procedemento rematou con código %1 de erro; consulta abaixo con que "
+"ficheiro(s) de datos fallou."
+
+#, qt-format
+msgctxt "BatchFileMenu|"
+msgid "JASP could not be started to run the batch: %1"
+msgstr "JASP non puido iniciarse para executar o procedemento: %1"
+
+msgctxt "BatchFileMenu|"
+msgid "[ earlier output was dropped ]"
+msgstr "[ o resultado anterior descartouse ]"
+
+msgctxt "ResourceButtons|"
+msgid "Batch"
+msgstr "Procesar"
+
+msgctxt "CsvPreview|"
+msgid "Read numbers as written in"
+msgstr "Ler números como anotados en"
+
+msgctxt "CsvPreview|"
+msgid "More languages"
+msgstr "Máis idiomas"
+
+msgctxt "CsvPreview|"
+msgid ""
+"Offer every language instead of the ones JASP is translated into, and let "
+"the territory be chosen as well."
+msgstr ""
+"Ofrecer cada idioma en troques de aqueles aos que JASP está traducido, e "
+"permitir tamén que se escolla a rexión."
+
+msgctxt "CsvPreview|"
+msgid "Territory"
+msgstr "Rexión"
+
+msgctxt "CsvPreviewModel|"
+msgid "text"
+msgstr "Texto"
+
+msgctxt "DataLibrary|"
+msgid "Click here to open the Online Data Library"
+msgstr "Facer clic aquí para abrir a Biblioteca en liña de Datos"
+
+msgctxt "PrefsUI|"
+msgid "Onboarding"
+msgstr "Incorporación"
+
+msgctxt "PrefsUI|"
+msgid "Show onboarding tour on next start"
+msgstr "Amosar o itinerario de incorporación no seguinte inicio"
+
+msgctxt "PrefsUI|"
+msgid "Enable this to see the guided tour again the next time JASP starts."
+msgstr ""
+"Habilitar isto para ver de novo o itinerario guiado a próxima vez que se "
+"inicie JASP."
+
+msgctxt "PrefsUI|"
+msgid "Start tutorial"
+msgstr "Iniciar titorial"
+
+msgctxt "MainWindow|"
+msgid "Data and Analysis Section"
+msgstr "Sección de Datos e Análise"
+
+msgctxt "MainWindow|"
+msgid "This is the main entry point for the Data and Analysis menu."
+msgstr "Este é o principal punto de entrada para o menú de Datos e Análise."
+
+msgctxt "MainWindow|"
+msgid "File Menu and Preferences"
+msgstr "Menú de ficheiros e Preferencias"
+
+msgctxt "MainWindow|"
+msgid ""
+"Clicking the hamburger button in the upper left corner opens/closes this "
+"file menu and preferences interface, used to open and save files, and to "
+"configure JASP global preferences."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Modules Library"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"This is where you can manage analytics modules. In the list on the far right "
+"of this area, you can enable/disable installed modules, and you can also "
+"manage all available modules from the online modules store on the left."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "AI Assistant"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Click the robot icon here or press Ctrl+J to bring up the AI chat panel."
+"Detailed AI settings can be found in the preferences menu."
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Elements"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Getting Started"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Finish"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Next"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Previous"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Skip the Tutorial"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Insert element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Remove element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Move element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Change column type"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit number"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit logical"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit text"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Clear all"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals and can be the root of a filter formula"
+msgstr "devolve os valores lóxicos e pode ser a raíz dunha fórmula de filtrado"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals"
+msgstr "devolve os valores lóxicos"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Addition"
+msgstr "Suma"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Subtraction"
+msgstr "Resta"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Multiplication"
+msgstr "Multiplicación"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Division"
+msgstr "División"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Power (2^3 returns 8)"
+msgstr "Potencia (2^3 devolve 8)"
+
+#, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Equality: %1"
+msgstr "Igualdade: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inequality: %1"
+msgstr "Desigualdade: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than: %1"
+msgstr "Menor que: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than or equal to: %1"
+msgstr "Menor que ou igual a: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than: %1"
+msgstr "Maior que: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than or equal to: %1"
+msgstr "Maior que ou igual a: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "And: %1"
+msgstr "E: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Or: %1"
+msgstr "Ou: %1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "Separar: aplica un filtro a cada subgrupo por separado"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "absolute value"
+msgstr "Valor absoluto"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "standard deviation"
+msgstr "Desvío padrón"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "variance"
+msgstr "Varianza"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "summation"
+msgstr "Suma"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "product of values"
+msgstr "Produto de valores"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Standardizes the variable"
+msgstr "Tipifica a variable"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns minimum of values"
+msgstr "Devolve o mínimo dos valores"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns maximum of values"
+msgstr "Devolve o máximo dos valores"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "mean"
+msgstr "Media"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns the sign of values"
+msgstr "Devolve o signo dos valores"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "rounds y to n decimals"
+msgstr "Arredonda y a n decimais"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns number of elements in y"
+msgstr "Devolve o número de elementos de y"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "median"
+msgstr "Mediana"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "if-else statement"
+msgstr "Enunciado se-entón"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns true if string contains substring at least once"
+msgstr ""
+"Devolve verdadeiro se a cadea contén unha subcadea, cando menos unha vez"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Combine with not-operator to filter out rows with missing values (NA) for a "
+"column."
+msgstr ""
+"Combinar con sen-operador para filtrar as filas con valores ausentes (NA) "
+"para unha columna."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Square root"
+msgstr "Raíz cadrada"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Not: %1"
+msgstr "Non: %1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "natural logarithm"
+msgstr "Logaritmo natural"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 2 logarithm"
+msgstr "Logaritmo en base 2"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 10 logarithm"
+msgstr "Logaritmo en base 10"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "logarithm of y in 'base'"
+msgstr "Logaritmo de y en 'base'"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "exponential"
+msgstr "Exponencial"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
+"correlations, numbers between -1 and 1 to the real line"
+msgstr ""
+"Transformación Z de Fisher (i.e. a inversa da tanxente hiperbólica) para "
+"transformar correlacións, números entre -1 e 1, á recta real"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
+"real numbers to numbers between -1 and 1"
+msgstr ""
+"Inversa da transformación Z de Fisher (i.e. a tanxente hiperbólica) para "
+"transformar números reais a números entre -1 e 1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Logit transform (i.e., the inverse of the standard logit function, or log-"
+"odds transform) converts numbers between 0 and 1 to the real line."
+msgstr ""
+"A transformación Logit (i.e., a inversa da función Logit estándar ou "
+"logaritmo da razón de probabilidades) converte números entre 0 e 1, aos da "
+"recta real."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse logit transform (i.e., the standard logit function) converts numbers "
+"on the real line to numbers between 0 and 1."
+msgstr ""
+"A transformación Logit inversa (i.e., a función Logit estándar) converte "
+"números da recta real en números entre 0 e 1."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+"Transformación Box-Cox de dous parámetros (transforma valores maiores que -"
+"desprazamento) para estabilizar a varianza e obter datos máis semellantes "
+"aos dunha distribución Normal."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform with an automatic determination of the shape "
+"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
+"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+"Transformación Box-Cox de dous parámetros con determinación automática do "
+"parámetro lambda de forma, de acordo con un dos tres métodos:'loglik', 'sd' "
+"ou 'movingRange'. A procura do lambda óptimo realízase só entre os límites "
+"'inferior' e 'superior'."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inverse two-parameter Box-Cox transform."
+msgstr "Inversa da transformación Box-Cox de dous parámetros."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform (scale-invariant Box-Box; transforms values "
+"greater than -shift) to stabilize variance and attempt to make the data more "
+"normal distribution-like."
+msgstr ""
+"Transformación potencial de dous parámetros (Box-Cox invariante á escala; "
+"transforma valores maiores que -desprazamento) para estabilizar a varianza, "
+"e tratar de facer os datos máis semellantes á distribución Normal."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform with an automatic determination of the shape "
+"parameter lambda. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+"Transformación potencial de dous parámetros con determinación automática do "
+"parámetro lambda de forma. A procura do lambda óptimo realízase só entre os "
+"límites 'inferior' e 'superior'."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
+"attempt to make the data more normal distribution-like."
+msgstr ""
+"Transformación Yeo-Johnson (transforma calquera valor real) para estabilizar "
+"a varianza e obter datos máis semellantes aos dunha distribución Normal."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) with an automatic "
+"determination of the shape parameter lambda. The search for optimal lambda "
+"is bounded within 'lower' and 'upper' limits."
+msgstr ""
+"Transformación de Yeo-Johnson (transforma calquera valor real) con "
+"determinación automática do parámetro lambda de forma. A procura do lambda "
+"óptimo realízase só entre os límites 'inferior' e 'superior'."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Johnson transform (transforms any real values). The search for optimal "
+"parameter is bounded within 'lower' and 'upper' limits."
+msgstr ""
+"Transformación de Johnson (transforma calquera valor real). A procura do "
+"lambda óptimo realízase só entre os límites 'inferior' e 'superior'."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "break your data up in numBreaks levels"
+msgstr "Separa os teus datos en niveles de numBreaks"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "replace any missing values (NA) in column by the value in replaceWith"
+msgstr ""
+"Substitúe calquera valor ausente (NA) da columna polo valor de replaceWith"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Gaussian distribution with specified mean and standard "
+"deviation sd"
+msgstr ""
+"Xera datos dunha distribución Normal coa media e o desvío padrón (sd) "
+"indicados"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from t distribution with degrees of freedom df and non-"
+"centrality parameter ncp"
+msgstr ""
+"Xera datos dunha distribución t cos graos de liberdade (gl) e parámetro de "
+"non centrado (ncp)"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a chi-squared distribution with degrees of freedom df "
+"and non-centrality parameter ncp"
+msgstr ""
+"Xera datos dunha distribución Khi-cadrado cos graos de liberdade (gl) e "
+"parámetro de non centrado (ncp)"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from an F distribution with specified degrees of freedoms "
+"df1, df2 and non-centrality parameter ncp"
+msgstr ""
+"Xera datos dunha distribución F cos graos de liberdade (gl1, gl2) e o "
+"parámetro de non centrado (ncp) indicados"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a binomial distribution with specified trials and "
+"probability prob"
+msgstr ""
+"Xera datos dunha distribución Binomial cos ensaios e a probabilidade (Prob) "
+"indicados"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a negative binomial distribution with specified trials "
+"and probability prob"
+msgstr ""
+"Xera datos dunha distribución Binomial Negativa cos ensaios e a "
+"probabilidade (Prob) indicados"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a geometric distribution with specified probability prob"
+msgstr ""
+"Xera datos dunha distribución Xeométrica coa probabilidade (Prob) indicada"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a Poisson distribution with specified rate lambda"
+msgstr "Xera datos dunha distribución Poisson coa frecuencia (lambda) indicada"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a beta distribution with specified shapes alpha and beta"
+msgstr ""
+"Xera datos dunha distribución Beta cos parámetros de forma (alfa e beta) "
+"indicados"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a uniform distribution between min and max"
+msgstr "Xera datos dunha distribución Uniforme entre Min e Max"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a gamma distribution with specified shape and scale"
+msgstr ""
+"Xera datos dunha distribución Gamma cos parámetros (de forma e escala) "
+"indicados"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from an exponential distribution with specified rate"
+msgstr "Xera datos dunha distribución Exponencial coa taxa indicada"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a log-normal distribution with specified logarithmic "
+"mean meanLog and standard deviation sdLog"
+msgstr ""
+"Xera datos dunha distribución Log-Normal coa media logarítmica (meanLog) e o "
+"desvío padrón (sdLog) indicados"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Weibull distribution with specified shape and scale"
+msgstr ""
+"Xera datos dunha distribución Weibull cos parámetros (de forma e escala) "
+"indicados"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise mean"
+msgstr "Media por filas"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise sum"
+msgstr "Suma por filas"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise standard deviation"
+msgstr "Desvío padrón por filas"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise variance"
+msgstr "Varianza por filas"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise median"
+msgstr "Mediana por filas"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise minimum"
+msgstr "Mínimo por filas"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise maximum"
+msgstr "Máximo por filas"
+
+msgctxt "ScriptConstructorView|"
+msgid "Filter cleared"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Filter applied"
+msgstr "Filtro aplicado"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code clear(ed)"
+msgstr "Código despexado de columnas calculadas"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code applied"
+msgstr "Código aplicado de columnas calculadas"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Please enter all arguments - see fields marked in red."
+msgstr ""
+"Por favor, introduce todos os argumentos (observar os campos marcados en "
+"vermello)."
+
+msgctxt "ScriptConstructorView|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Only one formula per computed column allowed."
+msgstr "Só se permite unha fórmula por columna calculada."
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Dump unwanted snippets here; double-click to erase the entire slate"
+msgstr ""
+"Verte aquí os anacos non desexados; fai clic dúas veces para eliminar todo"
+
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop filter!"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop computed column constructor!"
+msgstr ""
+"Benvido ao configurador de columnas calculadas mediante Arrastrar e Soltar!"
+
+#, fuzzy
+msgctxt "ScriptNodeItem|"
+msgid "Click icon to change column type"
+msgstr "Fai clic na icona para cambiar o tipo de columna"
+
+#, fuzzy
+msgctxt "ScriptNodeItem|"
+msgid "Column description: "
+msgstr "Descripción de columna: "
+
+#, qt-format
+msgctxt "ScriptNodeItem|"
+msgid "Only %1 allowed in this context."
+msgstr ""
+
+msgctxt "ScriptNodeItem|"
+msgid "/"
 msgstr ""

@@ -66,8 +66,9 @@ static Json::Value parsePayloadJson(const char * payloadJson)
 	return payload;
 }
 
-ColumnEncoderContext::ColumnEncoderContext(const ColumnEncoder::colTypeMap & columns, const ColumnEncoder::colTypeMap & extra)
-	: _columns(columns), _extra(extra), _supplied(true)
+ColumnEncoderContext::ColumnEncoderContext(const ColumnEncoder::colTypeMap & columns, const ColumnEncoder::colTypeMap & extra,
+                                           const std::string & prefix)
+	: _columns(columns), _extra(extra), _prefix(prefix), _supplied(true)
 {
 }
 
@@ -77,13 +78,17 @@ ColumnEncoderContext ColumnEncoderContext::fromJson(const Json::Value & context)
 		throw std::runtime_error("Column encoder context must be a JSON object.");
 
 	if(!context.isMember("version") || !context["version"].isInt())
-		throw std::runtime_error("Column encoder context must contain integer version 1.");
-	if(context["version"].asInt() != Version)
+		throw std::runtime_error("Column encoder context must contain an integer version.");
+	if(context["version"].asInt() < 1 || context["version"].asInt() > Version)
 		throw std::runtime_error("Unsupported column encoder context version.");
+	// v1 and v2 share one wire shape (the replay semantics moved into the table, not the JSON):
+	// a v1 context (no prefix or a dataset prefix) parses and replays exactly like v2's, so no
+	// migration exists and none is needed (dev-branch fixtures: regenerate, don't compat).
 
 	return ColumnEncoderContext(
 		columnTypesFromJson(context["columns"], "columns"),
-		columnTypesFromJson(context["extra"], "extra")
+		columnTypesFromJson(context["extra"], "extra"),
+		context["prefix"].isString() ? context["prefix"].asString() : std::string()
 	);
 }
 
@@ -106,31 +111,39 @@ Json::Value ColumnEncoderContext::toJson() const
 	context["version"] = Version;
 	context["columns"] = columnTypesToJson(_columns);
 	context["extra"] = columnTypesToJson(_extra);
+	if(!_prefix.empty())
+		context["prefix"] = _prefix;
 
 	return context;
 }
 
 ScopedColumnEncoderContext::ScopedColumnEncoderContext(const ColumnEncoderContext & context, ColumnEncoder & extraEncoder)
-	: _supplied(context.supplied()), _extraEncoder(extraEncoder)
+	: _supplied(context.supplied())
 {
 	if(!_supplied)
 		return;
 
-	_previousColumns = ColumnEncoder::columnEncoder()->currentNames();
-	_previousExtra = _extraEncoder.currentNames();
+	// v2 replay: the captured column set becomes a SCOPED block of the one global
+	// decode table - nothing else. The live canonical mint, every filter view and the extras
+	// encoder are never mutated (the v1 swap mutated whatever the current encoder pointed at,
+	// which after Phase 1 is a filter view funneling into the live dataset's mint - the landmine
+	// this rework removes). A context that carries its D<ds>_F<f> prefix replays in exactly that
+	// namespace; a prefix-less (v1) context replays under the namespace the process-global
+	// encoder holds right now, like before.
+	std::string columnsPrefix = context.prefix();
 
-	ColumnEncoder::columnEncoder()->setCurrentNames(context.columns());
-	_extraEncoder.setCurrentNames(context.extra());
+	if(columnsPrefix.empty())
+		columnsPrefix = ColumnEncoder::columnEncoder()->encodePrefix();
+
+	_columnsBlock.emplace(columnsPrefix, context.columns());
+	_extraBlock.emplace(extraEncoder.encodePrefix(), context.extra());
+
+	// Both blocks write themselves on entry and undo themselves (exactly, via their displaced-
+	// entry logs) in the destructor - member order makes the extra block undone first, which is
+	// irrelevant as they never share a namespace.
 }
 
-ScopedColumnEncoderContext::~ScopedColumnEncoderContext()
-{
-	if(!_supplied)
-		return;
-
-	ColumnEncoder::columnEncoder()->setCurrentNames(_previousColumns);
-	_extraEncoder.setCurrentNames(_previousExtra);
-}
+ScopedColumnEncoderContext::~ScopedColumnEncoderContext() = default;
 
 Json::Value decodeColumnJson(const char * payloadJson, const char * encoderContextJson, ColumnEncoder & extraEncoder, bool replaceNames)
 {
@@ -138,7 +151,7 @@ Json::Value decodeColumnJson(const char * payloadJson, const char * encoderConte
 	ColumnEncoderContext context = ColumnEncoderContext::fromJsonString(encoderContextJson);
 	ScopedColumnEncoderContext scopedContext(context, extraEncoder);
 
-	ColumnEncoder::columnEncoder()->decodeJson(payload, replaceNames);
+	ColumnEncoder::decodeJson(payload, replaceNames);	//context-free global table
 
 	return payload;
 }

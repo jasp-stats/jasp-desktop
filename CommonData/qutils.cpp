@@ -322,8 +322,8 @@ QVariant jsonToQVariant(const Json::Value & jsonValue)
 {
 	switch(jsonValue.type())
 	{
-	case Json::intValue:		return jsonValue.asInt();
-	case Json::uintValue:		return jsonValue.asUInt();
+	case Json::intValue:		return QVariant::fromValue(static_cast<qint64>(jsonValue.asInt64()));
+	case Json::uintValue:		return QVariant::fromValue(static_cast<quint64>(jsonValue.asUInt64()));
 	case Json::realValue:		return jsonValue.asDouble();
 	case Json::stringValue:		return tq(jsonValue.asString());
 	case Json::booleanValue:	return jsonValue.asBool();
@@ -358,6 +358,18 @@ Json::Value qvariantToJson(const QVariant & varValue)
     case QMetaType::ULongLong:	return static_cast<Json::UInt64>(varValue.toULongLong());
 	case QMetaType::Bool:		return varValue.toBool();
 	case QMetaType::QString:	return fq(varValue.toString());
+	// QML hands C++ every JS number as a double, and this bridge used to fall
+	//through to nullValue for them - a setOptions({someOption: 2}) from QML silently bound null.
+	//Integral doubles round-trip as ints (Json::Value(2.0).isIntegral() is true, but keeping the
+	//jsoncpp int where the number IS integral matches what a file's json reader produces).
+	case QMetaType::Float:
+	case QMetaType::Double:
+	{
+		const double asDouble = varValue.toDouble();
+		if (asDouble == static_cast<double>(static_cast<long long>(asDouble)))	//integral -> int, like a parsed json file would give
+			return static_cast<Json::Int64>(static_cast<long long>(asDouble));
+		return asDouble;
+	}
 	case QMetaType::QVariantList:
 	{
 		Json::Value jsonArray(Json::arrayValue);
@@ -495,6 +507,55 @@ QString QColumnUtils::decimalPoint()
 }
 
 
+///A locale that groups thousands with a space (French with U+202F, Russian or Swedish with U+00A0) is written with any kind of space,
+///because keyboards and older software do not know the one it prescribes. QLocale reads only that one and a plain space, so every other space becomes it.
+static QString withTheGroupSpaceOf(const QLocale & locale, QString number)
+{
+	const QString groupSeparator = locale.groupSeparator();
+
+	if(groupSeparator.size() != 1 || groupSeparator[0].category() != QChar::Separator_Space)
+		return number;
+
+	for(QChar & character : number)
+		if(character.category() == QChar::Separator_Space && character != u' ')
+			character = groupSeparator[0];
+
+	return number;
+}
+
+ColumnUtils::toDoubleF QColumnUtils::stringToDoubleFor(const QLocale & locale)
+{
+	return [locale](const std::string & str, double & dbl)
+	{
+		bool	isDouble	= false;
+				dbl			= locale.toDouble(withTheGroupSpaceOf(locale, tq(str)), &isDouble);
+		
+		if(!isDouble)
+			dbl = EmptyValues::missingValueDouble;
+
+		return isDouble;
+	};
+}
+
+bool QColumnUtils::readNumber(const std::string & text, double & number, const ColumnUtils::toDoubleF & readNumbersAs)
+{
+	return (readNumbersAs && readNumbersAs(text, number)) || ColumnUtils::getDoubleValue(text, number, false);
+}
+
+static ColumnUtils::toIntF stringToIntFor(const QLocale & locale)
+{
+	return [locale](const std::string & str, int & intVal)
+	{
+		bool isInt = false;
+		intVal = locale.toInt(withTheGroupSpaceOf(locale, tq(str)), &isInt);
+
+		if(!isInt)
+			intVal = EmptyValues::missingValueInteger;
+
+		return isInt;
+	};
+}
+
 void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps)
 {
 	QLocale::setDefault(locale);
@@ -502,9 +563,7 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 	ColumnUtils::setDecimalPoint(				fq(locale.decimalPoint())	);
 	
 	static ColumnUtils::currencyF	altFuncCurToString;
-	static ColumnUtils::toDoubleF	altFuncToDouble;
 	static ColumnUtils::doubleF		altFuncToString;
-	static ColumnUtils::toIntF		altFuncToInt;
 	
 	altFuncToString = [locale, useThousandSeps](double dbl, int precision, bool sepas)
 	{
@@ -526,31 +585,9 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 		return fq(loc.toCurrencyString(dbl, tq(symbol)));
 	};
 
-	altFuncToDouble = [locale, useThousandSeps](const std::string & str, double & dbl)
-	{
-		bool	isDouble	= false;
-				dbl			= locale.toDouble(tq(str), &isDouble);
-		
-		if(!isDouble)
-			dbl = EmptyValues::missingValueDouble;
-
-		return isDouble;
-	};
-
-	altFuncToInt = [locale, useThousandSeps](const std::string & str, int & intVal)
-	{
-		bool isInt = false;
-		intVal = locale.toInt(tq(str), &isInt);
-
-		if(!isInt)
-			intVal = EmptyValues::missingValueInteger;
-
-		return isInt;
-	};
-	
 	// ColumnUtils is in CommonData library and doesn't access Qt (for instance for QLocale), so instead we use a callback.
 	ColumnUtils::setAlternativeDoubleToString(	altFuncToString, altFuncCurToString	);
-	ColumnUtils::setExtraStringToNumber(		altFuncToDouble, altFuncToInt		);	
+	ColumnUtils::setExtraStringToNumber(		stringToDoubleFor(locale), stringToIntFor(locale)	);
 }
 
 QString QColumnUtils::getTypeFriendly(columnType colType)

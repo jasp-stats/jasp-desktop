@@ -30,6 +30,8 @@ public:
 	
 	bool		isJsonValid(const Json::Value& value)										const	override;
 	Json::Value	createJson()																const	override;
+	Json::Value	createFilterIds()															const	override;
+	JsonFormat	selfRebindFormat()															const	override	{ return Storage;	}	///< (zoo run 8): the Engine builder carries no per-term filterIds - the null-path self-rebind must round-trip the Storage shape, see BoundControl::selfRebindFormat
 	void		bindTo(const Json::Value &value)													override;
 	void		resetBoundValue()																	override;
 	void		setBoundValue(const Json::Value &value, bool emitChanges = true)					override;
@@ -37,10 +39,11 @@ public:
 	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const Terms::RelatedValuesPerTerm &extraTermsMap = {}) const;
 	bool		areTermsInOption(const Json::Value& option,	Terms& terms)					const;
 
+protected:
+	Json::Value	createStorageValue()														const	override;
+
 private:
 	Terms		_getTermsFromOptions(const Json::Value& option)								const;
-	Json::Value	_adjustBindingValue(const Json::Value &value)								const;
-	Json::Value	_adjustBindingType(const Json::Value &value)								const;
 	Json::Value _makeOption(const Terms& terms, const Terms::RelatedValuesPerTerm& controlValues) const;
 	std::string	_optionKeyValue()	const;
 	std::string _optionKeyLabel()	const;

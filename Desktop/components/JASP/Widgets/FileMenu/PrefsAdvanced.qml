@@ -540,7 +540,47 @@ PrefsScrollView
 			onCheckedChanged:	preferencesModel.engineSandbox = checked
 			toolTip:			qsTr("Strengthen security on Windows by isolating Engines running R-code")
 
-			KeyNavigation.tab:		showEnginesWindow
+			KeyNavigation.tab:	browseEngineSandboxDirButton
+		}
+
+		Item
+		{
+			id:				engineSandboxDirItem
+			width:			parent.width
+			height:			browseEngineSandboxDirButton.height
+			visible:			Qt.platform.os === "windows"
+			enabled:			Qt.platform.os === "windows"
+
+			RoundedButton
+			{
+				id:						browseEngineSandboxDirButton
+				text:				qsTr("Sandbox folder:")
+				onClicked:			preferencesModel.browseEngineSandboxDir()
+				anchors.left:		parent.left
+				anchors.leftMargin:	jaspTheme.subOptionOffset
+				toolTip:				qsTr("Browse to the folder used as home for the sandboxed Engines. This is where JASP stores logs, clipboard images and where sandboxed Engines may read and write files. Leave empty to use the default: JASP_Sandbox in your home-folder (chosen over Documents because that one tends to be synced by OneDrive).")
+
+				KeyNavigation.tab:		engineSandboxDirText.textInput
+				activeFocusOnTab:	true
+			}
+
+			PrefsTextInput
+			{
+				id:					engineSandboxDirText
+
+				text:				preferencesModel.engineSandboxDir
+				onEditingFinished:	preferencesModel.engineSandboxDir = text
+				nextEl:				showEnginesWindow
+				toolTip:				qsTr("The folder used as home for the sandboxed Engines. Leave empty to use the default: JASP_Sandbox in your home-folder.")
+
+				height:				browseEngineSandboxDirButton.height
+				anchors
+				{
+					left:			browseEngineSandboxDirButton.right
+					right:			parent.right
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
 		}
 
 		RoundedButton

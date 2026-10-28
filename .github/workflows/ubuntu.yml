@@ -37,7 +37,7 @@ jobs:
             target: 'desktop'
             arch: 'linux_gcc_64'
             cache: 'true'
-            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor'
+            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qthttpserver qtwaylandcompositor qtnetworkauth'
             tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake tools_ninja'
             # act can not use ../ (the default) as dir, so be explicit
             dir: '${{ github.workspace }}/qtinstall'
@@ -45,10 +45,10 @@ jobs:
       - name: Install dependencies of build system
         run: |
             # act -j build-jasp was stuck on typing y to continue
-            sudo apt install -y libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev
+            sudo apt install -y libboost-dev libjsoncpp26 libjsoncpp-dev libarchive13t64 libarchive-dev
             sudo apt install -y libxcb-xkb-dev libxcb-xkb1 libxcb-xinerama0 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake
             sudo apt install -y gfortran build-essential flex libssl-dev libgl1-mesa-dev libsqlite3-dev
-            sudo apt install -y libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev #required by some r packgaes
+            sudo apt install -y libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff-dev libjpeg-dev #required by some r packgaes
             sudo apt install -y libglpk-dev libcurl4-openssl-dev libmpfr-dev libfontconfig1-dev libcairo2-dev netcdf-bin #required by some r packages
             sudo apt install -y jags
             sudo apt install -y libminizip-dev # required by freexl

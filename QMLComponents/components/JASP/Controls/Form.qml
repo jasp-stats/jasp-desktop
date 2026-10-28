@@ -120,7 +120,7 @@ AnalysisForm
 		Rectangle
 		{
 			id:				oldFileMessagesBox
-			visible:		needsRefresh && form.hasVolatileNotes //Ill leave the text as is for now to avoid having to go back to the po again
+			visible:		needsRefresh && form.hasVolatileNotes
 			color:			jaspTheme.controlWarningBackgroundColor
 			width:			form.implicitWidth
 			height:			visible ? oldAnalysisText.height : 0

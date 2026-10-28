@@ -7,13 +7,9 @@ class AutoSaveFileListModel : public FileMenuBasicListModel
 {
 	Q_OBJECT
 public:
-	explicit			AutoSaveFileListModel(QObject *parent = nullptr);
+	explicit			AutoSaveFileListModel(FileMenuObject *parent);
 
 	Q_INVOKABLE void	refresh();
-				void	openFile(const QString &path) override;
-
-signals:
-				void	dataSetIORequest(FileEvent *event);
 };
 
 #endif // AUTOSAVEFILELISTMODEL_H
