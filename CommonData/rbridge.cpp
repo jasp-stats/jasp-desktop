@@ -152,7 +152,8 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 		rbridge_shouldEncodeColumnName,
 		rbridge_shouldDecodeColumnName,
 		rbridge_allColumnNames,
-		rbridge_computedColumnFilterIs
+		rbridge_computedColumnFilterIs,
+		rbridge_suggestColumnNames
 	};
 
 	JASPTIMER_START(jaspRCPP_init);
@@ -949,6 +950,23 @@ extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols, bool e
 	for(size_t i=0; i<numCols; i++)
 		names[i] = cols[i].c_str();
 	
+	return names;
+}
+
+extern "C" const char ** STDCALL rbridge_suggestColumnNames(const char * name, size_t & numSuggestions)
+{
+	static std::vector<std::string> suggestions;
+	static const char **			names = nullptr;
+
+	if(names)	free(names);
+
+	suggestions		= ColumnEncoder::suggestColumnNames(name);
+	numSuggestions	= suggestions.size();
+	names			= static_cast<const char **>(malloc(sizeof(char*) * suggestions.size()));
+
+	for(size_t i=0; i<numSuggestions; i++)
+		names[i] = suggestions[i].c_str();
+
 	return names;
 }
 

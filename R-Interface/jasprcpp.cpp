@@ -21,8 +21,6 @@
 #include "RInside.h"
 #endif
 
-#include "columnencoder.h"
-
 static const	std::string		NullString			= "null";
 static			std::string		lastErrorMessage	= "";
 
@@ -59,6 +57,7 @@ ShouldEnDecodeDef				shouldEncodeColumnName,
 								shouldDecodeColumnName;
 
 getColNames						getAllColumnNames;
+suggestColNames					suggestColumnNamesCB;
 RequestStringRBridge			computedColumnFilterCB;
 
 static logFlushDef				_logFlushFunction		= nullptr;
@@ -175,6 +174,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	runCallbackCB								= callbacks->runCallbackCB;
 	readDataSetCB								= callbacks->readDataSetCB;
 	getAllColumnNames							= callbacks->columnNames;
+	suggestColumnNamesCB						= callbacks->suggestColumnNames;
 	shouldEncodeColumnName						= callbacks->shouldEncode;
 	shouldDecodeColumnName						= callbacks->shouldDecode;
 	encodeAllColumnNames						= callbacks->encoderAll;
@@ -1429,11 +1429,12 @@ Rcpp::String jaspRCPP_decodeAllColumnNames(const Rcpp::String & in)
 
 Rcpp::CharacterVector jaspRCPP_suggestColumnNames(const Rcpp::String & in)
 {
-	const ColumnEncoder::colVec suggestions = ColumnEncoder::suggestColumnNames(std::string(in));
+	size_t			numSuggestions;
+	const char **	suggestions = suggestColumnNamesCB(std::string(in).c_str(), numSuggestions);
 
-	Rcpp::CharacterVector out(suggestions.size());
+	Rcpp::CharacterVector out(numSuggestions);
 
-	for(size_t i = 0; i < suggestions.size(); i++)
+	for(size_t i = 0; i < numSuggestions; i++)
 		out[i] = suggestions[i];
 
 	return out;

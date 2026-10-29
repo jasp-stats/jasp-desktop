@@ -73,6 +73,7 @@ extern "C" {
 	bool						STDCALL rbridge_shouldEncodeColumnName(	const char * in);
 	bool						STDCALL rbridge_shouldDecodeColumnName(	const char * in);
 	const char **				STDCALL rbridge_allColumnNames(			size_t & numCols,	bool encoded);
+	const char **				STDCALL rbridge_suggestColumnNames(		const char * name,	size_t & numSuggestions);
 	const char *				STDCALL rbridge_system(					const char * cmd);
 	void						STDCALL rbridge_moduleLibraryFixer(		const char * moduleLibrary);
 	const char *				STDCALL rbridge_computedColumnFilterIs();

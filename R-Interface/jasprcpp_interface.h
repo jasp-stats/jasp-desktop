@@ -90,6 +90,7 @@ typedef bool						(STDCALL *ShouldEnDecodeDef)			(const char *);
 typedef const char *				(STDCALL *systemDef)					(const char *);
 typedef void						(STDCALL *libraryFixerDef)				(const char *);
 typedef const char **				(STDCALL *getColNames)					(size_t &  names, bool encoded);
+typedef const char **				(STDCALL *suggestColNames)				(const char * name, size_t & numSuggestions);
 typedef const char*					(STDCALL *RequestStringRBridge)        ();
 
 struct RBridgeCallBacks {
@@ -123,6 +124,7 @@ struct RBridgeCallBacks {
 									shouldDecode;
 	getColNames						columnNames;
 	RequestStringRBridge			computedColumnFilter;
+	suggestColNames					suggestColumnNames;
 };
 
 typedef void			(*sendFuncDef)			(const char *);
