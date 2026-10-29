@@ -36,6 +36,15 @@ private slots:
 	void	testFailedLoadOrSyncForgetsCsvChoices();
 	void	testOdsImportLocale();
 	void	testMinitabImportLocale();
+
+	// The classic Minitab formats (.mtw/.mpj/.mtp) through the mtw-ffi library:
+	// column kinds, the missing-cell conventions (numeric sentinel -> NaN, text
+	// blank -> ""), first-worksheet-only for projects, legacy-era files and the
+	// user-facing errors a broken file produces.
+	void	testMinitabOldImport();
+	void	testMinitabOldImportProjectPortableAndLegacy();
+	void	testMinitabOldRegistrationAndErrors();
+
 	void	testDataSetsTableUpgrade();
 	void	testSavLabels();
 	void	testFilterLabels();

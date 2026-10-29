@@ -22,6 +22,7 @@
 #include "utilities/settings.h"
 #include "utilities/messageforwarder.h"
 #include "log.h"
+#include "appinfo.h"
 #include "data/datasetpackage.h"
 #include "mainwindow.h"
 #include "utilities/appdirs.h"
@@ -172,7 +173,8 @@ void FileMenu::sync()
 						tr("JASP has no associated data file to be synchronized with.\nDo you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data.")))
 				return;
 
-			path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.zsav *.ods *.xls *.xlsx *.dta *.por *.sas7bdat *.sas7bcat *.xpt *.rdata *.rds *.mwx *.mpx"));
+			//.mtw/.mpj/.mtp only show up in Enterprise (PRO) mode, like DataSetLoader::getImporter
+			path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.zsav *.ods *.xls *.xlsx *.dta *.por *.sas7bdat *.sas7bcat *.xpt *.rdata *.rds *.mwx *.mpx" + QString(AppInfo::proMode() ? " *.mtw *.mpj *.mtp" : "")));
 		}
 
 		_mainWindow->setCheckAutomaticSync(false);

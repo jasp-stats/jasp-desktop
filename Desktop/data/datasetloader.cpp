@@ -27,6 +27,7 @@
 #include "importers/excelimporter.h"
 #include "importers/rdataimporter.h"
 #include "importers/minitabimporter.h"
+#include "importers/minitaboldimporter.h"
 #include "asyncloader.h"
 
 #include <QFileInfo>
@@ -36,6 +37,7 @@
 #include "timers.h"
 #include "utils.h"
 #include "log.h"
+#include "appinfo.h"
 #include "utilities/desktopcommunicator.h"
 #include "qutils.h"
 #include "datasetpackage.h"
@@ -66,6 +68,9 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 		boost::iequals(ext,".rds"))							return new RDataImporter();
 	if( boost::iequals(ext, ".mwx") ||
 		boost::iequals(ext,".mpx"))							return new MinitabImporter();
+	//The classic Minitab reader is an Enterprise (PRO) feature: outside PRO mode the file types stay
+	//unknown to JASP, and the file-dialog filters do not offer them either (see the file menu sources).
+	if(	AppInfo::proMode() && MinitabOldImporter::extSupported(ext))	return new MinitabOldImporter(ext);
 
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }

@@ -18,6 +18,7 @@
 #include "data/importers/rdataimporter.h"
 #include "data/importers/readstatimporter.h"
 #include "data/importers/minitabimporter.h"
+#include "data/importers/minitaboldimporter.h"
 #include "data/importers/database/databaseimportcolumn.h"
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
@@ -43,6 +44,7 @@
 #include "data/asyncloader.h"
 #include "data/importers/csv/csvparser.h"
 #include "data/datasetloader.h"
+#include "parsedarguments.h"
 #include "data/expanddataproxymodel.h"
 #include "archivereader.h"
 #include "mainwindow.h"
@@ -356,6 +358,7 @@ void TestAll::testDataImport()
 		if(folder == "excel")		return new ExcelImporter();
 		if(folder == "ods")			return new ods::ODSImporter();
 		if(folder == "csv")			return new CSVImporter();
+		if(folder == "minitabold")	return new MinitabOldImporter();
 
 		return nullptr;
 	};
@@ -1158,6 +1161,242 @@ void TestAll::testMinitabImportLocale()
 					.arg(numbers[row]).arg(row + 1).arg(read, 0, 'g', 12).arg(QLocale::languageToString(interface.language()), thousandSeparators ? " with thousand separators" : "")));
 			}
 		}
+}
+
+///The tiny oracle worksheets produced alongside the mtw-ffi library (4.6KB each):
+///shape, column kinds, values, and the missing-cell convention (Minitab's universal
+///"*" sentinel arrives as NaN, which Column::numberAt reports as "not a number").
+void TestAll::testMinitabOldImport()
+{
+	auto freshPackage = [&]()
+	{
+		DatabaseInterface::closeInterfaces(); //Like cleanup() does, a DataSetPackage wants a database of its own
+		delete _pkg;
+		delete _importer;
+		_pkg		= new DataSetPackage(this);
+		_importer	= new MinitabOldImporter();
+	};
+
+	freshPackage();
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("minitabold/corners_4c_4r.mtw")), _pkg->createDataSet(), [](int){});
+
+	DataSet * dataSet = _pkg->dataSet();
+	QVERIFY2(dataSet, "No dataset!");
+
+	QCOMPARE(dataSet->columnCount(), 4);
+	QCOMPARE(dataSet->rowCount(), 4);
+
+	const doublevec cornersA = { 1, 0, 0, 1 };
+	const doublevec cornersD = { 1, 0, 0, 1 };
+	const doublevec zeros	= { 0, 0, 0, 0 };
+
+	Column * a = dataSet->column("A");
+	Column * b = dataSet->column("B");
+	Column * c = dataSet->column("C");
+	Column * d = dataSet->column("D");
+	QVERIFY2(a && b && c && d, "Columns A, B, C and D not found");
+
+	QCOMPARE(a->type(), columnType::scale);
+	QCOMPARE(b->type(), columnType::scale);
+
+	for(size_t row = 0; row < 4; row++)
+	{
+		double read = 0;
+		QVERIFY2(a->numberAt(row, read) && read == cornersA[row], qPrintable(QString("A row %1 read as %2").arg(row + 1).arg(read)));
+		QVERIFY2(d->numberAt(row, read) && read == cornersD[row], qPrintable(QString("D row %1 read as %2").arg(row + 1).arg(read)));
+		QVERIFY2(b->numberAt(row, read) && read == zeros[row], qPrintable(QString("B row %1 read as %2").arg(row + 1).arg(read)));
+	}
+
+	//single_value_22_3c_4r: exactly one non-zero cell, in the last column of row 3
+	freshPackage();
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("minitabold/single_value_22_3c_4r.mtw")), _pkg->createDataSet(), [](int){});
+
+	dataSet = _pkg->dataSet();
+	QCOMPARE(dataSet->columnCount(), 3);
+	QCOMPARE(dataSet->rowCount(), 4);
+
+	Column * lastColumn = dataSet->column(2);
+	QVERIFY2(lastColumn, "Third column not found");
+	double read = 0;
+	QVERIFY2(lastColumn->numberAt(2, read) && read == 1, qPrintable(QString("Expected the single value 1 in row 3, read %1").arg(read)));
+
+	//05-Body Temperatures (a Triola file): text columns, numeric columns and real
+	//missing cells scattered mid-column (121 of them), not only trailing rows.
+	freshPackage();
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("minitabold/05-Body Temperatures.mtw")), _pkg->createDataSet(), [](int){});
+
+	dataSet = _pkg->dataSet();
+	QCOMPARE(dataSet->columnCount(), 6);
+	QCOMPARE(dataSet->rowCount(), 107);
+
+	Column * sex = dataSet->column("SEX");
+	Column * day2noor = dataSet->column("DAY 2 - 12AM");
+	QVERIFY2(sex,			"Column SEX not found");
+	QVERIFY2(day2noor,		"Column 'DAY 2 - 12AM' not found");
+
+	QVERIFY2(sex->type() == columnType::nominal || sex->type() == columnType::nominalText,
+			 qPrintable(QString("SEX (a text column) imported as %1").arg(tq(~sex->type()))));
+	QCOMPARE(tq(sex->getValue(0, false, true)), "M");
+
+	QCOMPARE(day2noor->type(), columnType::scale);
+	QVERIFY2(day2noor->numberAt(0, read) && read == 98.6, qPrintable(QString("First 'DAY 2 - 12AM' value read as %1").arg(read)));
+	QVERIFY2(!day2noor->numberAt(1, read), "The second 'DAY 2 - 12AM' value is the '*' sentinel and must be missing");
+
+	//TireLife: an empty (kind 0) column that Minitab stores without name or values is
+	//dropped by buildDictionary, like the completely blank csv columns are.
+	freshPackage();
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("minitabold/TireLife.mtw")), _pkg->createDataSet(), [](int){});
+
+	dataSet = _pkg->dataSet();
+	QCOMPARE(dataSet->columnCount(), 4);
+	QCOMPARE(dataSet->rowCount(), 89);
+
+	Column * brand = dataSet->column("Brand");
+	Column * mileage = dataSet->column("Mileage");
+	QVERIFY2(brand, "Column 'Brand' not found");
+	QVERIFY2(mileage, "Column 'Mileage' not found");
+	QVERIFY2(brand->getValue(0, false, true) == "A", "The text of 'Brand' was not read");
+	QVERIFY2(mileage->numberAt(0, read) && read == 7924, qPrintable(QString("First 'Mileage' value read as %1").arg(read)));
+}
+///A project (.mpj) contributes its first worksheet only (JASP loads one dataset
+///per file, like the Excel importer reads the active sheet), a portable worksheet
+///(.mtp) comes with sparse text and nameless columns, and the legacy-era files
+///(MTB12/13, pre-OLE) read through the very same code path.
+void TestAll::testMinitabOldImportProjectPortableAndLegacy()
+{
+	auto freshPackage = [&]()
+	{
+		DatabaseInterface::closeInterfaces(); //Like cleanup() does, a DataSetPackage wants a database of its own
+		delete _pkg;
+		delete _importer;
+		_pkg		= new DataSetPackage(this);
+		_importer	= new MinitabOldImporter();
+	};
+
+	freshPackage();
+	//COUNT DATA.MPJ holds two worksheets: 'Count Data - Summarised data' (52 rows, 8 columns) and
+	//'Count Data - Raw data' (50 rows, 6 columns). Only the first may be imported.
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("minitabold/COUNT DATA.MPJ")), _pkg->createDataSet(), [](int){});
+
+	DataSet * dataSet = _pkg->dataSet();
+	QVERIFY2(dataSet, "No dataset!");
+
+	QCOMPARE(dataSet->columnCount(), 8);
+	QCOMPARE(dataSet->rowCount(), 52);
+	QVERIFY2(dataSet->column("Week No."),					"Column 'Week No.' of worksheet 1 not found");
+	QVERIFY2(!dataSet->column("Invoice No."),				"Column of the second worksheet must not be imported");
+
+	//The two nameless text columns (annotation blocks) are named by buildDictionary, like the csv importer does
+	QVERIFY2(dataSet->column("V1") && dataSet->column("V5"), "The nameless columns were not given names");
+
+	Column * invoices = dataSet->column("Total number of invoices");
+	QVERIFY2(invoices, "Column 'Total number of invoices' not found");
+	double read = 0;
+	QVERIFY2(invoices->numberAt(0, read) && read == 37, qPrintable(QString("First 'Total number of invoices' value read as %1").arg(read)));
+
+	//DONNEES COMPTEES.MTP: 6 columns, 50 rows, sparse text (a stored annotation of 4 cells
+	//followed by blanks) and two nameless columns.
+	freshPackage();
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("minitabold/DONNEES COMPTEES.MTP")), _pkg->createDataSet(), [](int){});
+
+	dataSet = _pkg->dataSet();
+	QCOMPARE(dataSet->columnCount(), 6);
+	QCOMPARE(dataSet->rowCount(), 50);
+
+	Column * facture = dataSet->column("Facture N°.");
+	Column * annotation = dataSet->column("V1");
+	QVERIFY2(facture,		"Column 'Facture N°.' not found");
+	QVERIFY2(annotation,	"The nameless first column was not given a name");
+
+	QVERIFY2(annotation->getValue(0, false, true) == "Pour un projet traitant", "The sparse text of the first column was not read");
+	QVERIFY2(annotation->getValue(4, false, true) == "", "The cells after the stored text are blanks");
+
+	//The legacy-era files (1990s, before the OLE container): MTB format 12 and 13.
+	freshPackage();
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("minitabold/pulserat.mtw")), _pkg->createDataSet(), [](int){});
+
+	dataSet = _pkg->dataSet();
+	QCOMPARE(dataSet->columnCount(), 1);
+	QCOMPARE(dataSet->rowCount(), 210);
+
+	Column * pulse = dataSet->column("pulse rate");
+	QVERIFY2(pulse, "Column 'pulse rate' not found");
+	QVERIFY2(pulse->numberAt(0, read) && read == 100, qPrintable(QString("First 'pulse rate' value read as %1").arg(read)));
+	QVERIFY2(pulse->numberAt(1, read) && read == 83, qPrintable(QString("Second 'pulse rate' value read as %1").arg(read)));
+
+	freshPackage();
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("minitabold/Pr4-8.MTW")), _pkg->createDataSet(), [](int){});
+
+	dataSet = _pkg->dataSet();
+	QCOMPARE(dataSet->columnCount(), 1);
+	QCOMPARE(dataSet->rowCount(), 8);
+	Column * yt = dataSet->column("Yt");
+	QVERIFY2(yt, "Column 'Yt' not found");
+	const doublevec ytValues = { 200, 210, 215, 216, 219, 220, 225, 226 };
+	for(size_t row = 0; row < ytValues.size(); row++)
+		QVERIFY2(yt->numberAt(row, read) && read == ytValues[row], qPrintable(QString("Yt row %1 read as %2").arg(row + 1).arg(read)));
+}
+
+///The extension routing (file dialog filters and DataSetLoader::getImporter) and the
+///error a broken file produces for the user.
+void TestAll::testMinitabOldRegistrationAndErrors()
+{
+	QVERIFY2(MinitabOldImporter::extSupported("mtw"),	".mtw must be supported");
+	QVERIFY2(MinitabOldImporter::extSupported(".MPJ"),	".mpj must be supported, also written with a dot or uppercase");
+	QVERIFY2(MinitabOldImporter::extSupported("mtp"),	".mtp must be supported");
+	QVERIFY2(!MinitabOldImporter::extSupported("mwx"),	".mwx belongs to MinitabImporter, not MinitabOldImporter");
+
+	//The extension routing that feeds DataSetLoader::getImporter runs through the FileType
+	//enum (Utils::getTypeFromFileName + FileTypeBaseToString), so the new extensions must be
+	//recognized there: they also make ParsedArguments::isDataFileType accept the files.
+	QCOMPARE(Utils::getTypeFromFileName("/some/file.mtw"),	Utils::FileType::mtw);
+	QCOMPARE(Utils::getTypeFromFileName("/some/file.mpj"),	Utils::FileType::mpj);
+	QCOMPARE(Utils::getTypeFromFileName("/some/file.mtp"),	Utils::FileType::mtp);
+	QCOMPARE(Utils::getTypeFromFileName("/some/file.mwx"),	Utils::FileType::mwx);
+	QCOMPARE(ParsedArguments::isDataFileType("/some/file.mtw"), true);
+	QCOMPARE(ParsedArguments::isDataFileType("/some/file.mpj"), true);
+	QCOMPARE(ParsedArguments::isDataFileType("/some/file.mtp"), true);
+
+	//A file that is not Minitab data at all produces a user-facing error, not a crash.
+	QTemporaryDir dir;
+	const QString junkPath = dir.filePath("not-really-minitab.mtw");
+	_writeTextFile(junkPath, "This is not a Minitab worksheet at all.\n");
+
+	if(_pkg)	delete _pkg;
+	_pkg = new DataSetPackage(this);	//Importer's constructor needs the current package to exist
+
+	//The classic Minitab reader is an Enterprise (PRO) feature: DataSetLoader::getImporter only
+	//routes .mtw/.mpj/.mtp when AppInfo::proMode() is on (the file-dialog filters gate the same
+	//way). The other minitabold tests build the importer directly, so flip the mode here.
+	const bool proModeWasOn = AppInfo::proMode();
+
+	AppInfo::setProMode(false);
+	Importer * communityImporter = DataSetLoader::getImporter("/some/file.mtw", ".mtw");
+	QVERIFY2(communityImporter == nullptr, "Outside PRO (Enterprise) mode, .mtw must not be routed to MinitabOldImporter");
+	delete communityImporter;
+
+	AppInfo::setProMode(true);
+	Importer * proImporter = DataSetLoader::getImporter("/some/file.mtw", ".mtw");
+	QVERIFY2(dynamic_cast<MinitabOldImporter *>(proImporter) != nullptr, "In PRO (Enterprise) mode, .mtw must be routed to MinitabOldImporter");
+	delete proImporter;
+
+	AppInfo::setProMode(proModeWasOn);
+
+	bool threw = false;
+	std::string thrownMessage;
+
+	try
+	{
+		MinitabOldImporter().loadDataSet(fq(junkPath), _pkg->createDataSet(), [](int){});
+	}
+	catch(const std::exception & e)
+	{
+		threw			= true;
+		thrownMessage	= e.what();
+	}
+
+	QVERIFY2(threw, "Loading a non-Minitab file must throw");
+	QVERIFY2(thrownMessage.find("Minitab") != std::string::npos, qPrintable(QString("The error should mention Minitab, got: %1").arg(tq(thrownMessage))));
 }
 
 ///A jaspfile saved before csvDelimiter and importLocale existed gets them when it is opened, also when it says it was saved by the version this is
