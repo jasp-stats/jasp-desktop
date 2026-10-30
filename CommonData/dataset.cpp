@@ -35,7 +35,7 @@ DataSet::DataSet(Workspace * workspace, int id)
 {
 	Log::log() << "DataSet::DataSet(id=" << id << ")" << std::endl;
 
-	_encoder = new ColumnEncoder();
+	_encoder = ColumnEncoder::createCanonical();	// the DataSet owns the mint, the namespaces (views) belong to the filters
 	_syncer  = new DataSetSyncer(this);
 	_emptyValues	= new EmptyValues(nullptr);
 	connect(_emptyValues,	&EmptyValues::emptyValuesChanged,	this,		&DataSet::emptyValuesChanged			);
@@ -130,6 +130,25 @@ void DataSet::addFilter()
 	while(filterExists(filterName));
 	
 	showFilter(createFilter(filterName));
+}
+
+Filter *DataSet::loadStoredFilter(const std::string & name)
+{
+	if(name.empty() || name == DEFAULT_FILTER_NAME)
+		return nullptr;	//the default filter is always live; a second default object would be a bug
+
+	if(Filter * existing = filter(name))
+		return existing;
+
+	try
+	{
+		return createFilter(name, false);	//dbLoad by name keeps the row id; registers itself into _filters
+	}
+	catch(...)
+	{
+		Log::log() << "DataSet::loadStoredFilter: could not materialise stored filter '" << name << "'" << std::endl;
+		return nullptr;
+	}
 }
 
 void DataSet::showFilter(Filter * f)
@@ -312,7 +331,12 @@ void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Column
 
 		//Column names/types have (just) been (re)loaded into this DataSet, so keep our own encoder in
 		//sync; when this dataset is the shown/current one it is what the encoder indirection points at.
-		_encoder->setCurrentNames(getColumnNames());
+		// (zoo run 2, codeF): the mint must keep the TYPED triple-per-column shape - a
+		//names-only re-mint here (the shape a fresh import/sync ends with, and startFileSyncing's
+		//immediate doSync() guarantees one after every load) downgrades every view's block to one
+		//slot per column, so a bind-time encodeRScript (rlang/JAGS textareas) mints indexes the
+		//engine's typed mint decodes as a different column entirely.
+		_encoder->setCurrentNames(getColumnTypesMap());
 
 		incRevision(); //Should trigger reload at engine end
 	}
@@ -544,13 +568,10 @@ std::map<std::string,columnType> DataSet::getColumnTypesMap()
 	return theMap;
 }
 
-void DataSet::setupEncoderPrefix()
+ColumnEncoder * DataSet::shownEncoder()
 {
-	//Make the encoder prefix globally unique (carries the dataset id) so ALL datasets loaded into the
-	//engine can coexist without encoded-name collisions. Must run after the id has been finalized
-	//(dbCreate/dbLoad), which is why it is called at the end of those, not in the constructor.
-	_encoder->_encodePrefix = "JASPColumn_" + std::to_string(_dataSetId) + "_";
-	_encoder->setCurrentNames(getColumnTypesMap()); //regenerate all encoded names with the new prefix
+	Filter * f = shownFilter();
+	return f ? f->columnEncoder() : nullptr;
 }
 
 void DataSet::setDataFileAndTimeStamp(const std::string &dataFilePath, long timestamp)
@@ -678,7 +699,10 @@ void DataSet::dbCreate()
 
 	_rowCount		= 0;
 
-	setupEncoderPrefix();
+	//Mint the (still empty) column names through the canonical; the default filter's view - whose
+	//block is rewritten as a consequence - got its final id from dbCreate above, so the funnel is
+	//live from here on.
+	_encoder->setCurrentNames(getColumnTypesMap());
 }
 
 void DataSet::dbUpdate()
@@ -791,7 +815,21 @@ void DataSet::dbLoad(int id, std::function<void(float)> progressCallback, Versio
 			f->dbUpdate(true);
 	}
 
-	setupEncoderPrefix();
+	//Remint the canonical with the loaded columns: every live filter view's block
+	//in the global decode table is rewritten as an automatic consequence, and the views attached
+	//just below (loadStoredFilter -> Filter::dbLoad) mint their blocks from this state.
+	_encoder->setCurrentNames(getColumnTypesMap());
+
+	//Eagerly materialise every stored filter (the upgrade branch above already did). Multi-dataset
+	//aware selections list LIVE filters only (Workspace::_filterDropDownList, RPC dataset_info),
+	//so a named filter that exists only as a db row is unselectable after a reopen - and a saved
+	//selection option naming it gets coerced away by ComboBoxBase::bindTo before it ever reaches
+	//the host. loadStoredFilter attaches to the existing row
+	//so the db row id - the invariant saved provenance refers to - is preserved, is a no-op for
+	//filters that are already live (default included), and runs after the canonical remint above
+	//so the freshly attached views mint their blocks from the loaded names.
+	for(const int filterRowId : db().dataSetGetFilters(_dataSetId))
+		loadStoredFilter(db().filterGetName(filterRowId));
 }
 
 
@@ -1351,14 +1389,23 @@ const DatabaseInterface &DataSet::db() const
 stringset DataSet::findUsedColumnNames(std::string searchThis)
 {
 	stringset columnsFound, columnsWithTypeFound;
-	encoder().encodeRScript(searchThis, &columnsWithTypeFound);
-	
+
+	//Text scanning encodes through the shown filter's VIEW (the canonical itself never mints
+	//full strings); which view it is cannot matter for the result set because the
+	//encode->decode roundtrip below drops the namespace again.
+	ColumnEncoder * view = shownEncoder();
+
+	if(!view)
+		return columnsFound;
+
+	view->encodeRScript(searchThis, &columnsWithTypeFound);
+
 	//The found columns now also include the type, but we dont really care about that right now.
 	//Instead we'll make use of the encode->decode not being symmetrical (for the results to be less ugly) and dropping the type
-	
+
 	for(const std::string & colPlusType : columnsWithTypeFound)
-		columnsFound.insert(encoder().decode(encoder().encode(colPlusType)));
-	
+		columnsFound.insert(ColumnEncoder::decode(view->encode(colPlusType)));
+
 	return columnsFound;
 }
 
@@ -1761,7 +1808,9 @@ bool DataSet::insertColumns(int column, int count, const QModelIndex &)
 
 	emit datasetChanged(_dataSetId, tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
-	_encoder->setCurrentNames(getColumnNames());
+	// typed re-mint - the new columns carry a type (scale default above), and a
+	//names-only mint here would downgrade every existing column's triple to a single slot.
+	_encoder->setCurrentNames(getColumnTypesMap());
 
 	return true;
 }
@@ -1789,7 +1838,9 @@ bool DataSet::removeColumns(int column, int count, const QModelIndex &)
 
 	emit datasetChanged(_dataSetId, tq(changed), tq(missingColumns), tq(changeNameColumns), false, false);
 
-	_encoder->setCurrentNames(getColumnNames());
+	// the SURVIVING columns keep their types - a names-only re-mint here would
+	//downgrade their triples to single slots (same zoo-driven bug class as endBatchedToDB).
+	_encoder->setCurrentNames(getColumnTypesMap());
 
 	return true;
 }
@@ -1957,7 +2008,7 @@ void DataSet::setTitle(const QString &title)
 
 bool DataSet::dataFileCanHaveLabels() const
 {
-	return !tq(dataFilePath()).endsWith(".csv");
+	return !tq(dataFilePath()).endsWith(".csv", Qt::CaseInsensitive);
 }
 
 void DataSet::resetAllFilters()

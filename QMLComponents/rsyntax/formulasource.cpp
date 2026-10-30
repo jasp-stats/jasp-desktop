@@ -27,6 +27,7 @@
 #include "log.h"
 #include "rsyntax.h"
 #include "filter.h"
+#include "workspace.h"
 #include "boundcontrols/boundcontrolterms.h"
 #include "controls/componentslistbase.h"
 #include "controls/variableslistbase.h"
@@ -199,30 +200,53 @@ QStringList FormulaSource::modelSources() const
 	return result;
 }
 
+// the emission context is the namespace BARE names resolve in at run time
+//(the self-reference rule): the ANALYSIS' own filter, else - the host-bound fallback chain, the same
+//one varInfo's provider follows (analysisform.cpp setAnalysisUp) - the SHOWN filter. A term
+//stamped with exactly that id emits bare (byte-identical); any other live filter id emits the
+//qualified minimal form; no filter at all means no context and the legacy unqualified emission.
+int FormulaSource::contextFilterIdForForm(AnalysisForm * form)
+{
+	if (!form)	return -1;
+
+	if (Filter * filter = form->filter())
+		return filter->id();
+
+	Workspace * ws = Workspace::singleton();
+
+	return ws && ws->shownFilter() ? ws->shownFilter()->id() : -1;
+}
+
+int FormulaSource::contextFilterIdFor(const ListModel * model)
+{
+	return model && model->listView() ? contextFilterIdForForm(model->listView()->form()) : -1;
+}
+
 QString FormulaSource::toString() const
 {
 	if (!_model)										return tr("No source found in Formula");
 
 	const Terms& terms = _model->terms();
 	Json::Value changedTypes = _model->getVariableTypes(true);
+	int contextFilterId = contextFilterIdFor(_model);
 
-	if (hasRandomEffects())								return _generateRandomEffectsTerms(terms);
-	if (_model->listView()->containsInteractions())		return generateInteractionTerms(terms, changedTypes);
-	else												return _generateSimpleTerms(terms, changedTypes);
+	if (hasRandomEffects())								return _generateRandomEffectsTerms(terms, contextFilterId);
+	if (_model->listView()->containsInteractions())		return generateInteractionTerms(terms, changedTypes, contextFilterId);
+	else												return _generateSimpleTerms(terms, changedTypes, contextFilterId);
 }
 
 
-QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
+QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms, int contextFilterId) const
 {
 	QString result;
 
-	QMap<QString, RowControls*> allRowControls = _model->getAllRowControls();
+	QMap<TermRowKey, RowControls*> allRowControls = _model->getAllRowControls();	// row-identity keyed
 	for (const Term& term : terms)
 	{
-		QString key = term.value();
+		const TermRowKey key = TermRowKey::ofTerm(term);
 		if (!allRowControls.contains(key))
 		{
-			Log::log() << "Cannot find key " << key << " in rowControls for RandomEffetcs Source" << std::endl;
+			Log::log() << "Cannot find key " << key.name().toStdString() << "@" << key.filterId() << " in rowControls for RandomEffetcs Source" << std::endl;
 			continue;
 		}
 		RowControls* rowControls = allRowControls[key];
@@ -248,10 +272,24 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 			result += (hasIntercept ? "1" : "0");
 
 			if (filteredTerms.size() > 0)
-				result += " + " + generateInteractionTerms(filteredTerms, componentListModel->getVariableTypes(filteredTerms, true));
+				result += " + " + generateInteractionTerms(filteredTerms, componentListModel->getVariableTypes(filteredTerms, true), contextFilterId);
 
 			result += (hasCorrelation ? " | " : " || ");
-			result += key;
+
+			// the grouping factor is emitted like any other term - a foreign
+			//slice's column must address that slice, not silently the context's same-named
+			//column. key carries the row's own filterId.
+			QString groupingFactor = key.name();
+			if (contextFilterId >= 0 && key.filterId() >= 0 && key.filterId() != contextFilterId)
+			{
+				QString qualifiedGrouping;
+				if (Workspace * ws = Workspace::singleton())
+					qualifiedGrouping = ws->renderQualifiedColumnRef(contextFilterId, key.filterId(), key.name().toStdString(), columnType::unknown);
+
+				if (!qualifiedGrouping.isEmpty())	groupingFactor = qualifiedGrouping;
+				else								Log::log() << "FormulaSource::_generateRandomEffectsTerms: grouping factor '" << key.name().toStdString() << "' is stamped with filter id " << key.filterId() << " which renders to nothing (dead slice); emitting the bare name" << std::endl;
+			}
+			result += groupingFactor;
 			result += ")";
 		}
 	}
@@ -259,7 +297,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 	return result;
 }
 
-QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::Value& changedTypes)
+QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::Value& changedTypes, int contextFilterId)
 {
 	// If the terms has interactions, try to use the '*' symbol when all combinations of the subterms are also present in the terms.
 	QString result;
@@ -282,10 +320,14 @@ QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::
 		{
 			bool allComponentsAreAlsoInTerms = true;
 			Terms allCrossedTerms = Terms(term.components()).crossCombinations();
-			allCrossedTerms.remove(term);
+			// allCrossedTerms is freshly composed (unqualified, -1) while the model
+			//terms carry their selection's filterId - strict Term equality would never match the
+			//two, so these membership probes stay name-based (formula syntax has no provenance
+			//yet; qualification of generated terms is the emitter's job).
+			allCrossedTerms.remove(Term(term.components()));
 			for (const Term& oneTerm : allCrossedTerms)
 			{
-				if (std::find(orgTerms.begin(), orgTerms.end(), oneTerm) == orgTerms.end())
+				if (std::find_if(orgTerms.begin(), orgTerms.end(), [&oneTerm](const Term &t) { return t.value() == oneTerm.value(); }) == orgTerms.end())
 				{
 					allComponentsAreAlsoInTerms = false;
 					break;
@@ -297,12 +339,12 @@ QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::
 				// Remove the components and their combinations in terms so that they don't appear in the formula
 				for (const Term& oneTerm : allCrossedTerms)
 				{
-					auto found = std::find(sortedTerms.begin(), sortedTerms.end(), oneTerm);
+					auto found = std::find_if(sortedTerms.begin(), sortedTerms.end(), [&oneTerm](const Term &t) { return t.value() == oneTerm.value(); });
 					if (found != sortedTerms.end()) sortedTerms.erase(found);
 				}
 
 				if (!first)	result += " + ";
-				result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator);
+				result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator, false, contextFilterId);
 				first = false;
 			}
 			else
@@ -316,7 +358,7 @@ QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::
 		if (termsToAdd.contains(term))
 		{
 			if (!first)	result += " + ";
-			result += FormulaParser::transformToFormulaTerm(term, termsToAdd[term], FormulaParser::interactionSeparator);
+			result += FormulaParser::transformToFormulaTerm(term, termsToAdd[term], FormulaParser::interactionSeparator, false, contextFilterId);
 			first = false;
 		}
 	}
@@ -325,7 +367,7 @@ QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::
 }
 
 
-QString FormulaSource::_generateSimpleTerms(const Terms &terms, const Json::Value& types) const
+QString FormulaSource::_generateSimpleTerms(const Terms &terms, const Json::Value& types, int contextFilterId) const
 {
 	QString result;
 	int i = 0;
@@ -334,7 +376,7 @@ QString FormulaSource::_generateSimpleTerms(const Terms &terms, const Json::Valu
 	{
 		Json::Value changedType = types.size() > i ? types[i] : Json::nullValue;
 		if (i > 0) result += " + ";
-		result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::interactionSeparator);
+		result += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::interactionSeparator, false, contextFilterId);
 		i++;
 	}
 
@@ -355,7 +397,7 @@ std::pair<Terms, Json::Value> FormulaSource::_onlyTrueTerms(const QString& contr
 	for (const Term& term : terms)
 	{
 		const Json::Value& changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
-		JASPControl* control = _model->getRowControl(term.value(), controlName);
+		JASPControl* control = _model->getRowControl(TermRowKey::ofTerm(term), controlName);	// exact row identity
 		BoundControl* boundControl = control ? control->boundControl() : nullptr;
 		if (boundControl && boundControl->boundValue().asBool())	
 		{
@@ -379,28 +421,32 @@ Terms::RelatedValuesPerTerm  FormulaSource::_getTermsFromExtraOptions(const Json
 			FormulaParser::ParsedTerms parsedTerms;
 			QString error;
 
-			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error, model()->listView()->form()->variableInfoProvider()))
+			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error, model()->listView()->resolvedVarInfo()->provider()))
 			{
+				// RelatedValuesPerTerm keys on row identity now; every term the
+				//formula machinery builds here is freshly parsed (unqualified, filterId -1) and is
+				//read back later by equally unqualified terms, so ofTerm() keeps the exact-hit +
+				//(name,-1)-fallback lookup byte-identical for this flow.
 				for (const Term& parsedTerm : parsedTerms.fixedTerms)
-					extraTermsMap[parsedTerm.value()][extraControlName] = true;
+					extraTermsMap[TermRowKey::ofTerm(parsedTerm)][extraControlName] = true;
 			}
 		}
 		else if (extraOptionJson.isString())
 		{
-				extraTermsMap[tq(extraOptionJson.asString())][extraControlName] = true;
+				extraTermsMap[TermRowKey(tq(extraOptionJson.asString()), -1)][extraControlName] = true;
 		}
 		else if (extraOptionJson.isArray())
 		{
 			for (const Json::Value& jsonTerm : extraOptionJson)
 			{
-				if (jsonTerm.isString()) extraTermsMap[tq(jsonTerm.asString())][extraControlName] = true;
+				if (jsonTerm.isString()) extraTermsMap[TermRowKey(tq(jsonTerm.asString()), -1)][extraControlName] = true;
 				else if (jsonTerm.isArray())
 				{
 					QStringList components;
 					for (const Json::Value& jsonComponent : jsonTerm)
 						if (jsonComponent.isString())
 							components.append(tq(jsonComponent.asString()));
-					extraTermsMap[Term(components).value()][extraControlName] = true;
+					extraTermsMap[TermRowKey::ofTerm(Term(components))][extraControlName] = true;
 				}
 			}
 		}
@@ -644,18 +690,18 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 		Terms::RelatedValuesPerTerm controlValues;
 		QMap<QString, Json::Value> interceptCheck;
 		interceptCheck[_randomEffects.checkControl] =  randomTerm.intercept;
-		controlValues[interceptTerm] = interceptCheck;
+		controlValues[TermRowKey(interceptTerm, -1)] = interceptCheck;	// row-identity key (unqualified, read back by the unqualified intercept term)
 
 		for (const Term& fixedTerm : fixedEffectTerms)
 		{
 			variables.add(fixedTerm);
 			QMap<QString, Json::Value> checkValue;
 			checkValue[_randomEffects.checkControl] = randomTerm.terms.containsValue(fixedTerm);
-			controlValues[fixedTerm.value()] = checkValue;
+			controlValues[TermRowKey::ofTerm(fixedTerm)] = checkValue;
 		}
 		componentValues[_randomEffects.correlationControl] = randomTerm.correlated;
 		componentValues[_randomEffects.variablesControl] = variables.getOptions(controlValues, fq(_randomEffects.variablesKeyValue), fq(_randomEffects.variablesKeyLabel), true, true, false);
-		randomTermsMap[mainTerm.value()] = componentValues;
+		randomTermsMap[TermRowKey::ofTerm(mainTerm)] = componentValues;
 	}
 
 	for (auto sourceMainTermsIt : sourceMainTermsMap)
@@ -697,9 +743,10 @@ QMap<QString, QString> FormulaSource::additionalOptionStrings() const
 		QString optionValue;
 		const Terms& terms = termsWithChangedTypes.first;
 		const Json::Value& changedTypes = termsWithChangedTypes.second;
+		int contextFilterId = contextFilterIdFor(_model);	// same context as toString
 
 		if (valueIsBool && extraOption.useFormula)
-			optionValue = "~ " + generateInteractionTerms(terms, changedTypes);
+			optionValue = "~ " + generateInteractionTerms(terms, changedTypes, contextFilterId);
 		else
 		{
 			optionValue = "list(";
@@ -709,8 +756,8 @@ QMap<QString, QString> FormulaSource::additionalOptionStrings() const
 				const Json::Value& changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
 				if (i > 0) optionValue += ", ";
 
-				if (valueIsBool)	optionValue += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator, true);
-				else				optionValue += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator, true) + " = " + RSyntax::transformJsonToR(boundControl->boundValue());
+				if (valueIsBool)	optionValue += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator, true, contextFilterId);
+				else				optionValue += FormulaParser::transformToFormulaTerm(term, changedType, FormulaParser::allInterationsSeparator, true, contextFilterId) + " = " + RSyntax::transformJsonToR(boundControl->boundValue());
 				i++;
 			}
 			optionValue += ")";

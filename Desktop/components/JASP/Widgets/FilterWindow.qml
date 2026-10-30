@@ -178,6 +178,13 @@ FocusScope
 				filterErrorMsg:		filterModel.filter.filterErrorMsg
 				clip:				true
 
+				// the column palette gains outward column sourcing - the picker
+				//catalog (every column of every other loaded slice) joins the own dataset's
+				//columns; dropping one stamps the node with its source slice and the generated
+				//R carries the full qualified surface form. The context is the EDITED filter
+				//(the same bare-name fallback namespace the R editor's picker uses).
+				contextFilterId:	filterModel.currentFilterId
+
 				anchors
 				{
 					bottom:	applyEasyFilter.top
@@ -321,7 +328,7 @@ FocusScope
 				anchors
 				{
 					top:		parent.top
-					bottom:		filterErrorScroll.top
+					bottom:		filterRefWarning.top
 					left:		parent.left
 					right:		parent.right
 				}
@@ -444,6 +451,7 @@ FocusScope
 															keyEvent.accepted = false
 													}
 
+
 							anchors
 							{
 								top:	parent.top
@@ -482,6 +490,38 @@ FocusScope
 						closeFunc();
 					}
 				}
+			}
+
+			// the edited filter's own DataSet is the bare-name fallback BY
+			// DEFINITION - there is deliberately no fallback/dataset-selection UI here.
+			// What the R editor gains is the outward surface: insertion of qualified references
+			// from the other loaded slices (the picker; insertion = the verbatim
+			// renderQualifiedColumnRef output with context = the edited filter's id) and live
+			// validation of what the user typed (non-blocking warning; the run still fails
+			// loudly at the engine). The easy constructor below stays v1: its
+			// palette offers only the own dataset's columns (the v1 scope cut), so its JSON
+			// column references stay as today for own-dataset picks.
+			Text
+			{
+				id:					filterRefWarning
+				visible:			filterRefValidator.error !== ""
+				height:				visible ? contentHeight + 4 * jaspTheme.uiScale : 0
+
+				anchors
+				{
+					left:			parent.left
+					right:			parent.right
+					bottom:			filterErrorScroll.top
+					leftMargin:		2 * jaspTheme.uiScale
+					rightMargin:	2 * jaspTheme.uiScale
+					bottomMargin:	visible ? 2 * jaspTheme.uiScale : 0
+				}
+
+				wrapMode:	Text.Wrap
+				font.family:	jaspTheme.fontCode.family
+				font.pixelSize:	baseFontSize * preferencesModel.uiScale
+				color:		jaspTheme.controlWarningTextColor
+				text:		qsTr("Note: ") + filterRefValidator.error
 			}
 
 			ScrollView
@@ -587,12 +627,28 @@ FocusScope
 
 				JaspControls.RectangularButton
 				{
+					id:			insertColumnRefButton
+					iconSource:	jaspTheme.iconPath + "round_addition.png"
+					width:		height
+					toolTip:	qsTr("Insert a column reference from another dataset or filter")
+					onClicked:	filterRefPicker.openForInsertion()
+
+					anchors
+					{
+						left:	clearRectangularButton.right
+						bottom:	parent.bottom
+						top:	closeRectangularButton.top
+					}
+				}
+
+				JaspControls.RectangularButton
+				{
 					id: applyFilter
 
 					property bool filterIsDefault: filterEdit.text === filterModel.filter.defaultRFilter
 
 					text:			qsTr("Apply pass-through filter")
-					anchors.left:	clearRectangularButton.right
+					anchors.left:	insertColumnRefButton.right
 					anchors.right:	helpButton.left
 					anchors.bottom:	parent.bottom
 					anchors.top:	closeRectangularButton.top
@@ -627,6 +683,27 @@ FocusScope
 					onClicked:		filterEditRectangle.askIfChanged(function (){ filterWindow.close() })
 					toolTip:		qsTr("Hide filter")
 				}
+			}
+
+			// outward-reference support for the R filter editor. The insertion
+			// context is the EDITED filter's id (filterModel.currentFilterId): its own dataset's
+			// columns come out of the picker as the bare names (the host-bound fallback), everything
+			// else as the minimal qualified surface form. The validator is debounced and
+			// read-only: it warns, it never triggers a run (the re-trigger belongs to the
+			// apply paths, which always re-scan fresh code at queue time).
+			JaspControls.QualifiedColumnValidator
+			{
+				id:			filterRefValidator
+				workspace:	dataSetPackage.workspace
+				target:		filterEdit
+			}
+
+			JaspControls.QualifiedColumnPicker
+			{
+				id:					filterRefPicker
+				target:				filterEdit
+				contextFilterId:	filterModel.currentFilterId
+				workspace:			dataSetPackage.workspace
 			}
 		}
 	}

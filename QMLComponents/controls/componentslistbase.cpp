@@ -49,7 +49,7 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 
 	Terms::RelatedValuesPerTerm allControlValues;
-	Terms	terms(value, Json::nullValue, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues),
+	Terms	terms(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues),
 			sourceTerms = _termsModel->getSourceTerms();
 
 	if (sourceTerms.size() > 0)
@@ -190,23 +190,23 @@ void ComponentsListBase::resetDefaultValue()
 	if (defaultJson.size() > defaultValuesRows)
 	{
 		const Terms& terms = _termsModel->terms();
-		const QMap<QString, RowControls*>& allRowControls = _termsModel->getAllRowControls();
+		const QMap<TermRowKey, RowControls*>& allRowControls = _termsModel->getAllRowControls();	// row-identity keyed
 
 		for (uint i = defaultValuesRows; i < defaultJson.size(); i++)
 		{
 			if (terms.size() > i)
 			{
-				const QString& key = terms.at(i).value();
-				RowControls* rowControls = allRowControls[key];
+				const TermRowKey key = TermRowKey::ofTerm(terms.at(i));
+				RowControls* rowControls = allRowControls.value(key);
 				if (!rowControls)
 				{
-					Log::log() << "Cannot find " << key << " in row controls!" << std::endl;
+					Log::log() << "Cannot find " << key.name() << "@" << key.filterId() << " in row controls!" << std::endl;
 					continue;
 				}
 				const QMap<QString, JASPControl*>& controlMap = rowControls->getJASPControlsMap();
 				Json::Value row(Json::objectValue);
 
-				row[fq(_optionKeyValue)] = fq(key);
+				row[fq(_optionKeyValue)] = fq(key.name());
 				for (const QString& controlName : controlMap.keys())
 				{
 					JASPControl* control = controlMap[controlName];
@@ -232,17 +232,45 @@ void ComponentsListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
-	setBoundValue(_termsModel->terms().getOptionsWithRelatedValues(_termsModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables()));
+	setBoundValue(createEngineValue());
 
 	bindOffsets();
 	emit controlNameXOffsetMapChanged();
+}
+
+Json::Value ComponentsListBase::createEngineValue() const
+{
+	if (!_termsModel)
+		return Json::Value(Json::arrayValue);
+
+	return getJsonFromComponentValues(_termsModel->terms(), _termsModel->getTermsWithComponentValues());
+}
+
+Json::Value ComponentsListBase::createFilterIds() const
+{
+	if (!_control->encodeValue() || !_termsModel)
+		return Json::nullValue;
+
+	const int			hostId	= generatedHostFilterId();
+
+	Json::Value ids(Json::arrayValue);
+	bool		any				= false;
+
+	for (const Term& term : _termsModel->terms())
+	{
+		const int id = term.filterId() >= 0 ? term.filterId() : hostId;
+		any = any || id >= 0;
+		ids.append(id >= 0 ? Json::Value(id) : Json::Value());
+	}
+
+	return any ? ids : Json::nullValue;
 }
 
 void ComponentsListBase::bindOffsets()
 {
 	if (_termsModel && _termsModel->rowCount() > 0)
 	{
-		RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).value());
+		RowControls* row = _termsModel->getRowControls(TermRowKey::ofTerm(_termsModel->terms().at(0)));	// exact row identity
 		if (row)
 			for (JASPControl* control : row->getJASPControlsMap().values())
 			{
@@ -270,7 +298,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 	std::vector<int> xOffsets;
 	QMap<QString, int> nameXOffsetMap;
-	QString key = _termsModel->terms().at(0).value();
+	TermRowKey key = TermRowKey::ofTerm(_termsModel->terms().at(0));	// exact row identity
 	auto rowControls = _termsModel->getAllRowControls();
 	if (!rowControls.contains(key))
 		return result;
@@ -329,9 +357,30 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 	return result;
 }
 
-Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues)
+Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues, bool storageShape) const
 {
-	return terms.getOptionsWithRelatedValues(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
+	// the rows-with-related-values shuffle of the mirror era is
+	//deleted - this is the on-demand child aggregation itself, one serialization through
+	//Terms::getOptions (the row branch), with the value-part taken out. useValueAndType keeps
+	//this list family's `{value, types}` row-entry shape (containsVariables()) exactly as before.
+	// storageShape switches to the FILE serialization - the same rows, but the term
+	//entry under the optionKey becomes the per-term object {name, filterId?, types} (row children
+	//keep today's shape, optionKey kept). The collision that blocked the preview embedding
+	//(a positional `filterIds` sibling would parse as a row child) is gone: the provenance rides
+	//INSIDE the nested term object, which the applier reads before anything else at that level.
+	if (storageShape)
+		return terms.getStorageOptions(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false)["value"];
+
+	return terms.getOptions(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false, containsVariables())["value"];
+}
+
+// the file shape for this row-bearing family (see getJsonFromComponentValues).
+Json::Value ComponentsListBase::createStorageValue() const
+{
+	if (!_termsModel)
+		return Json::Value(Json::arrayValue);
+
+	return getJsonFromComponentValues(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), true);
 }
 
 void ComponentsListBase::addItemHandler()
@@ -363,11 +412,25 @@ void ComponentsListBase::addItemHandler()
 		{
 			std::string keyString = fq(terms.at(size_t(currentInd)).value());
 			
+			// the row-key entry under optionKeyValue is a plain string in
+			//the ENGINE shape, but the control's own value right after a STORAGE bind (file load -
+			//BoundControlBase::bindTo parks the raw input until the first regeneration) carries the
+			//per-term object {name, filterId?, types}. `.asString()` on a jsoncpp object THROWS, so
+			//reading this blindly was an engine-shape assumption; extract the name from either.
+			auto rowKeyName = [](const Json::Value & keyVal) -> std::string
+			{
+				if (keyVal.isString())
+					return keyVal.asString();
+				if (keyVal.isObject() && keyVal.isMember("name") && keyVal["name"].isString())
+					return keyVal["name"].asString();
+				return std::string();
+			};
+			
 			for (const Json::Value& jsonVal : boundVal)
 			{
 				const Json::Value& keyVal = jsonVal.get(fq(_optionKeyValue), Json::nullValue);
 				
-				if (keyVal.asString() == keyString)
+				if (rowKeyName(keyVal) == keyString)
 				{
 					for (const std::string& member : jsonVal.getMemberNames())
 						jsonValues[tq(member)] = jsonVal.get(member, Json::nullValue);
@@ -378,7 +441,9 @@ void ComponentsListBase::addItemHandler()
 					jsonValues[_optionKeyLabel] = fq(newItemLabel);
 			}
 		}
-		rowValues[newItemValue] = jsonValues;
+		// the new row is fresh and unqualified, key it (name, -1) - the term gets its
+		//host stamp at intake and Terms::relatedValuesForTerm() finds these values through that key.
+		rowValues[TermRowKey(newItemValue, -1)] = jsonValues;
 	}
 	_termsModel->addTerms(newTerms, -1, rowValues);
 	setCurrentIndex(_termsModel->rowCount() - 1);
@@ -433,7 +498,11 @@ void ComponentsListBase::keyValueChangedHandler(int index, QString newLabel)
 	newLabel = _makeUnique(newLabel, _termsModel->terms().labels(), index);
 	QString newValue = _optionKeyLabel.isEmpty() ? newLabel : term.value();
 
-	_termsModel->changeTerm(index, Term(newValue, newLabel));
+	// a row rename must not drop the row's provenance - carry the old term's
+	//filterId over (ListModelTermsAssigned::changeTerm moves the row maps to the new key).
+	Term newTerm(newValue, newLabel);
+	newTerm.setFilterId(term.filterId());
+	_termsModel->changeTerm(index, newTerm);
 }
 
 QString ComponentsListBase::_changeLastNumber(const QString &val) const

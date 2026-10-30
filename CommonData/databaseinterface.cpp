@@ -141,7 +141,7 @@ void DatabaseInterface::_upgradeDBStatements(Version originalVersion)
 	//Multi-dataset schema (Workspace table, DataSets.title and Filters.invalidated, together with
 	//moving showRSyntax from DataSets into the Workspace) was introduced after upstream/development
 	//(which is 0.98.1). Any file created before 0.99 predates it, so bring it up to the current schema.
-	if(originalVersion < "0.99")
+	if(originalVersion <= "0.99")
 	{
 		if(!tableExists("Workspace"))
 			runStatements("CREATE TABLE Workspace ( "

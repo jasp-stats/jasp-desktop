@@ -103,6 +103,9 @@ public:
 		AUTOSAVE_ON,
 		AUTOSAVE_INTERVAL_SEC,
 		AI_USER_PROVIDERS,
+		AI_AUTH_MODE,
+		AI_LAST_APIKEY_PROVIDER,
+		AI_LAST_OIDC_PROVIDER,
 		AI_USER_PERSONAS,
 		AI_CURRENT_PERSONA_ID,
 		AI_COMMON_SYSTEM_PROMPT,
@@ -116,11 +119,35 @@ public:
 		RPC_SERVER_PORT,
 		SYNC_DROPPED_DATAFILE,
 		ONBOARDING_COMPLETED,
-		ONBOARDING_STEP
+		ONBOARDING_STEP,
+		MODULE_STORE_ENABLED,
+		EXTERNAL_LINKS_ENABLED,
+		CONTACT_URL_FEATURES,
+		CONTACT_URL_BUGS,
+		CONTACT_URL_CRASH_REPORT,
+		QUESTIONS_URL,
+		ENTERPRISE_SUPPORT_URL,
+		HOW_TO_USE_URL,
+		COMPANY_LOGO_PATH,
+		COMPANY_LOGO_HEIGHT,
+		DATABASE_ENABLED,
+		OSF_ENABLED
 	};
 
+	/// Resolution order for value(): highest first —
+///   1. group policy HKLM  (Windows only, IT admins via ADMX/GPO)
+///   2. group policy HKCU  (Windows only, IT admins via ADMX/GPO)
+///   3. forced.json        (shipped beside the app; enforced, overrules the user)
+///   4. user settings INI  (the user's own preferences)
+///   5. legacy registry    (Windows only, old-MSI user values; migrated to 4)
+///   6. defaults.json      (shipped beside the app; soft defaults)
+///   7. hardcoded defaults (Values[] below)
+/// setValue() refuses to change a setting enforced by forced.json: only
+/// policy (above it) or a new file shipped by an admin can change those.
 	static QVariant value(Settings::Type key);
 	static QVariant defaultValue(Settings::Type key);
+	static bool isForced(Settings::Type key);
+	static bool isForced(const QString& settingName);	///< string overload, e.g. for QML; unknown names are never forced
 	static void setValue(Settings::Type key, const QVariant &value);
 	static bool isSet(Settings::Type key); //Whether the user (or an admin) ever stored a value for this setting, regardless of what the (default) value is
 	static void sync();

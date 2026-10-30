@@ -33,6 +33,9 @@
 #include <json/value.h>
 #include "log.h"
 #include "rpc/jasprpcdispatcher.h"
+#include "data/exporters/jaspexporter.h"	// jaspArchiveVersion gates the legacy result decode
+#include "columnencoder.h"				// decodeJsonLegacyTokens
+#include "dataset.h"					// getColumnTypesMap
 #include "ai/agentstatetracker.h"
 #include <vector>
 
@@ -61,7 +64,7 @@ void Analyses::destroyAllForms()
 }
 
 
-Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
+Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel, Version doUpgradeFrom)
 {
 	Log::log() << "Analyses::createFromJaspFileEntry" << std::endl;
 
@@ -75,8 +78,20 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	if(_nextId <= id) _nextId = id + 1;
 
 	Modules::UpgradeMsgs		msgs;
-	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
+	//The Upgrader is MainWindow-owned in the shipped app; guard anyway (a null deref here would
+	//take down the whole load loop - the standalone test harness owns one locally instead).
+	bool						wasUpgraded		= false;
+	if(Upgrader * upgrader = Upgrader::upgrader())
+		wasUpgraded = upgrader->upgradeAnalysisData(DynamicModules::dynMods() ? DynamicModules::dynMods()->modules() : Modules::ModulesMap(), analysisData, msgs);
+	else
+		Log::log() << "Analyses::createFromJaspFileEntry: no Upgrader in this process - option upgrades skipped." << std::endl;
 	Json::Value				&	optionsJson		= analysisData["options"];
+
+	// released files' stored results can still carry old bare-prefix
+	//`JaspColumn_<i>_Encoded` tokens - best-effort decode them from the current column
+	//order before the results tree is loaded (and only there: live decoding stays strict-table
+	//and the legacy map registers nowhere; churned/removed columns leave tokens raw).
+	decodeLegacyResultTokens(analysisData, doUpgradeFrom);
 	std::string					title			= analysisData.get("title", "").asString();
 
 	// Reports have no module — create via report constructor, no module resolution needed
@@ -267,7 +282,7 @@ Json::Value Analyses::asJson() const
 	Json::Value analysesJson		= Json::objectValue,
 				analysesDataList	= Json::arrayValue;;
 
-	applyToAll([&analysesDataList](const Analysis * analysis)
+	applyToAll([&analysesDataList](Analysis * analysis)
 		{ analysesDataList.append(analysis->asJSON(true)); });
 
 	analysesJson["analyses"]	= analysesDataList;
@@ -314,7 +329,10 @@ void Analyses::reloadSavedAnalysesJson()
 
 	bool errorFound;
 	std::stringstream errors;
-	loadAnalysesFromJaspFileJson(_tempSave["analyses"], _tempSave["meta"], errorFound, errors, RibbonModel::singleton());
+	// _tempSave is OUR OWN generated tree (asJson of the live analyses) - it can
+	//never hold legacy bare-prefix tokens, so hand the loader our current archive version and the
+	//legacy decode gate skips it.
+	loadAnalysesFromJaspFileJson(_tempSave["analyses"], _tempSave["meta"], errorFound, errors, RibbonModel::singleton(), JASPExporter::jaspArchiveVersion);
 
 	//applyToAll([](Analysis * a){ a->setBeingTranslated(true); });
 	endResetModel();
@@ -416,10 +434,16 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 
 				//This function is called once after 300 ms upon translation due to delayedUpdate in description
 				//and causes the set analysis options to be cleared without this additional flag check set at the start of translations
-				if(a->readyToCreateForm() && !a->beingTranslated())
-				{
+				// only (re)create forms that are actually missing or broken. A description
+				//rescan (any Description.qml property change - e.g. the dev module's own live-JS title
+				//updates) used to destroyAndRecreate EVERY form of the module here; the fresh
+				//setAnalysisUp then consumed only the last-sent options delta as pending and every
+				//un-sent option reset to its default - silently wiping user state mid-session. QML edits
+				//need no rescan-driven recreation: each Analysis watches its own qml file since
+				//construction (watchQmlForm in the ctor, analysisQMLFileChanged -> reloadForm), and the
+				//pointer correction this rescan exists for happens in checkAnalysisEntry above.
+				if(a->readyToCreateForm() && !a->beingTranslated() && (!a->form() || !a->form()->formCompleted() || a->qmlError() != ""))
 					a->createForm();
-				}
 				a->setBeingTranslated(false);
 			}
 		}
@@ -475,7 +499,35 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 	}
 }
 
-void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel)
+// the load-time gate for the legacy-prefix result decode (do019Fix-style, see the
+//header). The archive version is what distinguishes released files (bare-prefix tokens possible)
+//from this branch's own output (D-namespaces only): < 7.0.0 (or absent -> major()==0) decodes,
+//7.x skips. The sweep takes the SHOWN dataset's current columns - released files are
+//single-dataset by construction; multi-dataset files are 7.x and never reach this. Best-effort
+//and read-side only either way: ColumnEncoder::decodeJsonLegacyTokens registers nothing, and an
+//unresolvable token (column churned since save) simply stays raw.
+void Analyses::decodeLegacyResultTokens(Json::Value & analysisData, const Version & doUpgradeFrom)
+{
+	if(doUpgradeFrom.major() >= JASPExporter::jaspArchiveVersion.major())
+		return;
+
+	if(!analysisData.isObject() || !analysisData.isMember("results"))
+		return;
+
+	DataSet * ds = DataSetPackage::pkg() ? DataSetPackage::pkg()->dataSet() : nullptr;
+	if(!ds)
+		return;
+
+	const ColumnEncoder::colTypeMap names = ds->getColumnTypesMap();
+	if(names.empty())
+		return;
+
+	ColumnEncoder::decodeJsonLegacyTokens(analysisData["results"], names);
+	Log::log() << "Analyses::decodeLegacyResultTokens: swept stored results against the legacy bare-prefix namespace ("
+	           << names.size() << " columns, file archive " << (doUpgradeFrom.isEmpty() ? std::string("<none>") : doUpgradeFrom.asString()) << ")" << std::endl;
+}
+
+void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom)
 {
 	if (DataSetPackage::pkg()->hasAnalyses())
 	{
@@ -502,11 +554,11 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 			}
 		}
 
-		loadAnalysesFromJaspFileJson(analysesDataList, meta, errorFound, errorMsg, ribbonModel);
+		loadAnalysesFromJaspFileJson(analysesDataList, meta, errorFound, errorMsg, ribbonModel, doUpgradeFrom);
 	}
 }
 
-void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel)
+void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom)
 {
 	int				corruptAnalyses = 0;
 	stringstream	corruptionStrings;
@@ -518,7 +570,7 @@ void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList
 	{
 		try
 		{
-			createFromJaspFileEntry(analysisData, ribbonModel);
+			createFromJaspFileEntry(analysisData, ribbonModel, doUpgradeFrom);
 		}
 		catch (Modules::ModuleException modProb)
 		{
@@ -964,12 +1016,62 @@ Analysis* Analyses::_rpcResolveAnalysis(int analysisId, Json::Value& errorRespon
 	return a;
 }
 
+void Analyses::_rpcWaitForFormInitialized(Analysis* a, int timeoutMs)
+{
+	//Pre-check before entering: between here and the connects below no event is processed,
+	//so the state cannot change under us. A form that is already up (or a QML that already
+	//failed) needs no wait at all.
+	if (!a || (a->form() && a->form()->initialized()) || a->qmlError() != "")
+		return;
+
+	JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+		[&](QEventLoop& loop, QTimer&)
+		{
+			auto settle = [&loop, a]()
+			{
+				if ((a->form() && a->form()->initialized()) || a->qmlError() != "")
+					loop.quit();
+			};
+
+			//The form attaches through AnalysisBase::createForm (formItemChanged); initialized()
+			//may flip right there, or later through AnalysisForm::formCompletedHandler - hence
+			//the second connect, wired the moment the form exists.
+			QObject::connect(a, &Analysis::formItemChanged, &loop, [&loop, a, settle]()
+			{
+				settle();
+				if (a->form())
+					QObject::connect(a->form(), &AnalysisForm::initializedChanged, &loop, settle);
+			});
+			QObject::connect(a, &Analysis::qmlErrorChanged, &loop, settle);
+		});
+}
+
 void Analyses::_rpcWriteIdentity(Json::Value& response, Analysis* a)
 {
 	response["analysisId"] = static_cast<int>(a->id());
 	response["module"]     = a->module();
 	response["analysis"]   = a->name();
 	response["dataSetId"]  = a->dataSet() ? a->dataSet()->id() : -1;
+	response["filterId"]   = a->filterId();
+
+	//For multi-dataset aware analyses: which datasets does this one actually run on (primary plus every
+	//one referenced through the .meta provenance of its options)?
+	if (a->multiDataSetAware())
+	{
+		response["multiDataSetAware"] = true;
+
+		Json::Value dataSetIds(Json::arrayValue);
+		int primaryDataSetId = a->dataSet() ? a->dataSet()->id() : -1;
+
+		if (primaryDataSetId >= 0)
+			dataSetIds.append(primaryDataSetId);
+
+		for (const auto & dataSetFilter : a->referencedDataSets())
+			if (dataSetFilter.first != primaryDataSetId)
+				dataSetIds.append(dataSetFilter.first);
+
+		response["dataSetIds"] = dataSetIds;
+	}
 }
 
 void Analyses::_rpcWriteStatus(Json::Value& response, Analysis* a)
@@ -979,7 +1081,12 @@ void Analyses::_rpcWriteStatus(Json::Value& response, Analysis* a)
 
 void Analyses::_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc)
 {
-	response["options"]    = a->boundValues();
+	// the RPC options report the GENERATED Engine tree (component state) with
+	//the transient `.filterIds` sidecar stripped - verifier-compatible with the old mirror output
+	//minus the documented-dead provenance keys (kept out of `.meta` anyway).
+	Json::Value options = a->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(options);
+	response["options"]    = options;
 	response["optionMeta"] = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
 }
 
@@ -1055,7 +1162,10 @@ static Json::Value _diffOptionMeta(const Json::Value& oldMeta, const Json::Value
 
 void Analyses::_rpcWriteOptionsDelta(Json::Value& response, Analysis* a, bool includeDesc, bool forceFull)
 {
-	response["options"] = a->boundValues();
+	// generated Engine tree, sidecar stripped (see _rpcWriteOptions).
+	Json::Value options = a->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(options);
+	response["options"] = options;
 
 	Json::Value fullMeta = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
 
@@ -1306,7 +1416,23 @@ void Analyses::registerRpcHandlers()
 		// Resolve and validate the target dataset up front so we never create (and register) an
 		// analysis and then delete it, which would leave a dangling pointer in the inventory.
 		Filter * bindFilter = nullptr;
-		if (params.isMember("dataSetId"))
+		if (params.isMember("filterId"))
+		{
+			//Selecting a dataset is selecting one of its filters; multi-dataset aware analyses (and any
+			//other analysis that should run on a non-default filter) pass the filter id to bind to here.
+			Workspace * ws = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
+			bindFilter = ws ? ws->filterById(params["filterId"].asInt()) : nullptr;
+			if (!bindFilter)
+				return JaspRpcDispatcher::errorResult(
+					"Filter not found for filterId: " + std::to_string(params["filterId"].asInt()));
+
+			if (params.isMember("dataSetId") && bindFilter->data()->id() != params["dataSetId"].asInt())
+				return JaspRpcDispatcher::errorResult(
+					"filterId " + std::to_string(params["filterId"].asInt()) + " belongs to dataset " +
+					std::to_string(bindFilter->data()->id()) + ", not the requested dataSetId " +
+					std::to_string(params["dataSetId"].asInt()));
+		}
+		else if (params.isMember("dataSetId"))
 		{
 			Workspace * ws = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
 			DataSet   * ds = ws ? ws->dataSetById(params["dataSetId"].asInt()) : nullptr;
@@ -1332,6 +1458,13 @@ void Analyses::registerRpcHandlers()
 
 		// Mark AI-created analyses in the title
 		a->setTitle(a->title() + " (AI)");
+
+		//The form is instantiated by the QML delegate a few event-loop passes from now: wait for
+		//it (bounded) so the identity reports the live multiDataSetAwareness - decided by the
+		//form's selection hosts - and options/meta come from real component state. A QML error
+		//ends the wait immediately, exactly like a timeout would.
+		int timeoutMs = params.isMember("timeoutMs") ? params["timeoutMs"].asInt() : 10000;
+		_rpcWaitForFormInitialized(a, timeoutMs);
 
 		Json::Value response = JaspRpcDispatcher::successResult();
 		_rpcWriteIdentity(response, a);
@@ -1372,6 +1505,30 @@ void Analyses::registerRpcHandlers()
 		response["analysisId"] = id;
 		response["module"]     = module;
 		response["analysis"]   = analysis;
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_setFilter", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		//Selecting a dataset is selecting one of its filters (filter ids are workspace-wide unique);
+		//this mirrors what the VariablesForm dataset/filter selection does in the UI and what
+		//analysis_create's filterId does at creation time.
+		Workspace * ws = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
+		Filter * filter = ws ? ws->filterById(params["filterId"].asInt()) : nullptr;
+		if (!filter)
+			return JaspRpcDispatcher::errorResult(
+				"Filter not found for filterId: " + std::to_string(params["filterId"].asInt()));
+
+		a->setFilterId(filter->id());
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
 		return response;
 	});
 
@@ -1682,6 +1839,7 @@ void Analyses::registerRpcHandlers()
 			dup->setResults(dup->results(), status); // apply status without changing content
 
 		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWaitForFormInitialized(dup, params.isMember("timeoutMs") ? params["timeoutMs"].asInt() : 10000);
 		_rpcWriteIdentity(response, dup);
 		_rpcWriteStatus(response, dup);
 		return response;
@@ -1750,6 +1908,9 @@ void Analyses::registerRpcHandlers()
 					Json::Value a;
 					a["name"]  = entry->function();
 					a["title"] = entry->title();
+					//No multiDataSetAware here: awareness is decided by the analysis' loaded form
+					//(AnalysisBase, via HostFilterSelection), not by the module entry. Live analyses
+					//report it through analyses_list / the identity writers.
 					analyses.append(a);
 				}
 				m["analyses"] = analyses;
@@ -1782,6 +1943,21 @@ void Analyses::registerRpcHandlers()
 			entry["analysis"]   = a->name();
 			entry["title"]      = a->title();
 			entry["dataSetId"]  = dataSetId;
+
+			//Multi-dataset aware analyses may run on more than their own dataset: report the full set.
+			if (a->multiDataSetAware())
+			{
+				entry["multiDataSetAware"] = true;
+
+				Json::Value dataSetIds(Json::arrayValue);
+				if (dataSetId >= 0)
+					dataSetIds.append(dataSetId);
+				for (const auto & dataSetFilter : a->referencedDataSets())
+					if (dataSetFilter.first != dataSetId)
+						dataSetIds.append(dataSetFilter.first);
+
+				entry["dataSetIds"] = dataSetIds;
+			}
 			analysesArr.append(entry);
 		});
 

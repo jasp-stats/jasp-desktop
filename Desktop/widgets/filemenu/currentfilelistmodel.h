@@ -17,7 +17,10 @@ public:
 	
 signals:
 	void syncCurrentFile(const QString& currentFile);
-	
+
+public slots:
+	void openFile(const QString& path) override;
+
 private:
 	CurrentFileFileSystem			*_fsbmCurrentFile;
 };

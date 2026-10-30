@@ -20,6 +20,7 @@
 #define VARIABLESFROMBASE_H
 
 #include "jaspcontrol.h"
+#include <QVariantList>
 
 class VariablesListBase;
 
@@ -46,6 +47,10 @@ public:
 	Q_INVOKABLE bool		widthSetByForm(JASPControl* control)	{ return _controlsWidthSetByForm.contains(control); }
 	Q_INVOKABLE bool		heightSetByForm(JASPControl* control)	{ return _controlsHeightSetByForm.contains(control); }
 
+public slots:
+	void					setMarginBetweenVariablesLists(qreal value);
+	void					setMinimumHeightVariablesLists(qreal value);
+
 signals:
 	void availableVariablesListChanged();
 	void allAssignedVariablesListChanged();
@@ -55,10 +60,6 @@ signals:
 
 protected:
 	void componentComplete() override;
-
-protected slots:
-	void setMarginBetweenVariablesLists(qreal value);
-	void setMinimumHeightVariablesLists(qreal value);
 
 private:
 

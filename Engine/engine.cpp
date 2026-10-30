@@ -25,6 +25,92 @@
 #include "qutils.h"
 #include "databaseinterface.h"
 #include "r_functionwhitelist.h"
+#include <algorithm>
+
+//Installed once per engine session, together with options(JASP.find.package.map), right before a
+//module loads (Engine::receiveModuleRequestMessage). Stock find.package() collects EVERY match:
+//it runs one vectorized file.exists() sweep across all of .libPaths() per lookup (also through
+//system.file), because it must gather all candidate dirs before prepending the loaded namespace's
+//path and version-checking each. With the ~300-400 micro-library libpaths of a module that costs
+//~20ms per call on Windows/NTFS (measured, R 4.5.2), paid per namespace load and on every
+//system.file() call. The map lets mapped packages skip the sweep entirely. Semantics are exactly
+//preserved: for a mapped package we return the loaded namespace's path when loaded (as stock
+//does), else the first hit in .libPaths() order (the map is built in that order); everything
+//unmapped (base packages included) falls through to the untouched original. unlockBinding is
+//legitimate here because JASP ships its own R; if a future R forbids it the tryCatch leaves the
+//stock function in place - slow, but correct. See Docs/development/windows-binary-pkgs-libpaths.md.
+static const char * pkgMapFindPackagePatch = R"RCODE(
+(function()
+{
+	install <- function()
+	{
+		if (isTRUE(getOption('JASP.find.package.map.installed')))
+			return(invisible(TRUE))
+
+		ok <- tryCatch({
+			orig <- base::find.package
+			newfp <- function(package = NULL, lib.loc = NULL, quiet = FALSE, verbose = getOption('verbose')) {
+				map <- getOption('JASP.find.package.map') #read at call time so module switches can refresh it
+				#is.null: the default search through .libPaths(); identical after unique(): loadNamespace's
+				#import recursion passes c(lib.loc, .libPaths()), duplicating the vector at every depth —
+				#unique() gives it back in original order, and duplicates never change a first-hit search
+				if ((is.null(lib.loc) || identical(unique(lib.loc), .libPaths())) && !is.null(map) && length(package) == 1L && !is.na(package) && package %in% names(map)) {
+					if (isNamespaceLoaded(package))
+						return(if (identical(package, 'base')) system.file() else .getNamespaceInfo(asNamespace(package), 'path'))
+					p <- file.path(map[[package]], package)
+					if (file.exists(file.path(p, 'DESCRIPTION')))
+						return(p)
+				}
+				orig(package, lib.loc, quiet, verbose)
+			}
+			ns <- asNamespace('base')
+			unlockBinding('find.package', ns)
+			assign('find.package', newfp, envir = ns)
+			lockBinding('find.package', ns)
+			TRUE
+		}, error = function(e) FALSE)
+
+			options(JASP.find.package.map.installed = ok)
+		if (ok)
+			cat('JASP find.package map active (', length(getOption('JASP.find.package.map')), ' entries)\n')
+		else
+			cat('JASP find.package map could not be installed, falling back to stock (slow) lookups\n') #cat, not warning: the eval wrapper suppresses warnings
+		invisible(ok)
+	}
+
+	installLoadNamespaceNormalizer <- function()
+	{
+		if (isTRUE(getOption('JASP.loadNamespace.normalized')))
+			return(invisible(TRUE))
+		ok <- tryCatch({
+			origln <- base::loadNamespace
+			newln <- function(package, lib.loc = NULL, ...)
+			{
+				#loadNamespace threads c(lib.loc, .libPaths()) through its recursion, so the shelf
+				#list duplicates at every dependency depth (285, 570, 855... entries). Duplicates are
+				#meaningless in a search path (first occurrence decides everything, order preserved),
+				#so dedup keeps the vectors bounded at length(.libPaths()) instead of growing with
+				#chain depth — and stops deep fall-through sweeps from being amplified several-fold.
+				if (is.character(lib.loc) && anyDuplicated(lib.loc))
+					lib.loc <- unique(lib.loc)
+				origln(package, lib.loc, ...)
+			}
+			ns <- asNamespace('base')
+			unlockBinding('loadNamespace', ns)
+			assign('loadNamespace', newln, envir = ns)
+			lockBinding('loadNamespace', ns)
+			TRUE
+		}, error = function(e) FALSE)
+		options(JASP.loadNamespace.normalized = ok)
+		if (!ok)
+			cat('JASP loadNamespace normalizer could not be installed; lib.loc vectors may duplicate\n')
+		invisible(ok)
+	}
+
+	install()
+	installLoadNamespaceNormalizer()
+})()
+)RCODE";
 
 void SendFunctionForJaspresults(const char * msg) 
 {
@@ -306,7 +392,7 @@ void Engine::receiveFilterMessage(const Json::Value & jsonRequest)
 	int filterRequestId			= jsonRequest.get("requestId", -1).asInt();
 	int dataSetId				= jsonRequest.get("dataSetId", -1).asInt();
 
-	runDefaultFilter(dataSetId, filter, generatedFilter, filterRequestId);
+	runDefaultFilter(dataSetId, filter, generatedFilter, filterRequestId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
 void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
@@ -319,10 +405,10 @@ void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
 	int dataSetId				= jsonRequest.get("dataSetId",	-1).asInt();
 	int requestId				= jsonRequest.get("requestId",	-1).asInt();
 
-	runFilterByName(name, dataSetId, requestId);
+	runFilterByName(name, dataSetId, requestId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
-void Engine::runFilterByName(const std::string & name, int dataSetId, int requestId)
+void Engine::runFilterByName(const std::string & name, int dataSetId, int requestId, const std::vector<int> & referencedFilterIds)
 {
 	provideAndUpdateDataSet(dataSetId);
 	
@@ -340,7 +426,10 @@ void Engine::runFilterByName(const std::string & name, int dataSetId, int reques
 	std::string RPossibleWarning;
 	try
 	{
-		filterResult		= rbridge_applyFilter(strippedFilter, localFilter->generatedFilter());
+		// the run's slice context is the filter being run - its own view encodes
+		//the code (fixed for filter expressions), and the request's referencedFilterIds
+		//sidecar drives the materialization of any referenced foreign slices.
+		filterResult		= rbridge_applyFilter(strippedFilter, localFilter->generatedFilter(), localFilter, referencedFilterIds);
 		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 	}
 	catch(filterException & e)
@@ -366,7 +455,7 @@ void Engine::runFilterByName(const std::string & name, int dataSetId, int reques
 	_engineState = engineState::idle;
 }
 
-void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const std::string & generatedFilter, int filterRequestId)
+void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const std::string & generatedFilter, int filterRequestId, const std::vector<int> & referencedFilterIds)
 {
 	DataSet		*	dataSet				= provideAndUpdateDataSet(dataSetId);
 
@@ -380,7 +469,9 @@ void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const s
 	try
 	{		
 		std::string		strippedFilter		= stringUtils::stripRComments(filter);
-		boolvec			filterResult		= rbridge_applyFilter(strippedFilter, generatedFilter);
+		// the run's slice context is the DEFAULT filter being run (its own view
+		//encodes the code) plus the request's referencedFilterIds sidecar.
+		boolvec			filterResult		= rbridge_applyFilter(strippedFilter, generatedFilter, dataSet->defaultFilter(), referencedFilterIds);
 		std::string		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
         Log::log() << "Engine::runDefaultFilter ran:\n\t" << strippedFilter << "\n\tRPossibleWarning='" << RPossibleWarning << "'\n\t\tfor revision " << dataSet->defaultFilter()->revision() << std::endl;
@@ -448,6 +539,26 @@ void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const
 	sendString(filterResponse);
 }
 
+std::vector<int> Engine::referencedFilterIdsFromRequest(const Json::Value & jsonRequest)
+{
+	// the transient `referencedFilterIds` sidecar of a filter/compute
+	//request - the desktop's scan of the run's code (the grammar helpers).
+	//This extraction IS the strip point for these requests (mirroring the last-moment
+	//doctrine): the ids are consumed for slice materialization only and are never forwarded
+	//into anything R evaluates - the R-visible code is built by rbridge_prepareSliceRunScript
+	//from the code text alone, and the sidecar member dies with the request json here.
+	std::vector<int> ids;
+
+	const Json::Value & sidecar = jsonRequest.get("referencedFilterIds", Json::Value::null);
+
+	if(sidecar.isArray())
+		for(const Json::Value & id : sidecar)
+			if(id.isInt() || id.isUInt())
+				ids.push_back(id.asInt());
+
+	return ids;
+}
+
 void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 {
 	if(_engineState != engineState::idle)
@@ -458,9 +569,10 @@ void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 	int			rCodeRequestId	= jsonRequest.get("requestId",		-1).asInt(),
 				dataSetId		= jsonRequest.get("dataSetId",		-1).asInt();
 	bool		whiteListed		= jsonRequest.get("whiteListed",	true).asBool(),
-				returnLog		= jsonRequest.get("returnLog",		false).asBool();
+				returnLog		= jsonRequest.get("returnLog",		false).asBool(),
+				columnsByName	= jsonRequest.get("columnsByName",	false).asBool();
 
-	if(returnLog)	runRCodeCommander(dataSetId, rCode);
+	if(returnLog)	runRCodeCommander(dataSetId, rCode, columnsByName);
 	else			runRCode(dataSetId, rCode, rCodeRequestId, whiteListed);
 }
 
@@ -480,7 +592,7 @@ void Engine::runRCode(int dataSetId, const std::string & rCode, int rCodeRequest
 }
 
 
-void Engine::runRCodeCommander(int dataSetId, std::string rCode)
+void Engine::runRCodeCommander(int dataSetId, std::string rCode, bool columnsByName)
 {
     DataSet * thereIsSomeDataDs = provideAndUpdateDataSet(dataSetId);
     bool thereIsSomeData = thereIsSomeDataDs && thereIsSomeDataDs->rowCount();
@@ -488,24 +600,40 @@ void Engine::runRCodeCommander(int dataSetId, std::string rCode)
 
 	static const std::string rCmdDataName = "data", rCmdFiltered = "filteredData";
 
-
 	if(thereIsSomeData)
 	{
-		
-		
-		rCode = ColumnEncoder::columnEncoder()->encodeAll(rCode);
-		jaspRCPP_runScript((rCmdDataName + "<- .readFullDatasetToEnd();").c_str());
-		jaspRCPP_runScript((rCmdFiltered + "<- .readFullFilteredDatasetToEnd();").c_str());
+		std::set<std::string> columnsMentioned;
+		rCode = ColumnEncoder::columnEncoder()->encodeRScript(rCode, &columnsMentioned);
+
+		//Only the columns the code mentions get loaded, also through whole string literals
+		//(data[["LL"]]), and with the type asked for (data$LL.nominal). This selective read is only
+		//done when the commander asks for "columns by name", otherwise the full datasets are read
+		//below, so that positional access (data[, 3]) and nrow(data) keep working as they always did.
+		const ColumnEncoder::colsPlusTypes wanted = ColumnEncoder::columnEncoder()->colsPlusTypesFor(columnsMentioned);
+
+		if(!columnsByName)
+		{
+			//The old behaviour: always hand the commander the full datasets, with the types as shown.
+			jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readFullDatasetToEnd());").c_str());
+			jaspRCPP_runScript((rCmdFiltered	+ "<- .encodedFrame(.readFullFilteredDatasetToEnd());").c_str());
+		}
+		else
+		{
+			//The same requested read that analyses and filters use: datasetWanted says which columns
+			//and types to load, and the frame override from jaspEncodedFrame.R resolves the string
+			//literals at lookup time. There is no fallback to the full dataset here: code that names
+			//no columns simply gets an empty frame (rows are kept, columns are not).
+			rbridge_setWantedCols(wanted);
+
+			jaspRCPP_runScript((rCmdDataName	+ "<- .encodedFrame(.readDataSetRequestedNativeUnfiltered());").c_str());
+			jaspRCPP_runScript((rCmdFiltered	+ "<- .encodedFrame(.readDataSetRequestedNative());").c_str());
+		}
 	}
 
 	std::string rCodeResult =	jaspRCPP_evalRCodeCommander(rCode.c_str());
 
 	if(thereIsSomeData)
-	{
-		rbridge_detachRCodeEnv(rCmdFiltered);
-		rbridge_detachRCodeEnv(rCmdDataName);
-		rCodeResult = ColumnEncoder::columnEncoder()->decodeAll(rCodeResult);
-	}
+		rCodeResult = ColumnEncoder::decodeAll(rCodeResult);
 
 	sendRCodeResult(-1, rCodeResult);
 
@@ -554,7 +682,7 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 	int			dataSetId		  =						 jsonRequest.get("dataSetId",	-1).asInt();
 
-	runComputeColumn(dataSetId, computeColumnName, computeColumnCode, computeColumnType);
+	runComputeColumn(dataSetId, computeColumnName, computeColumnCode, computeColumnType, referencedFilterIdsFromRequest(jsonRequest));
 }
 
 void Engine::receiveComputeDataSetMessage(const Json::Value & jsonRequest)
@@ -568,10 +696,10 @@ void Engine::receiveComputeDataSetMessage(const Json::Value & jsonRequest)
 	int			dataSetId				= jsonRequest.get("dataSetId", -1).asInt();
 	int			defaultInputFilterId	= jsonRequest.get("defaultInputFilterId", -1).asInt();
 
-	runComputeDataSet(dataSetId, computeCode, defaultInputFilterId);
+	runComputeDataSet(dataSetId, computeCode, defaultInputFilterId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
-void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType)
+void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType, const std::vector<int> & referencedFilterIds)
 {
 	Log::log() << "Engine::runComputeColumn()" << std::endl;
 
@@ -590,15 +718,26 @@ void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnNa
 	{
 		try
 		{
-			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
-			
 			Column * compCol = compDataSet->column(computeColumnName);
 			
-			std::string useThisFilter				= compCol ? compCol->computeFilter() : "",
-						computeColumnResultStr		= rbridge_evalRComputedColumn(
+			const std::string useThisFilter = compCol ? compCol->computeFilter() : "";
+			
+			// The run's slice context is the COMPUTE
+			//FILTER's view - the same view the data frame R reads inside
+			//rbridge_evalRComputedColumn, and the namespace bare names in the code fall back
+			//to. The output-name encode uses that same explicit handle; the process-global
+			//current encoder is no longer consulted here. ""/unknown falls back to the default
+			//filter - the same fallback showFilter applies.
+			Filter * computeFilter = compDataSet->filter(useThisFilter.empty() ? DEFAULT_FILTER_NAME : useThisFilter);
+			ColumnEncoder * runView = computeFilter ? computeFilter->columnEncoder() : nullptr;
+			std::string computeColumnNameEnc = runView ? runView->encode(computeColumnName) : ColumnEncoder::columnEncoder()->encode(computeColumnName);
+			
+			std::string computeColumnResultStr		= rbridge_evalRComputedColumn(
 							computeColumnCode, 
 							"toString("+ setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', .calcedVals, 1))",
-							useThisFilter);
+							useThisFilter,
+							computeFilter,
+							referencedFilterIds);
 	
 			computeColumnResponse["result"]			= computeColumnResultStr;
 			computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
@@ -620,7 +759,7 @@ void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnNa
 	_engineState = engineState::idle;
 }
 
-void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, int defaultInputFilterId)
+void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, int defaultInputFilterId, const std::vector<int> & referencedFilterIds)
 {
 	Log::log() << "Engine::runComputeDataSet()" << std::endl;
 
@@ -661,7 +800,7 @@ void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, i
 				throw std::runtime_error("Computed dataset (id " + std::to_string(dataSetId) + ") not found in engine's workspace; aborting compute. The output dataset must be synced before it can be filled.");
 			std::string	outputName	= output->name().toStdString();
 
-			std::string computeDataSetResult = rbridge_evalRComputedDataSet(computeCode, outputName, inputFilter->name());
+			std::string computeDataSetResult = rbridge_evalRComputedDataSet(computeCode, outputName, inputFilter->name(), inputFilter, referencedFilterIds);
 
 			computeDataSetResponse["result"]	= computeDataSetResult;
 			computeDataSetResponse["error"]		= jaspRCPP_getLastErrorMsg();
@@ -691,12 +830,18 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	std::string		moduleCode		= jsonRequest["moduleCode"].asString();
 	std::string		moduleName		= jsonRequest["moduleName"].asString();
 	std::string		moduleLibPaths  = jsonRequest["moduleLibPaths"].asString();
+	std::string		modulePkgMap	= jsonRequest.get("modulePkgMap", Json::nullValue).asString();
 
 	Log::log() << "About to run module request for module '" << moduleName << "' and code to run:\n'" << moduleCode << "'" << std::endl;
 
 	if(moduleStatusFromString((moduleRequest)) == moduleStatus::loading) {
 		//Some jaspModules use jaspBase calls in their .onload so we first we need to prepare jaspbase
-		jaspRCPP_evalRCode((".libPaths( " + moduleLibPaths +  " ); 'success'").c_str(), false);
+		//The pkg map (Windows micro-library layout) must be in place before anything loads, so that
+		//even jaspBase's own resolution skips the libpaths sweep.
+		std::string	setupCode = ".libPaths( " + moduleLibPaths + " ); ";
+		if(!modulePkgMap.empty() && modulePkgMap != "character(0)")
+			setupCode += "options(JASP.find.package.map = " + modulePkgMap + "); " + std::string(pkgMapFindPackagePatch) + " ";
+		jaspRCPP_evalRCode((setupCode + "'success'").c_str(), false);
 		jaspRCPP_init_jaspBase();
 	}
 
@@ -792,7 +937,11 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
 		_resultFont				= jsonRequest.get("resultFont",			"").asString();
 		_analysisPreloadData	= jsonRequest.get("preloadData",		false).asBool();
+		_analysisMultiDataSet	= jsonRequest.get("multiDataSetAware",	false).asBool();
 		_engineState			= engineState::analysis;
+
+		//Never let a queue from a previous run leak into this one:
+		setMultiDataSetQueue({});
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
 		
@@ -812,7 +961,14 @@ void Engine::sendString(Json::Value message)
 	
 	if(message.isObject()) //If everything is converted to jaspResults maybe we can do this there?
 	{
-		ColumnEncoder::columnEncoder()->decodeJsonSafeHtml(message); // decode all columnnames as far as you can
+		//Every results payload goes through the one global strict decode table:
+		//a block per live filter of every loaded dataset plus the extras block, membership-only,
+		//unknown tokens staying raw. Aware and non-aware runs are not different here - a non-aware
+		//analysis may still live in a workspace with other datasets, and over-sweeping is harmless.
+		//safeHtml is just a parameter of the sweep (the old currentEncoder-flip variant is gone);
+		//desktop renders HTML, so safeHtml = true.
+		ColumnEncoder::decodeJson(message, /*replaceNames=*/true, /*safeHtml=*/true);
+
 		msgStr = message.toStyledString();
 	}
 	else if(message.isString())
@@ -827,6 +983,12 @@ void Engine::sendString(Json::Value message)
 void Engine::runAnalysis()
 {
 	Log::log() << "Engine::runAnalysis() " << _analysisTitle << " (" << _analysisId << ") revision: " << _analysisRevision << std::endl;
+
+	// Drawing a plot decodes its column names, which needs the analysis' dataset to be the current encoder.
+	// That is only set once the dataset is provided, and an engine may get an image request before
+	// it ran any analysis (e.g. a resize right after loading a .jasp file).
+	if(_analysisStatus == Status::saveImg || _analysisStatus == Status::editImg || _analysisStatus == Status::rewriteImgs)
+		provideAndUpdateDataSet(_analysisDataSetId);
 
 	switch(_analysisStatus)
 	{
@@ -853,16 +1015,42 @@ void Engine::runAnalysis()
 	
 	updateOptionsAccordingToMeta(encodedAnalysisOptions);
 
-	_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
+	std::string multiDataSetJson;
+
+	//Check multiAware before preload: an aware analysis always runs preload-style (the datasets are
+	//handed over through the queued reads), and preloadData is forced true for aware entries anyway
+	//(Modules::AnalysisEntry::preloadData), so the flag must not gate this branch.
+	if(_analysisMultiDataSet)
+	{
+		//Encoding and slice queueing happen per dataset from the .meta provenance the controls
+		//stamped; shared with the syntax bridge through DataBridge so the two cannot drift apart.
+		MultiDataSetRunPlan plan = prepareMultiDataSetRun(encodedAnalysisOptions, _analysisDataSetId, _analysisFilter, _analysisTitle);
+
+		if(DataSet * primary = plan.primaryDataSetId >= 0 ? resolveWorkspace()->dataSetById(plan.primaryDataSetId) : nullptr)
+			dataset = primary;
+
+		_analysisColsTypes = plan.primaryCols;
+		multiDataSetJson	= plan.multiDataSetJson.toStyledString();
+	}
+	else
+	{
+		//Non-aware: the classic single (shown) dataset path, encoded against the current encoder.
+		_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
+	}
 
 	if(dataset && !_analysisFilter.empty() && dataset->filter(_analysisFilter))
 		dataset->showFilter(_analysisFilter); //Only show a filter that actually exists: showFilter(name)
 		                                        //creates a new filter for an unknown name, which would
 		                                        //silently fabricate one from a stale analysis request.
-	
+
+	// strip the transient `.filterIds` provenance from the ENCODED copy at the
+	//very last moment before R sees it (prepareMultiDataSetRun consumed it above; the unencoded
+	//_analysisOptions keeps the sidecar so a Status::changed re-run can consume it again).
+	stripTransientProvenanceForR(encodedAnalysisOptions);
+
 	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
 								encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, 
-								_developerMode, _analysisColsTypes, _analysisPreloadData);
+								_developerMode, _analysisColsTypes, _analysisPreloadData, multiDataSetJson);
 
 	switch(_analysisStatus)
 	{

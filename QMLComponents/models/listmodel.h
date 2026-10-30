@@ -56,7 +56,9 @@ public:
 		VirtualRole,
 		DeletableRole
     };
-	typedef QMap<QString, RowControls*>							RowControlMap;
+	///< row controls keyed by ROW IDENTITY (value + filterId), not by name, so
+	///  same-name twin rows behind different filters each get and keep their own controls.
+	typedef QMap<TermRowKey, RowControls*>						RowControlMap;
 
 	ListModel(JASPListControl* listView);
 	
@@ -81,9 +83,20 @@ public:
 	virtual void					setUpRowControls(int startRow = 0, bool onlyRemove = false);
 	const RowControlMap	&			getAllRowControls()												const		{ return _rowControlsMap;				}
 	Terms::RelatedValuesPerTerm		getTermsWithComponentValues()									const;
-	RowControls*					getRowControls(const QString& key)								const		{ return _rowControlsMap.value(key);	}
+	///< Exact row-controls access by row identity. The QString overload resolves
+	///< the name through the model (first row term with that name) - the legacy name-only API,
+	///< deterministic for twins now.
+	RowControls*					getRowControls(const TermRowKey& key)							const		{ return _rowControlsMap.value(key);	}
+	RowControls*					getRowControls(const QString& key)							const;
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)			const;
-	virtual bool					addRowControl(const QString& key, JASPControl* control);
+	///< Exact (name, filterId) row-control lookup: every C++ caller that holds the
+	///< row's term uses this, so a twin never resolves to the other row's control.
+	virtual JASPControl	*			getRowControl(const TermRowKey& key, const QString& name)			const;
+	///< Registration of a row control into the RowControls that is being (re)built:
+	///< the key is the creating row's identity (value + filterId, or the tableview's
+	///< per-row index string with filterId -1), never a bare name - name-based registration
+	///< would put a twin row's controls into the first row's set.
+	virtual bool					addRowControl(const TermRowKey& key, JASPControl* control);
 			QStringList				allLevels(const Terms& terms)									const;
 			void					setVariableType(int index, columnType type);
 			columnType				getVariableType(	const QString& name)						const;
@@ -97,6 +110,44 @@ public:
 			Terms					checkTermsTypes(const Terms& terms)								const;
 			Terms					checkTermsTypes(const std::vector<Term>& terms)					const;
 			void					checkTermsTypes();
+			///< (ORIGIN-AUTHORITATIVE participation rule): a term follows a provider
+			///  update iff it is a reference into the provider that changed - its stamp equals
+			///  `filterIdToUpdate`, the filterId the affected terms CURRENTLY carry (the old
+			///  selection id on a host switch, the unchanged selection id on a data change, -1
+			///  for a hostless/default-provider pool). Plain equality, no special cases: a -1
+			///  term participates exactly when the key is -1 (a hostless pool's update - the
+			///  default provider IS that pool's provider, and the replacement it delivers is
+			///  -1-stamped too, so -1 terms never change identity through this); on a qualified
+			///  update a -1 term is a reference into the provider WITHOUT host selection, which
+			///  resolves at use time through the host-bound fallback chain and is governed by THAT provider, so
+			///  it is never touched here. A foreign stamp (a typed copy picked/bound through
+			/// another pool) belongs to that other provider and keeps its
+			///  provenance.
+			static bool			termFollowsProviderChange(int termFilterId, int filterIdToUpdate)
+			{
+				return termFilterId == filterIdToUpdate;
+			}
+			///< ONE reconcile routine for a provider update (the signal-driven
+			///  successor of the deleted restamp walk, HostFilterSelection::restampValuesUnderHost
+			///  / restampTermsFilterId). `filterIdToUpdate` is the participation key (see
+			///  termFollowsProviderChange); `newUniverse` is the pool's rebuilt universe, whose
+			///  terms are birth-stamped by the pool (FIX 1). A participating term whose NAME the
+			///  universe still serves (NAME-ONLY comparison - the provenance pre-selection
+			///  already happened via the key, so the value-only lookup is deliberate) is
+			///  REPLACED BY the delivered universe term - stamp and fresh type ride the
+			///  replacement, never an in-place re-point (the same identity-change class as a
+			///  rename, so the row maps re-key exactly like the rename flow,
+			///  ListModelTermsAssigned::changeTerm); a vanished name is collected into the
+			///  returned Terms for the caller to remove with its own family machinery. Emits
+			///  dataChanged for the replaced rows (which folds into termsChanged ->
+			///  usedVariablesChanged), so the update is never silent.
+			///  Virtual: the multi-column and interaction families reconcile their own shapes (the
+			///  tuples / the components), the base version is the single-column rule.
+			virtual Terms		reconcileProviderChange(int filterIdToUpdate, const Terms &newUniverse);
+			///< Introspection (QML tests): "name@filterId" per model term - the
+			///< typed proof that a host switch restamped exactly the controls of the host that
+			///< moved. Empty filterId part (-1) means unqualified (no explicit host).
+			Q_INVOKABLE QStringList	termProvenanceForTest() const;
 	virtual Terms					termsFromIndexes(	const QList<int>& indexes)					const;
 	virtual QList<int>				indexesFromTerms(	const Terms		& terms)					const;
 
@@ -132,6 +183,9 @@ public slots:
 			void dataChangedHandler(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 
 protected:
+			///< The one init write path; protected like the other _-helpers below (subclasses and
+			///  test harnesses seed models without the listView-dependent source connecting).
+			void	_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool initRowControls = true);
 			void	_setTerms(const Terms& terms);
 			void	_setTerms(const Terms& terms, const Terms& parentTerms);
 			void	_removeTerms(const Terms& terms);
@@ -144,9 +198,12 @@ protected:
 			void	_connectAllSourcesControls();
 			Term	_checkTermType(const Term& terms)					const;
 			void	_setAllowedType(Term& term)							const;
+			///< The filter id of the selection this list's variables resolve through,
+			///< -1 when there is no explicit selection host — see _setAllowedType.
+			int		_currentSelectionFilterId()							const;
 
 			bool							_needsSource			= true;
-			QMap<QString, RowControls* >	_rowControlsMap;
+			RowControlMap						_rowControlsMap;			// keyed by row identity (TermRowKey), see getAllRowControls
 			QQmlComponent *					_rowComponent			= nullptr;
 			Terms::RelatedValuesPerTerm		_rowControlsValues;
 			QList<BoundControl *>			_rowControlsConnected;
@@ -154,7 +211,6 @@ protected:
 			QStringList						_columnsUsedForLabels;
 
 private:
-			void	_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool initRowControls = true);
 			void	_connectSourceControls(SourceItem* sourceItem);
 
 			JASPListControl*				_listView = nullptr;

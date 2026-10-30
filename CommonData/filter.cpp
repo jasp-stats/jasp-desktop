@@ -4,6 +4,7 @@
 #include "timers.h"
 #include "qutils.h"
 #include "dataset.h"
+#include "workspace.h"	// the Filter::nameChanged -> Workspace::filterNameChanged relay
 #include "dataenums.h"
 #include "filtereddata.h"
 #include "columnencoder.h"
@@ -60,6 +61,14 @@ void Filter::connectionCreation()
 	connect(this,	&Filter::refreshAllCompCols,	_data,	&DataSet::refreshAllCompCols);
 	connect(_data,	&DataSet::datasetChanged,		this,	&Filter::datasetChanged		);
 	connect(this,	&Filter::nameChanged,			_data,	[&](){_data->incRevision();});
+
+	// relay named-filter renames to the workspace so editors holding qualified
+	//references to this filter BY NAME can revalidate (the invalidation is loud, no edit
+	//needed on the editor side). The default filter's name never changes.
+	connect(this,	&Filter::nameChanged,			_data,	[this](){
+		if(_data->workspace() && _name != DEFAULT_FILTER_NAME)
+			emit _data->workspace()->filterNameChanged(_data->id());
+	});
 		
 	_data->registerFilter(this);
 	
@@ -89,6 +98,49 @@ void Filter::dbCreate()
 {
 	assert(_id == -1);
 	_id = db().filterInsert(_data->id(), _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
+	ensureColumnView();	//the rowid is final from here on, so the namespace view can be minted
+}
+
+void Filter::setId(int id)
+{
+	if(_id == id)
+		return;
+
+	_id = id;
+
+	if(_columnView)	//the (re)assigned rowid changes the namespace: reforge the view (DatabaseInterface::dataSetBatchedValuesLoad path)
+	{
+		dropColumnView();
+		ensureColumnView();
+	}
+}
+
+void Filter::ensureColumnView()
+{
+	if(_id == -1 || !_data)
+		return;
+
+	const std::string prefix = "JASPColumn_D" + std::to_string(_data->id()) + "_F" + std::to_string(_id) + "_";
+
+	if(_columnView && _columnView->encodePrefix() == prefix)
+		return;	//already live under this exact namespace (dbLoad re-entry)
+
+	dropColumnView();
+	_columnView = ColumnEncoder::createView(&_data->encoder(), prefix);
+}
+
+void Filter::dropColumnView()
+{
+	delete _columnView;	//~ColumnEncoder erases the block: this filter's tokens go raw
+	_columnView = nullptr;
+}
+
+Filter::~Filter()
+{
+	//The namespace view is the only thing the global decode table knows about this filter; with the
+	//block erased its tokens go raw. The rest of the members keep their pre-Phase-1
+	//lifetimes (QObject-parented where applicable).
+	dropColumnView();
 }
 
 void Filter::dbUpdate(bool writeFiltered)
@@ -134,6 +186,8 @@ bool Filter::dbLoad()
 
 	if(_id == -1)
 		return false;
+
+	ensureColumnView();	//rowid is final, mint/keep this filter's namespace view
 
 	db().transactionReadBegin();
 	
@@ -492,6 +546,19 @@ VarInfoModelProxy *Filter::rowFilteredVarInfo() const
 QAbstractItemModel *Filter::providerModel()
 {
 	return rowFilteredVarInfo();
+}
+
+ColumnEncoder *Filter::columnEncoder()
+{
+	//This filter is its own namespace: whoever en-/decodes through this provider
+	//(host dataset selection) uses this filter's view - canonical mint indices composed with this
+	//filter's prefix - never the process-global current one (which only means something inside an
+	//engine request). Lazy so a filter whose dbLoad attached no view yet still answers; nullptr
+	//only while no final rowid exists.
+	if(!_columnView)
+		ensureColumnView();
+
+	return _columnView;
 }
 
 

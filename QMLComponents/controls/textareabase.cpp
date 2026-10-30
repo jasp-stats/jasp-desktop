@@ -34,6 +34,27 @@ TextAreaBase::TextAreaBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
 	_controlType = ControlType::TextArea;
+
+	connect(this, &JASPControl::formIsKnown, this, &TextAreaBase::handleFormIsKnown);
+
+	//Per-component dataset selection state lives in _hostSelection, the Q_PROPERTYs mirror it:
+	connect(&_hostSelection, &HostFilterSelection::selectedFilterIdChanged,		this, &TextAreaBase::selectedFilterIdChanged);
+	connect(&_hostSelection, &HostFilterSelection::selectionAvailableChanged,	this, &TextAreaBase::selectionAvailableChanged);
+	connect(&_hostSelection, &HostFilterSelection::filterSelectionValuesChanged, this, &TextAreaBase::filterSelectionValuesChanged);
+}
+
+void TextAreaBase::handleFormIsKnown(AnalysisForm * form)
+{
+	if (!form)
+		return;
+
+	connect(form, &AnalysisForm::analysisChanged,	this, [this]() { _hostSelection.analysisBecameKnown(); });
+	//Plain functor connections (Qt::UniqueConnection does not apply to lambdas): these signals
+	//can fire several times per setup, but both HostFilterSelection entries are idempotent
+	//(same filter -> early return), so duplicates are harmless.
+	connect(form, &AnalysisForm::filterChanged,		this, [this]() { _hostSelection.analysisFilterMaybeChanged(); });
+
+	_hostSelection.analysisBecameKnown();
 }
 
 void TextAreaBase::setUpModel()
@@ -42,17 +63,17 @@ void TextAreaBase::setUpModel()
 	{
 		_model = new ListModelTermsAvailable(this);
 		_model->setNeedsSource(_textType == TextType::TextTypeCSem || _textType == JASPControl::TextType::TextTypeMetaSem);
-		connect(form()->varInfo(),	&VariableInfo::dataSetChanged,		this,	&TextAreaBase::checkSyntaxHandler);
+		connect(resolvedVarInfo(),	&VariableInfo::dataSetChanged,		this,	&TextAreaBase::checkSyntaxHandler);
 
 		if (_textType == TextType::TextTypeLavaan)
 		{
 			// Lavaan TextArea does not have a source, but the script contains variables: so it the variables types or names change, the model must be updated.
 
-			connect(form()->varInfo(),	&VariableInfo::variableNamesChanged,	_model, &ListModel::sourceVariableNamesChanged,	Qt::UniqueConnection);
-			connect(form()->varInfo(),	&VariableInfo::variableTypeChanged,		_model, &ListModel::sourceVariableTypeChanged,	Qt::UniqueConnection);
+			connect(resolvedVarInfo(),	&VariableInfo::variableNamesChanged,	_model, &ListModel::sourceVariableNamesChanged,	Qt::UniqueConnection);
+			connect(resolvedVarInfo(),	&VariableInfo::variableTypeChanged,		_model, &ListModel::sourceVariableTypeChanged,	Qt::UniqueConnection);
 			//If "rowCount" changes on VariableInfo it means a column has been added or removed, this means the model should be reencoded and checked
 			//Fixes https://github.com/jasp-stats/jasp-issues/issues/2462
-			connect(form()->varInfo(),	&VariableInfo::rowCountChanged,			this,	&TextAreaBase::checkSyntaxMaybeHandler,	Qt::UniqueConnection);
+			connect(resolvedVarInfo(),	&VariableInfo::rowCountChanged,			this,	&TextAreaBase::checkSyntaxMaybeHandler,	Qt::UniqueConnection);
 		}
 
 		JASPListControl::setUpModel();
@@ -64,11 +85,24 @@ bool TextAreaBase::containsVariables() const
 	if (_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeMetaSem)
 		return true;
 
+	// (the zoo's Rcode textarea with its own host): R-code text references columns -
+	//the control encodes it through the host view at bind time - so declaring a selection on it
+	//must also make the option ENCODE-side visible: encodeValue() gates the transient `.filterIds`
+	//node (BoundControlBase::createFilterIds), and without that node the host's slice is never
+	//queued and the tokens the text carries name a dataframe R never received. Scoped to the
+	//R-code type on purpose: a plain/default TextArea's text is never encoded (whole-string
+	//shouldEncode would be wrong there), and the Source/JAGS/Lavaan-family types already answer
+	//true through their own model/relation routes.
+	if (_hostSelection.selectionAvailable() && _textType == TextType::TextTypeRcode)
+		return true;
+
 	return JASPListControl::containsVariables();
 }
 
 void TextAreaBase::setUp()
 {
+	handleFormIsKnown(form());
+
 	switch (_textType)
 	{
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);												break;

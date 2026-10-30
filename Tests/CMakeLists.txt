@@ -35,6 +35,14 @@ qt_add_executable(
 )
 
 qt_add_executable(
+  JASPTestEngineImages
+  ${SYSTEM_TYPE}
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+  testengineimages.h testengineimages.cpp
+)
+
+qt_add_executable(
   JASPQuickTest
   ${SYSTEM_TYPE}
   testqml.h
@@ -81,14 +89,25 @@ qt_add_executable(
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
 )
 
+qt_add_executable(
+  JASPTestJsonDiff
+  ${SYSTEM_TYPE}
+  testjsondiff.h
+  testjsondiff.cpp
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+)
+
 add_dependencies(JASPTest           JASPDesktopLib)
 add_dependencies(JASPTestDebugData  JASPDesktopLib)
 add_dependencies(JASPTestEngine     JASPDesktopLib)
+add_dependencies(JASPTestEngineImages JASPDesktopLib)
 add_dependencies(JASPQuickTest      JASPDesktopLib)
 add_dependencies(JASPTestCsvPrev    JASPDesktopLib)
 add_dependencies(JASPTestDbMigration JASPDesktopLib)
 add_dependencies(JASPTestColumnEncoderContext Common)
 add_dependencies(JASPTestParsedArgs   JASPDesktopLib)
+add_dependencies(JASPTestJsonDiff     JASPDesktopLib)
 
 target_include_directories(
   JASPTest
@@ -107,6 +126,12 @@ target_include_directories(
 
 target_include_directories(
   JASPTestEngine
+  PUBLIC
+  JASPDesktopLib
+)
+
+target_include_directories(
+  JASPTestEngineImages
   PUBLIC
   JASPDesktopLib
 )
@@ -184,6 +209,13 @@ target_link_libraries(
 )
 
 target_link_libraries(
+  JASPTestEngineImages
+  PUBLIC
+  JASPDesktopLib
+  Qt::Test
+)
+
+target_link_libraries(
   JASPTestCsvPrev
   PUBLIC
   JASPDesktopLib
@@ -214,6 +246,13 @@ target_link_libraries(
   Qt6::Core
 )
 
+target_link_libraries(
+  JASPTestJsonDiff
+  PUBLIC
+  JASPDesktopLib
+  Qt::Test
+)
+
 target_compile_definitions(
   JASPTest
   PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
@@ -227,6 +266,11 @@ target_compile_definitions(
 
 target_compile_definitions(
   JASPTestEngine
+  PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
+)
+
+target_compile_definitions(
+  JASPTestEngineImages
   PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
 )
 
@@ -260,6 +304,7 @@ add_test(NAME testCsvPreview               COMMAND JASPTestCsvPrev)
 add_test(NAME testDbMigration              COMMAND JASPTestDbMigration)
 add_test(NAME testDebugData                COMMAND JASPTestDebugData)
 add_test(NAME testEngine                   COMMAND JASPTestEngine)
+add_test(NAME testEngineImages             COMMAND JASPTestEngineImages)
 add_test(NAME testQuick                    COMMAND JASPQuickTest)
 add_test(NAME testColumnEncoderContext     COMMAND JASPTestColumnEncoderContext)
 
@@ -296,6 +341,13 @@ if(BUILD_GATETEST)
 				--report ${CMAKE_CURRENT_BINARY_DIR}/gateTest.json)
 	set_tests_properties(gateTest PROPERTIES TIMEOUT 14400 LABELS gatetest
 		ENVIRONMENT "GATETEST_SCRIPT=fuzztest.py;JASP_BIN=${CMAKE_BINARY_DIR}/Desktop/JASP")
+endif()
+
+# Multi-dataset mode logic lives in jaspBase's R; check it directly with Rscript (no package install needed).
+find_program(RSCRIPT_EXECUTABLE Rscript)
+if(RSCRIPT_EXECUTABLE)
+  add_test(NAME testMultiDataSetRLogic     COMMAND ${RSCRIPT_EXECUTABLE} --slave --file ${CMAKE_CURRENT_SOURCE_DIR}/R/test_multidataset_rlogic.R)
+  set_tests_properties(testMultiDataSetRLogic PROPERTIES ENVIRONMENT "JASP_SOURCE_DIR=${CMAKE_SOURCE_DIR}")
 endif()
 
 

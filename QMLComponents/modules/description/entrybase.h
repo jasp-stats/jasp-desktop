@@ -30,6 +30,11 @@ class EntryBase : public DescriptionChildBase
 	Q_PROPERTY(QString		qml				READ qml				WRITE setQml				NOTIFY qmlChanged				)
 	Q_PROPERTY(EntryType	entryType		READ entryType										NOTIFY entryTypeChanged			) //Entry type can only be set in constructor, to keep things manageable
 	Q_PROPERTY(bool			requiresData	READ requiresData		WRITE setRequiresData		NOTIFY requiresDataChanged		)
+	///DEPRECATED and ignored: multiDataSetAwareness is decided by the analysis' loaded form (a control
+	///that registers a dataset selection flips AnalysisBase::multiDataSetAware, see HostFilterSelection).
+	///This write-only dummy only lets Analysis{} entries that still declare it keep loading; the
+	///declaration should be dropped from the qml instead.
+	Q_PROPERTY(bool			multiDataSetAware WRITE setMultiDataSetAwareDummy)
 	Q_PROPERTY(bool			preloadData		READ preloadData		WRITE setPreloadData		NOTIFY preloadDataChanged		)
 	Q_PROPERTY(bool			enabled			READ enabled			WRITE setEnabled			NOTIFY enabledEntryChanged		) //Hmm, this already exists in QQuickItem, maybe a problem?
 	Q_PROPERTY(bool			debug			READ debug				WRITE setDebug				NOTIFY debugChanged				)
@@ -67,6 +72,7 @@ public slots:
 	void setDebug(			bool	debug);
 	void setEnabled(		bool	enabled);
 	void setRequiresData(	bool	requiresData);
+	void setMultiDataSetAwareDummy(bool) {}; //DEPRECATED, ignored - see the multiDataSetAware property above
 	void setPreloadData(	bool	newPreloadData);
 	void devModeChanged(	bool	devMode);
 	void setHasWrapper(		bool	hasWrapper);

@@ -66,6 +66,23 @@ void DataSetProvider::resetDataSet()
 	
 	_workspace = new Workspace(this);
 	_workspace->createDataSet();
+	_firstLoadedDataSetId = -1;
+}
+
+void DataSetProvider::reloadWorkspace()
+{
+	//Open the database at hand afresh, like DataSetPackage does for a .jasp: the Workspace dies,
+	//a new one dbLoads every dataset out of the restored rows (ids preserved, stored filters
+	//materialised eagerly). The syntax bridge's loadDatabase() is not this: it loads a foreign
+	//file into the legacy single-dataset shape.
+	delete _workspace;
+	_workspace = nullptr;
+
+	_db->close();
+	_db->load();
+
+	_workspace = new Workspace(this);
+	_workspace->dbLoad();
 }
 
 int	DataSetProvider::rowCount(const QModelIndex &) const
@@ -87,10 +104,36 @@ QVariant DataSetProvider::data(const QModelIndex & index, int role) const
 	else								return QVariant(); //QAbstractTableModel::data(index, role);
 }
 
-void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSetStrings, int threshold, bool orderLabelsByValue)
+void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSetStrings, int threshold, bool orderLabelsByValue, const QString & title)
 {
-	if (!dataSet())
-		_workspace->createDataSet();
+	// With a title this is a named (multi-)dataset load: a dataset with that title gets its
+	// contents replaced, otherwise a new DataSet is added to the workspace (each through
+	// dbCreate, so they all get a real id and the encoder namespace minted by their per-filter
+	// views). Without a
+	// title the legacy behaviour holds: fill the shown dataset.
+	DataSet * target = nullptr;
+
+	if (title.isEmpty())
+	{
+		if (!dataSet())
+			_workspace->createDataSet();
+	}
+	else if (DataSet * existing = _workspace->dataSetByTitle(title))
+	{
+		_workspace->setShownDataSet(existing);
+		target = existing;
+	}
+	else
+	{
+		// createDataSet() reuses the shown dataset while it is still empty (the one
+		// resetDataSet() pre-creates), so the first named load fills that one.
+		target = _workspace->createDataSet();
+		_workspace->setShownDataSet(target);
+		target->setTitle(title);
+	}
+
+	if (_firstLoadedDataSetId < 0 && !title.isEmpty() && dataSet())
+		_firstLoadedDataSetId = dataSet()->id();   // primary of a multi-dataset syntax run
 
 	dataSet()->beginBatchedToDB();
 
@@ -119,7 +162,8 @@ void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & data
 	dataSet()->endBatchedToDB([](float f) {});
 
 	//The desktop must not rely on the process-global ColumnEncoder (that is only meaningful inside the
-	//engine's request context); consumers get the dataset's own encoder via provider->columnEncoder().
+	//engine's request context); consumers get a filter's view via provider->columnEncoder() and here we
+	//only (re)mint the dataset's canonical - every live view block follows automatically.
 	dataSet()->encoder().setCurrentNames(dataSet()->getColumnTypesMap());
 
 }

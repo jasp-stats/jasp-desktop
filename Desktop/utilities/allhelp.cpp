@@ -511,7 +511,8 @@ This is good, because we rely on a lot of opensource third party R packages from
 
 When developing R modules (and thus enabling "Developer mode") this will be disabled by default because otherwise the engine won't be able to load your development module.
 
-On macOs the operating system already implements at least a file access sandbox for applications and will ask for permission before accessing files outside it's "JASP.app". 
+On macOS the same checkbox is available and will use Apple's Seatbelt-sandbox to block the engines from the network: any R-code trying to phone home or fetch commands from the internet will simply fail. Local functionality, such as unix sockets and connections to localhost, keeps working so things like socket-based parallel-processing in R are unaffected. Filesystem access is not restricted on macOS: the operating system already implements a sandbox for applications and will ask for permission before JASP accesses files outside its "JASP.app".
+Installing modules still works with the sandbox enabled, because the module installation runs in a separate engine that is exempt from it.
 
 The same goes for the flatpak distribution of JASP on Linux, which in essence is a sandbox, which mediates access through file dialogs and the like. Here however we ask for home-directory read-access so that we can get normal user readable paths to recent files.
 This is entirely disableable by changing JASP's configuration per `flatpak override org.jaspstats.JASP --nofilesystem=~`.

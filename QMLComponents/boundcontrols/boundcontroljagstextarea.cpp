@@ -22,18 +22,6 @@
 #include "variableinfo.h"
 #include "columnencoder.h"
 
-ColumnEncoder * BoundControlJAGSTextArea::_encoder() const
-{
-	//Desktop-only: never use the process-global ColumnEncoder (that is only meaningful inside the engine's
-	//request context). Resolve the encoder for the data this control's form is bound to instead.
-	if (VariableInfo * vi = _textArea->form()->varInfo())
-		if (VariableInfoProvider * provider = vi->provider())
-			if (ColumnEncoder * encoder = provider->columnEncoder())
-				return encoder;
-
-	return ColumnEncoder::fallbackEncoder();
-}
-
 void BoundControlJAGSTextArea::bindTo(const Json::Value &value)
 {
 	if (value.type() != Json::objectValue)	return;
@@ -77,7 +65,28 @@ void BoundControlJAGSTextArea::checkSyntax()
 
 	// get the column names of the data set
 	_usedColumnNames.clear();
-	_textEncoded = tq(_encoder()->encodeRScript(stringUtils::stripRComments(fq(text)), &_usedColumnNames));
+
+	// resolve the qualified column references before the
+	//bare-name encode pass, exactly like the rlang companion - each becomes the referenced
+	//slice's token, bare names keep the context encoder as their fallback. Loud and
+	//typed, but non-blocking: an unresolved reference shows in the text area and the text is
+	//left unencoded (the bare pass would mangle it into the context namespace).
+	QString resolvedText;
+	bool resolved = true;
+	try
+	{
+		resolvedText = encodeQualifiedColumnRefs(tq(stringUtils::stripRComments(fq(text))));
+	}
+	catch (const std::exception & e)
+	{
+		resolved = false;
+		_textArea->setHasScriptError(true);
+		_textArea->setProperty("infoText", QString::fromStdString(e.what()));
+		_textEncoded = text;
+	}
+
+	if (resolved)
+		_textEncoded = tq(_encoder()->encodeRScript(fq(resolvedText), &_usedColumnNames));
 
 	QRegularExpression relationSymbol = QRegularExpression("<-|=|~");
 	QStringList textByLine = _textEncoded.split(QRegularExpression(";|\n"));
@@ -103,24 +112,15 @@ void BoundControlJAGSTextArea::checkSyntax()
 			if (paramName.contains("["))
                 paramName = paramName.left(paramName.indexOf("["));
 
-			if (paramName != "" && !_encoder()->shouldDecode(fq(paramName)))
+			//Token membership is the context-free global table's answer, not
+			//the host encoder's own map - the instance decode shims are retired.
+			if (paramName != "" && !ColumnEncoder::shouldDecode(fq(paramName)))
 				_usedParameters.insert(paramName);
 
 		}
 	}
 
-	Json::Value boundValue(Json::objectValue);
-
-	boundValue["modelOriginal"] = text.toStdString();
-	boundValue["model"] = _textEncoded.toStdString();
-	Json::Value columns(Json::arrayValue);
-	for (const std::string& column : _usedColumnNames)
-		columns.append(_encoder()->encode(column));
-	boundValue["columns"] = columns;
-	Json::Value parameters(Json::arrayValue);
-	for (const QString& parameter : _usedParameters)
-		parameters.append(parameter.toStdString());
-	boundValue["parameters"] = parameters;
+	Json::Value boundValue = liveBoundValue();
 
 	setBoundValue(boundValue);
 
@@ -129,6 +129,30 @@ void BoundControlJAGSTextArea::checkSyntax()
 	// Do not init the model terms when not necessary: this can call the resetBoundValues that calls checkSyntax
 	if (model->terms() != _usedParameters.values())
 		model->initTerms(_usedParameters.values());
+}
+
+// the value a JAGS textarea commits = the raw text plus the derived
+//model/columns/parameters of the last syntax check (the control's own cached typed state). One
+//builder for checkSyntax's writes; the generators read the committed result through
+//BoundControlTextArea::_appliedValue (commit-on-apply). No side effects in this builder.
+Json::Value BoundControlJAGSTextArea::liveBoundValue() const
+{
+	Json::Value boundValue(Json::objectValue);
+
+	boundValue["modelOriginal"] = _textArea->text().toStdString();
+	boundValue["model"]			= _textEncoded.toStdString();
+
+	Json::Value columns(Json::arrayValue);
+	for (const std::string& column : _usedColumnNames)
+		columns.append(_encoder()->encode(column));
+	boundValue["columns"] = columns;
+
+	Json::Value parameters(Json::arrayValue);
+	for (const QString& parameter : _usedParameters)
+		parameters.append(parameter.toStdString());
+	boundValue["parameters"] = parameters;
+
+	return boundValue;
 }
 
 

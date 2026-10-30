@@ -106,6 +106,13 @@ DataSet * DataSetPackage::createDataSet()
 
 void DataSetPackage::loadWorkspace(std::function<void(float)> progressCallback)
 {
+	if(QThread::currentThread() != thread())
+	{
+		//Regardless of which thread calls `deleteWorkspace` (including calls such as `deleteWorkspace(false)` within `loadWorkspace`, or `reset()`), the destruction is guaranteed to be completed on the GUI thread.
+		QMetaObject::invokeMethod(this, [this, cb = std::move(progressCallback)]() { loadWorkspace(cb); }, Qt::BlockingQueuedConnection);
+		return;
+	}
+
 	if(workspace())
 		deleteWorkspace(false); //no dbDelete necessary cause we just copied an old sqlite file here from the JASP file
 	

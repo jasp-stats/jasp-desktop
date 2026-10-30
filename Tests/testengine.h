@@ -24,7 +24,12 @@ private slots:
 	void    testComputedColumnCascade();
 	void    testComputedDataSet();
     void    testVariableInfoPerFilter();
+	void    testEngineRegistryPropagatesColumnMutations();
 	void	testScriptConstructorFuzz();
+	void	testQualifiedSliceReferencesEndToEnd();
+	void	testQualifiedConstructorReferencesEndToEnd();
+	void    testBatchAnalysis();
+	void    testBatchCreationGate();
 
 private:
 	EngineSync				*	_engines	= nullptr;

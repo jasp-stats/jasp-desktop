@@ -34,10 +34,33 @@
 #include "gui/preferencesmodel.h"
 #include "utilities/processhelper.h"
 #include "utilities/wincontainermanager.h"
+#include "utilities/macsandboxmanager.h"
 
 using namespace boost::interprocess;
 
 EngineSync * EngineSync::_singleton = nullptr;
+
+// a filter's run code is BOTH halves - the hand-written rFilter AND the
+//constructor-generated code (generatedFilter; Engine::runFilterByName/runDefaultFilter pass
+//both into rbridge_applyFilter, which prepares them as ONE script). The referencedFilterIds
+//sidecar must therefore list the references of both, exactly like sendFilter's union scan:
+//the constructor output can carry qualified outward refs (ScriptNodeColumn::toR
+//emits them for outward nodes). Bare/label-generated code holds no references, so scanning
+//the generated half is always safe.
+static std::set<int> referencedFilterIdsOf(const Filter * filter)
+{
+	std::set<int> ids;
+
+	if(Workspace::singleton() && filter)
+	{
+		ids = Workspace::singleton()->referencedFilterIdsInCode(filter->rFilter());
+		for(const int id : Workspace::singleton()->referencedFilterIdsInCode(filter->generatedFilter()))
+			ids.insert(id);
+	}
+
+	return ids;
+}
+
 
 EngineSync::EngineSync(QObject *parent)
 	: QAbstractListModel(parent)
@@ -562,6 +585,20 @@ int EngineSync::sendFilter(int dataSetId, const QString & generatedFilter, const
 
 	int requestId = ++_waitingFilterRequestIDCounter;
 	_waitingFilters.emplace_back(new RFilterStore(dataSetId, generatedFilter, filter, requestId));
+
+	// stamp the transient referencedFilterIds sidecar onto the request (desktop owns provenance,
+	//engine consumes and strips). Both halves of the run's
+	//code are scanned - the hand-written filter and the machine-generated constructor code -
+	//because the editors can emit qualified surface forms in either. Unresolvable
+	//references are logged inside the scan and the engine fails the run loudly at run time.
+	std::set<int> & referencedIds = _waitingFilters.back()->referencedFilterIds;
+	if(Workspace::singleton())
+	{
+		referencedIds = Workspace::singleton()->referencedFilterIdsInCode(filter.toStdString());
+		for(const int filterId : Workspace::singleton()->referencedFilterIdsInCode(generatedFilter.toStdString()))
+			referencedIds.insert(filterId);
+	}
+
 	Log::log() << "waiting filter with requestid: " << requestId << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 
 	return requestId;
@@ -583,13 +620,56 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 			auto * waiting = static_cast<RFilterByNameStore*>(script);
 
 			if(waiting->name == name && waiting->module == module && waiting->dataSetId == dataSetId)
+			{
+				// stale-sidecar guard: an identical request is already waiting,
+				//but its `referencedFilterIds` sidecar was stamped when it was queued - and the
+				//filter's code can have gained a NEW outward reference since (the
+				//SetRFilterCommand -> setInvalidated -> sendFilterByName re-queue lands exactly
+				//here while the older request is still queued). The engine loads the code by name
+				//from the db at dispatch time, so the CODE is fresh but the SIDECAR would be
+				//stale: the engine's own re-scan would fail the run loudly on a reference the
+				//sidecar never queued). Refresh the waiting store's
+				//sidecar from a fresh scan instead - the run then sees exactly the references
+				//the current code holds, without re-queueing a duplicate request.
+				if(Workspace::singleton())
+					if(DataSet * dataSet = Workspace::singleton()->dataSetById(dataSetId))
+						if(Filter * namedFilter = dataSet->filter(fq(name)))
+						{
+							// the fresh scan covers both halves of the run code
+							//(see referencedFilterIdsOf) - the constructor-generated half too.
+							const std::set<int> fresh = referencedFilterIdsOf(namedFilter);
+							if(fresh != waiting->referencedFilterIds)
+							{
+								Log::log() << "EngineSync::sendFilterByName: request for '" << name.toStdString()
+										   << "' is already waiting but its referencedFilterIds sidecar went stale ("
+										   << waiting->referencedFilterIds.size() << " -> " << fresh.size()
+										   << " referenced slices); refreshing it in place" << std::endl;
+								waiting->referencedFilterIds = fresh;
+							}
+						}
+
 				return;
+			}
 		}
 
 	//Unique requestId so the reply can be matched to this request (mirrors the default
 	//filter path): replies for superseded requests are dropped by EngineRepresentation
 	//and must never clear the filter's stale flag.
-	_waitingScripts.push(new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module));
+	RFilterByNameStore * store = new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module);
+
+	// stamp the transient referencedFilterIds sidecar (desktop owns
+	//provenance, engine consumes and strips). For a by-name run the code lives inside
+	//the named filter object, so the scan runs over BOTH halves of its run code here - the
+	//hand-written rFilter and the constructor-generated code (generatedFilter), which the
+	//outward constructor emission can qualify - when the dataset is not loaded desktop-side
+	//the sidecar stays empty and the engine's own re-scan of the code it loads fails the run
+	//loudly instead of guessing.
+	if(Workspace::singleton())
+		if(DataSet * dataSet = Workspace::singleton()->dataSetById(dataSetId))
+			if(Filter * namedFilter = dataSet->filter(fq(name)))
+				store->referencedFilterIds = referencedFilterIdsOf(namedFilter);
+
+	_waitingScripts.push(store);
 }
 
 void EngineSync::sendRCode(int dataSetId, const QString & rCode, int requestId, bool whiteListedVersion, QString module)
@@ -615,6 +695,13 @@ void EngineSync::computeColumn(int dataSetId, const QString & columnName, const 
 	}
 
 	_waitingCompCols.push(new RComputeColumnStore(dataSetId, columnName, computeCode, colType));
+
+	// stamp the transient referencedFilterIds sidecar onto the request (desktop owns provenance,
+	//engine consumes and strips). Unresolvable references
+	//are logged inside the scan; the engine fails the run loudly at run time if it cannot
+	//resolve them either.
+	if(Workspace::singleton())
+		_waitingCompCols.back()->referencedFilterIds = Workspace::singleton()->referencedFilterIdsInCode(computeCode.toStdString());
 }
 
 void EngineSync::computeDataSet(int dataSetId, const QString & computeCode, int defaultInputFilterId)
@@ -635,6 +722,13 @@ void EngineSync::computeDataSet(int dataSetId, const QString & computeCode, int 
 	}
 
 	_waitingCompDataSets.push(new RComputeDataSetStore(dataSetId, computeCode, defaultInputFilterId));
+
+	// stamp the transient referencedFilterIds sidecar onto the request (desktop owns provenance,
+	//engine consumes and strips). Unresolvable references
+	//are logged inside the scan; the engine fails the run loudly at run time if it cannot
+	//resolve them either.
+	if(Workspace::singleton())
+		_waitingCompDataSets.back()->referencedFilterIds = Workspace::singleton()->referencedFilterIdsInCode(computeCode.toStdString());
 }
 
 void EngineSync::processFilterScript()
@@ -1140,6 +1234,9 @@ QProcess * EngineSync::startSlaveProcess(int channel, bool privileged)
 #ifdef _WIN32
     if(privileged || !WinContainerManager::launchSandboxedEngine(slave, engineExe, args))
 		slave->start(engineExe, args);
+#elif defined(__APPLE__)
+	if(privileged || !MacSandboxManager::launchSandboxedEngine(slave, engineExe, args))
+		slave->start(engineExe, args);
 #else
 	slave->start(engineExe, args);
 #endif
@@ -1493,7 +1590,7 @@ EngineRepresentation *	EngineSync::createRCmdEngine()
 		const size_t rCmdChannelNumber = 12345; //Shouldnt ever crash with _channels
 
 		_rCmderChannel	= new IPCChannel(_memoryName, rCmdChannelNumber);
-        _rCmder			= createNewEngine(false, rCmdChannelNumber, true);
+        		_rCmder			= createNewEngine(false, rCmdChannelNumber, true);
 
 		_rCmder->setRunsAnalysis(	true);
 		_rCmder->setRunsUtility(	false);

@@ -576,7 +576,20 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
 	{
 		if (auto * t = AgentStateTracker::tracker(); t && t->isUserDiverged())
 		{
-			Json::Value snapshot = t->buildWorkspaceSnapshot();
+			Json::Value snapshot;
+			try
+			{
+				snapshot = t->buildWorkspaceSnapshot();
+			}
+			catch (const std::exception& e)
+			{
+				// Building the snapshot is a read-only pre-check: it must never throw
+				// through the caller (AiBridge runs inside a queued Qt slot, and an
+				// exception escaping a MetaCall event handler kills the app). Degrade
+				// to a regular RPC error instead.
+				return makeError(-32603,
+					std::string("Internal error building workspace snapshot: ") + e.what(), id);
+			}
 			t->markClean();
 			return makeError(-32001,
 				"Workspace state diverged since your last observation. "

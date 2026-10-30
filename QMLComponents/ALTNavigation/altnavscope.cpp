@@ -204,24 +204,27 @@ void ALTNavScope::setForeground(bool onForeground)
 
 	ALTNavControl* ctrl = ALTNavControl::ctrl();
 	_foreground = onForeground;
-	if (onForeground) // set ourselfs as the currentNode
+	if (ctrl->AltNavActive())
 	{
-		if (_root)
-			ctrl->setCurrentRoot(this);
-		ctrl->setCurrentNode(this);
-		ctrl->setAltNavInput(_prefix);
-	}
-	else
-	{
-		if (_root && ctrl->getCurrentRoot() == this) //we are the current root but we lost foreground so unset ourselfs
+		if (onForeground) // set ourselfs as the currentNode
 		{
-			ctrl->setCurrentRoot(ctrl->getDefaultRoot());
-			ctrl->resetAltNavInput();
+			if (_root)
+				ctrl->setCurrentRoot(this);
+			ctrl->setCurrentNode(this);
+			ctrl->setAltNavInput(_prefix);
 		}
-		if (ctrl->getCurrentNode() == this) //we are the currentNode but lost foreground reset to root
+		else
 		{
-			ctrl->setCurrentNode(ctrl->getCurrentRoot());
-			ctrl->setAltNavInput(ctrl->getCurrentRoot()->prefix());
+			if (_root && ctrl->getCurrentRoot() == this) //we are the current root but we lost foreground so unset ourselfs
+			{
+				ctrl->setCurrentRoot(ctrl->getDefaultRoot());
+				ctrl->resetAltNavInput();
+			}
+			if (ctrl->getCurrentNode() == this) //we are the currentNode but lost foreground reset to root
+			{
+				ctrl->setCurrentNode(ctrl->getCurrentRoot());
+				ctrl->setAltNavInput(ctrl->getCurrentRoot()->prefix());
+			}
 		}
 	}
 	emit foregroundChanged();
@@ -242,13 +245,15 @@ void ALTNavScope::setRoot(bool value)
 void ALTNavScope::setX(qreal x)
 {
 	_x = x;
-	_attachedTag->setX(_x);
+	if (_attachedTag)
+		_attachedTag->setX(_x);
 }
 
 void ALTNavScope::setY(qreal y)
 {
 	_y = y;
-	_attachedTag->setY(_y);
+	if (_attachedTag)
+		_attachedTag->setY(_y);
 }
 
 QString ALTNavScope::getRequestedPostfix()

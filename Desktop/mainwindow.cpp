@@ -16,6 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 #include <QDir>
+#include <algorithm>
 
 #include <QFile>
 #include <QUrl>
@@ -382,31 +383,110 @@ const QString MainWindow::commUrlMembers() const
 	return Coop::communityMembersUrl();
 }
 
+bool MainWindow::externalLinksEnabled() const
+{
+	// Settings-sourced: policy > forced.json > user INI > defaults.json >
+	// built-in (true). CONSTANT, so a change needs a restart.
+	return Settings::value(Settings::EXTERNAL_LINKS_ENABLED).toBool();
+}
+
 const QString MainWindow::contactUrlFeatures() const
 {
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";
-#else
-	return "https://jasp-stats.org/request-feature";	
-#endif
+	// Settings-sourced (name `contactUrlFeatures`): community default in
+	// settings.cpp, enterprise MSIs override it through forced.json or group
+	// policy — one binary serves every customer.
+	return Settings::value(Settings::CONTACT_URL_FEATURES).toString();
 }
 
 const QString MainWindow::contactUrlBugs() const
 {
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";
-#else
-	return "https://jasp-stats.org/report-bug";
-#endif
+	// Settings name `contactUrlBugs` — see contactUrlFeatures().
+	return Settings::value(Settings::CONTACT_URL_BUGS).toString();
 }
 
 const QString MainWindow::contactUrlCrashReport() const
 {
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
-#else
-	return "https://jasp-stats.org/report-bug";
+	// Settings name `contactUrlCrashReport` — see contactUrlFeatures().
+	return Settings::value(Settings::CONTACT_URL_CRASH_REPORT).toString();
+}
+
+const QString MainWindow::questionsUrl() const
+{
+	// Settings name `questionsUrl` — see contactUrlFeatures().
+	return Settings::value(Settings::QUESTIONS_URL).toString();
+}
+
+const QString MainWindow::enterpriseSupportUrl() const
+{
+	// Settings name `enterpriseSupportUrl` — see contactUrlFeatures(). Follows
+	// externalLinksEnabled; an empty string hides the welcome-page link too.
+	return Settings::value(Settings::ENTERPRISE_SUPPORT_URL).toString();
+}
+
+const QString MainWindow::howToUseUrl() const
+{
+	// Settings name `howToUseUrl` — see contactUrlFeatures(). Exempt from
+	// externalLinksEnabled; ships empty (hidden) and deployments opt in.
+	return Settings::value(Settings::HOW_TO_USE_URL).toString();
+}
+
+QString MainWindow::companyLogoUrl() const
+{
+	// Settings name `companyLogoPath` — see contactUrlFeatures() for the tier
+	// chain. Empty means "no logo". A relative path is resolved beside the
+	// executable and in its Resources/ subfolder (mirroring how forced.json
+	// and defaults.json are found; on macOS also in the bundle's Resources
+	// folder, where the per-client DMG layer stages CustomAssets/); an
+	// absolute path is taken as-is. A configured-but-missing file logs a
+	// warning and yields "" so the UI hides the logo instead of showing a
+	// broken image.
+	const QString raw = Settings::value(Settings::COMPANY_LOGO_PATH).toString();
+	if (raw.isEmpty())
+		return "";
+
+	QString found;
+	if (QDir::isAbsolutePath(raw))
+	{
+		if (QFile::exists(raw))
+			found = raw;
+	}
+	else
+	{
+		const QString appDir = QCoreApplication::applicationDirPath();
+		QStringList candidates = {
+			appDir + "/" + raw,
+			appDir + "/Resources/" + raw
+		};
+#ifdef __APPLE__
+		// applicationDirPath() is JASP.app/Contents/MacOS here, so the bundle's
+		// Resources folder is a sibling — the per-client DMG layer stages
+		// CustomAssets/ there, next to forced.json and defaults.json (same
+		// extra candidate as shippedSettings()).
+		candidates += appDir + "/../Resources/" + raw;
 #endif
+		for (const QString& candidate : candidates)
+			if (QFile::exists(candidate))
+			{
+				found = candidate;
+				break;
+			}
+	}
+
+	if (found.isEmpty())
+	{
+		qWarning() << "Settings: companyLogoPath" << raw << "does not point to an existing file; company logo not shown";
+		Log::log() << "Settings: companyLogoPath " << raw.toStdString() << " does not point to an existing file; company logo not shown" << std::endl;
+		return "";
+	}
+
+	return QUrl::fromLocalFile(QDir::cleanPath(found)).toString();
+}
+
+int MainWindow::companyLogoHeight() const
+{
+	// Settings name `companyLogoHeight` (default 35). Clamped so a policy
+	// typo cannot blow up the welcome-page layout.
+	return std::clamp(Settings::value(Settings::COMPANY_LOGO_HEIGHT).toInt(), 0, 200);
 }
 
 const QString MainWindow::contactText() const
@@ -1160,7 +1240,7 @@ void MainWindow::showLogFolder() const
 
 bool MainWindow::openURLFile(QString fileURLPath)
 {
-	QUrl fileUrl = fileURLPath.startsWith("file:") ? QUrl(fileURLPath) : QUrl::fromLocalFile(fileURLPath);
+	QUrl fileUrl = fileURLPath.startsWith("file:", Qt::CaseInsensitive) ? QUrl(fileURLPath) : QUrl::fromLocalFile(fileURLPath);
 	if (!fileUrl.isLocalFile())
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("Cannot access file %1").arg(fileURLPath));
@@ -1555,7 +1635,10 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 			if (QFile::exists(finalPath))
 				QFile::remove(finalPath);
 
-			QFile::copy(imagePath, finalPath);
+			//Streamed copy: QFile::copy is CopyFile-based and fails against EFS-encrypted session files (jasp-issues#4566)
+			std::string copyError;
+			if (!Utils::copyFileStreamed(imagePath.toStdString(), finalPath.toStdString(), copyError))
+				Log::log() << "Could not save image to '" << finalPath.toStdString() << "': " << copyError << std::endl;
 		}
 	}
 }
@@ -1577,7 +1660,11 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 
 		if (QFile::exists(finalPath))
 			QFile::remove(finalPath);
-		QFile::copy(imagePath, finalPath);
+
+		//Streamed copy: QFile::copy is CopyFile-based and fails against EFS-encrypted session files (jasp-issues#4566)
+		std::string copyError;
+		if (!Utils::copyFileStreamed(imagePath.toStdString(), finalPath.toStdString(), copyError))
+			Log::log() << "Could not save image to '" << finalPath.toStdString() << "': " << copyError << std::endl;
 	}
 }
 
@@ -1607,9 +1694,14 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 		string utf8 = fq(options);
 		Json::Value root;
 		Json::Reader().parse(utf8, root);
-		
-		root[".meta"] = analysis->optionsMeta();
-		
+
+		// the image request carries the analysis' CURRENT send-time `.meta`,
+		//generated from the components (never held provenance keys; the mirror's were
+		//documented-dead input for the engine since the sidecar flip) instead of the mirror's tree.
+		Json::Value generatedOptions = analysis->createOptionsJson(BoundControl::Engine);
+		if (generatedOptions.isMember(".meta"))
+			root[".meta"] = generatedOptions[".meta"];
+
 		analysis->editImage(root);
 	}
 }
@@ -1645,6 +1737,7 @@ void MainWindow::registerRpcHandlers()
 		}
 
 		info["loaded"]      = true;
+		info["dataSetId"]   = ds->id();
 		info["path"]        = tq(ds->dataFilePath()).toStdString();
 		info["rowCount"]    = static_cast<int>(ds->rowCount());
 
@@ -1668,6 +1761,27 @@ void MainWindow::registerRpcHandlers()
 			columns.append(col);
 		}
 		info["columns"] = columns;
+
+		//Every filter of this dataset, so an RPC client can bind analyses to a specific dataset/filter
+		//("selecting a dataset is selecting one of its filters") via analysis_create's filterId.
+		Json::Value filters(Json::arrayValue);
+
+		auto appendFilter = [&filters](const Filter * filter, bool isDefault)
+		{
+			Json::Value f;
+			f["filterId"] = filter->id();
+			f["name"]     = fq(filter->title());
+			f["isDefault"] = isDefault;
+			filters.append(f);
+		};
+
+		if (ds->defaultFilter())
+			appendFilter(ds->defaultFilter(), true);
+		for (const Filter * f : ds->filters())
+			if (f != ds->defaultFilter())
+				appendFilter(f, false);
+
+		info["filters"] = filters;
 
 		return info;
 	};
@@ -1935,7 +2049,12 @@ void MainWindow::fileEventRequestHandler(FileEvent *event)
 		_resultsJsInterface->exportPreviewHTML();
 		_package->setAnalysesData(_analyses->asJson());
 
-		JASPExporter::createSnapshot(event->isTmp() ? "jasp_autosave_snapshot_" : "jasp_snapshot_");
+		std::string snapshotError;
+		if (!JASPExporter::createSnapshot(event->isTmp() ? "jasp_autosave_snapshot_" : "jasp_snapshot_", &snapshotError))
+		{
+			event->setComplete(false, tr("Could not prepare the data for saving: %1").arg(tq(snapshotError)));
+			return;
+		}
 
 		_loader->io(event);
 	}
@@ -2201,7 +2320,7 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
-		if(!event->path().endsWith(".pdf") && _preferences->currentThemeName() != "lightTheme")
+		if(!event->path().endsWith(".pdf", Qt::CaseInsensitive) && _preferences->currentThemeName() != "lightTheme")
 			_resultsJsInterface->setThemeCss(_preferences->currentThemeName());
 	}
 	//FileSyncData completion is handled solely via AsyncLoader::syncCompleted -> DataSetSyncer::setSyncingResult
@@ -2221,7 +2340,10 @@ void MainWindow::populateUIfromDataSet(bool loadAnalyses)
 	_resultsJsInterface->setScrollAtAll(false);
 
 	if (loadAnalyses)
-		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
+		// hand the file's archive version to the analysis loader (do019Fix-style
+		//threading) - it gates the one-time best-effort decode of legacy bare-prefix result
+		//tokens in stored results trees.
+		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel, _package->archiveVersion());
 
 	if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 		(*_analyses)[0]->expandAnalysis(); //Show options for only analysis
@@ -2457,7 +2579,23 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	Json::Reader parser;
 	parser.parse(utf8, root);
 
-	analysis->setBoundValues(root);
+	// JSON->state goes through the controls, never through a direct mirror write.
+	//Since the sidecar flip the run request is GENERATED from component state, so a bare
+	//setBoundValues here would be written but never read - the downstream change would silently
+	//vanish. parseOptions is the same applier the RPC analysis_run uses (bindTo walks the bound
+	//controls; each write re-stamps and refreshes the mirror on the way). Without a form the
+	//options park as pending JSON: setAnalysisUp applies them exactly once at attach.
+	if (AnalysisForm * form = analysis->form())
+	{
+		Json::Value parsed;
+		std::string errorMsg;
+
+		if (!form->parseOptions(utf8, parsed, errorMsg) && !errorMsg.empty())
+			Log::log() << "MainWindow::analysisChangedDownstreamHandler: options for analysis " << id
+					   << " could not be applied: " << errorMsg << std::endl;
+	}
+	else
+		analysis->setPendingOptions(root);	//pending-options parking only (no form to apply through yet)
 }
 
 bool MainWindow::startDataEditorHandler()
@@ -2601,11 +2739,29 @@ void MainWindow::showAbout()
 
 void MainWindow::showContact()
 {
+#ifndef PRO
+	// Community-build lockdown: the Contact window points at the public
+	// jasp-stats.org channels there. In PRO it carries the client's own
+	// JASP Services tracker links (settings-driven URLs) and stays open.
+	if (!externalLinksEnabled())
+		return;
+#endif
+
+	// No tracker configured: with all three contact URLs explicitly empty
+	// the window would be nothing but dead links, so treat it as unavailable.
+	if (	Settings::value(Settings::CONTACT_URL_FEATURES).toString().isEmpty()
+		&&	Settings::value(Settings::CONTACT_URL_BUGS).toString().isEmpty()
+		&&	Settings::value(Settings::CONTACT_URL_CRASH_REPORT).toString().isEmpty())
+		return;
+
 	setContactVisible(true);
 }
 
 void MainWindow::showCommunity()
 {
+	if (!externalLinksEnabled())
+		return;
+
 	setCommunityVisible(true);
 }
 
@@ -2669,7 +2825,7 @@ void MainWindow::startDataEditor(QString path)
 #endif
 		if (!QDesktopServices::openUrl(QUrl::fromLocalFile(path)))
 		{
-			if (fileInfo.suffix() == "csv")
+			if (fileInfo.suffix().compare("csv", Qt::CaseInsensitive) == 0)
 				MessageForwarder::showWarning(tr("Start Spreadsheet Editor"), tr("No default spreadsheet editor for file %1. Use Preferences to set the right editor.").arg(fileInfo.fileName()));
 			else
 			{

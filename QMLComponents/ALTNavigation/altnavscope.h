@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QQuickItem>
+#include <QPointer>
 
 #include "altnavtag.h"
 #include "altnavpostfixassignmentstrategy.h"
@@ -143,7 +144,7 @@ private:
 	qreal _x, _y;
 
 	QQuickItem* _attachee;
-	ALTNavTagBase* _attachedTag = nullptr;
+	QPointer<ALTNavTagBase> _attachedTag = nullptr;
 	QQuickItem* _parentScopeAttachee = nullptr;
 	bool _parentOverride = false;
 	bool _initialized = false;

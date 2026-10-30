@@ -39,8 +39,25 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const Terms::RelatedV
 		availableModel()->removeTermsInAssignedList();
 }
 
-void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
+void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved, int filterIdToUpdate)
 {
+	// (ORIGIN-AUTHORITATIVE): the pool's provider moved on. References into that
+	//provider (stamp == filterIdToUpdate) reconcile here - survivors are REPLACED BY the
+	//delivered universe terms (the row maps re-key rename-flow style inside
+	//reconcileProviderChange), vanished names die - while foreign stamps and -1 terms are
+	//other providers' references and never move. The vanished ones are removed with the same
+	//machinery the pool's own removals use.
+	Terms vanished;
+	if (availableModel())
+		vanished = reconcileProviderChange(filterIdToUpdate, availableModel()->allTerms());
+
+	if (vanished.size() > 0)
+	{
+		beginResetModel();
+		_removeTerms(vanished);
+		endResetModel();
+	}
+
 	if (termsAdded.size() > 0 && listView()->addAvailableVariablesToAssigned())
 	{
 		beginResetModel();
@@ -154,7 +171,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 	const Term& term = terms().at(size_t(index));
 	AnalysisForm* form = listView()->form();
 
-	RowControls* controls = _rowControlsMap.value(term.value());
+	RowControls* controls = _rowControlsMap.value(TermRowKey::ofTerm(term));	// exact row identity
 	if (controls)
 	{
 		for (JASPControl* control : controls->getJASPControlsMap().values())
@@ -164,7 +181,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 				form->clearControlError(control);
 		}
 
-		_rowControlsMap.remove(term.value());
+		_rowControlsMap.remove(TermRowKey::ofTerm(term));
 	}
 	_removeTerm(term);
 
@@ -176,10 +193,24 @@ void ListModelTermsAssigned::changeTerm(int index, const Term& term)
 	Term oldTerm = terms().at(index);
 	if (oldTerm.value() != term.value())
 	{
-		_rowControlsMap[term.value()] = _rowControlsMap.value(oldTerm.value());
-		_rowControlsValues[term.value()] = _rowControlsValues.value(oldTerm.value());
-		_rowControlsMap.remove(oldTerm.value());
-		_rowControlsValues.remove(oldTerm.value());
+		// the row maps key on IDENTITY (value + filterId), so the rename moves
+		//both entries to the NEW key - and the new key must be exactly what _replaceTerm's
+		//intake (_checkTermType -> _setAllowedType) will stamp, or setUpRowControls (run from
+		//_replaceTerm before we could move anything afterwards) would find the moved row
+		//missing and rebuild it with defaults. _checkTermType is pure, so calling it here
+		//computes that very identity. A rename keeps the row's provenance: keyValueChangedHandler
+		//carries the old term's filterId onto the new term; a caller that does not gets the
+		//host-stamped identity _setAllowedType assigns (unchanged intake semantics).
+		const TermRowKey oldKey		= TermRowKey::ofTerm(oldTerm);
+		const TermRowKey newKey		= TermRowKey::ofTerm(_checkTermType(term));
+
+		if (newKey != oldKey)
+		{
+			if (_rowControlsMap.contains(oldKey))
+				_rowControlsMap.insert(newKey, _rowControlsMap.take(oldKey));
+			if (_rowControlsValues.contains(oldKey))
+				_rowControlsValues.insert(newKey, _rowControlsValues.take(oldKey));
+		}
 	}
 	_replaceTerm(index, term);
 

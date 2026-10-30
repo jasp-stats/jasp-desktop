@@ -89,6 +89,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool			analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 	Q_PROPERTY(bool			welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
+	Q_PROPERTY(bool			externalLinksEnabled	READ externalLinksEnabled																CONSTANT						)
 	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
     Q_PROPERTY(bool			aiChatVisible	READ aiChatVisible              WRITE setAiChatVisible                NOTIFY aiChatVisibleChanged	)
@@ -103,7 +104,11 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		contactUrlFeatures	READ contactUrlFeatures										CONSTANT							)
 	Q_PROPERTY(QString		contactUrlBugs		READ contactUrlBugs											CONSTANT							)
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
-	Q_PROPERTY(QString		questionsUrl		READ questionsUrl											CONSTANT							)
+	Q_PROPERTY(QString		questionsUrl			READ questionsUrl			CONSTANT								)
+	Q_PROPERTY(QString		enterpriseSupportUrl	READ enterpriseSupportUrl	CONSTANT								)
+	Q_PROPERTY(QString		howToUseUrl			READ howToUseUrl			CONSTANT								)
+	Q_PROPERTY(QString		companyLogoUrl		READ companyLogoUrl			CONSTANT								)
+	Q_PROPERTY(int			companyLogoHeight	READ companyLogoHeight																	CONSTANT							)
 	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
 	Q_PROPERTY(bool			startedForBatch		READ startedForBatch										CONSTANT							)
 
@@ -144,18 +149,30 @@ public:
 	const QString 		commHowToSupport()		const;
 	const QString 		commUrl()				const;
 	const QString 		commUrlMembers()		const;
+	/// Master switch for outward-facing community links and windows — see the
+	/// `externalLinksEnabled` entry in settings.cpp for the exact scope.
+	/// JASP Services links are deliberately exempt.
+	bool				externalLinksEnabled()	const;
 	const QString 		contactUrlBugs()		const;
 	const QString 		contactUrlFeatures()	const;
 	const QString 		contactUrlCrashReport()	const;
 	const QString 		contactText()			const;
-	const QString		questionsUrl()			const
-	{
-#ifdef PRO
-		return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new";
-#else
-		return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor";
-#endif
-	}
+	/// 'Ask a question' link target — settings-driven (`questionsUrl`),
+	/// overridable per client through forced.json / group policy.
+	const QString		questionsUrl()			const;
+	/// Enterprise Support follows externalLinksEnabled and hides when its URL
+	/// is ""; the How to Use link is exempt from the switch and shows only
+	/// when its URL is set.
+	const QString		enterpriseSupportUrl()	const;
+	const QString		howToUseUrl()			const;
+	/// Resolved `companyLogoPath` setting: a file:// URL to the company logo
+	/// (absolute path as-is; relative beside the exe / in Resources/, on macOS
+	/// also in the bundle's ../Resources/), or "" when unset or the file is
+	/// missing. Read once per launch.
+	QString				companyLogoUrl()	const;
+	/// `companyLogoHeight` setting (default 35), clamped to 0–200: base
+	/// height of the welcome-page logo, scaled with the page.
+	int					companyLogoHeight()	const;
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
 

@@ -33,7 +33,7 @@ jobs:
             target: 'desktop'
             arch: 'win64_msvc2022_64'
             cache: 'false'
-            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtlanguageserver qtquickeffectmaker qtwebsockets debug_info qt5compat qtshadertools'
+            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtlanguageserver qtquickeffectmaker qtwebsockets debug_info qtshadertools qthttpserver qtnetworkauth'
             tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake tools_ninja'
 
       - name: Install Conan
@@ -158,7 +158,7 @@ jobs:
             target: 'desktop'
             arch: 'win64_msvc2022_64'
             cache: 'false'
-            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtlanguageserver qtquickeffectmaker qtwebsockets debug_info qt5compat qtshadertools qthttpserver'
+            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtlanguageserver qtquickeffectmaker qtwebsockets debug_info qtshadertools qthttpserver qtnetworkauth'
             tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake tools_ninja'
 
       - name: Install Rtools source build tools
@@ -177,7 +177,7 @@ jobs:
                  exit 1
              }
              C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "tar -xzf readstat-1.1.9.tar.gz"
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd readstat-1.1.9 && ./configure --disable-dependency-tracking --host=`$MINGW_CHOST --build=`$MINGW_CHOST --prefix=`$MINGW_PREFIX CFLAGS='-g -O2 -Wno-error=use-after-free' CXXFLAGS='-g -O2 -Wno-error=use-after-free' && make -j2 && make install"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "unset CFLAGS CPPFLAGS; cd readstat-1.1.9 && ./configure --disable-dependency-tracking --host=${MINGW_CHOST} --build=${MINGW_CHOST} --prefix=${MINGW_PREFIX} CFLAGS='-g -O2 -Wno-error=use-after-free' CXXFLAGS='-g -O2 -Wno-error=use-after-free' && sed -i 's/-D_spawnv=spawnv//g' Makefile && make -j2 && make install"
 
       - name: Download and build rdata
         shell: pwsh

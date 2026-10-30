@@ -20,6 +20,12 @@ Workspace::Workspace(QObject *parent)
 	connect(this, &Workspace::dataSetRemoved,			this, &Workspace::inputFilterDropDownListChanged);
 	connect(this, &Workspace::shownDataSetChanged,		this, &Workspace::inputFilterDropDownListChanged);
 	connect(this, &Workspace::filtersCountChanged,		this, &Workspace::inputFilterDropDownListChanged);
+
+	//Same reactivity for the dataset/filter selection list, plus dataset renames because they change its labels.
+	connect(this, &Workspace::dataSetCreated,			this, &Workspace::dataSetFilterDropDownListChanged);
+	connect(this, &Workspace::dataSetRemoved,			this, &Workspace::dataSetFilterDropDownListChanged);
+	connect(this, &Workspace::dataSetTitleChanged,		this, &Workspace::dataSetFilterDropDownListChanged);
+	connect(this, &Workspace::filtersCountChanged,		this, &Workspace::dataSetFilterDropDownListChanged);
 }
 
 Workspace::~Workspace()
@@ -228,8 +234,9 @@ void Workspace::setShownDataSet(DataSet *dataSet)
 	UndoStack::setCurrent(_shownDataSet->undoStack());
 
 	//Column-name encoding/decoding (and computed-column dependency resolution) on the desktop must
-	//reflect the shown dataset. Consumers obtain the dataset's own encoder via the provider
-	//(provider->columnEncoder()); we only (re)populate its name map here, and never touch the
+	//reflect the shown dataset. Consumers obtain a filter's namespace view via the provider
+	//(provider->columnEncoder()); we only (re)mint the shown dataset's canonical here - the blocks of
+	//all its live filter views follow automatically - and never touch the
 	//process-global current encoder (that global is only meaningful inside the engine's request context).
 	_shownDataSet->encoder().setCurrentNames(_shownDataSet->getColumnTypesMap());
 	
@@ -365,6 +372,17 @@ DataSet *Workspace::dataSetByName(const std::string & name) const
 	return nullptr;
 }
 
+DataSet *Workspace::dataSetByTitle(const QString & title) const
+{
+	//Exact match on the user facing title (DataSet::setTitle keeps those unique); used by the
+	//syntax-mode dataset selection, where the user refers to datasets by name.
+	for(auto & idData : _dataSets)
+		if(idData.second->title() == title)
+			return idData.second;
+
+	return nullptr;
+}
+
 QString Workspace::makeDataSetTitleUnique(const QString & title, DataSet * exclude) const
 {
 	QSet<QString> takenTitles;
@@ -384,11 +402,26 @@ QString Workspace::makeDataSetTitleUnique(const QString & title, DataSet * exclu
 	return candidate;
 }
 
-Filter *Workspace::filterById(int id) const
+Filter *Workspace::filterById(int id)
 {
 	for(auto & idDataSet : _dataSets)
 		if(idDataSet.second->filter(id))
 			return idDataSet.second->filter(id);
+
+	//A reopened .jasp materialises only default filters: a named filter nobody has selected yet
+	//lives on purely as a db row. Attach to that row instead of resolving to nothing - saved
+	//provenance and the slice queue point at these ids, and the row's id is the invariant.
+	const int         dataSetId = db().filterGetDataSetId(id);
+	DataSet         * dataSet   = dataSetById(dataSetId);
+	const std::string name      = dataSet ? db().filterGetName(id) : std::string();
+
+	if(dataSet && !name.empty() && db().filterGetId(dataSetId, name) == id)
+	{
+		Filter * f = dataSet->loadStoredFilter(name);	//dbLoad by name keeps the row id
+		if(f && f->id() == id)
+			return f;
+	}
+
 	return nullptr;
 }
 
@@ -474,12 +507,22 @@ QStringList Workspace::dataSetNames() const
 
 QVariantList Workspace::inputFilterDropDownList() const
 {
-	typedef QMap<QString, QVariant> localMap;
-
 	//The filters available as *input* for the currently-shown computed dataset: every dataset's
 	//filters except the shown dataset's own. A computed dataset must not read from its own output,
 	//and setDefaultInputFilterId would refuse it as a loop anyway, so hide it here too.
-	const int excludeDataSetId = _shownDataSet ? _shownDataSet->id() : -1;
+	return _filterDropDownList(_shownDataSet ? _shownDataSet->id() : -1);
+}
+
+QVariantList Workspace::dataSetFilterDropDownList() const
+{
+	//Every filter of every dataset, for the multi-dataset aware selection: choosing a dataset means
+	//choosing one of its filters, so these are the entries the user picks between.
+	return _filterDropDownList(-1);
+}
+
+QVariantList Workspace::_filterDropDownList(int excludeDataSetId) const
+{
+	typedef QMap<QString, QVariant> localMap;
 
 	QVariantList out;
 
@@ -501,6 +544,868 @@ QVariantList Workspace::inputFilterDropDownList() const
 	}
 
 	return out;
+}
+
+// --- the dataset-selection syntax surface, see workspace.h -------------
+// Ids stay the internal wire format; these maps are how the human strings of syntax text get
+// onto the wire and back. Exact lookup only, never parsing: dataset titles may themselves
+// contain " - " (or ":"), so splitting would silently mis-resolve.
+
+QMap<QString, int> Workspace::datasetSelectionSurfaceMap() const
+{
+	QMap<QString, int> map;
+
+	//Every dropdown entry ("title - filterName" -> filter id), default filters included: their
+	//label embeds the translatable "Default filter", which is precisely why scripts are pointed
+	//at the bare titles below instead - but the label works too, in the language it was written.
+	for(const QVariant & entry : dataSetFilterDropDownList())
+	{
+		const QVariantMap mapEntry	= entry.toMap();
+		bool			  ok		= false;
+		const int		  filterId	= mapEntry.value("value").toString().toInt(&ok);
+
+		if(ok)
+			map.insert(mapEntry.value("label").toString(), filterId);
+	}
+
+	//Bare dataset title -> that dataset's default filter id (language-independent spelling of
+	//"the data as loaded"). Bare titles WIN label collisions - a dataset titled like another
+	//pair's dropdown label is addressed by its title, because titles are the primary handle:
+	for(const auto & idData : _dataSets)
+	{
+		const DataSet * dataSet = idData.second;
+
+		if(!dataSet || !dataSet->defaultFilter())
+			continue;
+
+		if(map.contains(dataSet->title()) && map.value(dataSet->title()) != dataSet->defaultFilter()->id())
+			Log::log() << "Workspace: dataset title '" << dataSet->title()
+			           << "' collides with a dataset/filter dropdown label, the bare title wins (-> default filter "
+			           << dataSet->defaultFilter()->id() << ")" << std::endl;
+
+		map.insert(dataSet->title(), dataSet->defaultFilter()->id());
+	}
+
+	return map;
+}
+
+QString Workspace::datasetSelectionSurface(int filterId) const
+{
+	if(filterId <= 0)
+		return QString();
+
+	for(const auto & idData : _dataSets)
+	{
+		const DataSet * dataSet = idData.second;
+
+		if(!dataSet)
+			continue;
+
+		if(dataSet->defaultFilter() && dataSet->defaultFilter()->id() == filterId)
+			return dataSet->title();									//bare: no translatable fragment in syntax
+
+		for(const Filter * f : dataSet->filters())
+			if(f != dataSet->defaultFilter() && f->id() == filterId)
+				return dataSet->title() + " - " + f->title();			//user strings all the way
+	}
+
+	return QString();													//unknown id renders empty (and the empty selection then fails loudly on re-parse)
+}
+
+bool Workspace::resolveDataSetSelectionValue(const QString &optionName, const Json::Value &value, int &filterId, QString &error) const
+{
+	filterId = -1;
+
+	QString text;
+
+	if(value.isString())
+		text = tq(value.asString());
+	else if(value.isIntegral())
+		text = QString::number(value.asInt64());
+	else if(value.isObject() && value.isMember("value") && (value["value"].isString() || value["value"].isIntegral()))
+	{
+		//Desktop-shaped {types,value}: unwrap the plain string/int inside (the type tag says
+		//nothing about a dataset selection); the bare rules below then apply to it.
+		const Json::Value & inner = value["value"];
+		text = inner.isString() ? tq(inner.asString()) : QString::number(inner.asInt64());
+	}
+	else if(!value.isNull())
+	{
+		error = "The dataset selection option '" + optionName + "' holds a value that is not a plain string: pass the dataset title directly (e.g. \"DataSetA\" or \"DataSetA - myfilter\")";
+		return false;
+	}
+
+	text = text.trimmed();
+
+	const QMap<QString, int> surfaceMap = datasetSelectionSurfaceMap();
+
+	if(text.isEmpty())
+	{
+		error = "The dataset selection option '" + optionName + "' must name one of the loaded datasets (available: " + surfaceMap.keys().join(", ") + ")";
+		return false;
+	}
+
+	if(surfaceMap.contains(text))
+	{
+		filterId = surfaceMap.value(text);
+		return true;
+	}
+
+	//No numeric-id path, ever: a number resolves only when a dataset is actually titled that
+	//number (the title-shadows-id confusion disappears together with the id-acceptance it shadowed).
+	error = "The dataset selection option '" + optionName + "' holds '" + text + "', which matches no dataset selection string (available: " + surfaceMap.keys().join(", ") + ")";
+	return false;
+}
+
+// --- the user-qualified column-reference grammar, see workspace.h ------------
+// (the parse/render surface mirrors the selection surface above: human strings,
+// exact resolution against the live workspace, typed rejections with ready-to-show messages.)
+
+//The accepted type-segment spellings are THE columnType names (case-insensitive, canonical on
+//output), built from the enum's own map so the grammar can never drift from it.
+static bool columnTypeFromSurfaceName(const QString & raw, columnType & out)
+{
+	static const std::map<QString, columnType> spellings = []()
+	{
+		std::map<QString, columnType> map;
+		for(const auto & idName : columnTypeToStringMap())
+			map.emplace(QString::fromStdString(idName.second).toLower(), columnType(idName.first));
+		return map;
+	}();
+
+	const auto it = spellings.find(raw.toLower());
+
+	if(it == spellings.end())
+		return false;
+
+	out = it->second;
+	return true;
+}
+
+static QStringList columnTypeSurfaceSpellings()
+{
+	QStringList spellings;
+	for(const auto & idName : columnTypeToStringMap())
+		spellings.push_back(QString::fromStdString(idName.second));
+	return spellings;
+}
+
+QString QualifiedColumnRef::escapeSegment(const QString & raw)
+{
+	QString escaped;
+	escaped.reserve(raw.size());
+
+	for(const QChar & c : raw)
+	{
+		if(c == '"' || c == '\\')
+			escaped += '\\';
+		escaped += c;
+	}
+
+	return escaped;
+}
+
+QString QualifiedColumnRef::render() const
+{
+	QStringList parts;
+
+	if(!dataSetName.isEmpty())
+		parts.push_back(dataSetName);
+	if(!filterName.isEmpty())
+		parts.push_back(filterName);
+	parts.push_back(columnName); //always present
+
+	QString out;
+
+	for(const QString & part : parts)
+	{
+		if(!out.isEmpty())
+			out += '.';
+		out += '"' + escapeSegment(part) + '"';
+	}
+
+	if(!typeName.isEmpty())
+		out += "(\"" + escapeSegment(typeName) + "\")";
+
+	return out;
+}
+
+bool QualifiedColumnRef::parse(const QString & text, QualifiedColumnRef & out, QString & error)
+{
+	out		= QualifiedColumnRef();
+	error.clear();
+
+	int			pos		= 0;
+	const int	size	= text.size();
+
+	auto skipSpaces = [&pos, &text, size]()
+	{
+		while(pos < size && text[pos].isSpace())
+			++pos;
+	};
+
+	//One quoted segment; `pos` sits on the opening quote. Exactly two escapes exist (" and
+	//\); a backslash before anything else is rejected, which keeps parse(render(x)) == x and
+	//leaves no ambiguity about what a backslash inside a name means.
+	auto parseQuotedSegment = [&](QString & value) -> bool
+	{
+		++pos; //opening quote
+
+		while(pos < size)
+		{
+			const QChar c = text[pos];
+
+			if(c == '\\')
+			{
+				if(pos + 1 >= size)
+				{
+					error = "a trailing backslash at the end of the reference is not a complete escape";
+					return false;
+				}
+
+				const QChar escaped = text[pos + 1];
+
+				if(escaped != '"' && escaped != '\\')
+				{
+					error = "invalid escape '\\" + QString(escaped) + "' in a quoted segment (only \\\" and \\\\ exist)";
+					return false;
+				}
+
+				value += escaped;
+				pos += 2;
+			}
+			else if(c == '"')
+			{
+				++pos; //closing quote
+				return true;
+			}
+			else
+			{
+				value += c;
+				++pos;
+			}
+		}
+
+		error = "unterminated quoted segment (missing closing '\"')";
+		return false;
+	};
+
+	skipSpaces();
+
+	if(pos >= size)
+	{
+		error = "The column reference is empty";
+		return false;
+	}
+
+	if(text[pos] != '"')
+	{
+		//The bare production: the whole (trimmed) text is the unqualified column name. Dots
+		//are never split here - bare handling is the callers' context fallback.
+		out.columnName = text.trimmed();
+		return true;
+	}
+
+	QStringList segments;
+	QString		typeSegment;
+
+	QString segment;
+	if(!parseQuotedSegment(segment))
+		return false;
+	segments.push_back(segment);
+
+	for(;;)
+	{
+		skipSpaces();
+
+		if(pos >= size)
+			break;
+
+		if(text[pos] == '.')
+		{
+			++pos;
+			skipSpaces();
+
+			if(pos >= size || text[pos] != '"')
+			{
+				error = "expected a quoted segment after '.'";
+				return false;
+			}
+
+			if(segments.size() >= 3)
+			{
+				error = "a column reference has at most three segments: \"Dataset\".\"Filter\".\"Column\"";
+				return false;
+			}
+
+			segment.clear();
+			if(!parseQuotedSegment(segment))
+				return false;
+			segments.push_back(segment);
+		}
+		else if(text[pos] == '(')
+		{
+			++pos;
+			skipSpaces();
+
+			if(pos >= size || text[pos] != '"')
+			{
+				error = "the type segment must be a quoted column type name, e.g. (\"scale\")";
+				return false;
+			}
+
+			segment.clear();
+			if(!parseQuotedSegment(segment))
+				return false;
+
+			skipSpaces();
+			if(pos >= size || text[pos] != ')')
+			{
+				error = "expected ')' after the type segment";
+				return false;
+			}
+			++pos;
+
+			skipSpaces();
+			if(pos < size)
+			{
+				error = "unexpected text after the type segment: '" + text.mid(pos) + "'";
+				return false;
+			}
+
+			typeSegment = segment;
+			break;
+		}
+		else
+		{
+			error = "unexpected character '" + QString(text[pos]) + "' after a segment: expected '.', '(\"Type\")' or the end of the reference";
+			return false;
+		}
+	}
+
+	if(!typeSegment.isEmpty())
+	{
+		columnType parsed = columnType::unknown;
+
+		if(!columnTypeFromSurfaceName(typeSegment, parsed))
+		{
+			error = "unknown column type \"" + typeSegment + "\" (known: " + columnTypeSurfaceSpellings().join(", ") + ")";
+			return false;
+		}
+
+		out.typeName = tq(columnTypeToString(parsed)); //canonical spelling
+	}
+
+	if(segments.size() == 1)
+	{
+		//A quoted bare reference: still unqualified (the quotes change nothing about context).
+		out.columnName = segments[0];
+		return true;
+	}
+
+	out.dataSetName	= segments[0];
+	out.columnName	= segments.back();
+
+	if(segments.size() == 3)
+		out.filterName = segments[1];
+
+	return true;
+}
+
+QualifiedRefError Workspace::resolveQualifiedColumnRef(const QualifiedColumnRef & ref, ResolvedQualifiedColumn & out, QString & error) const
+{
+	out		= ResolvedQualifiedColumn();
+	error.clear();
+
+	if(ref.isBare())
+	{
+		error = "The column reference '" + ref.columnName + "' is unqualified: a bare name resolves through its context (the filter's own dataset, the selected input filter or the analysis host), not through the workspace";
+		return QualifiedRefError::unqualifiedReference;
+	}
+
+	DataSet * dataSet	= nullptr;
+	Filter	* filter	= nullptr;
+
+	if(!ref.filterName.isEmpty())
+	{
+		//Full form "Dataset"."Filter"."Column": dataset by title, filter by name inside it
+		//(DataSet::filter matches named filters and the default filter by its internal
+		//DEFAULT_FILTER_NAME spelling).
+		dataSet = dataSetByTitle(ref.dataSetName);
+
+		if(!dataSet)
+		{
+			QStringList titles;
+			for(const auto & idData : _dataSets)
+				titles.push_back(idData.second->title());
+			error = "No loaded dataset is titled '" + ref.dataSetName + "' (loaded: " + titles.join(", ") + ")";
+			return QualifiedRefError::unknownDataSet;
+		}
+
+		filter = dataSet->filter(fq(ref.filterName));
+
+		if(!filter)
+		{
+			QStringList filterNames;
+			for(const Filter * f : dataSet->filters())
+				filterNames.push_back(f->nameQ());
+
+			error = "Dataset '" + ref.dataSetName + "' has no filter named '" + ref.filterName + "' (its filters: " + filterNames.join(", ") + ")";
+			return QualifiedRefError::unknownFilterInDataSet;
+		}
+	}
+	else
+	{
+		//Two-segment form "X"."Column": X is a dataset title first (its default filter), and
+		//only when no dataset is titled X is it a filter name - and then only when UNIQUE
+		//across all loaded datasets. No clever fall-through when the title matches:
+		//dataset-title precedence is exact, like the selection surface above.
+		dataSet = dataSetByTitle(ref.dataSetName);
+
+		if(dataSet)
+		{
+			filter = dataSet->defaultFilter();
+
+			if(!filter)
+			{
+				error = "Dataset '" + ref.dataSetName + "' has no default filter (yet)";
+				return QualifiedRefError::unknownFilterInDataSet;
+			}
+		}
+		else
+		{
+			QList<DataSet *> candidates;
+			for(const auto & idData : _dataSets)
+				if(idData.second->filter(fq(ref.dataSetName)))
+					candidates.push_back(idData.second);
+
+			if(candidates.size() > 1)
+			{
+				QStringList titles;
+				for(const DataSet * candidate : candidates)
+					titles.push_back(candidate->title());
+
+				error = "The filter name '" + ref.dataSetName + "' is used in several datasets (" + titles.join(", ") + "): qualify it with the dataset, e.g. \"" + candidates.first()->title() + "\".\"" + ref.dataSetName + "\".\"" + ref.columnName + "\"";
+				return QualifiedRefError::ambiguousFilterName;
+			}
+
+			if(candidates.empty())
+			{
+				QStringList titles;
+				for(const auto & idData : _dataSets)
+					titles.push_back(idData.second->title());
+				error = "'" + ref.dataSetName + "' matches no loaded dataset title and no filter name (loaded datasets: " + titles.join(", ") + ")";
+				return QualifiedRefError::filterNameMatchesNothing;
+			}
+
+			dataSet	= candidates.first();
+			filter	= dataSet->filter(fq(ref.dataSetName));
+		}
+	}
+
+	Column * column = dataSet->column(fq(ref.columnName));
+
+	if(!column)
+	{
+		QStringList columnNames;
+		for(const Column * c : dataSet->columns())
+			columnNames.push_back(tq(c->name()));
+
+		error = "Dataset '" + ref.dataSetName + "' has no column named '" + ref.columnName + "' (its columns: " + columnNames.join(", ") + ")";
+		return QualifiedRefError::unknownColumn;
+	}
+
+	out.dataSetId	= dataSet->id();
+	out.filterId	= filter->id();
+	out.columnName	= fq(ref.columnName);
+	out.type		= column->type();
+
+	if(!ref.typeName.isEmpty())
+	{
+		columnType stamped = columnType::unknown;
+
+		if(!columnTypeFromSurfaceName(ref.typeName, stamped))
+		{
+			error = "Unknown column type \"" + ref.typeName + "\" in the reference";
+			return QualifiedRefError::unknownTypeName;
+		}
+
+		out.type = stamped; //the type segment wins over the lookup
+	}
+
+	return QualifiedRefError::none;
+}
+
+QString Workspace::renderQualifiedColumnRef(int contextFilterId, int filterId, const std::string & columnName, columnType type)
+{
+	if(filterId < 0)
+	{
+		Log::log() << "Workspace::renderQualifiedColumnRef: no filter id to qualify against, rendering nothing" << std::endl;
+		return QString();
+	}
+
+	Filter * target = filterById(filterId);
+
+	if(!target || !target->data())
+	{
+		//Dead/unresolvable slice: render empty and fail loudly downstream, exactly like
+		//datasetSelectionSurface's unknown-id handling.
+		Log::log() << "Workspace::renderQualifiedColumnRef: filter id " << filterId << " resolves to nothing, rendering nothing" << std::endl;
+		return QString();
+	}
+
+	//Inside the caller's default namespace: the plain name IS the reference (the callers'
+	//bare-name fallback machinery takes it from here). Filter ids are globally unique,
+	//so id equality means the very same namespace.
+	Filter * context = contextFilterId >= 0 ? filterById(contextFilterId) : nullptr;
+
+	if(context && context->id() == target->id())
+		return tq(columnName);
+
+	QualifiedColumnRef ref;
+	ref.columnName	= tq(columnName);
+
+	if(type != columnType::unknown)
+		ref.typeName = tq(columnTypeToString(type));
+
+	DataSet * dataSet = target->data();
+
+	if(dataSet->defaultFilter() && dataSet->defaultFilter()->id() == filterId)
+	{
+		ref.dataSetName = dataSet->title(); //"DS"."Col" - a default filter needs no filter segment
+		return ref.render();
+	}
+
+	//"F"."Col" only when the filter name is unique across all loaded datasets - the minimal
+	//form must roundtrip through resolveQualifiedColumnRef, so an ambiguous name is never
+	//emitted (it would not resolve again).
+	int matches = 0;
+	for(const auto & idData : _dataSets)
+		if(idData.second->filter(target->name()))
+			++matches;
+
+	if(matches == 1)
+	{
+		ref.filterName = target->nameQ();
+		return ref.render();
+	}
+
+	ref.dataSetName	= dataSet->title();
+	ref.filterName	= target->nameQ();
+	return ref.render();
+}
+
+QString Workspace::fullQualifiedColumnRef(const QString & dataSetTitle, const QString & filterName, const std::string & columnName, columnType type) const
+{
+	// the constructors' outward emission composes the FULL surface form from
+	//the resolved pieces (see the header). The type segment is the caller's effective type;
+	//it is omitted when unknown (the type segment is optional, and stamping
+	//"unknown" would poison the type-wins rule at run).
+	QualifiedColumnRef ref;
+
+	ref.columnName	= tq(columnName);
+
+	if(type != columnType::unknown)
+		ref.typeName = tq(columnTypeToString(type));
+
+	//Resolve the slice live: a resolvable reference emits its CURRENT title/name (the
+	//resolved objects are the emission's source of truth - never re-parsed text). An
+	//unresolvable dataset title keeps the stored names verbatim: the emitted form then
+	//no longer resolves, and the run fails LOUDLY with the typed unknownDataSet error
+	//instead of silently degrading to a bare name. An
+	//empty stored filter name still means the default filter (the DEFAULT_FILTER
+	//spelling), so the emitted form stays the full form the node meant.
+	DataSet * dataSet = dataSetByTitle(dataSetTitle);
+
+	if(!dataSet)
+	{
+		ref.dataSetName	= dataSetTitle;
+		ref.filterName	= filterName.isEmpty() ? tq(DEFAULT_FILTER_NAME) : filterName;
+		return ref.render();
+	}
+
+	ref.dataSetName = dataSet->title();
+
+	//"" means the dataset's default filter (the v1 constructor nodes carry the dataset
+	//only); a stored filter name is resolved by NAME - the default filter's own name is
+	//the internal DEFAULT_FILTER spelling, which the qualified-reference grammar accepts in the full
+	//form. An unresolvable stored name keeps verbatim (loud unknownFilterInDataSet at run).
+	Filter * filter = filterName.isEmpty() ? dataSet->defaultFilter() : dataSet->filter(fq(filterName));
+
+	ref.filterName = filter ? tq(filter->name()) : filterName;
+
+	return ref.render();
+}
+
+std::vector<QualifiedRefOccurrence> QualifiedColumnRef::scanText(const std::string & code)
+{
+	// the in-code scanner of the surface forms. The grammar is
+	//ASCII-structural (quotes, '.', '(' ')'), so the scan runs on bytes; segment CONTENT may
+	//be any UTF-8 - each candidate's exact byte range is re-parsed by the strict parse()
+	//before it counts, so the scanner and the parser can never disagree about what a
+	//reference is. The grammar's whitespace tolerance is honored between segments.
+	std::vector<QualifiedRefOccurrence> occurrences;
+
+	const size_t size = code.size();
+	size_t pos = 0;
+
+	auto skipSpaces = [&](size_t & p)
+	{
+		while(p < size && (code[p] == ' ' || code[p] == '\t' || code[p] == '\n' || code[p] == '\r'))
+			++p;
+	};
+
+	//Skip one R string literal (either quote style) starting at `p` (code[p] is the opening
+	//quote); returns the position after the closing quote, or `size` when unterminated. An
+	//escaped anything cannot close the literal.
+	auto skipRStringLiteral = [&](size_t p) -> size_t
+	{
+		const char delim = code[p++];
+		while(p < size)
+		{
+			if(code[p] == '\\')		{ p += 2; continue; }
+			if(code[p] == delim)	return p + 1;
+			++p;
+		}
+		return size;
+	};
+
+	while(pos < size)
+	{
+		const char c = code[pos];
+
+		if(c == '#')	//an R comment: nothing inside it is a reference
+		{
+			while(pos < size && code[pos] != '\n')
+				++pos;
+			continue;
+		}
+
+		if(c != '"' && c != '\'')	{ ++pos; continue; }	//everything else: a candidate can only start at a double quote
+
+		if(c == '\'')
+		{
+			//A single-quoted R string literal: skipped wholesale, exactly like a double-quoted
+			//one - a surface form inside it is user text, not a reference.
+			pos = skipRStringLiteral(pos);
+			continue;
+		}
+
+		//Candidate: quoted segment, then ('.' quoted segment){1,2} and the optional
+		//('("Type")') tail, whitespace tolerated between the pieces.
+		size_t										p			= pos;
+		std::vector<std::pair<size_t, size_t>>		segRanges;	//[begin, end) incl. the quotes
+		bool										valid		= true;
+
+		auto trySegment = [&]() -> bool
+		{
+			if(p >= size || code[p] != '"')
+				return false;
+
+			const size_t segStart = p++;
+
+			while(p < size)
+			{
+				if(code[p] == '\\')			{ if(p + 1 >= size) return false; p += 2; continue; }
+				if(code[p] == '"')			{ segRanges.push_back({segStart, ++p}); return true; }
+				++p;
+			}
+
+			return false; //unterminated
+		};
+
+		if(trySegment())
+			for(;;)
+			{
+				size_t q = p;
+				skipSpaces(q);
+
+				if(q < size && code[q] == '.')
+				{
+					if(segRanges.size() >= 3)	{ valid = false; p = q; break; }	//4 segments: not our grammar, and the rest must not rescan as a shifted ref
+
+					++q;
+					skipSpaces(q);
+					p = q;
+
+					if(!trySegment())			{ valid = false; break; }
+					continue;
+				}
+
+				if(q < size && code[q] == '(')	//the optional type tail - only when it is ("...")
+				{
+					++q;
+					skipSpaces(q);
+
+					if(q < size && code[q] == '"')
+					{
+						p = q;
+						if(!trySegment())		{ valid = false; break; }
+						skipSpaces(p);
+						if(p < size && code[p] == ')')	++p;
+						else							{ valid = false; break; }
+					}
+					//an '(' with no quote behind it belongs to the R code (mean("B"."x")): the
+					//candidate simply ends before it
+				}
+
+				break; //no more continuation
+			}
+		else
+			valid = false;
+
+		if(valid && segRanges.size() >= 2)
+		{
+			QualifiedColumnRef ref;
+			QString error;
+			//The strict parser validates the candidate (escape discipline, type spelling,
+			//segment count); only a parse-accepted >=2-segment shape is a reference.
+			if(QualifiedColumnRef::parse(QString::fromUtf8(code.data() + pos, int(p - pos)), ref, error) && !ref.isBare())
+			{
+				occurrences.push_back({ pos, p, ref });
+				pos = p;
+				continue;
+			}
+		}
+
+		//Not a reference: skip the whole consumed candidate span. For a plain string literal
+		//that is the same as skipping the literal (the bare production IS one); for failed
+		//shapes it matters that the REMAINDER must not rescan as a shifted reference (a
+		//4-segment shape would otherwise degrade into a 3-segment one). On VALID R code this
+		//cannot swallow a real reference: an unescaped '."' after a string's closing quote is
+		//a syntax error in R, so any candidate spanning a string boundary only arises in
+		//already-invalid code - the run fails loudly there either way.
+		pos = p > pos ? p : pos + 1;
+	}
+
+	return occurrences;
+}
+
+std::set<int> Workspace::referencedFilterIdsInCode(const std::string & code, QString * firstError, QualifiedRefError * firstErrorKind) const
+{
+	std::set<int> filterIds;
+
+	if(firstError)		firstError->clear();
+	if(firstErrorKind)	*firstErrorKind = QualifiedRefError::none;
+
+	for(const QualifiedRefOccurrence & occurrence : QualifiedColumnRef::scanText(code))
+	{
+		ResolvedQualifiedColumn resolved;
+		QString error;
+		const QualifiedRefError kind = resolveQualifiedColumnRef(occurrence.ref, resolved, error);
+
+		if(kind != QualifiedRefError::none)
+		{
+			//Unresolvable here: it contributes no slice, and the omission is logged - never
+			//silent. The engine re-scans the very same code at run time and fails the run
+			//LOUDLY with this kind + message when it still cannot resolve (the error
+			//surface; the loud-failure doctrine forbids a silent fallback to nothing).
+			Log::log() << "Workspace::referencedFilterIdsInCode: the reference '" << occurrence.ref.render().toStdString()
+					   << "' does not resolve: " << error.toStdString() << " (contributes no slice; the engine will fail the run loudly if it cannot resolve it at run time either)" << std::endl;
+
+			if(firstErrorKind && *firstErrorKind == QualifiedRefError::none)
+				*firstErrorKind = kind;
+			if(firstError && firstError->isEmpty())	//the FIRST error only (scan order)
+				*firstError = error;
+
+			continue;
+		}
+
+		filterIds.insert(resolved.filterId);
+	}
+
+	return filterIds;
+}
+
+// --- the editor-side surface, see workspace.h ---------------------------
+
+QVariantList Workspace::qualifiedColumnCandidates(int contextFilterId)
+{
+	//Non-const on purpose (see header): renderQualifiedColumnRef may materialize named
+	//filters of a reopened file through filterById.
+	QVariantList out;
+
+	Filter * context = contextFilterId >= 0 ? filterById(contextFilterId) : nullptr;
+
+	//The context's own dataset first (the picker's "here" section), the rest in id order.
+	std::vector<DataSet *> ordered;
+	if(context && context->data())
+		ordered.push_back(context->data());
+	for(const auto & idData : _dataSets)
+	{
+		DataSet * dataSet = idData.second;
+		if(dataSet && (!context || !context->data() || dataSet != context->data()))
+			ordered.push_back(dataSet);
+	}
+
+	for(DataSet * dataSet : ordered)
+	{
+		//Columns are the dataset's (a filter filters ROWS, not columns), minted names are the
+		//bare originals; the same column is offered once per filter, because each filter is
+		//its own namespace and the rendered form differs per namespace.
+		const DataSet::colTypeMap columns = dataSet->getColumnTypesMap();
+
+		for(Filter * filter : dataSet->filters())
+		{
+			const bool isDefault = dataSet->defaultFilter() == filter;
+
+			for(const auto & [columnName, type] : columns)
+			{
+				//The type segment is deliberately not emitted here: insertion emits the
+				//minimal valid form (render rule) so stored code stays readable;
+				//a type-tail is something the user adds by hand when disambiguation needs it.
+				const QString code = renderQualifiedColumnRef(contextFilterId, filter->id(), columnName, columnType::unknown);
+
+				if(code.isEmpty())	//dead/unresolvable slice: never offer it (loud-failure doctrine)
+					continue;
+
+				QVariantMap entry;
+				entry["code"]			= code;
+				entry["dataSetId"]		= dataSet->id();
+				entry["dataSetTitle"]	= dataSet->title();
+				entry["filterName"]		= tq(filter->name());
+				entry["filterTitle"]	= filter->title();
+				entry["columnName"]		= tq(columnName);
+				entry["filterId"]		= filter->id();
+				// the source column's type, so the constructors' outward
+				//palette can stamp it on the dragged node (the type segment of its toR
+				//emission - the own-dataset type provider cannot answer for other datasets).
+				entry["columnType"]		= static_cast<int>(type);
+				entry["isBare"]			= code == tq(columnName);	//the context's own namespace: the plain name
+				entry["label"]			= entry["isBare"].toBool()
+										? tq(columnName)
+										: dataSet->title() + " - " + (isDefault ? QString() : filter->title() + " - ") + tq(columnName);
+
+				out.append(entry);
+			}
+		}
+	}
+
+	return out;
+}
+
+QString Workspace::qualifiedRefErrorInCode(const QString & code) const
+{
+	//Exactly the scanner's typed first error; empty string = all references resolve.
+	//Bare names are never errors here (the editors' context fallback is not this helper's
+	//business - it is codified at each editor's insertion context).
+	QString error;
+	referencedFilterIdsInCode(code.toStdString(), &error);
+	return error;
+}
+
+int Workspace::filterIdByName(int dataSetId, const QString & filterName)
+{
+	DataSet * dataSet = dataSetById(dataSetId);
+
+	if(!dataSet)
+		return -1;
+
+	//DataSet::filter(name) also answers the default filter for the "DEFAULT_FILTER" spelling,
+	//which is what Column::computeFilter reports when no filter was picked.
+	Filter * filter = dataSet->filter(fq(filterName));
+
+	return filter ? filter->id() : -1;
 }
 
 bool Workspace::wouldCreateComputedDataSetLoop(DataSet * me, DataSet * target) const
@@ -700,8 +1605,9 @@ void Workspace::computedColumnSucceeded(int dataSetId, QString columnNameQ, QStr
 		return;
 
 	std::string	columnName	= fq(columnNameQ);
-	//The engine may report the encoded name; translate it defensively so the lookup works either way.
-	try { columnName = dataSet->encoder().decode(columnName); } catch(...) {}
+	//The engine may report the encoded name; translate it defensively so the lookup works either
+	//way. Decoding is context-free: the global table answers, unknown stays raw.
+	columnName = ColumnEncoder::decode(columnName);
 	Column	*	column		= dataSet->column(columnName);
 
 	if(!column)

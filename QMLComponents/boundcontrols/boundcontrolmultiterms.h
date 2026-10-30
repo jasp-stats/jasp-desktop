@@ -34,6 +34,9 @@ public:
 	void		resetBoundValue()															override;
 	void		setBoundValue(const Json::Value &value, bool emitChanges = true)			override;
 
+protected:
+	Json::Value	createEngineValue()														const	override;
+	Json::Value	_wrapWithDefaultTypes(const Json::Value& value)							const;
 
 private:
 	ListModelMultiTermsAssigned*	_listModel;

@@ -28,85 +28,18 @@ BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool
 }
 
 
-// For interaction model, if there is no row component, the R Syntax tries to simplify the option value
-// The right json value is an array of abjects of array of strings, like this:
-// [
-//		{
-//			<optionKey> : [  value1 ]
-//		}
-//		{
-//			<optionKey> : [ component1, component2] // In case of interaction, a value is composed by 2 components.
-//		}
-// ]
-//
-// But with R syntax, an array of strings, or an array of array of strings is allowed (the optionKey is not necessary, since no other key is used):
-// [
-//		value1,
-//		[ component1, component2]
-// ]
-//
-// Also if a value comes from a JASP version < 0.19, then no types value is set. So it should be added.
-//
-Json::Value BoundControlTerms::_adjustBindingValue(const Json::Value &value) const
-{
-	Json::Value adjustedValue = _isValueWithTypes(value) ? value["value"] : value;
-
-	if (!_listView->hasRowComponent() && _listView->containsInteractions() && value.isArray())
-	{
-		adjustedValue = Json::Value(Json::arrayValue);
-		for (const Json::Value& aValue : value)
-		{
-			if (aValue.isObject())
-				adjustedValue.append(aValue);
-			else
-			{
-				Json::Value row(Json::objectValue);
-				Json::Value keyValue(Json::arrayValue);
-				if (aValue.isString())
-					keyValue.append(aValue);
-				else if (aValue.isArray())
-				{
-					for (const Json::Value& comp : aValue)
-					{
-						if (comp.isString())
-							keyValue.append(comp);
-						else
-							Log::log() << "Wrong Json type when binding " << getName() << ": " << value.toStyledString() << std::endl;
-					}
-				}
-				else
-					Log::log() << "Wrong Json type when binding " << getName() << ": " << value.toStyledString() << std::endl;
-
-				row[_optionKeyValue()] = keyValue;
-				adjustedValue.append(row);
-			}
-		}
-	}
-
-	return adjustedValue;
-}
-
-Json::Value BoundControlTerms::_adjustBindingType(const Json::Value &value) const
-{
-	Json::Value adjustedType = _isValueWithTypes(value) ? value["types"] : Json::arrayValue;
-	if (adjustedType.isString())
-	{
-		std::string type = adjustedType.asString();
-		adjustedType = Json::arrayValue;
-		adjustedType.append(type);
-	}
-
-	return adjustedType;
-}
-
 void BoundControlTerms::bindTo(const Json::Value &value)
 {
-	Json::Value valuePart = _adjustBindingValue(value);
-	Json::Value typesPart = _adjustBindingType(value);
-
 	Terms::RelatedValuesPerTerm allControlValues;
 
-	Terms terms(valuePart, typesPart, _optionKeyValue(), _optionKeyLabel(), allControlValues);
+	// ONE parse step - the Terms json applier absorbs the shape normalization that
+	//used to run here (and the list's
+	//interaction/row-component flags decide whether the R-syntax-simplified form gets row-wrapped,
+	//exactly as before). The parsed typed Terms are then copied into the model - provenance rides
+	//the Term objects, and legacy unqualified JSON parses to -1 terms that the
+	//name-only wildcard lookup matches against the stamped model.
+	Terms terms(value, _optionKeyValue(), _optionKeyLabel(), allControlValues,
+				_listView->containsInteractions(), _listView->hasRowComponent());
 
 	// For backward compatibility, the types of the terms must be checked.
 	// Before 0.19.0, the types were not given: in this case the real type of the variable (if it is a variable) is retrieved from the dataset.
@@ -141,10 +74,10 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 		term.setTypes(checkedTypes);
 	}
 
-	Json::Value newValue = Json::objectValue;
-	newValue["value"] = valuePart;
-	newValue["types"] = terms.types();
-	BoundControlBase::bindTo(newValue);
+	//The control's own value is the canonical serialization of what was parsed (the same builder
+	//the write path and the generator use), not the raw input tree the old mirror-era bind
+	//stored; every consumer that reads this option reads the generated form anyway.
+	BoundControlBase::bindTo(_makeOption(terms, allControlValues));
 
 	_termsModel->initTerms(terms, allControlValues);
 }
@@ -154,12 +87,61 @@ Json::Value BoundControlTerms::createJson() const
 	return _makeOption(_termsModel->terms(), _termsModel->getTermsWithComponentValues());
 }
 
+// the transient per-term provenance of this list, POSITIONAL over the terms
+//exactly like `types` is: one entry per term, `Term::filterId()` when the term is qualified
+//(>= 0), else the option's host filter (the same id createMeta stamps today - the
+//host-bound fallback baked in so the generated Engine json is a COMPLETE input contract for
+//prepareMultiDataSetRun and the request encoding), else null (= unqualified, legacy/hostless:
+//the resolver's currentEncoder fallback, exactly today's unstamped behaviour). The whole node is
+//omitted when there is nothing to say, so non-aware runs generate filterId-less Engine json that
+//matches today's byte-for-byte. This is the ENGINE wire and stays frozen (R contract + the
+//positional walk); the Storage format took the provenance out of this sidecar and into the
+//per-term objects (the final shape, createStorageValue below) - the positional array exists exactly
+//because the engine value tree cannot carry per-term members without breaking the frozen shape.
+Json::Value BoundControlTerms::createFilterIds() const
+{
+	if (!_control->encodeValue())
+		return Json::nullValue;
+
+	const int			hostId	= generatedHostFilterId();
+
+	Json::Value ids(Json::arrayValue);
+	bool		any				= false;
+
+	for (const Term& term : _termsModel->terms())
+	{
+		const int id = term.filterId() >= 0 ? term.filterId() : hostId;
+		any = any || id >= 0;
+		ids.append(id >= 0 ? Json::Value(id) : Json::Value());
+	}
+
+	return any ? ids : Json::nullValue;
+}
+
+// final: the Storage file shape = Terms::getStorageOptions - per-term
+//`{name, filterId?, types}` objects under the same row/optionKey discipline as the engine tree
+//(filterId omitted when -1; row children and textareas/combos/etc. keep today's shape). The
+//The preview positional `filterIds` member embedded next to {value, types} is GONE - the applier
+//(Terms(json)) accepts both this final shape and every engine/legacy shape byte-identically, and
+//a generated Storage tree round-trips parse->regenerate->byte-equal including same-name-
+//different-filter twins (testStorageTermShapeAndRoundTrip).
+Json::Value BoundControlTerms::createStorageValue() const
+{
+	return _termsModel->terms().getStorageOptions(_termsModel->getTermsWithComponentValues(), _optionKeyValue(), _optionKeyLabel(),
+												  _listView->containsInteractions(), _listView->hasRowComponent(), _isSingleRow);
+}
+
 bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 {
-	const Json::Value & valuePart = _isValueWithTypes(optionValue) ? optionValue["value"] : optionValue;
+	// valid input is the engine tree ({value, types} or a bare value), the Storage
+	//option object ({value} + optional optionKey - types are inside the term objects there), or
+	//the single-row Storage form (value = one term object). Everything the file/save path can
+	//hand back must pass here or bindTo would reset the control "loaded with the wrong type".
+	const bool isOptionObject = optionValue.isObject() && optionValue.isMember("value");
+	const Json::Value & valuePart = isOptionObject ? optionValue["value"] : optionValue;
 	const Json::Value & typesPart = _isValueWithTypes(optionValue) ? optionValue["types"] : Json::arrayValue;
 
-	return	(valuePart.isNull() || valuePart.isArray() || valuePart.isString()) &&
+	return	(valuePart.isNull() || valuePart.isArray() || valuePart.isString() || Term::isStorageTermObject(valuePart)) &&
 			(typesPart.isArray() || typesPart.isString());
 }
 

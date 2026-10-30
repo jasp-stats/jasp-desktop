@@ -2709,23 +2709,6 @@ QString Column::constructorJsonQ() const
 	return tq(constructorJsonStr()); 
 }
 
-bool Column::areLoopDependenciesOk(const std::string & code)
-{
-	try
-	{
-		checkForLoopInDependencies(!code.empty() ? code : analysisId() != -1 ? "" : rCodeStripped());
-	}
-	catch(std::logic_error & e)
-	{
-		validate();
-		setError(e.what());
-
-		return false;
-	}
-
-	return true;
-}
-
 void Column::checkForLoopInDependencies(std::string code)
 {
 	stringset dependencies	= _data->findUsedColumnNames(code);
@@ -2749,7 +2732,7 @@ void Column::_checkForDependencyLoop(stringset foundNames, std::list<std::string
 		loopSS << "In the definitions of your computed columns the following loop was found:\n";
 		for(const std::string & l : loopList)
 			loopSS << l << " depends on ";
-		loopSS << name() << "..\nThis is not allowed, so change one of the formulas to break the circle.";
+		loopSS << name() << "..\nThese columns will keep recomputing themselves, so change one of the formulas to break the circle.";
 
 		throw std::logic_error(loopSS.str());
 	}
@@ -3557,8 +3540,18 @@ void Column::tryAndRunComputedColumn()
 	if(code.empty())
 		return;
 
-	if(areLoopDependenciesOk(code))
-		data()->runComputedColumn(nameQ(), tq(code), type());
+	//A loop in the dependencies is not fatal anymore: warn the user that the columns involved will
+	//keep recomputing themselves, but let them be free to do it anyway.
+	try
+	{
+		checkForLoopInDependencies(code);
+	}
+	catch(std::logic_error & e)
+	{
+		emit showWarning(tr("Loop in computed columns"), tq(e.what()));
+	}
+
+	data()->runComputedColumn(nameQ(), tq(code), type());
 }
 
 void Column::showAnalysisForm()

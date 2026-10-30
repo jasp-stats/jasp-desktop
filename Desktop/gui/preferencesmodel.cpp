@@ -1,5 +1,4 @@
 #include "preferencesmodel.h"
-#include "utilities/secretstore.h"
 #include "qutils.h"
 #include "utilities/settings.h"
 #include "utilities/messageforwarder.h"
@@ -60,6 +59,11 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 AIPersonaModel* PreferencesModel::aiPersonaModel() const { return _aiPersonaModel; }
 
 AIConfigModel* PreferencesModel::aiConfigModel() const { return AIConfigModel::config(); }
+
+bool PreferencesModel::settingIsForced(const QString& settingName) const
+{
+	return Settings::isForced(settingName);
+}
 
 void PreferencesModel::browseSpreadsheetEditor()
 {
@@ -204,6 +208,7 @@ GET_PREF_FUNC_BOOL( ALTNavModeActive,				Settings::ALTNAVMODE_ACTIVE							)
 GET_PREF_FUNC_BOOL( orderByValueByDefault,			Settings::ORDER_BY_VALUE_BY_DEFAULT					)
 GET_PREF_FUNC_BOOL( checkUpdatesAskUser,			Settings::CHECK_UPDATES_ASK_USER					)
 GET_PREF_FUNC_BOOL( checkUpdates,					Settings::CHECK_UPDATES								)
+GET_PREF_FUNC_BOOL( moduleStoreEnabled,				Settings::MODULE_STORE_ENABLED						)
 GET_PREF_FUNC_INT(	maxScaleLevels,					Settings::MAX_SCALE_LEVELS							)
 GET_PREF_FUNC_BOOL(	pdfLandscape,					Settings::PDF_LANDSCAPE								)
 GET_PREF_FUNC_INT(	pdfPageSize,					Settings::PDF_PAGESIZE								)
@@ -251,7 +256,7 @@ int PreferencesModel::rpcServerPort() const
 
 bool PreferencesModel::engineSandbox() const
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__APPLE__)
 	return Settings::value(Settings::ENGINE_SANDBOX).toBool();
 #else
 	return false;
@@ -450,6 +455,7 @@ SET_PREF_FUNCTION(				bool,		setALTNavModeActive,		ALTNavModeActive,			ALTNavMod
 SET_PREF_FUNCTION(				bool,		setOrderByValueByDefault,	orderByValueByDefault,		orderByValueByDefaultChanged,	Settings::ORDER_BY_VALUE_BY_DEFAULT					)
 SET_PREF_FUNCTION(				bool,		setCheckUpdatesAskUser,		checkUpdatesAskUser,		checkUpdatesAskUserChanged,		Settings::CHECK_UPDATES_ASK_USER					)
 SET_PREF_FUNCTION(				bool,		setCheckUpdates,			checkUpdates,				checkUpdatesChanged,			Settings::CHECK_UPDATES								)
+SET_PREF_FUNCTION(				bool,		setModuleStoreEnabled,		moduleStoreEnabled,			moduleStoreEnabledChanged,	Settings::MODULE_STORE_ENABLED					)
 SET_PREF_FUNCTION(				int,		setMaxScaleLevels,			maxScaleLevels,				maxScaleLevelsChanged,			Settings::MAX_SCALE_LEVELS							)
 SET_PREF_FUNCTION(				bool,		setPdfLandscape,			pdfLandscape,				pdfLandscapeChanged,			Settings::PDF_LANDSCAPE								)
 SET_PREF_FUNCTION(				int,		setPdfPageSize,				pdfPageSize,				pdfPageSizeChanged,				Settings::PDF_PAGESIZE								)
@@ -740,7 +746,7 @@ void PreferencesModel::setEngineSandbox(bool engineSandbox) {
 	if(engineSandbox != PreferencesModel::engineSandbox()) {
 		Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox);
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__APPLE__)
 		MessageForwarder::showWarning(tr("Engine Sandbox setting changed"), tr("The Engine Sandbox setting has been changed, this will only take full effect after JASP is restarted."));
 #endif
 		emit engineSandboxChanged(engineSandbox);

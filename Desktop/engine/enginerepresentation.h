@@ -17,6 +17,8 @@ class DataSet;
 class EngineRepresentation : public QObject
 {
 	Q_OBJECT
+
+	friend class TestAll; ///< drives checkForComputedColumns (the results decode site) without a live engine
 	Q_PROPERTY(bool			runsAnalysis		READ runsAnalysis		WRITE setRunsAnalysis		NOTIFY runsAnalysisChanged		)
 	Q_PROPERTY(bool			runsUtility			READ runsUtility		WRITE setRunsUtility		NOTIFY runsUtilityChanged		)
 	Q_PROPERTY(bool			runsRCmd			READ runsRCmd			WRITE setRunsRCmd			NOTIFY runsRCmdChanged			)
@@ -41,7 +43,7 @@ public:
 	void			runAnalysisOnProcess(	Analysis			* analysis);
 	void			runScriptOnProcess(		RFilterStore		* filterStore);
 	void			runScriptOnProcess(		RScriptStore		* scriptStore);
-	void			runScriptOnProcess(		const QString		& rCmdCode);
+	void			runScriptOnProcess(		const QString		& rCmdCode, bool columnsByName = false);
 	void			runScriptOnProcess(		RFilterByNameStore	* filterStore);
 	void			runScriptOnProcess(		RComputeColumnStore * computeColumnStore);
 	void			runScriptOnProcess(		RComputeDataSetStore * computeDataSetStore);

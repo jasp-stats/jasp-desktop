@@ -21,7 +21,7 @@
 #include "workspace.h"
 
 RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent, VariableInfo * varInfo)
-	: QSyntaxHighlighter(parent), VariableInfoConsumer(varInfo), _textDocument(parent)
+	: QSyntaxHighlighter(parent), VariableInfoConsumer(nullptr), _textDocument(parent)
 {
 	if(!varInfo)
 	{
@@ -31,13 +31,10 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent, VariableInfo * var
 	setVarInfo(varInfo);
 
 	HighlightingRule rule;
+	
 	// most of these R regExp are copied from: https://github.com/PrismJS/prism/blob/master/components/prism-r.js
+	// the order of rules is most important here and should adjust to fix some parser bugs.
 
-	// operators
-	_operatorFormat.setForeground(QColor(200, 50, 50));
-	rule.pattern = QRegularExpression(R"(->?>?|<(?:=|<?-)?|[>=!]=?|::?|&&?|\|\|?|[+*\/^$@~]|%[^%\s]*%)");
-	rule.format = _operatorFormat;
-	_highlightingRules.append(rule);
 
 	// variables
 	_variableFormat.setToolTip("variable");
@@ -52,18 +49,29 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent, VariableInfo * var
 	_highlightingRules.append(rule);
 
 	// keyword
-	_keywordFormat.setForeground(QColor(0, 150, 200));
-	QStringList keywordList;
-	keywordList << "NA" << "NA_character_" << "NA_complex_" << "NA_integer_" << "NA_real_" << "NULL" << "break" 
-						<< "else" << "for" << "function" << "if" << "in" << "next" << "repeat" << "while";
+	// keyword: reserved words (if, for, etc.) from function names (abs, lm, etc.).
+	QStringList reservedWords;
+	reservedWords << "NA" << "NA_character_" << "NA_complex_" << "NA_integer_" << "NA_real_" << "NULL" 
+								<< "break" << "else" << "for" << "function" << "if" << "in" << "next" << "repeat" << "while";
 	
+	// process reserved words (normal matching)
+	_keywordFormat.setForeground(QColor(0, 150, 200));
+	rule.pattern = QRegularExpression(R"(\b(?:)" + reservedWords.join('|') + R"()\b)");
+	rule.format = _keywordFormat;
+	_highlightingRules.append(rule);
+	
+	// keyword: whitelist function
+	QStringList functionList;
 	std::set<std::string> whitelist = R_FunctionWhiteList::getWhiteList();
 	for (const auto& func : whitelist) {
-			keywordList << QString::fromStdString(func);
+			functionList << QString::fromStdString(func);
 	}
-	QString keywordPattern = R"(\b(?:)" + keywordList.join('|') + R"()\b)";
 	
-	rule.pattern = QRegularExpression(keywordPattern);
+	// use Lookahead: Optional spaces and left parentheses are required.
+	QString functionPattern = R"(\b(?:)" + functionList.join('|') + R"()(?=\s*\())";
+	
+	// _keywordFormat.setForeground(QColor(0, 150, 200));
+	rule.pattern = QRegularExpression(functionPattern);
 	rule.format = _keywordFormat;
 	_highlightingRules.append(rule);
 
@@ -84,6 +92,22 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent, VariableInfo * var
 	rule.pattern = QRegularExpression(R"([(){}\[\],;])");
 	rule.format = _punctuationFormat;
 	_highlightingRules.append(rule);
+	
+	// operators
+	_operatorFormat.setForeground(QColor(200, 50, 50));
+	rule.pattern = QRegularExpression(
+			R"(->?>?)"					// -> ->>
+			R"(|<(?:=|<?-)?)"		// < <= <- <<=
+			R"(|[>=!]=?)"				// > >= = == ! !=
+			R"(|::?)"						// : ::
+			R"(|&&?)"						// & &&
+			R"(|\|(?:\||>)?)"		// | || |>
+			R"(|[+*\/^$@~])"		// Arithmetic and others
+			R"(|%[^%\s]*%)"			// %in% %% %/% %>% %<>%
+			R"(|\\)"						// R4.1+ lambda
+	);
+	rule.format = _operatorFormat;
+	_highlightingRules.append(rule);
 
 	// comments
 	_commentFormat.setForeground(Qt::darkGray);
@@ -101,19 +125,44 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent, VariableInfo * var
 
 void RSyntaxHighlighter::highlightBlock(const QString &text)
 {
+	// Should apply all standard syntax rules first!
+	for (const HighlightingRule & rule : _highlightingRules)
+		applyRule(text, rule);
+
 	setStringsFormat(text, '"');
 	setStringsFormat(text, '\'');
 	setStringsFormat(text, '`');
-	
-	for (const HighlightingRule & rule : _highlightingRules)
-		applyRule(text, rule);
-	
-	//Do columns
-	QStringList			names = requestInfo(varInfoType::VariableNames).toStringList();
-	
-	for(const QString & name : names)
-		applyRule(text, QRegularExpression(QString(R"(%1(\.(scale|ordinal|nominal))?)").arg(name)), _columnFormat);
-	
+
+	// Match complete R symbols, skipping strings and comments. Column names are
+	// literal names, so regex metacharacters in them must not affect matching.
+	const QStringList names = requestInfo(varInfoType::VariableNames).toStringList();
+	static const QRegularExpression tokens(R"(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|(`(?:\\.|[^`\\])*`(?:\.(?:scale|ordinal|nominal))?)|([\p{L}_.][\p{L}\p{N}_.]*))");
+	static const QRegularExpression typeSuffix(R"(\.(?:scale|ordinal|nominal)$)");
+	auto matches = tokens.globalMatch(text);
+	while (matches.hasNext())
+	{
+		const auto match = matches.next();
+		QString name = match.captured(1).isEmpty() ? match.captured(2) : match.captured(1);
+		if (name.isEmpty())
+			continue;
+
+		auto columnName = [](QString symbol)
+		{
+			if (symbol.startsWith('`') && symbol.endsWith('`'))
+				symbol = symbol.mid(1, symbol.size() - 2);
+			return symbol;
+		};
+
+		bool isColumn = names.contains(columnName(name));
+		if (!isColumn)
+		{
+			name.remove(typeSuffix);
+			isColumn = names.contains(columnName(name));
+		}
+		if (isColumn)
+			setFormat(match.capturedStart(), match.capturedLength(), _columnFormat);
+	}
+
 	applyRule(text, _commentRule);
 }
 
@@ -148,13 +197,20 @@ void RSyntaxHighlighter::applyRule(const QString & text, const QRegularExpressio
 
 void RSyntaxHighlighter::setVarInfo(VariableInfo *info)
 {
-	_varInfo = info;
+	VariableInfo * current = VariableInfoConsumer::varInfo();
+	if (current == info)
+		return;
 	
-	if(_varInfo)
+	VariableInfoConsumer::setVarInfo(info);
+	
+	if (info)
 	{
-		connect(_varInfo, &VariableInfo::variableNamesChanged,		this, &RSyntaxHighlighter::handleNamesChanged,		Qt::UniqueConnection);
-		connect(_varInfo, &VariableInfo::rowCountChanged,			this, &RSyntaxHighlighter::handleRowCountChanged,	Qt::UniqueConnection);
-	}	
+		connect(info, &VariableInfo::variableNamesChanged,	this,	&RSyntaxHighlighter::handleNamesChanged,		Qt::UniqueConnection);
+		connect(info, &VariableInfo::rowCountChanged,				this,	&RSyntaxHighlighter::handleRowCountChanged,	Qt::UniqueConnection);
+	}
+  
+  rehighlight();
+  emit varInfoChanged();
 }
 
 RSyntaxHighlighterQuick::RSyntaxHighlighterQuick(QQuickItem *parent)

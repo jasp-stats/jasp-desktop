@@ -44,6 +44,18 @@ signals:
 protected slots:
 	void			termsChangedHandler()								override;
 
+protected:
+	// live input-model terms are the written value (termsChangedHandler writes
+	//exactly this); createJson stays the defaultValues builder for the initial binding.
+	//The sidecar is the positional per-term array (same schema as BoundControlTerms).
+	Json::Value		createEngineValue()												const	override;
+	// row-bearing input lists store the per-term objects under the optionKey
+	//({name, filterId?, types}, row children kept); non-row input lists keep the plain string
+	//array in the file too (their values are free text, and the card's three reshaped families
+	//are exactly the Terms::getOptions serializations - a non-row input list never builds one).
+	Json::Value		createStorageValue()												const	override;
+	Json::Value		createFilterIds()													const	override;
+
 private:
 	ListModelInputValue*		_inputModel			= nullptr;
 	std::vector<std::string>	_defaultValues;

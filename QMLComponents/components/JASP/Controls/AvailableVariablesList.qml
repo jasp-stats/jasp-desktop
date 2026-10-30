@@ -27,6 +27,10 @@ import JASP
     This control is not bound to R options. It displays all dataset variables
     from which users can drag variables into assigned lists.
 
+    Declaring \c dataSetSelectionOption on an AvailableVariablesList makes it the namespace
+    of the whole form: the assigned lists related to it inherit its selection (their items come
+    from here), while any other list can declare a selection of its own.
+
     \note AvailableVariablesList does not bind to R options.
     It is automatically managed by VariablesForm.
 

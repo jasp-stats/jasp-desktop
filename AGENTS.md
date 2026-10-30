@@ -34,7 +34,9 @@ Test names (use `-functions` on binary to list all). There are EIGHT test execut
 - `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPTestDbMigration`, `JASPQuickTest`
 - `JASPTestColumnEncoderContext` — encoder indirection/extra-encodings (depends only on `Common`, unlike the others)
 
-Known-stale failure to NOT chase: `testDataImport` (CSV+TSV data-driven) fails on its hardcoded golden-JSON comparison because trailing spaces are no longer trimmed; it fails on a clean checkout too.
+Known-stale failure to NOT chase: `testDataImport` (CSV+TSV data-driven) fails on its hardcoded golden-JSON comparison because trailing spaces are no longer trimmed; it fails on a clean checkout too. (Branch history: before the upstream rebase that brought in the trimming change, the two `testDataImport` CSV/TSV hardcoded-json failures long reported as pre-existing on this branch did not reproduce in a recent full run — 109 passed / 0 failed.)
+
+`JASPTestDebugData` and `JASPTestEngine` abort *intermittently* (roughly 1 run in 2-3): core dump with a completely empty log, i.e. before the first test prints. Seen on clean HEAD builds as well, so rerun the binary before concluding your change broke it.
 
 To build and run everything in one go (Linux; on macOS drop `xvfb-run`, `QT_QPA_PLATFORM=offscreen` suffices):
 
@@ -56,6 +58,8 @@ For most tests on Linux, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` 
 
 With `BUILD_TESTS=ON`, `gateSmoke`/`fuzzSmoke` (RPC-driven smokes from `Tests/gatetest/`, need a built `JASP` + the `Tests/gatetest/jasp-mcp` submodule, no xvfb) are also in ctest; the full `gateTest` sweep is opt-in via `-DBUILD_GATETEST=ON`. See `Tests/gatetest/README.md`.
 
+Inside a QML `TestCase` (the `Tests/qmlTests/tst_*.qml` files) functions run in **alphabetical order**, not declaration order — a test that leaves a form/selection mutated breaks the ones that sort after it. Restore state (a `try { ... } finally { ... }` around mutating calls works) or assert against a value captured before the mutation instead of what an earlier test happened to leave behind.
+
 ## Library architecture (dependency order)
 
 ```
@@ -76,9 +80,10 @@ Common → CommonData → QMLComponents → JASPEngine / JASPDesktopLib → JASP
 - `DataSet` — owns columns, filters, `ColumnEncoder`, `DataSetSyncer`
 - `Workspace` — owns map of datasets, manages shown/filter state
 - `DataSetSyncer` — per-dataset file watcher + DB interval syncer (created in `DataSet` ctor)
-- `ColumnEncoder` — per-dataset column name encoding singleton with context pointer (`ColumnEncoder::setCurrentEncoder()`)
 - `DatabaseConnectionInfo` — DB interval polling timer (owned by `DataSetSyncer`)
 - `DataSetPackage` — singleton desktop wrapper around Workspace
+
+**Column-name encoding architecture:** each `DataSet` owns a canonical *mint* encoder (`name → (index, type)` + reverse, `columnencoder.cpp`); every `Filter` owns a thin non-owning *view* over it that composes its own `JASPColumn_D<dsId>_F<filterId>_<i>_Encoded` prefix — encoding always goes through an explicit filter view (or the analysis' merged view over its selection hosts), never a process-global "current" encoder. Decoding goes through ONE process-global strict table (`ColumnEncoder::decode`), written only by `rebuildBlock()` (erase-then-write) and fed by the same mutation funnel in every process (desktop, engine, syntax bridge keep identical copies by deterministic minting); a token that is not in the table passes through raw. `ColumnEncoder::setCurrentEncoder` survives only as the documented legacy fallback for non-aware runs. `.meta` is generated at send time and never carries `dataSetId`/`filterId` — provenance rides the encoded names, and the transient `.filterIds` sidecar is stripped before R sees anything. User-facing qualified column references (`"Dataset"."Filter"."Column"("Type")`) are parsed/rendered C++-side by `Workspace::resolveQualifiedColumnRef`/`renderQualifiedColumnRef`; R never parses column tokens.
 - `JaspRpcDispatcher`/`JaspRpcServer` (`Desktop/rpc/`) — the JSON-RPC/MCP surface the agent API and gate tests use; method specs live in `Resources/JASP_RPC.json`, server start is gated on `PreferencesModel::rpcServerEnabled()`
 - `MainWindow` is NOT built in `main.cpp` — it's `new`ed inside `Application::init()`; `--rpcPort`/`--safeGraphics` style runtime overrides must be applied in `main()` before that
 

@@ -26,6 +26,7 @@ private slots:
 	void testIsDataFileType();
 	void testIsDataFileTypeFromPath();
 	void testNoArguments();
+	void testGetTypeFromFileNameCaseInsensitive();
 	void testBooleanFlags();
 	void testTimeoutParsing();
 	void testTimeoutDefault();
