@@ -2008,7 +2008,7 @@ void DataSet::setTitle(const QString &title)
 
 bool DataSet::dataFileCanHaveLabels() const
 {
-	return !tq(dataFilePath()).endsWith(".csv");
+	return !tq(dataFilePath()).endsWith(".csv", Qt::CaseInsensitive);
 }
 
 void DataSet::resetAllFilters()

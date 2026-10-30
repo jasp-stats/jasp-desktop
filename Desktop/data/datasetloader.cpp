@@ -17,8 +17,6 @@
 //
 #include "datasetloader.h"
 
-#include <boost/algorithm/string.hpp>
-
 #include "importers/databaseimporter.h"
 #include "importers/csvimporter.h"
 #include "importers/jaspimporter.h"
@@ -54,18 +52,20 @@ string DataSetLoader::getExtension(const string &locator, const string &extensio
 
 Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 {
+	const QString lowerExt = tq(ext).toLower();
+
 	if(	ext == "DATABASE")									return new DatabaseImporter();
-	if(	boost::iequals(ext,".csv") || 
-		boost::iequals(ext,".txt") ||
-		boost::iequals(ext,".tsv"))							return new CSVImporter();
-	if(	boost::iequals(ext,".ods"))							return new ODSImporter();
-	if( boost::iequals(ext,".xls") ||
-		boost::iequals(ext,".xlsx"))						return new ExcelImporter();
+	if(	lowerExt == ".csv" ||
+		lowerExt == ".txt" ||
+		lowerExt == ".tsv")									return new CSVImporter();
+	if(	lowerExt == ".ods")									return new ODSImporter();
+	if( lowerExt == ".xls" ||
+		lowerExt == ".xlsx")								return new ExcelImporter();
 	if(	ReadStatImporter::extSupported(ext))				return new ReadStatImporter(ext);
-	if( boost::iequals(ext,".rdata") ||
-		boost::iequals(ext,".rds"))							return new RDataImporter();
-	if( boost::iequals(ext, ".mwx") ||
-		boost::iequals(ext,".mpx"))							return new MinitabImporter();
+	if( lowerExt == ".rdata" ||
+		lowerExt == ".rds")									return new RDataImporter();
+	if( lowerExt == ".mwx" ||
+		lowerExt == ".mpx")									return new MinitabImporter();
 
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
@@ -107,7 +107,7 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 		DataSetPackage::pkg()->workspace()->setShownDataSet(dataSet);
 		DataSetPackage::pkg()->workspace()->refresh();
 	}
-	else if(extension == ".jasp" || extension == "jasp")
+	else if(tq(extension).compare(".jasp", Qt::CaseInsensitive) == 0 || tq(extension).compare("jasp", Qt::CaseInsensitive) == 0)
 		JASPImporter::loadDataSet(locator, progress);
 	else
 		throw LoaderException("JASP does not support loading the file-type \"" + extension + '"');

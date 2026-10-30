@@ -41,6 +41,8 @@
 #include "controls/jaspcontrol.h"
 #include "rsyntax/formulaparser.h"	// emission + re-parse roundtrip
 #include "data/asyncloader.h"
+#include "data/fileevent.h"
+#include "utils.h"
 #include "data/importers/csv/csvparser.h"
 #include "data/datasetloader.h"
 #include "data/expanddataproxymodel.h"
@@ -489,6 +491,91 @@ void TestAll::testJaspRoundRobin()
 	QVERIFY2(dataSet->jsonForCompare() == compareMe,	"DataSet should be the same after reloading!");
 }
 
+
+void TestAll::testFileTypeFromFileName_data()
+{
+	QTest::addColumn<QString>("path");
+	QTest::addColumn<int>("type");
+
+	QTest::newRow("lower case")				<< "/a/b/data.csv"			<< int(Utils::FileType::csv);
+	QTest::newRow("upper case")				<< "/a/b/data.CSV"			<< int(Utils::FileType::csv);
+	QTest::newRow("mixed case")				<< "/a/b/results.JaSp"		<< int(Utils::FileType::jasp);
+	QTest::newRow("no folder")				<< "data.Ods"				<< int(Utils::FileType::ods);
+	QTest::newRow("non ascii name")			<< "/ü/é.SAV"				<< int(Utils::FileType::sav);
+	QTest::newRow("dot in folder")			<< "/home/my.data/file"		<< int(Utils::FileType::empty);
+	QTest::newRow("known type as folder")	<< "/a/b.jasp/c.xlsx"		<< int(Utils::FileType::xlsx);
+	QTest::newRow("hidden file")			<< "/home/.bashrc"			<< int(Utils::FileType::empty);
+	QTest::newRow("no extension")			<< "/a/b/data"				<< int(Utils::FileType::empty);
+	QTest::newRow("trailing dot")			<< "/a/b/data."				<< int(Utils::FileType::unknown);
+	QTest::newRow("unknown extension")		<< "/a/b/data.foo"			<< int(Utils::FileType::unknown);
+}
+
+void TestAll::testFileTypeFromFileName()
+{
+	QFETCH(QString, path);
+	QFETCH(int,		type);
+
+	QCOMPARE(int(Utils::getTypeFromFileName(fq(path))), type);
+}
+
+///Recognizing "X.JASP" as a jasp file is not enough: the loader has to accept that extension as well.
+void TestAll::testLoadJaspFileWithUpperCaseExtension()
+{
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	const QString jaspFile = tempDir.filePath("DESCRIPTIVES.JASP");
+	QVERIFY(QFile::copy(_testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp"), jaspFile));
+
+	delete _importer;
+	_importer = nullptr;
+	delete _pkg;
+	_pkg = new DataSetPackage(this);
+
+	const std::string path = fq(jaspFile);
+	QCOMPARE(Utils::getTypeFromFileName(path), Utils::FileType::jasp);
+
+	try
+	{
+		DataSetLoader::loadPackage(path, DataSetLoader::getExtension(path, ""), [](int){});
+	}
+	catch(std::exception & e)
+	{
+		QFAIL(e.what());
+	}
+
+	QVERIFY2(_pkg->dataSet(), "No dataset loaded from a .JASP file");
+}
+
+void TestAll::testCsvFileWithUpperCaseExtensionHasNoLabels()
+{
+	QVERIFY(_newPkgWithDataSet());
+	DataSet * dataSet = _pkg->dataSet();
+
+	dataSet->setDataFile("/a/b/data.CSV");
+	QVERIFY(!dataSet->dataFileCanHaveLabels());
+
+	dataSet->setDataFile("/a/b/data.sav");
+	QVERIFY(dataSet->dataFileCanHaveLabels());
+}
+
+///An export path without an extension gets the default extension of its exporter, also when a folder in it has a dot.
+void TestAll::testExportPathWithoutExtensionGetsDefault()
+{
+	FileEvent noExtension(nullptr, FileEvent::FileExportResults, false);
+	QVERIFY(noExtension.setPath("/a/b/results"));
+	QCOMPARE(noExtension.type(), Utils::FileType::html);
+	QCOMPARE(noExtension.path(), QString("/a/b/results.html"));
+
+	FileEvent dotInFolder(nullptr, FileEvent::FileExportResults, false);
+	QVERIFY(dotInFolder.setPath("/home/my.data/results"));
+	QCOMPARE(dotInFolder.path(), QString("/home/my.data/results.html"));
+
+	FileEvent upperCase(nullptr, FileEvent::FileExportResults, false);
+	QVERIFY(upperCase.setPath("/a/b/results.PDF"));
+	QCOMPARE(upperCase.type(), Utils::FileType::pdf);
+	QCOMPARE(upperCase.path(), QString("/a/b/results.PDF"));
+}
 
 void TestAll::testJaspDataImport()
 {

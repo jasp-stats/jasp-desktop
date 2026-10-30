@@ -23,6 +23,14 @@ private slots:
 	void	testJaspDataImport_data();
 	void	testJaspRoundRobin_data();
 	void	testJaspRoundRobin();
+
+	// File extensions are recognized whatever their case, and only in the file name itself: a dot in a
+	// folder name or a hidden file (".bashrc") is no extension.
+	void	testFileTypeFromFileName_data();
+	void	testFileTypeFromFileName();
+	void	testLoadJaspFileWithUpperCaseExtension();
+	void	testCsvFileWithUpperCaseExtensionHasNoLabels();
+	void	testExportPathWithoutExtensionGetsDefault();
 	void	testCancelledImportLeavesTheModelUsable();
 	void	testDatabaseImportNulls();
 	void	testCsvImportLocale();
