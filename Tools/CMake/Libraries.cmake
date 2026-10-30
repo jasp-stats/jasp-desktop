@@ -84,6 +84,7 @@ if(NOT FLATPAK_USED)
       OpenGL
       Widgets
       Qml
+      QmlPrivate
       QuickTemplates2
       Quick
       QuickLayouts
@@ -119,6 +120,7 @@ else()
                OpenGL
                Widgets
                Qml
+               QmlPrivate
                WebChannel
                Svg
                Sql
