@@ -272,6 +272,23 @@ void TestEngine::testBatchAnalysis()
 	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
 	QVERIFY2(spy.takeFirst()[0].toString().contains("strength ~ temperature + pressure"), "columnFormula mishandled dependent or multiple columns");
 	spy.clear();
+
+	//Regression: on Windows the strict encoder threw an MSVC exception into the GCC-built R-Interface for
+	//any name that is not a column, which crashed the engine (heap corruption) instead of giving an R error.
+	rcmd->runScriptOnProcess("paste(tryCatch(.encodeColNamesStrict('noSuchColumn'), error = function(e) 'encodeErrored'),"
+							 "      tryCatch(.decodeColNamesStrict('noSuchColumn'), error = function(e) 'decodeErrored'),"
+							 "      is.null(data[['noSuchColumn']]))");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine, did it crash?");
+	QVERIFY2(spy.takeFirst()[0].toString().contains("encodeErrored decodeErrored TRUE"), "Unknown names did not give R errors and NULL");
+	spy.clear();
+
+	//names(data) gives the encoded names: columnFormula must take those as existing columns
+	rcmd->runScriptOnProcess("f <- columnFormula(names(data)[1]); 'formulaBuilt'");
+	QVERIFY2(spy.wait(30000), "No reply from the commander engine");
+	const QString encodedNamesLog = spy.takeFirst()[0].toString();
+	spy.clear();
+	QVERIFY2(encodedNamesLog.contains("formulaBuilt"),	"columnFormula failed on an encoded column name");
+	QVERIFY2(!encodedNamesLog.contains("No column named"),	"columnFormula reported an encoded column name as missing");
 }
 
 void TestEngine::testBatchCreationGate()

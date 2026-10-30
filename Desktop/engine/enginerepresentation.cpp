@@ -67,11 +67,17 @@ void EngineRepresentation::cleanUpAfterClose(bool forgetAnalyses)
 	_lastCompColName	= "???";
 
 
-	if(_dynModName != "")
-		emit unregisterForModule(this, _dynModName);
+	//The R Commander's module is chosen in its window and never registered with EngineSync, so keep it when
+	//the engine restarts (after a crash for instance): EngineSync::process loads it again once the engine is idle.
+	if(!runsRCmd())
+	{
+		if(_dynModName != "")
+			emit unregisterForModule(this, _dynModName);
 
-	_dynModName			= "";
-	_moduleLoaded		= "";
+		_dynModName		= "";
+	}
+
+	_moduleLoaded		= false;
 
 	if(runMeLater)
 		runMeLater->run();

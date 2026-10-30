@@ -124,7 +124,8 @@ std::string DataBridge::createColumn(const std::string &columnName, bool compute
 
 	reloadColumnNames();
 
-	return rbridge_encodeColumnName(columnName.c_str());
+	const char * encoded = rbridge_encodeColumnName(columnName.c_str());
+	return encoded ? encoded : "";
 }
 
 bool DataBridge::deleteColumn(const std::string &columnName)

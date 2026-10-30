@@ -1401,14 +1401,26 @@ void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibrary)
 		Rf_error("jaspRCPP_postProcessLocalPackageInstall did not receive a string, it should get that and the string should represent some kind of R library path.");
 }
 
+//The Engine's encoder and decoder return nullptr for a name they do not know (they cannot throw into this
+//DLL, see rbridge_encodeColumnName), so throw here instead: Rcpp turns that into an R error, as on Linux and macOS.
+static std::string jaspRCPP_enDecodeOrThrow(EnDecodeDef enDecoder, const std::string & in, const std::string & notAColumn)
+{
+	const char * out = enDecoder(in.c_str());
+
+	if(!out)
+		throw std::runtime_error("'" + in + "' " + notAColumn);
+
+	return out;
+}
+
 Rcpp::String jaspRCPP_encodeColumnNameRcpp(const Rcpp::String & in)
 {
-	return encodeColumnName(std::string(in).c_str());
+	return jaspRCPP_encodeColumnName(in);
 }
 
 Rcpp::String jaspRCPP_decodeColumnNameRcpp(const Rcpp::String & in)
 {
-	return decodeColumnName(std::string(in).c_str());
+	return jaspRCPP_decodeColumnName(in);
 }
 
 
@@ -1452,12 +1464,12 @@ bool jaspRCPP_shouldDecodeColumnName(std::string in)
 
 std::string jaspRCPP_encodeColumnName(std::string in)
 {
-	return encodeColumnName(in.c_str());
+	return jaspRCPP_enDecodeOrThrow(encodeColumnName, in, "is not a columnName!");
 }
 
 std::string jaspRCPP_decodeColumnName(std::string in)
 {
-	return decodeColumnName(in.c_str());
+	return jaspRCPP_enDecodeOrThrow(decodeColumnName, in, "is not an encoded columnName!");
 }
 
 // ------------------- Below here be dragons -------------------- //
