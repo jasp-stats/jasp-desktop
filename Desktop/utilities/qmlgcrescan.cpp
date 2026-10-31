@@ -46,7 +46,7 @@ namespace
 	{
 		QV4::MemoryManager * mm = gc->mm;
 
-		if(gc->timeLimit.count() > 0 && mm->markStack() && mm->m_weakValues) //Only incremental runs can miss anything
+		if(gc->timeLimit.count() > 0 && !mm->aggressiveGC && mm->markStack() && mm->m_weakValues) //Only incremental runs can miss anything, Qt's own test for that (see markReady)
 		{
 			QElapsedTimer timer;
 			timer.start();
