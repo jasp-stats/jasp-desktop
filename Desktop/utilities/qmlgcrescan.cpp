@@ -70,6 +70,13 @@ namespace
 void installQmlGcRescan(QQmlEngine * engine)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+	//The hook relies on Qt-private struct layouts, which may change in any Qt release
+	if(qstrcmp(qVersion(), QT_VERSION_STR) != 0)
+	{
+		qCWarning(lcQmlGcRescan).nospace() << "QML GC rescan disabled: built for Qt " << QT_VERSION_STR << ", running " << qVersion();
+		return;
+	}
+
 	GCStateMachine	* gc		= engine->handle()->memoryManager->gcStateMachine.get();
 	StateFunction	& markReady	= gc->stateInfoMap[GCState::MarkReady].execute;
 
