@@ -56,9 +56,9 @@ namespace
 			gc->stateInfoMap[GCState::InitMarkWeakValues].execute(gc, data);
 			while(gc->stateInfoMap[GCState::MarkWeakValues].execute(gc, data) == GCState::MarkWeakValues) {}
 
-			gc->deadline = QDeadlineTimer(gc->timeLimit); //A fresh slice, so Qt's InitCallDestroyObjects (which redrains) runs before any JS can parent more objects
-
 			qCDebug(lcQmlGcRescan).nospace() << "QML GC rescan took " << timer.nsecsElapsed() / 1000 << " us";
+
+			gc->deadline = QDeadlineTimer(gc->timeLimit); //A fresh slice, so Qt's InitCallDestroyObjects (which redrains) runs before any JS can parent more objects
 		}
 
 		return originalMarkReady(gc, data);
