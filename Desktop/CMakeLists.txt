@@ -153,7 +153,6 @@ target_link_libraries(
     Qt::OpenGL
     Qt::Widgets
     Qt::Qml
-    Qt::QmlPrivate
     Qt::WebEngineQuick
     Qt::WebChannel
     Qt::WebChannelQuick
@@ -196,6 +195,8 @@ target_link_libraries(
     # R-Framework --------------------------------
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
 )
+
+target_link_libraries(JASPDesktopLib PRIVATE Qt::QmlPrivate) #Only qmlgcrescan.cpp uses Qt's private QML API
 
 target_link_libraries(
     JASP
