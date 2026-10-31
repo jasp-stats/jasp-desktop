@@ -2097,9 +2097,9 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid ""
-"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
-"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
-"PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
+"Portable Network Graphics (*.png);;Portable Document Format "
+"(*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File "
+"(*.tiff);;PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
 
 msgctxt "MainWindow|"
