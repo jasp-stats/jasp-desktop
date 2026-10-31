@@ -18,6 +18,10 @@
 #include "qmlgcrescan.h"
 
 #include <QQmlEngine>
+
+//Qt's incremental GC, and with it the bug, starts with Qt 6.8. The GC state names are spelled as in 6.8.0 (directly in QV4), which from 6.8.1 on are aliases.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+
 #include <QElapsedTimer>
 #include <QLoggingCategory>
 
@@ -29,14 +33,16 @@ Q_LOGGING_CATEGORY(lcQmlGcRescan, "jasp.qml.gc.rescan", QtWarningMsg)
 
 namespace
 {
+	using QV4::GCState;
 	using QV4::GCStateMachine;
-	using StateFunction = GCStateMachine::GCState (*)(GCStateMachine *, GCStateMachine::ExtraData &);
+	using ExtraData		= QV4::GCStateInfo::ExtraData;
+	using StateFunction = GCState (*)(GCStateMachine *, ExtraData &);
 
 	StateFunction originalMarkReady = nullptr;
 
 	//Runs Qt's own weak-value pass (QObjectWrappers kept alive by their QObject or its parent chain) once more, to completion,
 	//then rescans the JS stack and drains, as Qt does before sweeping. The pass keeps its iterator in the state data, as in Qt.
-	GCStateMachine::GCState rescanThenMarkReady(GCStateMachine * gc, GCStateMachine::ExtraData & data)
+	GCState rescanThenMarkReady(GCStateMachine * gc, ExtraData & data)
 	{
 		QV4::MemoryManager * mm = gc->mm;
 
@@ -47,8 +53,8 @@ namespace
 
 			auto oldDeadline = std::exchange(gc->deadline, QDeadlineTimer(QDeadlineTimer::Forever));
 
-			gc->stateInfoMap[GCStateMachine::InitMarkWeakValues].execute(gc, data);
-			while(gc->stateInfoMap[GCStateMachine::MarkWeakValues].execute(gc, data) == GCStateMachine::MarkWeakValues) {}
+			gc->stateInfoMap[GCState::InitMarkWeakValues].execute(gc, data);
+			while(gc->stateInfoMap[GCState::MarkWeakValues].execute(gc, data) == GCState::MarkWeakValues) {}
 
 			gc->deadline = oldDeadline;
 
@@ -62,14 +68,20 @@ namespace
 	}
 }
 
+#endif
+
 void installQmlGcRescan(QQmlEngine * engine)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
 	GCStateMachine	* gc		= engine->handle()->memoryManager->gcStateMachine.get();
-	StateFunction	& markReady	= gc->stateInfoMap[GCStateMachine::MarkReady].execute;
+	StateFunction	& markReady	= gc->stateInfoMap[GCState::MarkReady].execute;
 
 	if(markReady == rescanThenMarkReady)
 		return;
 
 	originalMarkReady	= markReady;
 	markReady			= rescanThenMarkReady;
+#else
+	Q_UNUSED(engine);
+#endif
 }
