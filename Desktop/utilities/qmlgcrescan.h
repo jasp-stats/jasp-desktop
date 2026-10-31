@@ -21,11 +21,20 @@
 class QQmlEngine;
 
 ///
-/// Works around a bug in Qt's incremental QML garbage collector (Qt >= 6.8, still in 6.12).
+/// Works around a bug in Qt's incremental QML garbage collector (Qt 6.8 through at least 6.12 and dev, not fixed upstream yet).
 /// The collector decides only once per cycle, early on, which QObjectWrappers are kept alive by their QObject (C++ ownership or parent chain).
 /// A QObject that gets parented or rooted after that pass, as happens while big forms are built, keeps a wrapper the collector never marks.
-/// That wrapper and its property/method storage are freed while still in use, and JASP later crashes inside the collector.
-/// installQmlGcRescan repeats that pass right before marking ends (one short atomic step), through Qt's private GC state machine.
+/// That wrapper and its property/method storage are freed while still in use, and JASP later crashes inside the collector (QV4::MarkStack::drain).
+///
+/// installQmlGcRescan repeats Qt's own pass, to completion, right before marking ends (the MarkReady step of Qt's private GC state machine),
+/// then starts a fresh time slice so that Qt rescans the JS stack and drains before any JS runs again.
+/// Cost: one blocking step per GC cycle that grows with the number of QML objects, about 5 ms per open analysis form
+/// (0.2 ms in a fresh session, 140 ms with 25 Parametric Survival analyses; Qt 6.11.1, Windows).
+/// It must be called for every QQmlEngine that builds analysis forms; only MainWindow's engine is hooked (not SyntaxInterface's).
+/// Uses Qt's private API (Qt::QmlPrivate): compiled only for Qt >= 6.8, and installed only when the Qt at run time is the version it was built with.
+/// Tested with Qt 6.11.1; the Qt code it relies on is the same from 6.8.1 through 6.12.
+/// Remove it once Qt repeats the weak-value pass before sweeping: with QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1 and QV4_GC_TIMELIMIT=1,
+/// and without this hook, creating a Parametric Survival analysis then logs no "Cross Validation Error".
 ///
 void installQmlGcRescan(QQmlEngine * engine);
 
