@@ -40,8 +40,8 @@ namespace
 
 	StateFunction originalMarkReady = nullptr;
 
-	//Runs Qt's own weak-value pass (QObjectWrappers kept alive by their QObject or its parent chain) once more, to completion,
-	//then rescans the JS stack and drains, as Qt does before sweeping. The pass keeps its iterator in the state data, as in Qt.
+	//Runs Qt's own weak-value pass (QObjectWrappers kept alive by their QObject or its parent chain) once more, to completion.
+	//The pass leaves its marks on the mark stack; Qt's InitCallDestroyObjects rescans the JS stack and drains it before anything is destroyed or swept.
 	GCState rescanThenMarkReady(GCStateMachine * gc, ExtraData & data)
 	{
 		QV4::MemoryManager * mm = gc->mm;
@@ -57,9 +57,6 @@ namespace
 			while(gc->stateInfoMap[GCState::MarkWeakValues].execute(gc, data) == GCState::MarkWeakValues) {}
 
 			gc->deadline = oldDeadline;
-
-			mm->collectFromJSStack(mm->markStack());
-			mm->markStack()->drain();
 
 			qCDebug(lcQmlGcRescan).nospace() << "QML GC rescan took " << timer.nsecsElapsed() / 1000 << " us";
 		}
