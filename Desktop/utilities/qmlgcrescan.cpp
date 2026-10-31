@@ -51,12 +51,12 @@ namespace
 			QElapsedTimer timer;
 			timer.start();
 
-			auto oldDeadline = std::exchange(gc->deadline, QDeadlineTimer(QDeadlineTimer::Forever));
+			gc->deadline = QDeadlineTimer(QDeadlineTimer::Forever);
 
 			gc->stateInfoMap[GCState::InitMarkWeakValues].execute(gc, data);
 			while(gc->stateInfoMap[GCState::MarkWeakValues].execute(gc, data) == GCState::MarkWeakValues) {}
 
-			gc->deadline = oldDeadline;
+			gc->deadline = QDeadlineTimer(gc->timeLimit); //A fresh slice, so Qt's InitCallDestroyObjects (which redrains) runs before any JS can parent more objects
 
 			qCDebug(lcQmlGcRescan).nospace() << "QML GC rescan took " << timer.nsecsElapsed() / 1000 << " us";
 		}
