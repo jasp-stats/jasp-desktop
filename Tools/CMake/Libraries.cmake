@@ -84,7 +84,6 @@ if(NOT FLATPAK_USED)
       OpenGL
       Widgets
       Qml
-      QmlPrivate
       QuickTemplates2
       Quick
       QuickLayouts
@@ -120,7 +119,6 @@ else()
                OpenGL
                Widgets
                Qml
-               QmlPrivate
                WebChannel
                Svg
                Sql
@@ -146,6 +144,11 @@ else()
        ${Qt6WebEngineQuick_DIR}
     NO_DEFAULT_PATH)
 
+endif()
+
+# Qt ships its private modules as separate CMake packages from 6.9 on; before that Qt6::QmlPrivate comes with Qml
+if(Qt6_VERSION VERSION_GREATER_EQUAL 6.9)
+  find_package(Qt6 REQUIRED COMPONENTS QmlPrivate)
 endif()
 
 if(LINUX)
