@@ -27,14 +27,15 @@ class QQmlEngine;
 /// That wrapper and its property/method storage are freed while still in use, and JASP later crashes inside the collector (QV4::MarkStack::drain).
 ///
 /// installQmlGcRescan repeats Qt's own pass, to completion, right before marking ends (the MarkReady step of Qt's private GC state machine),
-/// then starts a fresh time slice so that Qt rescans the JS stack and drains before any JS runs again.
-/// Cost: one blocking step per GC cycle that grows with the number of QML objects, about 5 ms per open analysis form
-/// (0.2 ms in a fresh session, 140 ms with 25 Parametric Survival analyses; Qt 6.11.1, Windows).
+/// then starts a fresh time slice so that Qt rescans the JS stack and drains (InitCallDestroyObjects) before any JS runs again.
+/// Not covered: JS that runs during the later, interruptible steps of the same cycle (destroying objects, sweeping).
+/// Cost: one blocking step per GC cycle that grows with the number of QML objects, about 6 ms per open analysis form
+/// (under 0.1 ms in a fresh session, 144 ms with 25 Parametric Survival analyses; Qt 6.11.1, Windows).
 /// It must be called for every QQmlEngine that builds analysis forms; only MainWindow's engine is hooked (not SyntaxInterface's).
 /// Uses Qt's private API (Qt::QmlPrivate): compiled only for Qt >= 6.8, and installed only when the Qt at run time is the version it was built with.
-/// Tested with Qt 6.11.1; the Qt code it relies on is the same from 6.8.1 through 6.12.
-/// Remove it once Qt repeats the weak-value pass before sweeping: with QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1 and QV4_GC_TIMELIMIT=1,
-/// and without this hook, creating a Parametric Survival analysis then logs no "Cross Validation Error".
+/// Tested with Qt 6.11.1; the Qt logic it relies on is equivalent from 6.8.0 through 6.12 and dev.
+/// Remove it once Qt repeats the weak-value pass before sweeping. Check with Qt >= 6.11, which has the validator: with QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1,
+/// QV4_GC_TIMELIMIT=1 and the installQmlGcRescan call removed, creating a few Parametric Survival analyses then logs no "Cross Validation Error".
 ///
 void installQmlGcRescan(QQmlEngine * engine);
 
