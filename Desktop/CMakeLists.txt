@@ -196,6 +196,8 @@ target_link_libraries(
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
 )
 
+target_link_libraries(JASPDesktopLib PRIVATE Qt::QmlPrivate) #Only qmlgcrescan.cpp uses Qt's private QML API
+
 target_link_libraries(
     JASP
 	PUBLIC

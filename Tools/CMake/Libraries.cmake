@@ -146,6 +146,11 @@ else()
 
 endif()
 
+# Qt ships its private modules as separate CMake packages from 6.9 on; before that Qt6::QmlPrivate comes with Qml
+if(Qt6_VERSION VERSION_GREATER_EQUAL 6.9)
+  find_package(Qt6 REQUIRED COMPONENTS QmlPrivate)
+endif()
+
 if(LINUX)
 
   message(CHECK_START "Looking for `librt`")

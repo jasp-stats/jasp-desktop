@@ -64,6 +64,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include "utilities/qmlutils.h"
+#include "utilities/qmlgcrescan.h"
 #include "utilities/reporter.h"
 #include "utilities/allhelp.h"
 
@@ -122,6 +123,7 @@ MainWindow::MainWindow(Application * application, bool batchRun) : QObject(appli
 		PreferencesModel::prefs()->rpcServerIp(),
 		PreferencesModel::prefs()->rpcServerPort());
 	_qml					= new QQmlApplicationEngine(this);
+	installQmlGcRescan(_qml); //Qt's incremental GC frees live QML objects otherwise, see qmlgcrescan.h
 	_languageModel			= new LanguageModel(application, _qml, this);
 	_loader					= new AsyncLoader(nullptr);
 	_preferences			= new PreferencesModel(this);
