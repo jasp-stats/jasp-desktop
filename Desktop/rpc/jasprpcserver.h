@@ -42,6 +42,10 @@ public:
 	quint16 serverPort() const;
 
 private:
+	/// Why a request must be refused, empty when it may be dispatched. Only local non-browser clients
+	/// (e.g. jasp-mcp) are served: web pages could otherwise drive JASP, and so run R code, from the user's browser.
+	QString rejectionReason(const QHttpServerRequest& request) const;
+
 	JaspRpcDispatcher& _dispatcher;
 	QString             _host;
 	quint16             _port;

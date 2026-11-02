@@ -13,6 +13,7 @@
 #include <QHttpServerRequest>
 #include <QHttpServerResponse>
 #include <QHostAddress>
+#include <QJsonObject>
 #include "log.h"
 
 JaspRpcServer::JaspRpcServer(JaspRpcDispatcher& dispatcher,
@@ -40,6 +41,15 @@ bool JaspRpcServer::start()
 					  QHttpServerRequest::Method::Post,
 					  [this](const QHttpServerRequest& request)
 	{
+		const QString rejected = rejectionReason(request);
+		if (!rejected.isEmpty())
+		{
+			Log::log() << "[JaspRpcServer] Refused a request: " << rejected.toStdString() << std::endl;
+			const QJsonObject error {{"code", -32600}, {"message", "JASP refused the request: " + rejected}};
+			return QHttpServerResponse(QJsonObject{{"jsonrpc", "2.0"}, {"id", QJsonValue::Null}, {"error", error}},
+									   QHttpServerResponse::StatusCode::Forbidden);
+		}
+
 		const QByteArray body    = request.body();
 		const std::string input(body.constData(), body.size());
 
@@ -50,23 +60,7 @@ bool JaspRpcServer::start()
 			QHttpServerResponse::StatusCode::Ok);
 	});
 
-	// ---- OPTIONS /rpc — CORS pre-flight for browser-based clients ----
-	_httpServer.route(_endpointPath,
-					  QHttpServerRequest::Method::Options,
-					  [](const QHttpServerRequest&)
-	{
-
-		QHttpHeaders corsHeaders;
-		corsHeaders.append("Access-Control-Allow-Origin",  "*");
-		corsHeaders.append("Access-Control-Allow-Methods", "POST, OPTIONS");
-		corsHeaders.append("Access-Control-Allow-Headers", "Content-Type");
-
-		QHttpServerResponse resp(QHttpServerResponse::StatusCode::Ok);
-		resp.setHeaders(corsHeaders);
-
-
-		return resp;
-	});
+	// No OPTIONS route and no CORS headers: browser pages must not be able to reach this endpoint.
 
 	// ---- TCP listener ----
 	_tcpServer = new QTcpServer(this);
@@ -107,4 +101,26 @@ void JaspRpcServer::stop()
 quint16 JaspRpcServer::serverPort() const
 {
 	return _tcpServer ? _tcpServer->serverPort() : 0;
+}
+
+QString JaspRpcServer::rejectionReason(const QHttpServerRequest& request) const
+{
+	const QHttpHeaders & headers = request.headers();
+
+	// Browsers send Origin with every cross-site POST (even "no-cors" ones); local tools such as jasp-mcp do not.
+	if (headers.contains(QHttpHeaders::WellKnownHeader::Origin))
+		return "requests from web pages (with an Origin header) are not accepted";
+
+	// A DNS-rebinding page reaches 127.0.0.1 under its own host name, so only accept the names of this listener.
+	const QString	host	= QString::fromLatin1(headers.value(QHttpHeaders::WellKnownHeader::Host)).toLower(),
+					port	= ":" + QString::number(serverPort());
+	const QStringList acceptedHosts = { "127.0.0.1" + port, "localhost" + port, "[::1]" + port, _host.toLower() + port };
+	if (!acceptedHosts.contains(host))
+		return "unexpected Host header '" + host + "'";
+
+	// Pages can send text/plain without a CORS pre-flight, application/json they cannot.
+	if (!QByteArray(headers.value(QHttpHeaders::WellKnownHeader::ContentType)).toLower().startsWith("application/json"))
+		return "Content-Type must be application/json";
+
+	return {};
 }
