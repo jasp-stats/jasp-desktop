@@ -1704,6 +1704,12 @@ void MainWindow::registerRpcHandlers()
 			   return JaspRpcDispatcher::errorResult(
 				   "A data load is already in progress (job " + std::to_string(id) + ").");
 
+		// With data loaded, FileOpen starts a new JASP window for the file (fileEventRequestHandler) and never
+		// completes the event: the job would stay "running" forever and block every later data_load.
+		if (DataSetPackage::pkg()->isLoaded())
+			return JaspRpcDispatcher::errorResult(
+				"This JASP window already has a data set; data_load only loads data into a window without one.");
+
 		bool wait      = params.get("wait", true).asBool();
 		int  timeoutMs = params.get("timeoutMs", 30000).asInt();
 
