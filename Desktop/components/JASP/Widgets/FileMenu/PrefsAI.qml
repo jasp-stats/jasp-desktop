@@ -897,6 +897,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					commonSystemPromptUseCustom
+			enabled:			!preferencesModel.settingIsForced("aiCommonSystemPromptUseCustom")
 			label:				qsTr("Use custom system prompt")
 			checked:			preferencesModel.aiCommonSystemPromptUseCustom
 			onCheckedChanged:	preferencesModel.aiCommonSystemPromptUseCustom = checked
@@ -911,7 +912,7 @@ PrefsScrollView
 			text:				preferencesModel.aiCommonSystemPrompt
 			isBound:			false
 			wrapMode:			TextEdit.Wrap
-			enabled:			commonSystemPromptUseCustom.checked
+			enabled:			commonSystemPromptUseCustom.checked && !preferencesModel.settingIsForced("aiCommonSystemPrompt")
 			placeholderText:		qsTr("Common system prompt shared across all personas…")
 			onActiveFocusChanged:	if (!activeFocus) preferencesModel.aiCommonSystemPrompt = text
 			applyScriptInfo:	""
@@ -932,6 +933,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					annotationUseCustom
+			enabled:			!preferencesModel.settingIsForced("aiAnnotationUseCustom")
 			label:				qsTr("Use custom annotation prompt")
 			checked:			preferencesModel.aiAnnotationUseCustom
 			onCheckedChanged:	preferencesModel.aiAnnotationUseCustom = checked
@@ -946,7 +948,7 @@ PrefsScrollView
 			text:			preferencesModel.aiAnnotationPrompt
 			isBound:		false
 			wrapMode:		TextEdit.Wrap
-			enabled:		annotationUseCustom.checked
+			enabled:		annotationUseCustom.checked && !preferencesModel.settingIsForced("aiAnnotationPrompt")
 			onActiveFocusChanged: if (!activeFocus) preferencesModel.aiAnnotationPrompt = text
 			applyScriptInfo:""
 			useTabAsSpaces:	false
@@ -1017,6 +1019,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					mcpEnabled
+			enabled:			!preferencesModel.settingIsForced("rpcServerEnabled")
 			label:				qsTr("Enable MCP server (Model Context Protocol)")
 			checked:			preferencesModel.rpcServerEnabled
 			onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
@@ -1042,6 +1045,7 @@ PrefsScrollView
 		Button
 		{
 			id:				aiEnableBtn
+			enabled:		!preferencesModel.settingIsForced("aiEnabled")
 			text:			preferencesModel.aiEnabled ? qsTr("Disable") : qsTr("Enable")
 			toolTip:			qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
 

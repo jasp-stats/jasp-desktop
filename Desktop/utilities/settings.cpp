@@ -339,19 +339,11 @@ QVariant Settings::value(Settings::Type key) {
 	
   QString settingStringName = Settings::Values[key].type;
 
-#ifdef WIN32
-    // 1. Enterprise Machine Policy (Strict GPO from IT Admins)
-    QSettings gpoMachine("HKEY_LOCAL_MACHINE\\Software\\Policies\\JASP", QSettings::NativeFormat);
-    if (gpoMachine.contains(settingStringName)) {
-        return gpoMachine.value(settingStringName);
+    // 1. + 2. Enterprise policy (Strict GPO from IT Admins), machine before user
+    QVariant policy;
+    if (policyValue(settingStringName, policy)) {
+        return policy;
     }
-
-    // 2. Enterprise User Policy (Strict GPO from IT Admins)
-    QSettings gpoUser("HKEY_CURRENT_USER\\Software\\Policies\\JASP", QSettings::NativeFormat);
-    if (gpoUser.contains(settingStringName)) {
-        return gpoUser.value(settingStringName);
-    }
-#endif
 
     // 3. Enforced settings (forced.json beside the app; per-client MSI)
     //    Overrule the user; only group policy (checked above) outranks them.
@@ -393,28 +385,48 @@ QVariant Settings::defaultValue(Settings::Type key)
 	return Settings::Values[key].defaultValue;
 }
 
+bool Settings::policyValue(const QString& settingName, QVariant& value)
+{
+#ifdef WIN32
+	for (const char* policyKey : { "HKEY_LOCAL_MACHINE\\Software\\Policies\\JASP", "HKEY_CURRENT_USER\\Software\\Policies\\JASP" })
+	{
+		QSettings policy(policyKey, QSettings::NativeFormat);
+		if (policy.contains(settingName)) {
+			value = policy.value(settingName);
+			return true;
+		}
+	}
+#else
+	Q_UNUSED(settingName);
+	Q_UNUSED(value);
+#endif
+	return false;
+}
+
 bool Settings::isForced(Settings::Type key)
 {
-	return shippedSettings(true).contains(Settings::Values[key].type);
+	return isForced(Settings::Values[key].type);
 }
 
 bool Settings::isForced(const QString& settingName)
 {
-	return shippedSettings(true).contains(settingName);
+	QVariant ignored;
+	return policyValue(settingName, ignored) || shippedSettings(true).contains(settingName);
 }
 
-void Settings::setValue(Settings::Type key, const QVariant &value)
+bool Settings::setValue(Settings::Type key, const QVariant &value)
 {
 	if (isForced(key))
 	{
 		// The user cannot override enforced settings; refusing the write also
 		// keeps a zombie value out of the INI that would resurface the moment
-		// the admin removes the file again.
-		qWarning() << "Settings:" << Settings::Values[key].type << "is enforced by forced.json; change refused";
-		Log::log() << "Settings: " << Settings::Values[key].type.toStdString() << " is enforced by forced.json; change refused" << std::endl;
-		return;
+		// the admin removes the policy or the file again.
+		qWarning() << "Settings:" << Settings::Values[key].type << "is enforced by group policy or forced.json; change refused";
+		Log::log() << "Settings: " << Settings::Values[key].type.toStdString() << " is enforced by group policy or forced.json; change refused" << std::endl;
+		return false;
 	}
 	getSettings()->setValue(Settings::Values[key].type, value);
+	return true;
 }
 
 void Settings::sync()

@@ -311,8 +311,9 @@ QHash<int, QByteArray> LanguageModel::roleNames() const
 }
 
 void LanguageModel::setCurrentLanguage(QString language)
-{	
-	if(resultXmlCompare::compareResults::theOne()->testMode())
+{
+	//The setters here keep their own copy of the setting, so one that an admin enforced would hold until the next start
+	if(resultXmlCompare::compareResults::theOne()->testMode() || Settings::isForced(Settings::PREFERRED_LANGUAGE))
 		return;
 	
 	QString languageCode = language.split(" ")[0];
@@ -374,7 +375,7 @@ void LanguageModel::refreshAll()
 
 void LanguageModel::setUseAlternativeLocale(bool useIt)
 {
-	if(_useAlternativeLocale == useIt || resultXmlCompare::compareResults::theOne()->testMode())
+	if(_useAlternativeLocale == useIt || resultXmlCompare::compareResults::theOne()->testMode() || Settings::isForced(Settings::USE_ALT_LOCALE))
 		return;
 		
 	_useAlternativeLocale = useIt;
@@ -571,7 +572,7 @@ QString LanguageModel::currentAltLanguage() const
 
 void LanguageModel::setCurrentAltLanguage(const QString &newCurrentAltLanguage)
 {
-	if (_currentAltLanguage == newCurrentAltLanguage)
+	if (_currentAltLanguage == newCurrentAltLanguage || Settings::isForced(Settings::ALT_LOCALE_LANGUAGE))
 		return;
 	
 	_currentAltLanguage = newCurrentAltLanguage;
@@ -610,7 +611,7 @@ QString LanguageModel::exampleFormatting() const
 
 void LanguageModel::setCurrentAltTerritory(const QString &newCurrentAltTerritory)
 {
-	if (_currentAltTerritory == newCurrentAltTerritory)
+	if (_currentAltTerritory == newCurrentAltTerritory || Settings::isForced(Settings::ALT_LOCALE_REGION))
 		return;
 	
 	_currentAltTerritory = newCurrentAltTerritory;
@@ -628,7 +629,7 @@ bool LanguageModel::useThousandSeps() const
 
 void LanguageModel::setUseThousandSeps(bool newUseThousandSeps)
 {
-	if (_useThousandSeps == newUseThousandSeps)
+	if (_useThousandSeps == newUseThousandSeps || Settings::isForced(Settings::USE_THOUSAND_SEPARATORS))
 		return;
 	
 	_useThousandSeps = newUseThousandSeps;
