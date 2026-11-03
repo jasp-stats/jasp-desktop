@@ -4,6 +4,7 @@
 #include <QQuickStyle>
 #include "qmlutils.h"
 #include "qutils.h"
+#include "appinfo.h"
 #include "log.h"
 #include "columnencoder.h"
 #include "models/term.h"
@@ -234,7 +235,11 @@ void QmlUtils::setGlobalPropertiesInQMLContext(QQmlContext * ctxt)
 	
 		
 #ifdef PRO
-		buildingPro = true;
+	// Runtime, not compile-time: an expired enterprise license demotes
+	// AppInfo::proMode() for the session (see Desktop/utilities/license.cpp),
+	// and the QML PRO gates — e.g. the OIDC sign-in switch in PrefsAI.qml —
+	// must follow it down.
+	buildingPro = AppInfo::proMode();
 #endif
 	
 #ifdef INTERACTIVE_PLOTS

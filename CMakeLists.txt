@@ -74,6 +74,24 @@ if(PRO)
   add_definitions(-DPRO)
 endif()
 
+# Enterprise license expiry check (PRO builds only): compile Desktop/utilities/license.cpp
+# and nag on expired/missing blobs minted by Tools/license/license.py. Debug builds only log.
+set(LICENSE_CHECK     TRUE        CACHE BOOL   "Compile the enterprise license expiry check into PRO builds?")
+if(PRO AND LICENSE_CHECK)
+  add_definitions(-DLICENSE_CHECK)
+endif()
+
+# Enterprise enforcement: besides the nag popup, an expired license also demotes
+# AppInfo::proMode() — SSO sign-in and the batch data-sync command line behave like
+# a community build until a fresh blob arrives via forced.json or group policy.
+# Default OFF: it is a deliberate packaging decision, because every failure of
+# the license pipeline (missing file, stale token, bug) then disables client
+# features instead of merely showing a popup. Enable it in packaging recipes.
+set(LICENSE_ENFORCEMENT FALSE      CACHE BOOL   "Expired enterprise licenses also disable PRO features?")
+if(PRO AND LICENSE_CHECK AND LICENSE_ENFORCEMENT)
+  add_definitions(-DLICENSE_ENFORCEMENT)
+endif()
+
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 
 set(CMAKE_CXX_STANDARD 20)

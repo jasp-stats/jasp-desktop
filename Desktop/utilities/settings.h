@@ -127,7 +127,13 @@ public:
 		COMPANY_LOGO_PATH,
 		COMPANY_LOGO_HEIGHT,
 		DATABASE_ENABLED,
-		OSF_ENABLED
+		OSF_ENABLED,
+		// Signed+obfuscated enterprise license blob (PRO builds; see
+		// Desktop/utilities/license.cpp and Tools/license/README.md).
+		// A hidden setting: no Preferences UI binds it, but it rides the
+		// normal tiers so an admin can push a re-minted blob through
+		// group policy above the shipped forced.json.
+		LICENSE
 	};
 
 	/// Resolution order for value(): highest first —

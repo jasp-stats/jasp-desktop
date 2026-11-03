@@ -91,3 +91,7 @@ Modules/local
 
 # User configurations
 .qmlls.ini
+
+# Enterprise license minting keys - live in the JASP vault, never in the repo
+Tools/license/.license_keys.json
+__pycache__/

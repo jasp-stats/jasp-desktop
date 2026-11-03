@@ -34,6 +34,9 @@
 #include "utilities/appdirs.h"
 #include "parsedarguments.h"
 #include "batchresult.h"
+#if defined(PRO) && defined(LICENSE_CHECK) && defined(LICENSE_ENFORCEMENT)
+#include "utilities/license.h"
+#endif
 
 #ifdef linux
 #include "utilities/qmlutils.h"
@@ -300,6 +303,12 @@ int main(int argc, char *argv[])
 	QCoreApplication::setApplicationName("JASP");
 #endif
 	Dirs::setLocalAppdataDir(AppDirs::appData(false).toStdString());
+
+#if defined(PRO) && defined(LICENSE_CHECK) && defined(LICENSE_ENFORCEMENT)
+	// Before argument parsing: the batch data-sync flags only parse while
+	// AppInfo::proMode() is true, and an expired license demotes it.
+	License::enforceProDemotion();
+#endif
 
 	ParsedArguments arguments(argc, argv);
 

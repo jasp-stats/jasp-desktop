@@ -21,6 +21,7 @@
 #include <QTextStream>
 
 #include "log.h"
+#include "appinfo.h"
 #include "dirs.h"
 #include "rpc/jasprpcdispatcher.h"
 #include "agentstatetracker.h"
@@ -176,15 +177,26 @@ void AiBridge::configureTokenProvider()
 	else if (mode == QStringLiteral("oidc"))
 	{
 #ifdef PRO
-		const QString backend = cfg ? cfg->currentAuthBackend() : QStringLiteral("auto");
+		if (AppInfo::proMode())
+		{
+			const QString backend = cfg ? cfg->currentAuthBackend() : QStringLiteral("auto");
 
-		if (backend == QStringLiteral("devicecode"))
-			m_authUnavailable = QStringLiteral("Device-code sign-in is not implemented yet. "
-									   "Choose the browser sign-in method in AI preferences.");
+			if (backend == QStringLiteral("devicecode"))
+				m_authUnavailable = QStringLiteral("Device-code sign-in is not implemented yet. "
+										   "Choose the browser sign-in method in AI preferences.");
+			else
+				// "auto" and "browser" both land here: the system browser plus a
+				// loopback redirect is the flow JASP ships.
+				m_tokenProvider = new BrowserTokenProvider(this);
+		}
 		else
-			// "auto" and "browser" both land here: the system browser plus a
-			// loopback redirect is the flow JASP ships.
-			m_tokenProvider = new BrowserTokenProvider(this);
+		{
+			// PRO features were demoted this session — an expired enterprise
+			// license (see license.cpp) — so OIDC behaves like in a community
+			// build; the message below is that build's.
+			m_authUnavailable = QStringLiteral("Sign-in with a work account is only available in JASP PRO. "
+										 "Use a provider with an API key instead.");
+		}
 #else
 		// OIDC sign-in is a PRO feature; a non-PRO build reading a config saved
 		// by a PRO install falls back to no provider — requests go out only if
