@@ -26,6 +26,7 @@ public:
 	static MessageForwarder * msgForwarder() { return _singleton; }
 	using WarningHandler = std::function<void(const QString &, const QString &, bool)>;
 	static void setWarningHandler(WarningHandler handler) { _warningHandler = std::move(handler); }
+	static WarningHandler warningHandler() { return _warningHandler; }
 
 	static QMessageBox* getInfoBox(const QString& title, const QString& message);
 

@@ -78,7 +78,7 @@ public:
 
 	Q_INVOKABLE void		installJASPModule(				const QString & filepath);
 	Q_INVOKABLE	void		uninstallJASPModule(			const QString & moduleName);
-	Q_INVOKABLE void		installJASPDeveloperModule();
+	Q_INVOKABLE bool		installJASPDeveloperModule();
 
 	Q_INVOKABLE QString		getDescriptionFormattedFromArchive(QString archiveFilePath);
 
@@ -138,6 +138,7 @@ signals:
 private:
 	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
 	void						registerForInstallingSubFunc(const std::string & moduleName);
+	void						registerRpcHandlers();
 
 private:
 	static DynamicModules								*	_singleton;

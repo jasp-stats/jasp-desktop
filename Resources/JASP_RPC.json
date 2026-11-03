@@ -589,6 +589,103 @@
 			}
 		},
 		{
+			"name": "module_installDeveloper",
+			"summary": "Load a developer module from an R library, like Preferences > Advanced > 'Install module from libpath' followed by 'Install Developer Module'. Only available in developer mode. Install (or reinstall) the module package into the library first, e.g. R CMD INSTALL --library=<libPath> <module source>; call this again after every reinstall. Replaces a developer module loaded before, and a bundled module of the same name until module_uninstallDeveloper.",
+			"x-displayName": "Install Developer Module",
+			"params": [
+				{
+					"name": "libPath",
+					"required": true,
+					"description": "Absolute path of the R library folder that contains the installed module package (and any R packages it needs that JASP does not ship).",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "moduleName",
+					"required": true,
+					"description": "Name of the module's R package, i.e. its folder in libPath, e.g. 'jaspTTests'.",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "module_installDeveloper_result",
+				"description": "The loaded developer module; pass its name as the module of analysis_create.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success'."
+						},
+						"name": {
+							"type": "string",
+							"description": "Module name."
+						},
+						"title": {
+							"type": "string",
+							"description": "Human-readable module title, prefixed with 'Dev: '."
+						},
+						"analyses": {
+							"type": "array",
+							"description": "Available analyses in the module.",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"description": "Analysis function name."
+									},
+									"title": {
+										"type": "string",
+										"description": "Human-readable analysis title."
+									}
+								},
+								"required": ["name", "title"]
+							}
+						},
+						"warnings": {
+							"type": "array",
+							"description": "Messages JASP would otherwise show in a dialog while loading the module, e.g. a broken Upgrades.qml.",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"required": ["status", "name", "title", "analyses", "warnings"]
+				}
+			}
+		},
+		{
+			"name": "module_uninstallDeveloper",
+			"summary": "Unload the developer module loaded by module_installDeveloper or the 'Install Developer Module' button. A bundled module it replaced is loaded again. Only available in developer mode.",
+			"x-displayName": "Uninstall Developer Module",
+			"params": [],
+			"result": {
+				"name": "module_uninstallDeveloper_result",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success'."
+						},
+						"name": {
+							"type": "string",
+							"description": "Name of the module that was unloaded."
+						},
+						"bundledRestored": {
+							"type": "boolean",
+							"description": "True when the bundled module of the same name is loaded again."
+						}
+					},
+					"required": ["status", "name", "bundledRestored"]
+				}
+			}
+		},
+		{
 			"name": "analyses_list",
 			"summary": "List all analyses currently in the workspace.",
 			"x-displayName": "List Active Analyses",
