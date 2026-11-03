@@ -32,6 +32,8 @@
 #include "engine/enginesync.h"
 #include "modules/description/description.h"
 #include "mainwindow.h"
+#include "gui/preferencesmodel.h"
+#include "rpc/jasprpcdispatcher.h"
 
 
 #ifdef __APPLE__
@@ -50,6 +52,8 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 
 	if(!std::filesystem::exists(_modulesInstallDirectory))
 		std::filesystem::create_directories(_modulesInstallDirectory);
+
+	registerRpcHandlers();
 }
 
 DynamicModules::~DynamicModules()
@@ -475,21 +479,21 @@ void DynamicModules::refreshDeveloperModule(bool R, bool Qml)
 	}
 }
 
-void DynamicModules::installJASPDeveloperModule()
+bool DynamicModules::installJASPDeveloperModule()
 {
 	QString modulePath = QDir::cleanPath(Settings::value(Settings::DIRECT_LIBPATH_FOLDER).toString().trimmed());
 
 	if(modulePath == "")
 	{
 		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
-		return;
+		return false;
 	}
 	else if(!QDir(modulePath).exists())
 	{
 		Log::log() << modulePath << " doesnt seem to exist according to QDir, it gives: '" << QDir(modulePath).absolutePath() << "'." << std::endl;
 
 		MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '%1' but it doesn't exist.").arg(modulePath));
-		return;
+		return false;
 	}
 
 	try
@@ -511,15 +515,17 @@ void DynamicModules::installJASPDeveloperModule()
 			replaceModule(devMod);
 
 		_modules[name] = devMod;
-		initializeModule(devMod);
+		bool initialized = initializeModule(devMod);
 		
 		emit reloadAnalysesJson();
+		return initialized;
 	}
 	catch(std::exception & e)
 	{
 		MessageForwarder::showWarning(tr("Problem initializing module"), tr("There was a problem loading the developer module:\n\n") + e.what());
 		
 		emit reloadAnalysesJson();
+		return false;
 	}
 }
 
@@ -675,5 +681,110 @@ const QStringList DynamicModules::loadedModulesTitles() const
 			mods << _modules.at(mod)->titleQ();
 
 	return mods;
+}
+
+///Runs work with the dialogs of MessageForwarder::showWarning turned into the returned messages,
+///so an RPC call reports what the GUI would show instead of blocking on a modal box.
+static Json::Value collectWarnings(const std::function<void()> & work)
+{
+	Json::Value									messages(Json::arrayValue);
+	const MessageForwarder::WarningHandler		previous = MessageForwarder::warningHandler();
+
+	MessageForwarder::setWarningHandler([&messages](const QString & title, const QString & message, bool)
+	{
+		messages.append(fq(title.isEmpty() ? message : title + ": " + message));
+	});
+
+	try			{ work(); }
+	catch(...)	{ MessageForwarder::setWarningHandler(previous); throw; }
+
+	MessageForwarder::setWarningHandler(previous);
+	return messages;
+}
+
+void DynamicModules::registerRpcHandlers()
+{
+	auto * disp = JaspRpcDispatcher::singleton();
+	if (!disp)
+		return;
+
+	//A developer module runs R code from any folder the caller names, so, like the GUI's "Install Developer Module" button, this needs developer mode.
+	const std::string developerModeOff = "Developer modules can only be loaded in developer mode: enable it under Preferences > Advanced.";
+
+	disp->registerMethodByName("module_installDeveloper", [this, developerModeOff](const Json::Value & params) -> Json::Value
+	{
+		if (!PreferencesModel::prefs()->developerMode())
+			return JaspRpcDispatcher::errorResult(developerModeOff);
+
+		const QString	libPath		= QDir::cleanPath(tq(params["libPath"].asString()).trimmed()),
+						moduleName	= tq(params["moduleName"].asString()).trimmed();
+
+		if (!QDir::isAbsolutePath(libPath))
+			return JaspRpcDispatcher::errorResult("libPath must be an absolute path, got '" + fq(libPath) + "'.");
+
+		if (moduleName.isEmpty() || !QFileInfo(QDir(libPath).filePath(moduleName)).isDir())
+			return JaspRpcDispatcher::errorResult("No package '" + fq(moduleName) + "' in the R library '" + fq(libPath) + "': install the module there first, e.g. R CMD INSTALL --library=<libPath> <module source>.");
+
+		//One developer module at a time, as in the GUI: a different one replaces the current one.
+		//(developmentModuleName() keeps the last developer module's name, so check that it is still loaded as one.)
+		Modules::DynamicModule * current = dynamicModule(developmentModuleName());
+		if (current && current->isDevMod() && current->name() != fq(moduleName))
+			uninstallJASPDeveloperModule();
+
+		//The preferences the GUI's "Install module from libpath" fields set, so Preferences shows what is loaded.
+		PreferencesModel * prefs = PreferencesModel::prefs();
+		prefs->setDirectLibpathFolder(libPath);
+		prefs->setDirectDevModName(moduleName);
+
+		bool		installed	= false;
+		Json::Value	warnings	= collectWarnings([&]() { installed = installJASPDeveloperModule(); });
+
+		Modules::DynamicModule * devMod = installed ? dynamicModule(developmentModuleName()) : nullptr;
+
+		if (!devMod)
+		{
+			std::string message = "Loading developer module '" + fq(moduleName) + "' from '" + fq(libPath) + "' failed.";
+			for (const Json::Value & warning : warnings)
+				message += "\n" + warning.asString();
+
+			return JaspRpcDispatcher::errorResult(message);
+		}
+
+		Json::Value analyses(Json::arrayValue);
+		for (const Modules::AnalysisEntry * entry : devMod->menu())
+			if (entry->isAnalysis() && !entry->isSeparator())
+			{
+				Json::Value analysis;
+				analysis["name"]  = entry->function();
+				analysis["title"] = entry->title();
+				analyses.append(analysis);
+			}
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["name"]		= devMod->name();
+		response["title"]		= devMod->title();
+		response["analyses"]	= analyses;
+		response["warnings"]	= warnings;
+		return response;
+	});
+
+	disp->registerMethodByName("module_uninstallDeveloper", [this, developerModeOff](const Json::Value &) -> Json::Value
+	{
+		if (!PreferencesModel::prefs()->developerMode())
+			return JaspRpcDispatcher::errorResult(developerModeOff);
+
+		const std::string			name	= developmentModuleName();
+		Modules::DynamicModule	*	devMod	= dynamicModule(name);
+
+		if (!devMod || !devMod->isDevMod())
+			return JaspRpcDispatcher::errorResult("No developer module is loaded.");
+
+		uninstallJASPDeveloperModule();
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["name"]			= name;
+		response["bundledRestored"]	= dynamicModule(name) != nullptr;
+		return response;
+	});
 }
 
