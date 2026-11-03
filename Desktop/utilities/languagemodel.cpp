@@ -241,8 +241,13 @@ void LanguageModel::fillAltTerritories()
 	
 	bool				previouslyChosenTerritoryFound	= false;
 	QLocale::Territory	prevTer							= _nativeTerritoryNameToEnum.count(_currentAltTerritory) ? _nativeTerritoryNameToEnum.at(_currentAltTerritory) : QLocale::Territory::AnyTerritory;
-	
-			
+
+	//At startup the map is still empty and _currentAltTerritory comes from the settings, named in the chosen language
+	if(prevTer == QLocale::Territory::AnyTerritory)
+		for(const QLocale & l : languageLocales)
+			if(l.nativeTerritoryName() == _currentAltTerritory)
+				prevTer = l.territory();
+
 	_nativeTerritoryNameToEnum.clear();
 
 	for(QLocale & l : languageLocales)
@@ -573,9 +578,12 @@ void LanguageModel::setCurrentAltLanguage(const QString &newCurrentAltLanguage)
 	emit currentAltLanguageChanged();
 	
 	Settings::setValue(Settings::ALT_LOCALE_LANGUAGE, _currentAltLanguage);
-		
+
 	fillAltTerritories();
-	
+
+	//fillAltTerritories() may pick another territory, or the same one under this language's name, so store that too
+	Settings::setValue(Settings::ALT_LOCALE_REGION, _currentAltTerritory);
+
 	refreshAll();
 }
 
