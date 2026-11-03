@@ -86,25 +86,6 @@ void PreferencesModel::browseSpreadsheetEditor()
 	
 }
 
-void PreferencesModel::browseDeveloperFolder()
-{
-	QString defaultfolder = developerFolder();
-	if (defaultfolder.isEmpty())
-	{
-#ifdef _WIN32
-		defaultfolder = "c:\\";
-#else
-		defaultfolder = "~";
-#endif
-	}
-	
-	QString folder = MessageForwarder::browseOpenFolder(tr("Select a folder..."), defaultfolder);
-	
-	if (!folder.isEmpty())
-		setDeveloperFolder(folder);	
-}
-
-
 void PreferencesModel::browseDeveloperLibPathFolder()
 {
 	QString defaultfolder = directLibpathFolder();
@@ -174,7 +155,6 @@ GET_PREF_FUNC_BOOL(	normalizedNotation,				Settings::NORMALIZED_NOTATION						)
 GET_PREF_FUNC_FLT(	ribbonBarHeightScale,			Settings::RIBBON_BAR_HEIGHT_SCALE					)
 GET_PREF_FUNC_BOOL(	useDefaultEditor,				Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
 GET_PREF_FUNC_STR(	customEditor,					Settings::SPREADSHEET_EDITOR_NAME					)
-GET_PREF_FUNC_STR(	developerFolder,				Settings::DEVELOPER_FOLDER							)
 GET_PREF_FUNC_BOOL(	useDefaultPPI,					Settings::PPI_USE_DEFAULT							)
 GET_PREF_FUNC_INT(	customPPI,						Settings::PPI_CUSTOM_VALUE							)
 GET_PREF_FUNC_WHT(	whiteBackground,				Settings::IMAGE_BACKGROUND							)
@@ -212,7 +192,6 @@ GET_PREF_FUNC_BOOL( moduleStoreEnabled,				Settings::MODULE_STORE_ENABLED						)
 GET_PREF_FUNC_INT(	maxScaleLevels,					Settings::MAX_SCALE_LEVELS							)
 GET_PREF_FUNC_BOOL(	pdfLandscape,					Settings::PDF_LANDSCAPE								)
 GET_PREF_FUNC_INT(	pdfPageSize,					Settings::PDF_PAGESIZE								)
-GET_PREF_FUNC_BOOL( directLibpathEnabled,			Settings::DIRECT_LIBPATH_ENABLED					)
 GET_PREF_FUNC_STR(	directLibpathFolder,			Settings::DIRECT_LIBPATH_FOLDER						)
 GET_PREF_FUNC_STR(	directDevModName,				Settings::DIRECT_DEVMOD_NAME						)
 GET_PREF_FUNC_STR(	localConfigurationPATH,			Settings::LOCAL_CONFIGURATION_PATH              	)
@@ -424,7 +403,6 @@ SET_PREF_FUNCTION(				bool,		setUseDefaultEditor,		useDefaultEditor,			useDefaul
 SET_PREF_FUNCTION(				QString,	setCustomEditor,			customEditor,				customEditorChanged,			Settings::SPREADSHEET_EDITOR_NAME					)
 SET_PREF_FUNCTION(				bool,		setUseDefaultPPI,			useDefaultPPI,				useDefaultPPIChanged,			Settings::PPI_USE_DEFAULT							)
 SET_PREF_FUNCTION(				bool,		setDeveloperMode,			developerMode,				developerModeChanged,			Settings::DEVELOPER_MODE							)
-SET_PREF_FUNCTION(				QString,	setDeveloperFolder,			developerFolder,			developerFolderChanged,			Settings::DEVELOPER_FOLDER							)
 SET_PREF_FUNCTION(				int,		setCustomPPI,				customPPI,					customPPIChanged,				Settings::PPI_CUSTOM_VALUE							)
 SET_PREF_FUNCTION(				float,		setRibbonBarHeightScale,	ribbonBarHeightScale,		ribbonBarHeightScaleChanged,	Settings::RIBBON_BAR_HEIGHT_SCALE					)
 SET_PREF_FUNCTION(				bool,		setLogToFile,				logToFile,					logToFileChanged,				Settings::LOG_TO_FILE								)
@@ -459,7 +437,6 @@ SET_PREF_FUNCTION(				bool,		setModuleStoreEnabled,		moduleStoreEnabled,			modul
 SET_PREF_FUNCTION(				int,		setMaxScaleLevels,			maxScaleLevels,				maxScaleLevelsChanged,			Settings::MAX_SCALE_LEVELS							)
 SET_PREF_FUNCTION(				bool,		setPdfLandscape,			pdfLandscape,				pdfLandscapeChanged,			Settings::PDF_LANDSCAPE								)
 SET_PREF_FUNCTION(				int,		setPdfPageSize,				pdfPageSize,				pdfPageSizeChanged,				Settings::PDF_PAGESIZE								)
-SET_PREF_FUNCTION(				bool,		setDirectLibpathEnabled,	directLibpathEnabled,		directLibpathEnabledChanged,	Settings::DIRECT_LIBPATH_ENABLED					)
 SET_PREF_FUNCTION(				QString,	setDirectDevModName,		directDevModName,			directDevModNameChanged,		Settings::DIRECT_DEVMOD_NAME						)
 SET_PREF_FUNCTION(				QString,	setLocalConfigurationPATH,	localConfigurationPATH,		localConfigurationPATHChanged,	Settings::LOCAL_CONFIGURATION_PATH					)
 SET_PREF_FUNCTION(				bool,   	setRemoteConfiguration, 	remoteConfiguration,		remoteConfigurationChanged,     Settings::REMOTE_CONFIGURATION  					)

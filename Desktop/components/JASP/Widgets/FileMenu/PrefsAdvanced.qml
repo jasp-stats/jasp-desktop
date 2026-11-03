@@ -57,7 +57,7 @@ PrefsScrollView
 				onEditingFinished:	preferencesModel.cranRepoURL = text
 				nextEl:				githubPatDefault
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:			cranRepoUrlLabel.right
@@ -109,7 +109,7 @@ PrefsScrollView
 
 				nextEl:				developerMode
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:			githubPatCustomLabel.right
@@ -176,7 +176,7 @@ PrefsScrollView
 				onEditingFinished:	preferencesModel.moduleLibraryURL = text
 				nextEl:				cleanModulesFolder
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:		moduleLibraryUrlLabel.right
@@ -195,7 +195,7 @@ PrefsScrollView
 			toolTip:			qsTr("This will erase the 'renv', 'Modules' and development Module folders in the appdata.")
 			onClicked:			mainWindow.clearModulesFoldersUser();
 
-			KeyNavigation.tab:		directLibpathDevModEnabled
+			KeyNavigation.tab:		directLibPathLabel
 			activeFocusOnTab:		true
 		}
 	}
@@ -208,64 +208,9 @@ PrefsScrollView
 		visible:			preferencesModel.developerMode
 		enabled:			preferencesModel.developerMode
 
-		CheckBox
-		{
-			id:					directLibpathDevModEnabled
-			label:				qsTr("Enable renv mode") //We should really remove the old way and this checkbox
-			checked:			preferencesModel.directLibpathEnabled
-			onCheckedChanged:	preferencesModel.directLibpathEnabled = checked
-			toolTip:			qsTr("Load modules from a binary in an R-library instead of installing it from sources.")
-			visible:			preferencesModel.developerMode
-
-			KeyNavigation.tab:	browseDeveloperFolderButton
-		}
-
-
-		Item
-		{
-			width:				parent.width
-			height:				browseDeveloperFolderButton.height
-			enabled:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
-			visible:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
-
-
-			RoundedButton
-			{
-				id:						browseDeveloperFolderButton
-				text:					qsTr("Source folder:")
-				onClicked:				preferencesModel.browseDeveloperFolder()
-				anchors.left:			parent.left
-				anchors.leftMargin:		jaspTheme.subOptionOffset
-				toolTip:				qsTr("Browse to your JASP Module folder.")
-
-				KeyNavigation.tab:		developerFolderText.textInput
-				activeFocusOnTab:		true
-
-			}
-
-			PrefsTextInput
-			{
-				id:					developerFolderText
-
-				text:				preferencesModel.developerFolder
-				onEditingFinished:	preferencesModel.developerFolder = text
-				nextEl:				directLibPathLabel
-
-				height:				browseDeveloperFolderButton.height
-				anchors
-				{
-					left:			browseDeveloperFolderButton.right
-					right:			parent.right
-					margins:		jaspTheme.generalAnchorMargin
-				}
-			}
-		}
-
 		Item
 		{
 			id:					directLibpath
-			enabled:			preferencesModel.directLibpathEnabled
-			visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 			width:				parent.width
 			height:				cranRepoUrl.height
 
@@ -277,7 +222,7 @@ PrefsScrollView
 				onClicked:				preferencesModel.browseDeveloperLibPathFolder()
 				activeFocusOnTab:		true
 				KeyNavigation.tab:		directLibpathFolder.textInput
-				KeyNavigation.backtab:	directLibpathDevModEnabled
+				KeyNavigation.backtab:	cleanModulesFolder
 
 				anchors
 				{
@@ -298,7 +243,7 @@ PrefsScrollView
 
 				nextEl:				moduleName
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:			directLibPathLabel.right
@@ -315,8 +260,6 @@ PrefsScrollView
 		Item {
 
 			id:					directDevMod
-			enabled:			preferencesModel.developerMode &&preferencesModel.directLibpathEnabled
-			visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 			width:				parent.width
 			height:				cranRepoUrl.height
 
@@ -343,7 +286,7 @@ PrefsScrollView
 
 				nextEl:				useConf
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:			directDevModName.right
@@ -415,7 +358,7 @@ PrefsScrollView
 					text:				preferencesModel.remoteConfigurationURL
 					onEditingFinished:	preferencesModel.remoteConfigurationURL = text
 
-					height:				browseDeveloperFolderButton.height
+					height:				directLibPathLabel.height
 					anchors
 					{
 						left:			remoteSettingsLabel.right
