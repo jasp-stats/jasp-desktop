@@ -79,9 +79,6 @@ public:
 	///This constructor takes the path to an R-package as first argument, this R-package must also be a jasp-module and will be installed to the app-directory for the particular OS it runs on.
 	explicit DynamicModule(QQmlContext * context, std::string modulePackageFile, QObject *parent, bool unpack = true);
 
-	///This constructor is meant specifically for the development module and only *it*!
-	explicit DynamicModule(QObject * parent, QQmlContext * context);
-
 	///This constructor is meant specifically for development modules initialized form a libpaths
 	explicit DynamicModule(QObject *parent, QQmlContext * context, QString libpath, bool isDevMod = true);
 
@@ -100,7 +97,6 @@ public:
 	static std::string	getQmlDescriptionFilename()		{ return "Description.qml";			}
 	static std::string	getQmlUpgradesFilename()		{ return "Upgrades.qml";			}
 	static QFileInfo	developmentModuleFolder();
-	static void			developmentModuleFolderCreate();
 	static bool			isDescriptionFile(const std::string & filename);
 	static bool			isDescriptionFile(const QString		& filename);
 
@@ -173,7 +169,6 @@ public:
 	bool installing()	const { return _installing;		}
 	bool initialized()	const { return _initialized;	}
 	bool isBundled()	const { return _bundled;		}
-	bool isLibpathDevMod() const { return _isLibpathDevMod; }
 
 	void initialize(QQmlContext * context);
 	void loadDescriptionQml(QQmlContext * context, const QString		& descriptionTxt,	const QUrl		& url);
@@ -247,7 +242,6 @@ private:
 						_installed			= false,
 						_isDeveloperMod		= false,
 						_isSource			= false,
-						_isLibpathDevMod	= false,
 						_initialized		= false,
 						_bundled			= false,
 						_isCommon			= false,

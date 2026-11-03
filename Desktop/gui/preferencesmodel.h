@@ -30,8 +30,6 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(double		uiScale					READ uiScale					WRITE setUiScale					NOTIFY uiScaleChanged					)
 	Q_PROPERTY(float		ribbonBarHeightScale	READ ribbonBarHeightScale		WRITE setRibbonBarHeightScale		NOTIFY ribbonBarHeightScaleChanged		)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
-	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
-	Q_PROPERTY(bool			directLibpathEnabled	READ directLibpathEnabled		WRITE setDirectLibpathEnabled		NOTIFY directLibpathEnabledChanged		)
 	Q_PROPERTY(QString		directLibpathFolder		READ directLibpathFolder		WRITE setDirectLibpathFolder		NOTIFY directLibpathFolderChanged		)
 	Q_PROPERTY(QString		directDevModName		READ directDevModName			WRITE setDirectDevModName			NOTIFY directDevModNameChanged			)
 	Q_PROPERTY(int			thresholdScale			READ thresholdScale				WRITE setThresholdScale				NOTIFY thresholdScaleChanged			)
@@ -135,7 +133,6 @@ public:
 	double			uiScale()								override;
 	float			ribbonBarHeightScale()					const override;
 	QString			customEditor()							const;
-	QString			developerFolder()						const;
 	QString			fixedDecimalsForJS()					const;
 	QStringList		emptyValues()							const;
 	int				thresholdScale()						const;
@@ -188,7 +185,6 @@ public:
 	QVariantList	pdfPageSizeModel()						const { return _pdfPageSizeModel; }
 	int				pdfPageSize()							const;
 	bool			pdfLandscape()							const;
-	bool			directLibpathEnabled()					const;
 	QString			directLibpathFolder()					const;
 	QString			directDevModName()						const;
 
@@ -272,10 +268,8 @@ public:
 	void setDeveloperMode(				bool		developerMode)					override;
 	void setWhiteBackground(			bool		whiteBackground);
 	void setPlotBackground(				QString		plotBackground);
-	void setDeveloperFolder(			QString		developerFolder);
 	void setUseDefaultEditor(			bool		useDefaultEditor);
 	void browseSpreadsheetEditor();
-	void browseDeveloperFolder();
 	void browseDeveloperLibPathFolder();
 	void browseEngineSandboxDir();
 	void browseConfigurationFile();
@@ -322,7 +316,6 @@ public:
 	void setMaxScaleLevels(				int			maxScaleLevels);
 	void setPdfPageSize(				int			pdfPageSize);
 	void setPdfLandscape(				bool		pdfLandscape);
-	void setDirectLibpathEnabled(		bool		setDirectLibpathEnabled);
 	void setDirectLibpathFolder(		QString		libpath);
 	void setDirectDevModName(			QString		 name);
 	void setEngineSandbox(				bool		engineSandbox);
@@ -349,7 +342,6 @@ signals:
 	void customPPIChanged(				int			customPPI);
 	void defaultPPIChanged(				int			defaultPPI);
 	void emptyValuesChanged();
-	void developerFolderChanged(		QString		developerFolder);
 	void plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
 	void plotBackgroundChanged(			QString		plotBackground);
 	void thresholdScaleChanged(			int			thresholdScale);
@@ -388,7 +380,6 @@ signals:
 	void maxScaleLevelsChanged(			int			maxScaleLevels);
 	void pdfPageSizeChanged(			int			pdfPageSize);
 	void pdfLandscapeChanged(			bool		pdfLandscape);
-	void directLibpathEnabledChanged(	bool		directLibpathEnabled);
 	void directLibpathFolderChanged();
 	void directDevModNameChanged(		QString		name);
 	void engineSandboxChanged(			bool		engineSandbox);

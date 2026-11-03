@@ -58,7 +58,6 @@ const Settings::Setting Settings::Values[] = {
 	{"ImageBackground",				"white"},
 	{"fixedDecimals",				false},
 	{"developerMode",				false},
-	{"developerFolder",				""},
 	{"ThresholdScale",				10},
 	{"logToFile",					false}, //By default do not log to file and when running debug-mode log to stdout and in release to nowhere.
 	{"logFilesMax",					15},
@@ -134,7 +133,6 @@ const Settings::Setting Settings::Values[] = {
 	{"maxScaleLevels",				100		},
 	{"pdfLandscape",				false	},
 	{"pdfPageSize",					int(pdfPageSize::A4)			},
-	{"directLibpathEnabled",		true	},
 	{"directLibpathFolder",			""		},
 	{"directDevModName",			""		},
 	{"ribbonBarHeightScale",		1.0		},

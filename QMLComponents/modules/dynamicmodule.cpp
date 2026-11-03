@@ -77,33 +77,8 @@ QFileInfo DynamicModule::developmentModuleFolder()
 	return QFileInfo(AppDirs::userModulesDir() + QString::fromStdString(defaultDevelopmentModuleName()) + "/");
 }
 
-void DynamicModule::developmentModuleFolderCreate()
-{
-	if(developmentModuleFolder().dir().exists()) return;
-
-	QDir(AppDirs::userModulesDir()).mkpath(QString::fromStdString(defaultDevelopmentModuleName()));
-}
-
-///This constructor is meant specifically for the development module and only *it*!
-DynamicModule::DynamicModule(QObject * parent, QQmlContext * context) : QObject(parent), _isDeveloperMod(true)
-{
-	_modulePackage	= PreferencesModelBase::preferences()->developerMode();
-	_moduleFolder	= developmentModuleFolder();
-
-					_name = extractPackageNameFromFolder(context, _modulePackage);
-	if(_name == "") _name = defaultDevelopmentModuleName();
-
-	Log::log() << "Development Module is constructed with name: '" << _name << "' and will be installed to '" << _moduleFolder.absoluteFilePath().toStdString() << "' from source dir: '" << _modulePackage << "'" << std::endl;
-
-	_developmentModuleName = _name;
-
-	loadDescriptionFromFolder(context, _modulePackage);
-	loadDESCRIPTION(tq(getDESCRIPTIONFromFolder(_modulePackage)));
-}
-
-
 ///This constructor is meant specifically for the development module from a libpath, or for loading a module from source
-DynamicModule::DynamicModule(QObject * parent, QQmlContext * context, QString libpath, bool isDevMod ) : QObject(parent), _isDeveloperMod(isDevMod), _isLibpathDevMod(isDevMod), _isSource(!isDevMod)
+DynamicModule::DynamicModule(QObject * parent, QQmlContext * context, QString libpath, bool isDevMod ) : QObject(parent), _isDeveloperMod(isDevMod), _isSource(!isDevMod)
 {
 	if (isDevMod)
 	{
@@ -549,10 +524,8 @@ std::string DynamicModule::generateModuleUninstallingR()
 
 std::string DynamicModule::moduleInstFolder() const
 {
-	//Because in a developer mod everything is loaded directly from the source folder we give an actual inst folder:
-	if(_isDeveloperMod && !_isLibpathDevMod) return _modulePackage + "/inst";
-	//But after install this is in a R-library and therefore there is no more inst folder:
-	else				return moduleRLibrary().toStdString() + "/" + _name + "/";
+	//A module is loaded from an R-library and therefore there is no more inst folder:
+	return moduleRLibrary().toStdString() + "/" + _name + "/";
 }
 
 std::string	DynamicModule::qmlFilePath(const std::string & qmlFileName)	const
