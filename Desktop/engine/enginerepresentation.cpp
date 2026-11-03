@@ -92,7 +92,9 @@ void EngineRepresentation::sendString(const Json::Value & json)
 	
 	Log::log() << "sending to jaspEngine: " << printData << "\n" << std::endl;
 #endif
-	channel()->send(json.toStyledString());
+	//A string goes out as is, like Engine::sendString does: sendString("") must clear the channel with an empty message,
+	//as toStyledString() would turn it into the json string "" that a freshly started engine reads as a request.
+	channel()->send(json.isString() ? json.asString() : json.toStyledString());
 }
 
 void EngineRepresentation::resend()

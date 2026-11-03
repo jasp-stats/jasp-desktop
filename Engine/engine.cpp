@@ -304,7 +304,7 @@ bool Engine::receiveMessages(int timeout)
 		//Clear send buffer and anonymized log
 		Json::Value printData;
 		bool parsed = jsonReader.parse(data, printData);
-		if (parsed && printData.isMember("GITHUB_PAT")) {
+		if (parsed && printData.isObject() && printData.isMember("GITHUB_PAT")) {
 			printData["GITHUB_PAT"] = "********";
 		}
 		
@@ -313,6 +313,12 @@ bool Engine::receiveMessages(int timeout)
 		sendString("");
 
 		//Check if we got anyting useful
+		if(!jsonRequest.isObject() && !jsonRequest.isNull())
+		{
+			Log::log() << "Engine got a request that is not a json object, ignoring it: '" << data << "'" << std::endl;
+			return false;
+		}
+
 		std::string typeSend	= jsonRequest.get("typeRequest", Json::nullValue).asString();
 		if(typeSend == "")
 		{
