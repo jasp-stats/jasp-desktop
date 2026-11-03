@@ -196,7 +196,7 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	//Q_INVOKABLE for the wrapper-generation qml test; Form.qml uses the
 	//analysis-level Analysis::generateWrapper(), which forwards here with multiDataSetAware().
 	Q_INVOKABLE QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware = false);
-	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
+	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg, bool keepCurrentOptions = false);
 	void					setAnalysis(AnalysisBase *	analysis);
 	void					addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false, bool closeable = true);
 	void					clearControlError(JASPControl* control);

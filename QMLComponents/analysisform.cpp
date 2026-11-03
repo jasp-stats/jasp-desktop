@@ -399,7 +399,7 @@ void AnalysisForm::clearAllErrors()
 	emit warningsChanged();
 }
 
-bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg)
+bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg, bool keepCurrentOptions)
 {
 	Json::Reader jsonReader;
 
@@ -411,6 +411,43 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 	{
 		if (_rSyntax->parseRSyntaxOptions(parsedOptions))
 		{
+			// bindTo sets every control, and an absent option means "initial value" (createJson): fine for R syntax, but an
+			// update that names only the options it changes would reset list controls such as ComponentsList rows.
+			if (keepCurrentOptions)
+			{
+				// The Storage tree is what a saved analysis is re-bound from (Analysis::asJSON).
+				Json::Value merged = createOptionsJson(BoundControl::Storage);
+				// A control that depends, directly or not, on a changed option (e.g. model terms filled from the factors) must follow it,
+				// not keep its old value. depends() is not always transitively closed (sortControls registers explicit edges per control),
+				// so walk the graph here.
+				auto dependsOnRequest = [&parsedOptions](JASPControl * control)
+				{
+					std::set<JASPControl*>		seen;
+					std::vector<JASPControl*>	todo(control->depends().begin(), control->depends().end());
+					while (!todo.empty())
+					{
+						JASPControl * dependency = todo.back();
+						todo.pop_back();
+						if (!dependency || !seen.insert(dependency).second)
+							continue;
+						if (parsedOptions.isMember(fq(dependency->name())))
+							return true;
+						todo.insert(todo.end(), dependency->depends().begin(), dependency->depends().end());
+					}
+					return false;
+				};
+
+				for (const std::string & name : merged.getMemberNames())
+					if (JASPControl * control = getControl(tq(name)))
+						// DropDowns can take their values from another control's properties without a depends() edge; their
+						// createJson() is the current value anyway (unless a startValue is set), so leave them to it.
+						if (qobject_cast<ComboBoxBase*>(control) || dependsOnRequest(control))
+							merged.removeMember(name);
+				for (const std::string & name : parsedOptions.getMemberNames())
+					merged[name] = parsedOptions[name];
+				parsedOptions = merged;
+			}
+
 			bindTo(parsedOptions);
 			// report the options as GENERATED from the now-bound components
 			//(Engine shape: values + send-time .meta minus provenance + the transient
