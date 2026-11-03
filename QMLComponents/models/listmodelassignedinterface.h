@@ -33,6 +33,10 @@ public:
 	virtual void					setAvailableModel(ListModelTermsAvailable *availableModel);
 	ListModelTermsAvailable*		availableModel() const													{ return _availableModel; }
 
+	// Called when an option value is bound to the control (analysis opened, R syntax, RPC, AI): the value is the complete new state.
+	// initTerms is also used to refresh the model when its source changed, and may keep parts of the current terms (see ListModelInteractionAssigned).
+	virtual void					bindTerms(const Terms& terms, const Terms::RelatedValuesPerTerm& allValuesMap = {})	{ initTerms(terms, allValuesMap); }
+
 public slots:
 	///< (ORIGIN-AUTHORITATIVE): the pool's update (added/removed diff plus the
 	///  participation key `filterIdToUpdate` - the filterId the affected terms currently
