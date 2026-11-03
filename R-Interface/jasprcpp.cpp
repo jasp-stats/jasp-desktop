@@ -1024,6 +1024,7 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 			for (const std::string & requested : tmps)
 				if(requested != "")
 				{
+					// This really shouldnt be necessary but we do it in case something unencoded manages to get all the way here: (see https://github.com/jasp-stats/jasp-desktop/pull/6376)
 					const std::string tmp = jaspRCPP_encodedColumnNameRequested(requested);
 
 					if(columnsOrder.count(tmp) == 0)
