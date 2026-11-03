@@ -39,6 +39,23 @@ void EngineRepresentation::killProcess()
 	}
 }
 
+bool EngineRepresentation::jaspEngineExited()
+{
+	if(!_slaveProcess)
+		return false;
+
+	//waitForFinished() would emit finished right away, running processFinished() and handleEngineCrash() inside our caller.
+	//So we block the process' signals and leave handling the exit to the caller.
+	QSignalBlocker blockSignals(_slaveProcess);
+
+	if(!_slaveProcess->waitForFinished(0))
+		return false;
+
+	Log::log() << "Engine #" << _channelNumber << " exited while in state '" << _engineState << "' " << (_slaveProcess->exitStatus() == QProcess::ExitStatus::CrashExit ? "crashing" : "normally") << " and with exitCode " << _slaveProcess->exitCode() << "!" << std::endl;
+
+	return true;
+}
+
 EngineRepresentation::~EngineRepresentation()
 {
 	Log::log() << "~EngineRepresentation() Engine #" << _channelNumber << std::endl;
