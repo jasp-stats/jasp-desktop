@@ -46,6 +46,21 @@ using namespace boost;
 
 std::thread IPCChannel::_heartbeatThread;
 
+namespace
+{
+	//Every message starts with a fixed-width decimal id so the receiver can tell a new message from the one it already read.
+	//It used to be ONE digit (id % 10): when the sender sent exactly 10 (or 20, ...) messages between two polls of the receiver,
+	//the last message got the same id as the last one the receiver had read, was taken for old, and was never read.
+	constexpr size_t	MSG_ID_DIGITS	= 8;
+	constexpr uint64_t	MSG_ID_MODULO	= 100000000; //10^MSG_ID_DIGITS
+
+	std::string msgIdPrefix(uint64_t id)
+	{
+		const std::string number = std::to_string(id % MSG_ID_MODULO);
+		return std::string(MSG_ID_DIGITS - number.size(), '0') + number;
+	}
+}
+
 IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 	:
 	  _baseName(		name + "_" + std::to_string(channelNumber)	),
@@ -388,7 +403,7 @@ void IPCChannel::send(const string & data, bool alreadyLockedMutex)
 		if(!alreadyLockedMutex)
 			_mutexOut->lock();
 
-		_dataOut->assign(std::to_string(_msgIDSend % 10).c_str()); // prefix a one character msg ID
+		_dataOut->assign(msgIdPrefix(_msgIDSend).c_str(), MSG_ID_DIGITS); // prefix a fixed-width msg ID
 		_msgIDSend++;
 		_dataOut->append(data.c_str(), data.length());
 
@@ -420,7 +435,7 @@ retryAfterDoublingMemory:
 
 void IPCChannel::resend()
 {
-	if(_dataOut->size() == 0)
+	if(_dataOut->size() < MSG_ID_DIGITS)
 	{
 		Log::log() << "IPCChannel::resend() called but no message to resend..." << std::endl;
 		return;
@@ -432,7 +447,7 @@ void IPCChannel::resend()
 	{
 		_mutexOut->lock();
 
-		(*_dataOut)[0] = std::to_string(_msgIDSend % 10).c_str()[0]; // replace the one character prefix msg ID
+		_dataOut->replace(0, MSG_ID_DIGITS, msgIdPrefix(_msgIDSend).c_str(), MSG_ID_DIGITS); // replace the prefix msg ID
 		_msgIDSend++;
 	}
 	catch (boost::interprocess::interprocess_exception &e)
@@ -462,7 +477,7 @@ bool IPCChannel::receive(string &data, int timeout)
 		try
 		{
 			rebindMemoryInIfSizeChanged();
-			data.assign(_dataIn->c_str() + 1, _dataIn->size() - 1); // remove message id prefix
+			data.assign(_dataIn->c_str() + MSG_ID_DIGITS, _dataIn->size() - MSG_ID_DIGITS); // remove message id prefix
 		}
 		catch(std::exception & e)
 		{
@@ -485,9 +500,9 @@ bool IPCChannel::tryWait(int timeout)
 
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
-	if(_dataIn->length()) {
+	if(_dataIn->length() >= MSG_ID_DIGITS) {
 		try{
-			uint64_t newMsgID = std::stoull(std::string(1, _dataIn->front()));
+			uint64_t newMsgID = std::stoull(std::string(_dataIn->c_str(), MSG_ID_DIGITS));
 			if(newMsgID != _msgIDRecv) {
 				messageWaiting = true;
 				_msgIDRecv = newMsgID;
