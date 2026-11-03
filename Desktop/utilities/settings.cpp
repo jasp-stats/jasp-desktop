@@ -26,6 +26,12 @@
 #include <QJsonObject>
 #include <QStringList>
 
+#ifdef __APPLE__
+#include <CoreFoundation/CoreFoundation.h>
+#include <QDateTime>
+#include <limits>
+#endif
+
 static bool _thisIsATest = false;
 
 void Settings::informSettingsThatThisIsATest()
@@ -339,7 +345,7 @@ QVariant Settings::value(Settings::Type key) {
 	
   QString settingStringName = Settings::Values[key].type;
 
-    // 1. + 2. Enterprise policy (Strict GPO from IT Admins), machine before user
+    // 1. + 2. Enterprise policy (Strict GPO from IT Admins), machine before user; managed preferences (MDM) on macOS
     QVariant policy;
     if (policyValue(settingStringName, policy)) {
         return policy;
@@ -385,6 +391,43 @@ QVariant Settings::defaultValue(Settings::Type key)
 	return Settings::Values[key].defaultValue;
 }
 
+#ifdef __APPLE__
+static QVariant variantFromCFPropertyList(CFPropertyListRef cfValue)
+{
+	const CFTypeID typeId = CFGetTypeID(cfValue);
+
+	if (typeId == CFStringGetTypeID())		return QString::fromCFString(static_cast<CFStringRef>(cfValue));
+	if (typeId == CFBooleanGetTypeID())		return bool(CFBooleanGetValue(static_cast<CFBooleanRef>(cfValue)));
+	if (typeId == CFDataGetTypeID())		return QByteArray::fromCFData(static_cast<CFDataRef>(cfValue));
+	if (typeId == CFDateGetTypeID())		return QDateTime::fromCFDate(static_cast<CFDateRef>(cfValue));
+	if (typeId == CFNumberGetTypeID())
+	{
+		CFNumberRef number = static_cast<CFNumberRef>(cfValue);
+		if (CFNumberIsFloatType(number))
+		{
+			double d = 0;
+			CFNumberGetValue(number, kCFNumberDoubleType, &d);
+			return d;
+		}
+		qlonglong l = 0;
+		CFNumberGetValue(number, kCFNumberLongLongType, &l);
+		if (l >= std::numeric_limits<int>::min() && l <= std::numeric_limits<int>::max())
+			return int(l);
+		return l;
+	}
+	if (typeId == CFArrayGetTypeID())
+	{
+		CFArrayRef	array = static_cast<CFArrayRef>(cfValue);
+		QVariantList list;
+		for (CFIndex i = 0; i < CFArrayGetCount(array); i++)
+			list.append(variantFromCFPropertyList(CFArrayGetValueAtIndex(array, i)));
+		return list;
+	}
+
+	return QVariant();
+}
+#endif
+
 bool Settings::policyValue(const QString& settingName, QVariant& value)
 {
 #ifdef WIN32
@@ -396,6 +439,29 @@ bool Settings::policyValue(const QString& settingName, QVariant& value)
 			return true;
 		}
 	}
+#elif defined(__APPLE__)
+	// Managed preferences: what an MDM configuration profile (Jamf, Intune,
+	// Kandji, ... "Application & Custom Settings") or /Library/Managed Preferences
+	// imposes, the macOS counterpart of group policy. Only values that are forced
+	// count: a plain `defaults write` is the user's own setting, already read through
+	// QSettings. The preference domain is the bundle identifier, the convention for
+	// MDM payloads; the domain QSettings stores the user's settings in is accepted too.
+	CFStringRef key = settingName.toCFString();
+	for (CFStringRef domain : { CFSTR("org.jaspstats.jasp"), CFSTR("org.jasp-stats.JASP") })
+	{
+		if (!CFPreferencesAppValueIsForced(key, domain))
+			continue;
+
+		CFPropertyListRef cfValue = CFPreferencesCopyAppValue(key, domain);
+		if (!cfValue)
+			continue;
+
+		value = variantFromCFPropertyList(cfValue);
+		CFRelease(cfValue);
+		CFRelease(key);
+		return true;
+	}
+	CFRelease(key);
 #else
 	Q_UNUSED(settingName);
 	Q_UNUSED(value);
