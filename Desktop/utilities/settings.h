@@ -133,18 +133,21 @@ public:
 	/// Resolution order for value(): highest first —
 ///   1. group policy HKLM  (Windows only, IT admins via ADMX/GPO)
 ///   2. group policy HKCU  (Windows only, IT admins via ADMX/GPO)
+///   1.+2. on macOS: managed preferences (MDM configuration profile) for the
+///         domain org.jaspstats.jasp (or org.jasp-stats.JASP); only forced keys
 ///   3. forced.json        (shipped beside the app; enforced, overrules the user)
 ///   4. user settings INI  (the user's own preferences)
 ///   5. legacy registry    (Windows only, old-MSI user values; migrated to 4)
 ///   6. defaults.json      (shipped beside the app; soft defaults)
 ///   7. hardcoded defaults (Values[] below)
-/// setValue() refuses to change a setting enforced by forced.json: only
-/// policy (above it) or a new file shipped by an admin can change those.
+/// setValue() refuses to change a setting enforced by group policy or
+/// forced.json (isForced()): the user's value would never be read back, only
+/// an admin can change those. It returns false when it refused.
 	static QVariant value(Settings::Type key);
 	static QVariant defaultValue(Settings::Type key);
 	static bool isForced(Settings::Type key);
 	static bool isForced(const QString& settingName);	///< string overload, e.g. for QML; unknown names are never forced
-	static void setValue(Settings::Type key, const QVariant &value);
+	static bool setValue(Settings::Type key, const QVariant &value);
 	static void sync();
 	static void remove(Settings::Type key);
 	static QSettings* getSettings();
@@ -158,6 +161,8 @@ private:
 		QVariant defaultValue;
 	};
 	static QSettings* _settings;
+
+	static bool policyValue(const QString& settingName, QVariant& value);	///< group policy (HKLM, then HKCU Software\Policies\JASP) on Windows, forced managed preferences (MDM) on macOS
 	static const Setting Values[];
 
 };

@@ -207,6 +207,8 @@ target_link_libraries(
 if(APPLE)
   # Keychain backend in Desktop/auth/secretvault.cpp (SecItemAdd et al.)
   target_link_libraries(JASPDesktopLib PUBLIC "-framework Security")
+  # Managed preferences (MDM) in Desktop/utilities/settings.cpp (CFPreferencesAppValueIsForced et al.)
+  target_link_libraries(JASPDesktopLib PUBLIC "-framework CoreFoundation")
 endif()
 
 if(APPLE)
