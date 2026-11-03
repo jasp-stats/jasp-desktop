@@ -111,15 +111,23 @@ QString JaspRpcServer::rejectionReason(const QHttpServerRequest& request) const
 	if (headers.contains(QHttpHeaders::WellKnownHeader::Origin))
 		return "requests from web pages (with an Origin header) are not accepted";
 
+	// value() only returns the first of repeated fields, so a second Host or Content-Type would go unchecked.
+	if (headers.values(QHttpHeaders::WellKnownHeader::Host).size() != 1 || headers.values(QHttpHeaders::WellKnownHeader::ContentType).size() != 1)
+		return "exactly one Host and one Content-Type header are required";
+
 	// A DNS-rebinding page reaches 127.0.0.1 under its own host name, so only accept the names of this listener.
-	const QString	host	= QString::fromLatin1(headers.value(QHttpHeaders::WellKnownHeader::Host)).toLower(),
-					port	= ":" + QString::number(serverPort());
-	const QStringList acceptedHosts = { "127.0.0.1" + port, "localhost" + port, "[::1]" + port, _host.toLower() + port };
-	if (!acceptedHosts.contains(host))
-		return "unexpected Host header '" + host + "'";
+	const QString	host			= QString::fromLatin1(headers.value(QHttpHeaders::WellKnownHeader::Host)).toLower(),
+					listenHost		= _host.contains(':') ? "[" + _host.toLower() + "]" : _host.toLower(), // IPv6 literal
+					port			= ":" + QString::number(serverPort());
+	QStringList acceptedHosts;
+	for (const QString & name : { QString("127.0.0.1"), QString("localhost"), QString("[::1]"), listenHost })
+		acceptedHosts << name + port << (serverPort() == 80 ? name : QString()); // clients omit the default port
+	if (host.isEmpty() || !acceptedHosts.contains(host))
+		return "unexpected Host header '" + host.left(100) + "'";
 
 	// Pages can send text/plain without a CORS pre-flight, application/json they cannot.
-	if (!QByteArray(headers.value(QHttpHeaders::WellKnownHeader::ContentType)).toLower().startsWith("application/json"))
+	const QByteArray mediaType = QByteArray(headers.value(QHttpHeaders::WellKnownHeader::ContentType)).split(';').first().trimmed().toLower();
+	if (mediaType != "application/json")
 		return "Content-Type must be application/json";
 
 	return {};
