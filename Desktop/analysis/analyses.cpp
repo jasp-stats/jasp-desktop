@@ -1547,6 +1547,10 @@ void Analyses::registerRpcHandlers()
 		// The options are not typed in by a user here, so by default the input constraints (like the number of decimals) are relaxed.
 		form->setRelaxInputConstraints(params.get("relaxInputConstraints", true).asBool());
 
+		// parseOptions binds the request into the controls before the values are validated: keep the current options to put them back if the request is rejected.
+		// The Storage tree is what a saved analysis is re-bound from (Analysis::asJSON), so bindTo restores it as it is.
+		const Json::Value previousOptions = a->createOptionsJson(BoundControl::Storage);
+
 		Json::Value parsedOptions;
 		std::string errorMsg;
 		std::string rawOptions = Json::writeString(Json::StreamWriterBuilder(), params["options"]);
@@ -1561,8 +1565,17 @@ void Analyses::registerRpcHandlers()
 		}
 
 		if (!errorMsg.empty())
+		{
+			// A rejected request must leave the analysis as it was: otherwise the rejected values stay in the form and the stored options,
+			// and every later (valid) request is rejected because of them. Rebind the previous options without signalling a change, which would start a run.
+			form->blockValueChangeSignal(true);
+			form->clearAllErrors();
+			form->bindTo(previousOptions);
+			form->blockValueChangeSignal(false, false);
+
 			return JaspRpcDispatcher::errorResult(
 				"Validation errors on analysis options: " + errorMsg);
+		}
 
 		// If the analysis was already running or completed with stale
 		// options (e.g. EngineSync picked up the default/empty options
