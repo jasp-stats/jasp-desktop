@@ -986,6 +986,18 @@ void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *
 }
 
 
+//Analyses ask for columns by their encoded names, but code in the R Commander can use a plain column name:
+//readDataSetToEnd(columns = "y1"). Those are encoded here, as everything else in the commander is, and a name
+//that is no column at all becomes an R error that tryCatch can handle. The Engine's reader cannot do this itself,
+//it would throw an MSVC exception into this DLL (see rbridge_encodeColumnName).
+static std::string jaspRCPP_encodedColumnNameRequested(const std::string & name)
+{
+	if(jaspRCPP_shouldDecodeColumnName(name))	return name;
+	if(jaspRCPP_shouldEncodeColumnName(name))	return jaspRCPP_encodeColumnName(name);
+
+	throw std::runtime_error("'" + name + "' is not a column of the dataset");
+}
+
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax)
 {
 	std::map<std::string, columnType>	columnsRequested;
@@ -1009,9 +1021,11 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 		if(Rf_isString(cols))
 		{
 			std::vector<std::string> tmps = Rcpp::as<std::vector<std::string>>(cols);
-			for (const std::string & tmp : tmps)
-				if(tmp != "")
+			for (const std::string & requested : tmps)
+				if(requested != "")
 				{
+					const std::string tmp = jaspRCPP_encodedColumnNameRequested(requested);
+
 					if(columnsOrder.count(tmp) == 0)
 					{
 						columnsRequested[tmp]	= SetThis;
@@ -1022,7 +1036,7 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 						columnsRequested[tmp] = SetThis; //If type is unknown then we simply overwrite it with a manually specified type of analysis
 
 					else if( !(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == SetThis) ) //Only give an error if the type is different from what is requested
-						Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", tmp.c_str());
+						Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", requested.c_str());
 				}
 		}
 	};
