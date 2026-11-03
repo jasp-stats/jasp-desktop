@@ -1101,9 +1101,6 @@ void DataSetPackage::setModifiedAfterAutoSave(bool value)
 		_isModifiedAfterAutoSave = value;
 		emit isModifiedAfterAutoSaveChanged();
 	}
-	
-	if(_isModifiedAfterAutoSave)
-		_autoSaveTimer.start(); //Restart the timer so that no one gets an annoying save right in the middle of doing something. Yet there will be a save when you dont do something for a while
 }
 
 
