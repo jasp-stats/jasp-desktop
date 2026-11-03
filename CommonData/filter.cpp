@@ -573,6 +573,7 @@ QVariant Filter::provideInfo(varInfoType info, const QString& colName, int row) 
 		case varInfoType::DataSetRowCount:			return  rowFilteredData()->rowCount();
 		case varInfoType::DataAvailable:			return	bool(data());
 		case varInfoType::DataSetPointer:			return	QVariant::fromValue<void*>(data());
+		case varInfoType::SignalsBlocked:			return	data() && data()->synchingData(); //Asked without a column (SourceItem::_resetModel), as ColumnsModel answers it
 		default:									break;
 		}
 
@@ -601,7 +602,6 @@ QVariant Filter::provideInfo(varInfoType info, const QString& colName, int row) 
 		case varInfoType::PreviewOrdinal:			return	rowFilteredData()		->headerData(colIndex, Qt::Horizontal,	int(dataPkgRoles::previewOrdinal));
 		case varInfoType::PreviewNominal:			return	rowFilteredData()		->headerData(colIndex, Qt::Horizontal,	int(dataPkgRoles::previewNominal));
 		case varInfoType::ColumnDescription:		return	rowFilteredData()		->headerData(colIndex, Qt::Horizontal,	int(dataPkgRoles::description));
-		case varInfoType::SignalsBlocked:			throw std::runtime_error("????");
 		default:									break;
 		}
 	}
