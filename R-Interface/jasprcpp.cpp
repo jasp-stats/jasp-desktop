@@ -993,7 +993,11 @@ void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *
 static std::string jaspRCPP_encodedColumnNameRequested(const std::string & name)
 {
 	if(jaspRCPP_shouldDecodeColumnName(name))	return name;
-	if(jaspRCPP_shouldEncodeColumnName(name))	return jaspRCPP_encodeColumnName(name);
+	if(jaspRCPP_shouldEncodeColumnName(name))
+	{
+		std::cerr << "You are trying to read from a dataset with an unencoded columnName (" << name << ")! Instead of crashing the engine we will now encode it for you. But either there is a bug in a JASP control or you are calling functions you shouldn't be calling." << std::endl;
+		return jaspRCPP_encodeColumnName(name);
+	}
 
 	throw std::runtime_error("'" + name + "' is not a column of the dataset");
 }
