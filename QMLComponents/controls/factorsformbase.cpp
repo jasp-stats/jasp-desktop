@@ -132,7 +132,7 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 				}
 				else
 					for (const std::string& component : components)
-						types.push_back(model()->getVariableRealType(tq(component)));
+						types.push_back(model()->getVariableSourceType(tq(component)));
 				initTerms.add(Term(components, types));
 			}
 			termId++;

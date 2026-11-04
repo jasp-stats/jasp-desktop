@@ -33,6 +33,10 @@ public:
 	virtual void					setAvailableModel(ListModelTermsAvailable *availableModel);
 	ListModelTermsAvailable*		availableModel() const													{ return _availableModel; }
 
+	///< The type of the variable in the available list this list gets its terms from (when it has one), so that a variable keeps
+	///  the type its source gave it (e.g. a nominal-only Factors list) instead of falling back to the column's own type.
+	columnType						getVariableSourceType(const QString& name)						const	override;
+
 public slots:
 	///< (ORIGIN-AUTHORITATIVE): the pool's update (added/removed diff plus the
 	///  participation key `filterIdToUpdate` - the filterId the affected terms currently

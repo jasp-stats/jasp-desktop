@@ -104,6 +104,10 @@ public:
 			Json::Value				getVariableTypes(bool onlyChanged = false)						const;
 			Json::Value				getVariableTypes(const Terms& terms, bool onlyChanged = false)	const;
 			columnType				getVariableRealType(const QString& name)						const;
+	///< The type the variable has where this list takes it from: the type it has in a source list (e.g. Components whose
+	///  source is a nominal-only Fixed Factors list), the type in the paired available list for an assigned list (see
+	///  ListModelAssignedInterface), and the column's own type for a list fed by the dataset.
+	virtual columnType				getVariableSourceType(const QString& name)						const;
 			QString					getVariablePreview(	const QString& name)						const;
 			QStringList				getUsedTypes()													const;
 
