@@ -11,6 +11,7 @@ FocusScope
 	property bool	splitMe:					splitHeight > height
 	property bool	showResetWorkspaceButton:	false
 	property bool	showWorkspaceMissingValues:	true
+	property bool	valuesEditable:				true	///< false when the values cannot be changed here, e.g. an admin enforces them
 
 	property string resetButtonLabel:			qsTr("Reset")
 	property string resetButtonTooltip
@@ -94,6 +95,7 @@ FocusScope
 							width:				height
 							anchors.right:		parent.right
 							anchors.top:		parent.top
+							enabled:			valuesEditable
 							onClicked:			missingValuesWidget.model.removeEmptyValue(modelData)
 							cursorShape:		Qt.PointingHandCursor
 							hoverEnabled:		true
@@ -129,6 +131,7 @@ FocusScope
 			Item
 			{
 				id:					addValueItem
+				enabled:			valuesEditable
 				height:				implicitHeight
 				implicitHeight:		addButton.height
 				Layout.fillWidth:	true
@@ -187,6 +190,7 @@ FocusScope
 			{
 				Layout.fillWidth:	true
 				id:					resetButton
+				enabled:			valuesEditable
 				text:				resetButtonLabel
 				toolTip:			resetButtonTooltip
 				onClicked:			missingValuesWidget.model.resetEmptyValues()

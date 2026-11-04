@@ -35,6 +35,7 @@ PrefsGroupRect
 	DropDown
 	{
 		id:							languages
+		enabled:					!preferencesModel.settingIsForced("preferredLanguage")
 		label:						qsTr("Choose language")
 		source:						languageModel
 		startValue: 				languageModel.currentLanguage
@@ -47,6 +48,7 @@ PrefsGroupRect
 	CheckBox
 	{
 		id:							useThousandsSeparator
+		enabled:					!preferencesModel.settingIsForced("useThousandSeparators")
 		label:						qsTr("Use thousands separators")
 		checked:					languageModel.useThousandSeps
 		onCheckedChanged:			languageModel.useThousandSeps = checked
@@ -58,6 +60,7 @@ PrefsGroupRect
 	CheckBox
 	{
 		id:							useAlternativeLocale
+		enabled:					!preferencesModel.settingIsForced("useAlternativeLocale")
 		label:						qsTr("Use an alternative language and territory dependent display for numbers")
 		checked:					languageModel.useAlternativeLocale
 		onCheckedChanged:			languageModel.useAlternativeLocale = checked
@@ -77,6 +80,7 @@ PrefsGroupRect
 			DropDown
 			{
 				id:							alternativeLocaleLanguage
+				enabled:					!preferencesModel.settingIsForced("alternativeLocLanguage")
 				label:						qsTr("Alt. language")
 				values:		 				languageModel.altLanguages
 				startValue:				 	languageModel.currentAltLanguage
@@ -89,6 +93,7 @@ PrefsGroupRect
 			DropDown
 			{
 				id:							alternativeLocaleTerritory
+				enabled:					!preferencesModel.settingIsForced("alternativeLocRegion")
 				label:						qsTr("Alt. territory")
 				values:		 				languageModel.altTerritories
 				startValue:				 	languageModel.currentAltTerritory

@@ -332,9 +332,9 @@ void PreferencesModel::setFixedDecimals(bool newFixedDecimals)
 {
 	if (fixedDecimals() == newFixedDecimals)
 		return;
-	
-	Settings::setValue(Settings::FIXED_DECIMALS, newFixedDecimals);
-	
+
+	if(!Settings::setValue(Settings::FIXED_DECIMALS, newFixedDecimals)) return;
+
 	emit fixedDecimalsChanged(newFixedDecimals);
 	emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
@@ -343,9 +343,9 @@ void PreferencesModel::setNumDecimals(int newNumDecimals)
 {
 	if (numDecimals() == newNumDecimals)
 		return;
-	
-	Settings::setValue(Settings::NUM_DECIMALS, newNumDecimals);
-	
+
+	if(!Settings::setValue(Settings::NUM_DECIMALS, newNumDecimals)) return;
+
 	emit numDecimalsChanged(newNumDecimals);
 	
 	if(fixedDecimals())
@@ -374,24 +374,24 @@ void PreferencesModel::onDefaultPPIChanged(int)
 #define SET_PREF_FUNCTION(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
 void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 {																		\
-		if(GET_FUNC() == newVal) return;									\
-		Settings::setValue(SETTING, newVal);								\
-		emit NOTIFY(newVal);												\
+	if(GET_FUNC() == newVal) return;									\
+	if(!Settings::setValue(SETTING, newVal)) return;			\
+	emit NOTIFY(newVal);												\
 }
 
 #define SET_PREF_FUNCTION_EMIT_NO_ARG(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
 void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 {																		\
-		if(GET_FUNC() == newVal) return;									\
-		Settings::setValue(SETTING, newVal);								\
-		emit NOTIFY();														\
+	if(GET_FUNC() == newVal) return;									\
+	if(!Settings::setValue(SETTING, newVal)) return;			\
+	emit NOTIFY();														\
 }
 
 void PreferencesModel::setCurrentThemeName(QString _currentThemeName)
 {
 	if (currentThemeName() == _currentThemeName) return;
-	
-	Settings::setValue(Settings::THEME_NAME, _currentThemeName);
+
+	if(!Settings::setValue(Settings::THEME_NAME, _currentThemeName)) return;
 	JaspTheme::setCurrentThemeFromName(_currentThemeName);
 	
 	emit currentThemeNameChanged(_currentThemeName);
@@ -477,9 +477,9 @@ void PreferencesModel::setGithubPatCustom(QString newPat)
 {
 	if (githubPatCustom() == newPat)
 		return;
-	
-	Settings::setValue(Settings::GITHUB_PAT_CUSTOM, encrypt(newPat));
-	
+
+	if(!Settings::setValue(Settings::GITHUB_PAT_CUSTOM, encrypt(newPat))) return;
+
 	emit githubPatCustomChanged();
 }
 
@@ -506,8 +506,8 @@ void PreferencesModel::setUiScale(double newUiScale)
 	
 	if (std::abs(uiScale() - newUiScale) < 0.001)
 		return;
-	
-	Settings::setValue(Settings::UI_SCALE, newUiScale);
+
+	if(!Settings::setValue(Settings::UI_SCALE, newUiScale)) return;
 	_uiScale = newUiScale;
 	
 	emit uiScaleChanged();
@@ -517,8 +517,8 @@ void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
 {
 	if (modulesRemembered() == newModulesRemembered)
 		return;
-	
-	Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
+
+	if(!Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'))) return;
 	emit modulesRememberedChanged();
 }
 
@@ -526,8 +526,8 @@ void PreferencesModel::setSafeGraphics(bool newSafeGraphics)
 {
 	if (safeGraphics() == newSafeGraphics)
 		return;
-	
-	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics);
+
+	if(!Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics)) return;
 	emit modulesRememberChanged(newSafeGraphics);
 	
 	MessageForwarder::showWarning(tr("Safe Graphics mode changed"), tr("You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP"));
@@ -581,8 +581,8 @@ void PreferencesModel::setThresholdScale(int newThresholdScale)
 {
 	if (thresholdScale() == newThresholdScale)
 		return;
-	
-	Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
+
+	if(!Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale)) return;
 	emit thresholdScaleChanged(newThresholdScale);
 	
 }
@@ -694,7 +694,7 @@ void PreferencesModel::_setEmptyValues(const QStringList& values)
 {
 	if (values != emptyValues())
 	{
-		Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"));
+		if(!Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"))) return;
 		emit emptyValuesChanged();
 	}
 }
@@ -714,14 +714,14 @@ void PreferencesModel::setDirectLibpathFolder(QString libpath)
 {
 	if (libpath != "")
 	{
-		Settings::setValue(Settings::DIRECT_LIBPATH_FOLDER, libpath);
+		if(!Settings::setValue(Settings::DIRECT_LIBPATH_FOLDER, libpath)) return;
 		emit directLibpathFolderChanged();
 	}
 }
 
 void PreferencesModel::setEngineSandbox(bool engineSandbox) {
 	if(engineSandbox != PreferencesModel::engineSandbox()) {
-		Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox);
+		if(!Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox)) return;
 
 #if defined(_WIN32) || defined(__APPLE__)
 		MessageForwarder::showWarning(tr("Engine Sandbox setting changed"), tr("The Engine Sandbox setting has been changed, this will only take full effect after JASP is restarted."));

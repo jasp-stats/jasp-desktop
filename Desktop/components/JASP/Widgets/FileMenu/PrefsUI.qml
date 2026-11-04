@@ -95,6 +95,7 @@ PrefsScrollView
 			DropDown
 			{
 				id:			 			interfaceFonts
+				enabled:				!preferencesModel.settingIsForced("interfaceFont")
 				label:					qsTr("Interface:")
 				values:			 		preferencesModel.allInterfaceFonts
 				addEmptyValue:			true
@@ -110,6 +111,7 @@ PrefsScrollView
 			DropDown
 			{
 				id:							codeFonts
+				enabled:					!preferencesModel.settingIsForced("codeFont")
 				label:						qsTr("R, JAGS, or lavaan code:")
 				values:		 				preferencesModel.allCodeFonts
 				addEmptyValue:		 		true
@@ -125,6 +127,7 @@ PrefsScrollView
 			DropDown
 			{
 				id:							resultFonts
+				enabled:					!preferencesModel.settingIsForced("resultFont")
 				label:						qsTr("Result & help:")
 				values:						preferencesModel.allResultFonts
 				addEmptyValue:				true
@@ -142,6 +145,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					qtTextRendering
+			enabled:			!preferencesModel.settingIsForced("guiQtTextRender")
 			label:				qsTr("Use Qt's text rendering")
 			checked:			preferencesModel.guiQtTextRender
 			onCheckedChanged:	preferencesModel.guiQtTextRender = checked
@@ -163,6 +167,7 @@ PrefsScrollView
 			RadioButton
 			{
 				id:					lightThemeButton
+				enabled:			!preferencesModel.settingIsForced("themeName")
 				label:				qsTr("Light theme")
 				checked:			preferencesModel.currentThemeName === "lightTheme"
 				onCheckedChanged:	if (checked) preferencesModel.currentThemeName  =  "lightTheme"
@@ -174,6 +179,7 @@ PrefsScrollView
 			RadioButton
 			{
 				id:					darkThemeButton
+				enabled:			!preferencesModel.settingIsForced("themeName")
 				label:				qsTr("Dark theme")
 				checked:			preferencesModel.currentThemeName === "darkTheme"
 				onCheckedChanged:	if (checked) preferencesModel.currentThemeName  =  "darkTheme"
@@ -198,6 +204,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					altnavcheckbox
+			enabled:			!preferencesModel.settingIsForced("ALTNavModeActive")
 			label:				qsTr("ALT-Navigation mode")
 			checked:			preferencesModel.ALTNavModeActive
 			onCheckedChanged:	preferencesModel.ALTNavModeActive = checked
@@ -214,6 +221,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					checkForUpdates
+			enabled:			!preferencesModel.settingIsForced("checkUpdates")
 			label:				qsTr("Daily automatic check for updates & known issues")
 			checked:			preferencesModel.checkUpdates
 			onCheckedChanged:	preferencesModel.checkUpdates = checked
@@ -260,6 +268,7 @@ PrefsScrollView
 		SpinBox
 		{
 			id:						uiScaleSpinBox
+			enabled:				!preferencesModel.settingIsForced("UIScaleAll")
 			value:					Math.round(preferencesModel.uiScale * 100)
 			onEditingFinished:		preferencesModel.uiScale = value / 100
 			from:					20
@@ -276,6 +285,7 @@ PrefsScrollView
 		SpinBox
 		{
 			id:						ribbonBarSpinBox
+			enabled:				!preferencesModel.settingIsForced("ribbonBarHeightScale")
 			value:					Math.round(preferencesModel.ribbonBarHeightScale * 100)
 			onValueChanged:			if(value!= "") preferencesModel.ribbonBarHeightScale = value / 100
 			from:					10
@@ -292,6 +302,7 @@ PrefsScrollView
 		SpinBox
 		{
 			id:						uiMaxFlickVelocity
+			enabled:				!preferencesModel.settingIsForced("maxFlickVelocity")
 			value:					preferencesModel.maxFlickVelocity
 			onValueChanged:			if(value !== "") preferencesModel.maxFlickVelocity = value
 			from:					100
@@ -308,6 +319,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					safeGraphicsMode
+			enabled:			!preferencesModel.settingIsForced("safeGraphicsMode")
 			label:				qsTr("Safe graphics mode")
 			checked:			preferencesModel.safeGraphics
 			onCheckedChanged:	preferencesModel.safeGraphics = checked
@@ -320,6 +332,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					startMaximized
+			enabled:			!preferencesModel.settingIsForced("startMaximized")
 			label:				qsTr("Start maximized")
 			checked:			preferencesModel.startMaximized
 			onCheckedChanged:	preferencesModel.startMaximized = checked
@@ -335,9 +348,9 @@ PrefsScrollView
 			label:				qsTr("Disable animations")
 			checked:			preferencesModel.disableAnimations
 			onCheckedChanged:	preferencesModel.disableAnimations = checked
-			toolTip:			enabled ? qsTr("Turns off all animations, this is implied when \"Safe Graphics Mode\" is on.") : qsTr("Already disabled animations because \"Safe Graphics Mode\" is on")
+			toolTip:			!preferencesModel.safeGraphics ? qsTr("Turns off all animations, this is implied when \"Safe Graphics Mode\" is on.") : qsTr("Already disabled animations because \"Safe Graphics Mode\" is on")
 
-			enabled:			!preferencesModel.safeGraphics
+			enabled:			!preferencesModel.safeGraphics && !preferencesModel.settingIsForced("disableAnimations")
 
 			KeyNavigation.tab:			useNativeFileDialog
 		}
@@ -346,6 +359,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					useNativeFileDialog
+			enabled:			!preferencesModel.settingIsForced("useNativeFileDialog")
 			label:				qsTr("Use native file dialogs")
 			checked:			preferencesModel.useNativeFileDialog
 			onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
@@ -358,6 +372,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					reportingMode
+			enabled:			!preferencesModel.settingIsForced("showReports")
 			label:				qsTr("Reporting mode")
 			checked:			preferencesModel.reportingMode
 			onCheckedChanged:	preferencesModel.reportingMode = checked

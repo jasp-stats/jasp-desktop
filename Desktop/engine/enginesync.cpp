@@ -18,6 +18,7 @@
 
 #include "enginesync.h"
 #include <QApplication>
+#include <QDeadlineTimer>
 #include <QFileInfo>
 #include <QFile>
 #include <QDir>
@@ -1333,13 +1334,31 @@ void EngineSync::resumeEngines()
 
 	_stopProcessing = false;
 	
-	while(!allEnginesResumed())
+	//We do not return to the eventloop while waiting, so QProcess::finished cannot tell us that an engine died while starting: jaspEngineExited() checks for that.
+	//Such an engine gets started again. At the deadline we stop waiting: an engine that is merely slow then resumes in EngineSync::process(),
+	//and one that keeps dying ends up in the usual crash handling once its last process exits.
+	QDeadlineTimer deadline(ENGINE_RESUME_TIMEOUT);
+
+	while(!allEnginesResumed() && !deadline.hasExpired())
 		for(EngineRepresentation * engine : _engines)
 		{
 			engine->processReplies();
+
+			if(engine->jaspEngineStillRunning() && engine->jaspEngineExited())
+			{
+				Log::log() << "Engine #" << engine->channelNumber() << " exited while resuming, starting it again." << std::endl;
+				engine->killEngine(); //Cleans up the exited process without treating it as a crash
+
+				std::string staleReply; //Whatever it sent before exiting should not be taken for a reply of the new process
+				channel(engine->channelNumber())->receive(staleReply);
+			}
+
 			if(!engine->jaspEngineStillRunning())
 				startStoppedEngine(engine);
 		}
+
+	if(!allEnginesResumed())
+		Log::log() << "Not all engines resumed within " << ENGINE_RESUME_TIMEOUT << "ms, leaving them to EngineSync::process()." << std::endl;
 }
 
 bool EngineSync::allEnginesStopped(std::set<EngineRepresentation *> these)

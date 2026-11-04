@@ -54,6 +54,23 @@ void EngineRepresentation::killProcess()
 	}
 }
 
+bool EngineRepresentation::jaspEngineExited()
+{
+	if(!_slaveProcess)
+		return false;
+
+	//waitForFinished() would emit finished right away, running processFinished() and handleEngineCrash() inside our caller.
+	//So we block the process' signals and leave handling the exit to the caller.
+	QSignalBlocker blockSignals(_slaveProcess);
+
+	if(!_slaveProcess->waitForFinished(0))
+		return false;
+
+	Log::log() << "Engine #" << _channelNumber << " exited while in state '" << _engineState << "' " << (_slaveProcess->exitStatus() == QProcess::ExitStatus::CrashExit ? "crashing" : "normally") << " and with exitCode " << _slaveProcess->exitCode() << "!" << std::endl;
+
+	return true;
+}
+
 EngineRepresentation::~EngineRepresentation()
 {
 	Log::log() << "~EngineRepresentation() Engine #" << _channelNumber << std::endl;
@@ -83,11 +100,17 @@ void EngineRepresentation::cleanUpAfterClose(bool forgetAnalyses)
 	_lastCompColDataSet	= -1;
 
 
-	if(_dynModName != "")
-		emit unregisterForModule(this, _dynModName);
+	//The R Commander's module is chosen in its window and never registered with EngineSync, so keep it when
+	//the engine restarts (after a crash for instance): EngineSync::process loads it again once the engine is idle.
+	if(!runsRCmd())
+	{
+		if(_dynModName != "")
+			emit unregisterForModule(this, _dynModName);
 
-	_dynModName			= "";
-	_moduleLoaded		= "";
+		_dynModName		= "";
+	}
+
+	_moduleLoaded		= false;
 
 	if(runMeLater)
 		runMeLater->run();
@@ -102,7 +125,9 @@ void EngineRepresentation::sendString(const Json::Value & json)
 	
 	Log::log() << "sending to jaspEngine: " << printData << "\n" << std::endl;
 #endif
-	channel()->send(json.toStyledString());
+	//A string goes out as is, like Engine::sendString does: sendString("") must clear the channel with an empty message,
+	//as toStyledString() would turn it into the json string "" that a freshly started engine reads as a request.
+	channel()->send(json.isString() ? json.asString() : json.toStyledString());
 }
 
 void EngineRepresentation::resend()

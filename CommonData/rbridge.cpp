@@ -194,12 +194,24 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 
 }
 
+//These are called from R-Interface, which on Windows is a separate DLL built with Rtools' GCC: an MSVC
+//exception cannot be caught there and corrupts the heap while unwinding through R. So a name that is not a
+//column gives a nullptr instead, and R-Interface turns that into its own exception (and thus an R error).
+//rbridge_decodeColumnName does not throw: unknown tokens stay raw.
 extern "C" const char * STDCALL rbridge_encodeColumnName(const char * in)
 {
 	static std::string out;
 
-	if(extraEncodings->shouldEncode(in))	out = extraEncodings->encode(in);
-	else									out = ColumnEncoder::columnEncoder()->encode(in);
+	try
+	{
+		if(extraEncodings->shouldEncode(in))	out = extraEncodings->encode(in);
+		else									out = ColumnEncoder::columnEncoder()->encode(in);
+	}
+	catch(std::exception & e)
+	{
+		Log::log() << "rbridge_encodeColumnName: " << e.what() << std::endl;
+		return nullptr;
+	}
 
 	return out.c_str();
 }

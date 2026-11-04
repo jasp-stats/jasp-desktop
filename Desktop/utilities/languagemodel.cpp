@@ -244,8 +244,13 @@ void LanguageModel::fillAltTerritories()
 	
 	bool				previouslyChosenTerritoryFound	= false;
 	QLocale::Territory	prevTer							= _nativeTerritoryNameToEnum.count(_currentAltTerritory) ? _nativeTerritoryNameToEnum.at(_currentAltTerritory) : QLocale::Territory::AnyTerritory;
-	
-			
+
+	//At startup the map is still empty and _currentAltTerritory comes from the settings, named in the chosen language
+	if(prevTer == QLocale::Territory::AnyTerritory)
+		for(const QLocale & l : languageLocales)
+			if(l.nativeTerritoryName() == _currentAltTerritory)
+				prevTer = l.territory();
+
 	_nativeTerritoryNameToEnum.clear();
 
 	for(QLocale & l : languageLocales)
@@ -309,8 +314,9 @@ QHash<int, QByteArray> LanguageModel::roleNames() const
 }
 
 void LanguageModel::setCurrentLanguage(QString language)
-{	
-	if(resultXmlCompare::compareResults::theOne()->testMode())
+{
+	//The setters here keep their own copy of the setting, so one that an admin enforced would hold until the next start
+	if(resultXmlCompare::compareResults::theOne()->testMode() || Settings::isForced(Settings::PREFERRED_LANGUAGE))
 		return;
 	
 	QString languageCode = language.split(" ")[0];
@@ -372,7 +378,7 @@ void LanguageModel::refreshAll()
 
 void LanguageModel::setUseAlternativeLocale(bool useIt)
 {
-	if(_useAlternativeLocale == useIt || resultXmlCompare::compareResults::theOne()->testMode())
+	if(_useAlternativeLocale == useIt || resultXmlCompare::compareResults::theOne()->testMode() || Settings::isForced(Settings::USE_ALT_LOCALE))
 		return;
 		
 	_useAlternativeLocale = useIt;
@@ -569,16 +575,19 @@ QString LanguageModel::currentAltLanguage() const
 
 void LanguageModel::setCurrentAltLanguage(const QString &newCurrentAltLanguage)
 {
-	if (_currentAltLanguage == newCurrentAltLanguage)
+	if (_currentAltLanguage == newCurrentAltLanguage || Settings::isForced(Settings::ALT_LOCALE_LANGUAGE))
 		return;
 	
 	_currentAltLanguage = newCurrentAltLanguage;
 	emit currentAltLanguageChanged();
 	
 	Settings::setValue(Settings::ALT_LOCALE_LANGUAGE, _currentAltLanguage);
-		
+
 	fillAltTerritories();
-	
+
+	//fillAltTerritories() may pick another territory, or the same one under this language's name, so store that too
+	Settings::setValue(Settings::ALT_LOCALE_REGION, _currentAltTerritory);
+
 	refreshAll();
 }
 
@@ -605,7 +614,7 @@ QString LanguageModel::exampleFormatting() const
 
 void LanguageModel::setCurrentAltTerritory(const QString &newCurrentAltTerritory)
 {
-	if (_currentAltTerritory == newCurrentAltTerritory)
+	if (_currentAltTerritory == newCurrentAltTerritory || Settings::isForced(Settings::ALT_LOCALE_REGION))
 		return;
 	
 	_currentAltTerritory = newCurrentAltTerritory;
@@ -623,7 +632,7 @@ bool LanguageModel::useThousandSeps() const
 
 void LanguageModel::setUseThousandSeps(bool newUseThousandSeps)
 {
-	if (_useThousandSeps == newUseThousandSeps)
+	if (_useThousandSeps == newUseThousandSeps || Settings::isForced(Settings::USE_THOUSAND_SEPARATORS))
 		return;
 	
 	_useThousandSeps = newUseThousandSeps;
