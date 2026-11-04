@@ -101,6 +101,10 @@ public:
 			///Replace all occurences of encoded columnNames in a string by their decoded versions, regardless of word boundaries or parentheses.
 	static	std::string			decodeAll(const std::string & text) { columnEncoder(); return replaceAll(text, decodingMap(), encodedNames());  }
 
+			///Like decodeAll, but an encoded name that asks for another type than the column has in the data comes back as "columnName.type"
+			///(x.nominal for a scale column x), as the user typed it. A name with the type of the data comes back as plain "columnName".
+	static	std::string			decodeAllKeepingTypes(const std::string & text);
+
 			///Replace all occurences of columnNames in a string by their encoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
 	static	void				encodeJson(Json::Value & json, bool replaceNames = false, bool replaceStrict = false);
 

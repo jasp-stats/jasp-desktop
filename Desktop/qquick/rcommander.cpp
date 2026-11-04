@@ -234,23 +234,28 @@ void RCommander::applyBatchEntryToAnalysis(Analysis * analysis, const QString & 
 	if (!analysis)
 		return;
 
-	auto applyNow = [analysis, optionsJson]()
-	{
-		analysis->runScriptRequestDone(optionsJson, AnalysisForm::rSyntaxControlName, false);
-	};
-
 	if (analysis->hasForm() && analysis->form()->initialized())
 	{
-		applyNow();
+		setOptionsOfBatchAnalysis(analysis, optionsJson);
 		return;
 	}
 
 	QPointer<Analysis> guard(analysis);
-	connect(analysis, &Analysis::analysisInitialized, this, [guard, optionsJson]()
+	connect(analysis, &Analysis::analysisInitialized, this, [this, guard, optionsJson]()
 	{
 		if (guard)
-			guard->runScriptRequestDone(optionsJson, AnalysisForm::rSyntaxControlName, false);
+			setOptionsOfBatchAnalysis(guard, optionsJson);
 	}, Qt::SingleShotConnection);
+}
+
+void RCommander::setOptionsOfBatchAnalysis(Analysis * analysis, const QString & optionsJson)
+{
+	analysis->runScriptRequestDone(optionsJson, AnalysisForm::rSyntaxControlName, false);
+
+	//The form shows what it could not take over (a term of the formula that no option of the analysis takes, for instance) as an error
+	//next to its R syntax, but nobody looks at the form of every analysis of a batch: the R in JASP output must say so too.
+	if (analysis->hasForm() && analysis->form()->hasError())
+		appendToOutput(tr("Analysis \"%1\" was added, but its options could not be set: %2").arg(tq(analysis->title()), analysis->form()->getError()));
 }
 
 void RCommander::setRunning(bool running)

@@ -531,6 +531,84 @@ void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteL
 }
 
 
+//Columns in a formula of a batch analysis (and the title made from it) can ask for a type, ~ x.nominal. The code was
+//encoded to column tokens, which decode to the column in the data and so lose that type. The Desktop reads
+//"x.nominal" in a formula just like the R syntax of an analysis does, so these strings are decoded with their type.
+//Strings of other options stay as decodeAll gives them: "x.nominal" is no value for those.
+static void decodeBatchResultKeepingTypes(Json::Value & json, bool inFormula)
+{
+	switch(json.type())
+	{
+	case Json::stringValue:
+		if(inFormula)
+			json = ColumnEncoder::decodeAllKeepingTypes(json.asString());
+		return;
+
+	case Json::arrayValue:
+		for(Json::Value & element : json)
+			decodeBatchResultKeepingTypes(element, inFormula);
+		return;
+
+	case Json::objectValue:
+		//A formula option (jaspBase::jaspFormula) has the formula itself and its left and right hand side
+		inFormula = inFormula || (json.isMember("formula") && json["formula"].isString() && json.isMember("lhs") && json.isMember("rhs"));
+
+		for(const std::string & name : json.getMemberNames())
+			decodeBatchResultKeepingTypes(json[name], inFormula);
+		return;
+
+	default:
+		return;
+	}
+}
+
+static std::string decodeBatchResult(const std::string & batchJson)
+{
+	Json::Value batch;
+	Json::Reader reader;
+
+	if(!reader.parse(batchJson, batch) || !batch.isArray())
+		return ColumnEncoder::decodeAll(batchJson);
+
+	for(Json::Value & analysis : batch)
+		if(analysis.isObject())
+		{
+			if(analysis.isMember("title"))
+				decodeBatchResultKeepingTypes(analysis["title"], true);
+
+			if(analysis.isMember("options"))
+				decodeBatchResultKeepingTypes(analysis["options"], false);
+		}
+
+	//what is left (all other options, names of options) is decoded as everything else
+	ColumnEncoder::decodeJson(batch);
+
+	Json::StreamWriterBuilder compact;
+	compact["indentation"]	= "";
+	compact["precision"]	= 15; //R wrote at most 15 significant digits (digits = NA of jsonlite), so 0.1 stays 0.1
+
+	return Json::writeString(compact, batch);
+}
+
+//The result of the R code of the commander is the output as shown in the R in JASP window, with the JSON of the analyses
+//that a batch of analyses made (@@@JASP_BATCH_RESULT@@@...@@@JASP_BATCH_RESULT_END@@@) in the middle of it.
+static std::string decodeCommanderResult(const std::string & result)
+{
+	static const std::string	beginMarker = "@@@JASP_BATCH_RESULT@@@",
+								endMarker	= "@@@JASP_BATCH_RESULT_END@@@";
+
+	const size_t	begin		= result.find(beginMarker),
+					jsonBegin	= begin == std::string::npos ? std::string::npos : begin + beginMarker.size(),
+					end			= jsonBegin == std::string::npos ? std::string::npos : result.find(endMarker, jsonBegin);
+
+	if(end == std::string::npos)
+		return ColumnEncoder::decodeAll(result);
+
+	return	ColumnEncoder::decodeAll(result.substr(0, begin))	+ beginMarker +
+			decodeBatchResult(result.substr(jsonBegin, end - jsonBegin)) + endMarker +
+			ColumnEncoder::decodeAll(result.substr(end + endMarker.size()));
+}
+
 void Engine::runRCodeCommander(std::string rCode, bool columnsByName)
 {
 	bool thereIsSomeData = provideAndUpdateDataSet() && provideAndUpdateDataSet()->rowCount();
@@ -570,7 +648,7 @@ void Engine::runRCodeCommander(std::string rCode, bool columnsByName)
 	std::string rCodeResult =	jaspRCPP_evalRCodeCommander(rCode.c_str());
 
 	if(thereIsSomeData)
-		rCodeResult = ColumnEncoder::decodeAll(rCodeResult);
+		rCodeResult = decodeCommanderResult(rCodeResult);
 
 	sendRCodeResult(-1, rCodeResult);
 

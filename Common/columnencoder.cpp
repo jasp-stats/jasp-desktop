@@ -465,6 +465,27 @@ std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::stri
 	return text;
 }
 
+std::string ColumnEncoder::decodeAllKeepingTypes(const std::string & text)
+{
+	columnEncoder();
+
+	colMap decodingWithTypes = decodingMap();
+
+	for(const auto & encodedType : decodingTypes())
+	{
+		const auto decoded = decodingWithTypes.find(encodedType.first);
+		if(decoded == decodingWithTypes.end())
+			continue;
+
+		const auto dataType = _columnEncoder->_dataSetTypes.find(decoded->second);
+
+		if(dataType != _columnEncoder->_dataSetTypes.end() && dataType->second != columnType::unknown && dataType->second != encodedType.second)
+			decoded->second += "." + columnTypeToString(encodedType.second);
+	}
+
+	return replaceAll(text, decodingWithTypes, encodedNames());
+}
+
 std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string> * columnNamesFound)
 {
 	return encodeRScript(text, encodingMap(), originalNames(), columnNamesFound);
