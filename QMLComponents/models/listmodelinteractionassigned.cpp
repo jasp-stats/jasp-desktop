@@ -58,6 +58,13 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms, const Terms::Re
     ListModelAssignedInterface::initTerms(this->terms(), allValuesMap);
 }
 
+void ListModelInteractionAssigned::bindTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap)
+{
+	// A bound value is the complete new state: the interactions that are absent from it (e.g. removed through the RPC,
+	// the AI or the R syntax) must not be re-added from the current terms like initTerms does.
+	ListModelAssignedInterface::initTerms(terms, allValuesMap);
+}
+
 void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 {
 	if(!indices.count())

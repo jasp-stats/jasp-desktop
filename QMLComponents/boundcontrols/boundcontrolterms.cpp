@@ -79,7 +79,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	//stored; every consumer that reads this option reads the generated form anyway.
 	BoundControlBase::bindTo(_makeOption(terms, allControlValues));
 
-	_termsModel->initTerms(terms, allControlValues);
+	_termsModel->bindTerms(terms, allControlValues);
 }
 
 Json::Value BoundControlTerms::createJson() const
