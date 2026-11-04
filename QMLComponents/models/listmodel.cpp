@@ -115,10 +115,12 @@ void ListModel::_setAllowedType(Term& term) const
 			term.setType(_listView->defaultType());
 		else
 		{
-			// If the real type is now allowed, change the type to its original one.
-			columnType realType = getVariableRealType(term.value());
-			if (type != realType && _listView->isTypeAllowed(realType))
-				term.setType(realType);
+			// If the original type is now allowed, change the type back to it. The original type is the one the variable has
+			// where this list gets it from: for a list whose variables come from another list (e.g. model terms made of the
+			// factors), that is the type in that list, which may differ from the column's own type.
+			columnType sourceType = getVariableSourceType(term.value());
+			if (sourceType != columnType::unknown && type != sourceType && _listView->isTypeAllowed(sourceType))
+				term.setType(sourceType);
 		}
 	}
 

@@ -104,6 +104,9 @@ public:
 			Json::Value				getVariableTypes(bool onlyChanged = false)						const;
 			Json::Value				getVariableTypes(const Terms& terms, bool onlyChanged = false)	const;
 			columnType				getVariableRealType(const QString& name)						const;
+	///< The type the variable has where this list takes it from: the column's own type for a list
+	///  fed by the dataset, the type in the paired available list for an assigned list (see ListModelAssignedInterface).
+	virtual columnType				getVariableSourceType(const QString& name)						const	{ return getVariableRealType(name); }
 			QString					getVariablePreview(	const QString& name)						const;
 			QStringList				getUsedTypes()													const;
 

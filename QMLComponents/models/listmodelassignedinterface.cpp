@@ -27,6 +27,20 @@ ListModelAssignedInterface::ListModelAssignedInterface(JASPListControl* listView
 	_needsSource = false;
 }
 
+columnType ListModelAssignedInterface::getVariableSourceType(const QString &name) const
+{
+	if (_availableModel)
+	{
+		const Terms &	availableTerms	= _availableModel->allTerms();
+		int				index			= availableTerms.indexOfValue(name);
+
+		if (index >= 0 && availableTerms.at(index).type() != columnType::unknown)
+			return availableTerms.at(index).type();
+	}
+
+	return ListModelDraggable::getVariableSourceType(name);
+}
+
 void ListModelAssignedInterface::refresh()
 {
 	bool doRefresh = true;
