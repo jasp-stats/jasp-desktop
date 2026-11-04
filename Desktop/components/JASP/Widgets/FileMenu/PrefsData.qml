@@ -32,7 +32,7 @@ PrefsScrollView
 				label:                  qsTr("Use default as external spreadsheet editor.")
 				checked:                LINUX || preferencesModel.useDefaultEditor
 				onCheckedChanged:       preferencesModel.useDefaultEditor = checked
-				enabled:                !LINUX
+				enabled:                !LINUX && !preferencesModel.settingIsForced("useDefaultSpreadsheetEditor")
 				focus:					true
 				KeyNavigation.tab:      editCustomEditor
 			}
@@ -63,6 +63,7 @@ PrefsScrollView
 				RoundedButton
 				{
 					id:					browseEditorButton
+					enabled:			!preferencesModel.settingIsForced("spreadsheetEditorName")
 					text:				qsTr("Select custom editor")
 					onClicked:			preferencesModel.browseSpreadsheetEditor()
 					anchors.left:		parent.left
@@ -90,6 +91,7 @@ PrefsScrollView
 					TextInput
 					{
 						id:					customEditorText
+						enabled:			!preferencesModel.settingIsForced("spreadsheetEditorName")
 						text:				preferencesModel.customEditor
 						clip:				true
 						font:				jaspTheme.font
@@ -119,6 +121,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:						syncWhenDroppedDatafile
+			enabled:				!preferencesModel.settingIsForced("syncDroppedDatafile")
 			label:					qsTr("Synchronize when a new data file is dropped into JASP")
 			checked:				preferencesModel.syncDroppedDatafile
 			onCheckedChanged:       preferencesModel.syncDroppedDatafile = checked
@@ -135,6 +138,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					autoSave
+			enabled:			!preferencesModel.settingIsForced("autoSaveOn")
 			label:				qsTr("Automatically save a backup of your workspace")
 			checked:			preferencesModel.autoSaveAtAll
 			onCheckedChanged:	preferencesModel.autoSaveAtAll = checked
@@ -146,6 +150,7 @@ PrefsScrollView
 		SpinBox
 		{
 			id:					autoSaveInterval
+			enabled:			!preferencesModel.settingIsForced("autoSaveInterval")
 			text:				qsTr("Autosave interval in minutes")
 			value:				preferencesModel.autoSaveIntervalSec / 60
 			onValueChanged:		preferencesModel.autoSaveIntervalSec = (value  * 60)
@@ -167,6 +172,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					orderByDefault
+			enabled:			!preferencesModel.settingIsForced("orderByValueByDefault")
 			label:				qsTr("Order labels by value by default")
 			checked:			preferencesModel.orderByValueByDefault
 			onCheckedChanged:	preferencesModel.orderByValueByDefault = checked
@@ -179,6 +185,7 @@ PrefsScrollView
 		SpinBox
 		{
 			id:					thresholdScale
+			enabled:			!preferencesModel.settingIsForced("ThresholdScale")
 			text:				qsTr("Threshold for Scale")
 			value:				preferencesModel.thresholdScale
 			onValueChanged:		preferencesModel.thresholdScale = value
@@ -207,6 +214,7 @@ PrefsScrollView
 		SpinBox
 		{
 			id:					maxScaleLevels
+			enabled:			!preferencesModel.settingIsForced("maxScaleLevels")
 			text:				qsTr("Maximum allowed levels for scale when used as nominal/ordinal")
 			value:				preferencesModel.maxScaleLevels
 			onValueChanged:		preferencesModel.maxScaleLevels = value
@@ -245,6 +253,7 @@ PrefsScrollView
 			PrefsTextInput
 			{
 				id:					missingValueDataLabelInput
+				enabled:			!preferencesModel.settingIsForced("dataNALabel")
 
 				text:				preferencesModel.dataLabelNA
 				onEditingFinished:	preferencesModel.dataLabelNA = text
@@ -267,6 +276,7 @@ PrefsScrollView
 			{
 				id:							missingValuesList
 				model:						preferencesModel
+				valuesEditable:				!preferencesModel.settingIsForced("MissingValueList")
 				showResetWorkspaceButton:	true
 				resetButtonLabel:			qsTr("Reset with standard values")
 				resetButtonTooltip:			qsTr("Reset missing values with the standard JASP missing values")
@@ -284,6 +294,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					noBomNative
+			enabled:			!preferencesModel.settingIsForced("WindowsNoBomNative")
 			label:				qsTr("Assume CSV is the selected codepage, when no BOM is specified.")
 			checked:			preferencesModel.windowsNoBomNative
 			onCheckedChanged:	preferencesModel.windowsNoBomNative = checked

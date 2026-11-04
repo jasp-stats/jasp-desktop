@@ -103,6 +103,9 @@ void sendLogCfg();
 
 	bool			jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed() && !stopped(); }
 
+	///Did the engine process exit? Works without the eventloop, unlike QProcess::finished, but the caller has to handle the exit itself.
+	bool			jaspEngineExited();
+
 	void			processReplies();
 	void			restartAbortedAnalysis();
 	void			checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }

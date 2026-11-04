@@ -187,30 +187,76 @@ void RCommander::createAnalysesFromBatchJson(const QString & json)
 		return;
 	}
 
-	int added = 0;
+	//The R code can return anything, so every entry is checked on its own: an entry that cannot be made into
+	//an analysis is reported in the output and the other entries are still created. Nothing may throw out of
+	//here, an exception that reaches Application::notify ends in the fatal error dialog of the Desktop.
+	int added = 0, entryNo = 0;
 	for (const Json::Value & entry : root)
 	{
+		entryNo++;
+
+		QString name; //module::analysis, once known
+		auto couldNotCreate = [&](const QString & why)
+		{
+			appendToOutput(name.isEmpty()	? tr("Could not create analysis %1: %2").arg(entryNo).arg(why)
+											: tr("Could not create analysis %1 (%2): %3").arg(entryNo).arg(name).arg(why));
+		};
+
 		Json::Value analysisObj = entry;
 		if (analysisObj.isString())
 		{
 			Json::Value parsed;
-			if (!reader.parse(analysisObj.asString(), parsed) || !parsed.isObject())
+			if (!reader.parse(analysisObj.asString(), parsed))
+			{
+				couldNotCreate(tr("the entry is not valid JSON"));
 				continue;
+			}
 			analysisObj = parsed;
 		}
 
 		if (!analysisObj.isObject())
+		{
+			couldNotCreate(tr("the entry is not a JASP analysis"));
 			continue;
+		}
 
-		const QString module	= tq(analysisObj.get("module",	"").asString());
-		const QString analysis	= tq(analysisObj.get("analysis",	"").asString());
-		if (module.isEmpty() || analysis.isEmpty())
+		const Json::Value	moduleJson		= analysisObj.get("module",		Json::nullValue),
+							analysisJson	= analysisObj.get("analysis",	Json::nullValue);
+		if (!moduleJson.isString() || !analysisJson.isString() || moduleJson.asString().empty() || analysisJson.asString().empty())
+		{
+			couldNotCreate(tr("'module' and 'analysis' must be the names of a module and one of its analyses"));
 			continue;
+		}
 
-		Analysis * a = Analyses::analyses()->createAnalysis(module, analysis);
+		const QString module	= tq(moduleJson.asString());
+		const QString analysis	= tq(analysisJson.asString());
+		name = module + "::" + analysis;
+
+		//An empty R list is written as [], so that is accepted as "no options"
+		Json::Value options = analysisObj.get("options", Json::nullValue);
+		if (options.isNull() || (options.isArray() && options.empty()))
+			options = Json::Value(Json::objectValue);
+		else if (!options.isObject())
+		{
+			couldNotCreate(tr("'options' must be a named list"));
+			continue;
+		}
+
+		Analysis * a = nullptr;
+		try
+		{
+			a = Analyses::analyses()->createAnalysis(module, analysis);
+		}
+		catch (const std::exception & e)
+		{
+			//The module does not have this analysis: createAnalysis throws a ModuleException
+			couldNotCreate(tq(e.what()));
+			continue;
+		}
+
 		if (!a)
 		{
-			appendToOutput(tr("Analysis not found: %1::%2").arg(module).arg(analysis));
+			couldNotCreate(tr("module '%1' not found").arg(module));
 			continue;
 		}
 
@@ -218,7 +264,7 @@ void RCommander::createAnalysesFromBatchJson(const QString & json)
 			a->setTitle(analysisObj["title"].asString());
 
 		Json::Value formResult(Json::objectValue);
-		formResult["options"] = analysisObj.get("options", Json::Value(Json::objectValue));
+		formResult["options"] = options;
 		const QString resultStr = tq(Json::writeString(Json::StreamWriterBuilder(), formResult));
 
 		applyBatchEntryToAnalysis(a, resultStr);

@@ -333,13 +333,15 @@ protected:
 	bool					eventFilter(QObject *watched, QEvent *event)		override;
 	bool					checkOptionName(const QString& name);
 	void					_addExplicitDependency(const QVariant& depends);
+	void					_insertDependency(JASPControl* item);
 	bool					dependingControlsAreInitialized();
 	virtual void			_setInitialized(const Json::Value &value);
 	virtual QString			printLabelMD(int depth)												const;
 	virtual JASPControls	getMDSubItems(const QQuickItem* parentItem = nullptr)	const;
 
 protected:
-	Set						_depends;
+	Set						_depends;		// The controls this one depends on. Raw pointers: kept in sync with _dependents, so that a destroyed control removes itself from here.
+	Set						_dependents;	// The controls that have this one in their _depends.
 	ControlType				_controlType;
 	AnalysisForm*			_form						= nullptr;
 	QString					_name,
