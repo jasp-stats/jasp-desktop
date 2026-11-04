@@ -12,3 +12,6 @@
 [submodule "Tests/gatetest/jasp-mcp"]
 	path = Tests/gatetest/jasp-mcp
 	url = https://github.com/jasp-stats/jasp-mcp
+[submodule "Libraries/MTW-FFI"]
+	path = Libraries/MTW-FFI
+	url = https://github.com/jasp-stats/MTW-FFI.git

@@ -15,3 +15,11 @@
 *.png binary
 *.jpg binary
 *.jpeg binary
+
+# Minitab worksheet/project/portable files (test fixtures) are binary.
+*.mtw binary
+*.MTW binary
+*.mpj binary
+*.MPJ binary
+*.mtp binary
+*.MTP binary

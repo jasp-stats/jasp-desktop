@@ -30,7 +30,7 @@ The JASP file you currently have open. Open (or save) the file whose analyses yo
 
 ## Data files to run it against
 
-Use *Add files...* to add data files, several at once if you like, and *Add folder...* to add all data files in a folder. A folder is searched recursively, so the data files in its subfolders are added as well. Anything JASP can import counts as a data file: `.csv`, `.txt`, `.tsv`, `.sav`, `.zsav`, `.por`, `.xpt`, `.ods`, `.xls`, `.xlsx`, `.dta`, `.sas7bdat`, `.sas7bcat`, `.rdata`, `.rds`, `.mwx` and `.mpx`.
+Use *Add files...* to add data files, several at once if you like, and *Add folder...* to add all data files in a folder. A folder is searched recursively, so the data files in its subfolders are added as well. Anything JASP can import counts as a data file: `.csv`, `.txt`, `.tsv`, `.sav`, `.zsav`, `.por`, `.xpt`, `.ods`, `.xls`, `.xlsx`, `.dta`, `.sas7bdat`, `.sas7bcat`, `.rdata`, `.rds`, `.mwx`, `.mpx`, `.mtw`, `.mpj` and `.mtp`.
 
 `.jasp`, `.html` and `.pdf` files are not data files, so a folder is allowed to also hold the results of an earlier run.
 
