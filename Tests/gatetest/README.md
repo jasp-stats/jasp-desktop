@@ -211,17 +211,22 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
   (analysis_remove while a run is in flight + fresh analysis_create re-binding),
   the desktop dies in `QV4::MarkStack::drain` (QtQml GC marking) with a stale JS
   reference to freed heap. Root cause (Linux/Qt 6.12.0, 2026-11-04): Qt's
-  `QV4::IdentifierHash::addEntry` stores identifiers into the `entries` root array
-  **without a write barrier**; an identifier interned while a GC cycle is marking
-  stays white (Qt allocates white during a cycle), gets swept, and the never-pruned
-  `IdentifierHashData::entries` keeps the dangling pointer — the next cycle's
-  `IdentifierTable::markObjects` pushes it and `MarkStack::drain` segfaults on the
-  zeroed header. Proven with an instrumented qtdeclarative build (push-site
-  backtrace named `IdentifierTable::markObjects`) and Qt's own cross-validator
-  (`Cross Validation Error ... With type "String"` every run before the fix, zero
-  after). Fix = one write barrier in `addEntry`
-  (`Docs/development/qt612-identifierhash-writebarrier.patch`): repro seed clean
-  4/4, cross-validation errors 4→0, 5-module sweep clean, JASPQuickTest unchanged.
+  `IdentifierHashData::entries` is a GC root (marked every cycle, never pruned),
+  and re-interning an *existing* identifier into a new hash —
+  `IdentifierHash::add` → `asPropertyKey(QString)` → `resolveStringEntry()` —
+  stores that key **without a write barrier** (the barrier lives only in
+  `PropertyKey::fromStringOrSymbol`, i.e. on the create path). When the previous
+  holder hash was destroyed earlier in the same cycle, the string is white at
+  sweep time: it is freed while the new hash's root array keeps the dangling
+  pointer, and the next cycle's marking crashes. Proven with an instrumented
+  qtdeclarative build (sweep-time `[DANGLING-ROOT]` detector + intern-origin
+  backtraces naming `QQmlContext::setContextProperty`) and Qt's own
+  cross-validator (`Cross Validation Error ... With type "String"` every run
+  before the fix, zero after). Fix = one write barrier in `IdentifierHash::addEntry`
+  (`Docs/development/qt612-identifierhash-writebarrier.patch`): JASP repro seed
+  clean 4/4, cross-validation errors 4→0, 5-module sweep clean, JASPQuickTest
+  unchanged; **standalone reproducer (no JASP): `Docs/development/qt612-gc-repro/`,
+  SIGSEGV 3/3 on stock Qt 6.12.0, clean 4/4 with the fix**.
   Until Qt ships this, `QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1` (0/3, doubles mark
   cost) and `QV4_GC_TIMELIMIT=0` (0/8, timing-dependent) are empirical stop-gaps.
   Full write-up: `Docs/development/qv4-gc-crash.md`.

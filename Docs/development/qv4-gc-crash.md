@@ -134,28 +134,43 @@ The crash is a **missing write barrier in Qt's `QV4::IdentifierHash::addEntry`**
 (`src/qml/jsruntime/qv4identifierhash.cpp`). JASP-side suspects below were
 formally exonerated.
 
-## The mechanism, end to end (proven)
+## The mechanism, end to end (proven — corrected after deeper instrumentation)
 
 1. `IdentifierHashData` is a **GC root**: `IdentifierTable::markObjects` marks the
    identifiers stored in every registered hash's `entries` array *every* cycle,
    and the entries are **never pruned** (`IdentifierHashData` has no sweep).
-2. `IdentifierHash::addEntry` stores a `PropertyKey` (carrying a
-   `Heap::StringOrSymbol*`) into that malloc'd `entries` array **without a write
-   barrier** — unlike `IdentifierTable::asPropertyKeyImpl`, which does barrier
-   its store via `WriteBarrier::markCustom`.
-3. Qt's incremental GC allocates **white** during an ongoing cycle
-   (`src/qml/memory/design.md`: "While a gc cycle is ongoing, allocations are
-   white"); survival depends on write barriers and the pre-sweep JS-stack rescan.
-   An identifier interned *while a cycle is marking* (e.g. during QML form
-   compilation / context creation — JASP's analysis churn does this constantly)
-   is therefore never marked, is not on the JS stack, and is not reachable from
-   any marked object.
-4. The sweep frees that string. `IdentifierTable::sweep()` prunes only the
-   *table's* arrays — **`IdentifierHashData::entries` is not swept** — so the
-   root array now permanently holds a dangling pointer.
+2. Every key stored into that root array must therefore be marked if a GC cycle
+   is ongoing. The **first** intern of a name is safe:
+   `resolveStringEntry()` creates the string and the table's `addEntry()` assigns
+   `str->identifier = PropertyKey::fromStringOrSymbol(...)`, and
+   `fromStringOrSymbol` carries an insertion barrier (`WriteBarrier::markCustom`)
+   that marks the string black immediately.
+3. **The hole is the re-intern**: storing an *existing* identifier into another
+   hash. `IdentifierHash::add(QString)` →
+   `asPropertyKey(QString, ForceConversionToId)` → `resolveStringEntry()` finds
+   the existing table entry and returns its identifier **without any barrier**
+   (the barrier lives only in `fromStringOrSymbol`, i.e. on the create path),
+   and `IdentifierHash::addEntry` stores that key into the new hash's root
+   `entries` array unmarked.
+4. When, in the *same* GC cycle, the previous holder hash is destroyed before
+   `MarkGlobalObject` and the re-intern lands after it (but before `DoSweep`),
+   the string is white at sweep time: the allocator sweep frees it and the
+   table's `sweep()` prunes it from the (non-root) table arrays, while the new
+   hash's never-pruned root array keeps the dangling pointer.
 5. The next GC cycle: `IdentifierTable::markObjects` → `IdentifierHashData::markObjects`
    pushes the dangling identifier → `MarkStack::drain` pops it → header reads
    NULL → `mov 0x10(%rax),%rax` with rax=0 → **SIGSEGV**.
+
+   (JASP's analysis churn does exactly step 4 constantly: the fuzzer destroys
+   analysis contexts while `analysis_create` re-interns the same context-property
+   names into fresh contexts.)
+
+An instrumented build that logs every store of an unmarked string into a root
+hash (`[HASH-STORE-UNMARKED]`) plus a sweep-time detector that checks whether a
+dropped table entry is still referenced by a registered hash
+(`[DANGLING-ROOT]`) confirmed this end to end: in the standalone repro every
+mid-cycle unmarked store became a dangling root one sweep later; in JASP the
+same detector fires 8× per repro run before the crash.
 
 ## How it was proven (instrumented Qt build)
 
@@ -215,6 +230,23 @@ This supersedes the earlier macOS-era theory ("wrapper already marked, QObject
 destroyed between slices"): the actual defect is the identifier-hash write
 barrier, which is timing- and platform-independent and explains the SEGV/SIGBUS
 variants alike.
+
+## Standalone reproducer (no JASP)
+
+`Docs/development/qt612-gc-repro/` contains a ~100-line public-API reproducer
+(QQmlEngine + `setContextProperty` churn, see its README) that crashes stock
+Qt 6.12.0 deterministically:
+
+| libQt6Qml | result |
+|---|---|
+| stock 6.12.0 | SIGSEGV 3/3 runs, ~1 s, backtrace: `Heap::Base::mark` ← `IdentifierHashData::markObjects` ← `markGlobalObject` ← `allocString` |
+| 6.12.0 + one-barrier fix | clean 4/4 runs |
+
+It sets `QV4_GC_TIMELIMIT=1` internally to widen the incremental-GC window
+(with the default ~5 ms slice budget a toy-size heap completes whole cycles
+atomically and the mutator never runs mid-cycle); the production crash needs no
+env vars because real QML churn dwarfs the toy loop. This reproducer is the
+artifact to attach to the Qt bug report.
 
 ## Forensics (assembly level, from a coredump)
 
