@@ -127,12 +127,94 @@ loops (`jaspLearnBayes` with extreme `pointsToWin`), and a dispatcher hang with
 
 ---
 
-# Follow-up (2026-11-04): Linux / Qt 6.12.0 — root cause pinned, exonerations recorded
+# Follow-up (2026-11-04): Linux / Qt 6.12.0 — root cause found and fixed locally
 
-Reproduced and root-caused on Linux (Arch, `libQt6Qml.so.6.12.0`, gdb available).
-The crash is now pinned to **Qt's incremental GC wrongly freeing live objects**,
-with Qt's own cross-validator as the witness. JASP-side suspects below were
+Reproduced, root-caused **and fixed** on Linux (Arch, `libQt6Qml.so.6.12.0`, gdb).
+The crash is a **missing write barrier in Qt's `QV4::IdentifierHash::addEntry`**
+(`src/qml/jsruntime/qv4identifierhash.cpp`). JASP-side suspects below were
 formally exonerated.
+
+## The mechanism, end to end (proven)
+
+1. `IdentifierHashData` is a **GC root**: `IdentifierTable::markObjects` marks the
+   identifiers stored in every registered hash's `entries` array *every* cycle,
+   and the entries are **never pruned** (`IdentifierHashData` has no sweep).
+2. `IdentifierHash::addEntry` stores a `PropertyKey` (carrying a
+   `Heap::StringOrSymbol*`) into that malloc'd `entries` array **without a write
+   barrier** — unlike `IdentifierTable::asPropertyKeyImpl`, which does barrier
+   its store via `WriteBarrier::markCustom`.
+3. Qt's incremental GC allocates **white** during an ongoing cycle
+   (`src/qml/memory/design.md`: "While a gc cycle is ongoing, allocations are
+   white"); survival depends on write barriers and the pre-sweep JS-stack rescan.
+   An identifier interned *while a cycle is marking* (e.g. during QML form
+   compilation / context creation — JASP's analysis churn does this constantly)
+   is therefore never marked, is not on the JS stack, and is not reachable from
+   any marked object.
+4. The sweep frees that string. `IdentifierTable::sweep()` prunes only the
+   *table's* arrays — **`IdentifierHashData::entries` is not swept** — so the
+   root array now permanently holds a dangling pointer.
+5. The next GC cycle: `IdentifierTable::markObjects` → `IdentifierHashData::markObjects`
+   pushes the dangling identifier → `MarkStack::drain` pops it → header reads
+   NULL → `mov 0x10(%rax),%rax` with rax=0 → **SIGSEGV**.
+
+## How it was proven (instrumented Qt build)
+
+Built `qtdeclarative` v6.12.0 (RelWithDebInfo, system-Qt ABI swap via
+`LD_LIBRARY_PATH`) with temporary instrumentation in `MarkStack::push` and both
+`drain()` overloads: print a backtrace whenever a pushed/popped entry reads
+`internalClass == NULL` (freed-and-zeroed header). First repro run:
+
+```
+[STALE-PUSH] h=0x7ff4885d3c60 internalClass=NULL
+  QV4::IdentifierTable::markObjects(MarkStack*)      ← the pusher
+  QV4::ExecutionEngine::markObjects(MarkStack*)
+  GCStateMachine::transition()                        (markGlobalObject state)
+  QV4::MemoryManager::allocString(unsigned long)      ← GC triggered by allocation
+  QV4::ExecutionEngine::fromData(QMetaType, ...)      (QVariant→JS string)
+  QV4::Function::call / QQmlJavaScriptExpression::evaluate
+  QQmlBoundSignalExpression::evaluate                 ← JASP signal → QML handler
+[STALE-POP] h=0x7ff4885d3c60 (same entry, later in drain(deadline))
+```
+
+The cross-validator confirmed the identity of the missed objects: before the
+fix, *every* run reported `Cross Validation Error ... With type "String"`
+(4 per run); the missed Strings were exactly the identifier-hash entries.
+
+## The fix (Qt-side, minimal)
+
+Mirror the barrier that `asPropertyKeyImpl` already uses, in
+`src/qml/jsruntime/qv4identifierhash.cpp` `addEntry`:
+
+```cpp
+d->entries[idx].identifier = identifier;
+// Write barrier: entries[] is a root array - IdentifierHashData::markObjects marks
+// the stored identifiers every cycle and they are never pruned. An identifier stored
+// while a gc cycle is ongoing (allocations are white then, see memory/design.md)
+// would otherwise stay unmarked, get swept, and leave a dangling pointer in entries[]
+// that crashes the next cycle's marking (MarkStack::drain, NULL internalClass).
+if (Heap::StringOrSymbol *storedId = identifier.asStringOrSymbol())
+    WriteBarrier::markCustom(d->identifierTable->engine, [storedId](QV4::MarkStack *ms) {
+        storedId->mark(ms);
+    });
+```
+
+(plus `#include <private/qv4writebarrier_p.h>` and
+`#include <private/qv4mm_p.h>`; the patch is kept at
+`Docs/development/qt612-identifierhash-writebarrier.patch`.)
+
+## Verification
+
+| Run (default GC, deterministic seed 101010148 repro) | Result |
+|---|---|
+| instrumented Qt, **before** fix | crash within 1 run + `[STALE-PUSH]` naming `IdentifierTable::markObjects` |
+| instrumented Qt, **after** fix, 4× | exit 0, 0 stale hits |
+| after fix + `QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1` | **0 cross-validation errors** (was 4 per run) |
+
+A broader 5-module fuzzer sweep with the patched lib ran as a regression check.
+This supersedes the earlier macOS-era theory ("wrapper already marked, QObject
+destroyed between slices"): the actual defect is the identifier-hash write
+barrier, which is timing- and platform-independent and explains the SEGV/SIGBUS
+variants alike.
 
 ## Forensics (assembly level, from a coredump)
 

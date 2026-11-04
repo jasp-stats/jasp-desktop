@@ -207,20 +207,23 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
   fuzzSmoke run produced no repro files.) The QML validators clamp user
   input; the RPC path bypasses them, so a range clamp at the option layer is
   the likely fix.
-- **SIGSEGV in the QML JS GC (flaky, root-caused, unfixed upstream)** — under heavy churn
+- **SIGSEGV in the QML JS GC (flaky, root-caused AND fixed locally, pending Qt)** — under heavy churn
   (analysis_remove while a run is in flight + fresh analysis_create re-binding),
-  the desktop dies in `QV4::markDrain`/`MarkStack::drain` (QtQml GC marking) with
-  a stale JS reference to freed heap. Root-caused on Linux/Qt 6.12.0 (2026-11-04):
-  Qt's incremental GC misses live `String` objects (`QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1`
-  reports `Cross Validation Error ... With type "String"` every repro run), the sweep
-  frees them, and a later mark walks the dangling reference into zeroed memory
-  (`mov 0x10(%rax),%rax`, rax=0). JASP-side suspects (ControlErrorMessage ad-hoc
-  items, combo dict-repr junk, sweep accumulation) were formally exonerated with
-  controlled experiments; the fuzzer's create-failure path now classifies an
-  eventual process death as a crash instead of a bland "systemic create regression".
-  Empirical stop-gaps: `QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1` (0/3, doubles mark
-  cost) and `QV4_GC_TIMELIMIT=0` (0/8, timing-dependent). Not a gate-harness
-  artifact; predates the #6313 branch; needs a Qt-level fix.
+  the desktop dies in `QV4::MarkStack::drain` (QtQml GC marking) with a stale JS
+  reference to freed heap. Root cause (Linux/Qt 6.12.0, 2026-11-04): Qt's
+  `QV4::IdentifierHash::addEntry` stores identifiers into the `entries` root array
+  **without a write barrier**; an identifier interned while a GC cycle is marking
+  stays white (Qt allocates white during a cycle), gets swept, and the never-pruned
+  `IdentifierHashData::entries` keeps the dangling pointer — the next cycle's
+  `IdentifierTable::markObjects` pushes it and `MarkStack::drain` segfaults on the
+  zeroed header. Proven with an instrumented qtdeclarative build (push-site
+  backtrace named `IdentifierTable::markObjects`) and Qt's own cross-validator
+  (`Cross Validation Error ... With type "String"` every run before the fix, zero
+  after). Fix = one write barrier in `addEntry`
+  (`Docs/development/qt612-identifierhash-writebarrier.patch`): repro seed clean
+  4/4, cross-validation errors 4→0, 5-module sweep clean, JASPQuickTest unchanged.
+  Until Qt ships this, `QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1` (0/3, doubles mark
+  cost) and `QV4_GC_TIMELIMIT=0` (0/8, timing-dependent) are empirical stop-gaps.
   Full write-up: `Docs/development/qv4-gc-crash.md`.
 
   Full-sweep data point (2026-09-10, commit `309fe5227`, seed 77,
