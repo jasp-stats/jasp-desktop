@@ -100,6 +100,16 @@ Item
 					"A term moved from the factors keeps its nominal type instead of going back to its ordinal column type")
 		}
 
+		// The available list fed by the factors (like Components in ANOVA's Model section) shows the type the factors gave the variable
+		function test_sourceFedAvailableListKeepsTheTypeOfTheFactors()
+		{
+			termTypesForm.setOptions({ factorsT: { value: ["TestInts"], types: ["nominal"] }, modelTermsT: [] })
+			tryCompare(availableTermsT, "count", 1, 1000, "The available terms come from the factors")
+
+			compare(availableTermsT.getVariableRealType("TestInts"), 2, "TestInts is ordinal in the dataset")
+			compare(availableTermsT.getVariableType("TestInts"), 3, "The available terms keep the nominal type of the factors, not the ordinal column type")
+		}
+
 		// A list fed by the dataset still takes the column type of an untyped variable
 		function test_listFedByTheDataSetUsesTheColumnType()
 		{

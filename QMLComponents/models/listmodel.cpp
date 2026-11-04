@@ -481,6 +481,24 @@ columnType ListModel::getVariableRealType(const QString& name) const
 	return (columnType)requestInfo(varInfoType::VariableType, name).toInt();
 }
 
+columnType ListModel::getVariableSourceType(const QString& name) const
+{
+	// A variable that comes from another list keeps the type it has there: that list may have changed it
+	// (e.g. a list allowing only nominal turns an ordinal column into a nominal one).
+	for (SourceItem* sourceItem : _listView->sourceItems())
+	{
+		const ListModel* sourceModel = sourceItem->isAnalysisDataSet() ? nullptr : sourceItem->sourceListModel();
+		if (!sourceModel)
+			continue;
+
+		int index = sourceModel->terms().indexOfValue(name);
+		if (index >= 0 && sourceModel->terms().at(index).type() != columnType::unknown)
+			return sourceModel->terms().at(index).type();
+	}
+
+	return getVariableRealType(name);
+}
+
 QString ListModel::getVariablePreview(const QString& name) const
 {
 	columnType	chosenType	= getVariableType(name),
