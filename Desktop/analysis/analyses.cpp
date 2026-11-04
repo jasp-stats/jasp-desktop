@@ -1551,7 +1551,7 @@ void Analyses::registerRpcHandlers()
 		std::string errorMsg;
 		std::string rawOptions = Json::writeString(Json::StreamWriterBuilder(), params["options"]);
 
-		form->parseOptions(rawOptions, parsedOptions, errorMsg);
+		form->parseOptions(rawOptions, parsedOptions, errorMsg, true); // an RPC update may name only the options it changes
 
 		QString formErrors = form->errors();
 		if (!formErrors.isEmpty())
