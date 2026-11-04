@@ -106,6 +106,8 @@ protected slots:
 
 protected:
 	bool _checkLevelsConstraints()			override;
+	static std::string	_scalarAsString(const Json::Value& value);
+	Json::Value			_jsonOfIndex(int index)						const;
 
 
 	ListModelTermsAvailable*	_model					= nullptr;

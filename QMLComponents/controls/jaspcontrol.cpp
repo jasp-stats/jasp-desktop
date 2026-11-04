@@ -165,7 +165,10 @@ void JASPControl::_resetBindingValue()
 	// If a control gets a value from a JASP file, this value may differ from its default value sets by a QML binding:
 	// this QML binding may then change the value during the initialization of the form.
 	// In this case, restore the original value.
-	if (isBound() && hasUserInteractiveValue() && initializedWithValue() && form() && !form()->initialized())
+	// This holds as well when the options of an already initialized form are bound again: the syntax bridge parses
+	// every R syntax call (and jaspTools every test) with a cached form, `checked: secondaryFactor.count === 0` must
+	// not override the `colorAnyway = FALSE` it was given.
+	if (isBound() && hasUserInteractiveValue() && initializedWithValue() && form() && form()->bindingOptions())
 		boundControl()->resetBoundValue();
 }
 
@@ -951,6 +954,10 @@ void JASPControl::cleanUp()
 
 void JASPControl::_setInitialized(const Json::Value &value)
 {
+	// Until this control is bound, it is not initialized with the value of this bind: a value change during its own
+	// bindTo must not be 'restored' by _resetBindingValue to the value of a previous bind of the same form.
+	_initializedWithValue = false;
+
 	BoundControl* bControl = boundControl();
 	if (bControl)
 	{
