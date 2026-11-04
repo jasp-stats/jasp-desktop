@@ -104,7 +104,7 @@ Common → CommonData → QMLComponents → JASPEngine / JASPDesktopLib → JASP
 ## Gate test / fuzzer (`Tests/gatetest/`)
 
 - `run_gatetest.sh` → gate test (every analysis, default options, via jasp-mcp MCP layer).
-- `fuzztest.py` → schema-guided option fuzzer (optionMeta kinds: checkbox/combo/variables/number/integer/percent/string/array).
+- `fuzztest.py` → schema-guided option fuzzer (optionMeta kinds: checkbox/combo/variables/number/integer/percent/string/array/table/factors/levels; chunks option names across runs so every field is mutated at least once, reports per-option coverage + "blind" options without meta, `--expected-modules` guards against silently unloaded modules).
 - `gatecommon.py` → shared RPC harness (MCP-first with direct-JSON-RPC fallback), JASP process handling.
 - JASP headless requires `-platform offscreen` (`-platform minimal`, used by `--hide`, crashes QtWebEngine's scene graph during blocking RPC waits). `--rpcPort=<n>` enables the RPC server at startup as a session-only runtime override (unlike `--safeGraphics` it is NOT persisted; see `PreferencesModel::setRuntimeRpcPort`).
 - The fuzz/gate harness tolerates `validationError`/`rejected`/`fatalError` outcomes; crash/hang/wedge abort the run with a `.repro.json` (multiple repros get `-2`, `-3` suffixes). `-32603` internal errors and unexpected statuses are only counted as *suspicious* — they fail the run solely with `--strict`.

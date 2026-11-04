@@ -118,8 +118,18 @@ to a skip file, with an issue reference in a comment.
 Schema-guided fuzzing of analysis options through the same agent API. For every
 analysis it generates mutations of the default options based on the
 machine-readable `optionMeta` schema (kinds: checkbox / combo / variables /
-number / integer / percent / string / array, including deliberately invalid
-values), runs them via `analysis_run` and classifies the outcome.
+number / integer / percent / string / array / table / factors / levels,
+including deliberately invalid values), runs them via `analysis_run` and
+classifies the outcome.
+
+Option names are split into disjoint chunks, one chunk per run, so a full
+sweep mutates every option name of every analysis at least once (an unknown
+top-level `__fuzz_unknown_option__` key is occasionally added on top). The
+report carries a per-analysis `option_coverage` section: which option names
+were mutated, which were never reached, and which are "blind" (present in the
+defaults but without an `optionMeta` kind, so they can only receive
+type-mismatched junk). `--expected-modules` / `--expected-modules-file` fail
+the run when a module is missing from `modules_list` (i.e. it did not load).
 
 ```bash
 # everything, ~8 mutations per analysis (30-60 min)
