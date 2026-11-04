@@ -207,16 +207,20 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
   fuzzSmoke run produced no repro files.) The QML validators clamp user
   input; the RPC path bypasses them, so a range clamp at the option layer is
   the likely fix.
-- **SIGSEGV in the QML JS GC (flaky, unfixed)** — under heavy churn
+- **SIGSEGV in the QML JS GC (flaky, root-caused, unfixed upstream)** — under heavy churn
   (analysis_remove while a run is in flight + fresh analysis_create re-binding),
-  the desktop dies in `QV4::markDrain` (QtQml incremental GC marking) with
-  EXC_BAD_ACCESS on a mangled/PAC-style address: a stale JS reference to a
-  freed C++-backed QML object. This is the same finding that ended the first
-  full sweep at 158/271 as a mystery "exit code 0"; subsequent runs also died
-  with SIGBUS (-10) or SIGSEGV (-11). Not a gate-harness artifact: reproduced
-  under lldb launch-supervision with the stack captured, and predates the
-  #6313 branch. Qt/QML ownership territory (JS heap vs AnalysisForm/destroyForm
-  timing during remove-while-in-flight); needs a Qt-level or ownership fix.
+  the desktop dies in `QV4::markDrain`/`MarkStack::drain` (QtQml GC marking) with
+  a stale JS reference to freed heap. Root-caused on Linux/Qt 6.12.0 (2026-11-04):
+  Qt's incremental GC misses live `String` objects (`QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1`
+  reports `Cross Validation Error ... With type "String"` every repro run), the sweep
+  frees them, and a later mark walks the dangling reference into zeroed memory
+  (`mov 0x10(%rax),%rax`, rax=0). JASP-side suspects (ControlErrorMessage ad-hoc
+  items, combo dict-repr junk, sweep accumulation) were formally exonerated with
+  controlled experiments; the fuzzer's create-failure path now classifies an
+  eventual process death as a crash instead of a bland "systemic create regression".
+  Empirical stop-gaps: `QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1` (0/3, doubles mark
+  cost) and `QV4_GC_TIMELIMIT=0` (0/8, timing-dependent). Not a gate-harness
+  artifact; predates the #6313 branch; needs a Qt-level fix.
   Full write-up: `Docs/development/qv4-gc-crash.md`.
 
   Full-sweep data point (2026-09-10, commit `309fe5227`, seed 77,

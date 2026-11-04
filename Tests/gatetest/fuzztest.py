@@ -164,7 +164,13 @@ def _value_for_kind(rng: random.Random, meta: dict, by_type: dict[str, list[str]
     if kind == "combo":
         # sorted(): the order of JASP's choices array varies between process starts,
         # which would make the RNG stream irreproducible for the same seed.
-        choices = sorted(str(c) for c in (meta.get("choices") or []))
+        # Choices entries may be {"label": ..., "value": ...} dicts - send the canonical
+        # value string, not the dict repr (a dict repr is just another invalid string
+        # and starves the valid-value path of coverage).
+        choices = sorted(
+            (str(c.get("value", c.get("label", ""))) if isinstance(c, dict) else str(c))
+            for c in (meta.get("choices") or [])
+        )
         if choices and rng.random() < valid_probability:
             return rng.choice(choices)
         return rng.choice(["__fuzz_nonexistent__", "", UNICODE_CRUD, None, 0, True])
@@ -675,7 +681,10 @@ def main() -> int:
         prev_mod: str | None = None
         prev_ana: str | None = None
         prev_mutation: dict | None = None
+        sweep_stop = False  # a failed restart inside the runs loop aborts the whole sweep
         for module, analysis in pairs:
+            if sweep_stop:
+                break
             analyses_done += 1
             if jasp_proc.poll() is not None:
                 if watchdog_flag["killed"]:
@@ -713,6 +722,26 @@ def main() -> int:
                     bump("create-failed")
                     continue
             except GateFailure as e:
+                if jasp_proc.poll() is not None:
+                    # Transport failure + dead process: the death is the finding, the failed
+                    # create is just where it surfaced (same class as the boundary check
+                    # above; the previous mutation batch or its removal is the likely trigger).
+                    if prev_mod:
+                        culprit_mod, culprit_ana = prev_mod, prev_ana
+                        detail = (f"JASP process exited (code {jasp_proc.returncode}) during "
+                                  f"{module}/{analysis} create; death most likely happened during "
+                                  f"{culprit_mod}/{culprit_ana} (mutation or its removal)")
+                    else:
+                        culprit_mod, culprit_ana = module, analysis
+                        detail = f"JASP process exited (code {jasp_proc.returncode}) during {module}/{analysis} create"
+                    crashes.append({"type": "crash", "module": culprit_mod, "analysis": culprit_ana,
+                                    "options": prev_mutation, "detail": detail})
+                    log(f"FATAL: {detail}")
+                    if prev_mutation is not None and cfg.report:
+                        write_repro(cfg.report + ".repro.json", seed, culprit_mod, culprit_ana, cfg.csv, prev_mutation, detail)
+                    if not restart_after_death(f"{module}/{analysis} create"):
+                        break
+                    continue
                 records.append({"module": module, "analysis": analysis, "outcome": "create-failed", "detail": str(e)})
                 bump("create-failed")
                 analysis_id = None
@@ -759,6 +788,22 @@ def main() -> int:
                         if fresh_id is None:
                             raise GateFailure("analysis_create returned no analysisId")
                     except GateFailure as e:
+                        if jasp_proc.poll() is not None:
+                            # Transport failure + dead process: a crash, not a bland
+                            # create failure - the current mutation batch is the likely
+                            # trigger and gets the repro.
+                            detail = (f"JASP process exited (code {jasp_proc.returncode}) during "
+                                      f"{module}/{analysis} run {i + 1} create; the failed create is "
+                                      f"where the death surfaced, this mutation batch is the likely trigger")
+                            crashes.append({"type": "crash", "module": module, "analysis": analysis,
+                                            "options": options, "detail": detail})
+                            log(f"FATAL: {detail}")
+                            if cfg.report:
+                                write_repro(cfg.report + ".repro.json", seed, module, analysis, cfg.csv, options, detail)
+                            if not restart_after_death(f"{module}/{analysis} run {i + 1} create"):
+                                sweep_stop = True
+                                break
+                            continue
                         rec = {"module": module, "analysis": analysis, "run": i + 1,
                                "options": options, "outcome": "create-failed", "message": str(e)}
                         records.append(rec)
