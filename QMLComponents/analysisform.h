@@ -191,6 +191,9 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	Q_INVOKABLE QVariant    getConstant(QString key, QVariant defaultValue) const;
 	Q_INVOKABLE QVariant    getConstant(QString key, QVariant defaultValue, QString module, QString analysis) const;
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
+	/// True while bindTo writes options into the controls: the first set up of the form, a reopened JASP file,
+	/// or a later rebind of an initialized form (R syntax through the syntax bridge, setOptions).
+	bool					bindingOptions()		const	{ return !_initialized || _bindingOptions; }
 	Q_INVOKABLE QVariant	options()				const;
 	Q_INVOKABLE void		setOptions(const QVariantMap& options);
 	//Q_INVOKABLE for the wrapper-generation qml test; Form.qml uses the
@@ -354,6 +357,7 @@ private:
 													_formCompleted					= false,
 													_hasVolatileNotes				= false,
 													_initialized					= false,
+													_bindingOptions					= false,
 													_valueChangedEmittedButBlocked	= false;
 	QString											_info,
 													_infoBottom;
