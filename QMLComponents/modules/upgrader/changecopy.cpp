@@ -21,11 +21,12 @@ void ChangeCopy::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool in
 		throw upgradeError("Could not copy option '" + oldName + "' to '" + newName + "' because options does not contain '" + oldName + "'", true);
 
 	options[newName]	= options[oldName];
-	msgs[newName]		= msgs[oldName];
+	if(!inMeta) //the msgs are about the options, applying this to .meta as well must not touch them again
+		msgs[newName]	= msgs[oldName];
 
 	msgs[logId].push_back(prefixLog + "Copied option '" + oldName + "' to '" + newName + "'");
 
-	if(msg() != "")
+	if(!inMeta && msg() != "")
 		msgs[newName].push_back(fq(msg()));
 }
 

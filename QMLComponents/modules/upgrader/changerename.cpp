@@ -24,12 +24,15 @@ void ChangeRename::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool 
 	options[newName] = options[oldName];
 	options.removeMember(oldName);
 
-	msgs[newName] = msgs[oldName];
-	msgs.erase(oldName);
+	if(!inMeta) //the msgs are about the options, applying this to .meta as well must not touch them again
+	{
+		msgs[newName] = msgs[oldName];
+		msgs.erase(oldName);
+	}
 
 	msgs[logId].push_back(prefixLog + "Renamed option '" + oldName + "' to '" + newName + "'");
 
-	if(msg() != "")
+	if(!inMeta && msg() != "")
 		msgs[newName].push_back(fq(msg()));
 }
 
