@@ -434,6 +434,11 @@ void STDCALL syntaxBridgeShutdown()
 
 int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
 {
+	return syntaxBridgeLoadDataSetWithLevels(syntaxBridgeDataSet, nullptr, dbInMemory, threshold, orderLabelsByValue);
+}
+
+int STDCALL syntaxBridgeLoadDataSetWithLevels(const SyntaxBridgeDataSet* syntaxBridgeDataSet, const SyntaxBridgeColumnLevels* columnLevels, bool dbInMemory, int threshold, bool orderLabelsByValue)
+{
 	if (!init(dbInMemory))
 	{
 		Log::log() << "Error during initialization" << std::endl;
@@ -458,7 +463,8 @@ int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataS
 		                 : resetDataProvider(dbInMemory, true);
 	}
 
-	std::map<std::string, stringvec > dataSet;
+	std::map<std::string, stringvec >	dataSet,
+										levels;
 
 	for (int colNr = 0; colNr < syntaxBridgeDataSet->columnCount; colNr++)
 	{
@@ -467,12 +473,21 @@ int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataS
 		for (int rowNr = 0; rowNr < syntaxBridgeDataSet->rowCount; rowNr++)
 			values.push_back(column.values[rowNr]);
 		dataSet[column.name] = values;
+
+		if (columnLevels && columnLevels[colNr].levelCount > 0 && columnLevels[colNr].levels)
+		{
+			stringvec & columnLevelValues = levels[column.name];
+			for (int levelNr = 0; levelNr < columnLevels[colNr].levelCount; levelNr++)
+				if (columnLevels[colNr].levels[levelNr])
+					columnLevelValues.push_back(columnLevels[colNr].levels[levelNr]);
+		}
 	}
 
 	//A named dataset goes into the workspace as its own DataSet (with id + encoder prefix, titled);
 	//an unnamed one keeps the legacy behaviour of filling the shown dataset.
 	provider->loadDataSet(dataSet, threshold, orderLabelsByValue,
-	                      syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name ? tq(syntaxBridgeDataSet->name) : QString());
+	                      syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name ? tq(syntaxBridgeDataSet->name) : QString(),
+	                      levels);
 
 	//Either way the just-loaded dataset is the shown one: hand its REAL database id back so
 	//callers (jaspSyntax, jaspTools) can refer to it by the invariant instead of the title.

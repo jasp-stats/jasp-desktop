@@ -43,7 +43,7 @@ public:
 	///< With a title: named load for the multi-dataset (syntax-mode) flow - replaces the contents
 	///< of the dataset with that title or adds a new one; every titled dataset gets a real id and
 	///< encoder prefix. Without: legacy behaviour, fill the shown dataset.
-	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true, const QString & title = QString());
+	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true, const QString & title = QString(), const std::map<std::string, stringvec > & levels = {}); ///< levels: the labels of these columns (e.g. R factors) follow this order
 	///< id of the first dataset loaded since the last resetDataSet() (the primary of a syntax-mode
 	///< multi-dataset run, matching the wrapper's datasets[[1]]); -1 when nothing was loaded yet.
 	int							firstLoadedDataSetId() const { return _firstLoadedDataSetId; }

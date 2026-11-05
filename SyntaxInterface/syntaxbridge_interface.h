@@ -53,6 +53,13 @@ struct SyntaxBridgeDataSet {
 	SyntaxBridgeColumn	*	columns;
 };
 
+// The levels of a factor column, in their order (levelCount 0: not a factor).
+// A separate struct, so that SyntaxBridgeColumn and syntaxBridgeLoadDataSet keep their ABI.
+struct SyntaxBridgeColumnLevels {
+	char	**	levels;
+	int			levelCount;
+};
+
 
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeCleanup();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeShutdown();
@@ -60,6 +67,8 @@ SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearQmlState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearDataSetState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearNativeState();
 SYNTAX_INTERFACE int					STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* dataset, bool dbInMemory, int threshold, bool orderLabelsByValue);
+// columnLevels: null, or one entry per column of dataset. The labels of a factor column follow its levels.
+SYNTAX_INTERFACE int					STDCALL syntaxBridgeLoadDataSetWithLevels(const SyntaxBridgeDataSet* dataset, const SyntaxBridgeColumnLevels* columnLevels, bool dbInMemory, int threshold, bool orderLabelsByValue);
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptions(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
