@@ -599,6 +599,10 @@ Item
 			verify(plain.indexOf("data = NULL,") >= 0, "non-aware wrapper keeps the data argument")
 			verify(plain.indexOf("datasets = NULL,") < 0, "non-aware wrapper has no datasets argument")
 			verify(plain.indexOf("jaspBase::storeDataSet(data)") >= 0, "non-aware wrapper keeps the store block")
+			verify(plain.indexOf("options <- options[names(options) %in% names(match.call())[-1L]]") >= 0,
+				"only the arguments of the call are passed as options, the form gives the others their default")
+			verify(wrapper.indexOf("options <- options[names(options) %in% names(match.call())[-1L]]") >= 0,
+				"also in the aware wrapper (after its selection options were resolved from all arguments)")
 			verify(plain.indexOf("selectionOptions <- c(") < 0, "non-aware wrapper has no selection resolution block")
 		}
 	}
