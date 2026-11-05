@@ -24,6 +24,12 @@ private slots:
 	void	testJaspRoundRobin_data();
 	void	testJaspRoundRobin();
 
+	// The syntax bridge (jaspSyntax's readDatasetFromJaspFile) opens a .jasp through
+	// DataSetProvider::loadDatabase: it must load the archive's own dataset and filter, the same
+	// data Desktop loads, without adding a dataset of its own to the archive's database.
+	void	testSyntaxBridgeLoadsJaspDatabase_data();
+	void	testSyntaxBridgeLoadsJaspDatabase();
+
 	// File extensions are recognized whatever their case, and only in the file name itself: a dot in a
 	// folder name or a hidden file (".bashrc") is no extension.
 	void	testFileTypeFromFileName_data();

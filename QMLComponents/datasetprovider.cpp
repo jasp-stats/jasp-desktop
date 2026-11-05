@@ -73,8 +73,8 @@ void DataSetProvider::reloadWorkspace()
 {
 	//Open the database at hand afresh, like DataSetPackage does for a .jasp: the Workspace dies,
 	//a new one dbLoads every dataset out of the restored rows (ids preserved, stored filters
-	//materialised eagerly). The syntax bridge's loadDatabase() is not this: it loads a foreign
-	//file into the legacy single-dataset shape.
+	//materialised eagerly). The syntax bridge's loadDatabase() does the same for a foreign
+	//database, after upgrading it from the JASP version that wrote it.
 	delete _workspace;
 	_workspace = nullptr;
 
@@ -184,9 +184,14 @@ void DataSetProvider::loadDatabase(const Version & jaspVersion)
 		_db->load();
 		_db->upgradeDBFromVersion(jaspVersion);
 
+		//Load the datasets the archive holds the way Desktop opens a .jasp (ids and stored filters
+		//kept). createDataSet() would dbCreate a NEW DataSet row + filter in this database first, and
+		//the stored dataset then queried that foreign Filter_<n> column in its own table.
 		_workspace = new Workspace(this);
-		_workspace->createDataSet();
-		dataSet()->dbLoad(1, [](float p) {}, jaspVersion);
+		_workspace->dbLoad([](float) {}, jaspVersion);
+
+		if (!dataSet())
+			_workspace->createDataSet();
 
 		dataSet()->encoder().setCurrentNames(dataSet()->getColumnTypesMap());
 	}

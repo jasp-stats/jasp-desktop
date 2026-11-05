@@ -47,6 +47,8 @@
 #include "data/datasetloader.h"
 #include "data/expanddataproxymodel.h"
 #include "archivereader.h"
+#include "datasetprovider.h"
+#include "version.h"
 #include "mainwindow.h"
 #include "engine/enginerepresentation.h"
 #include "results/resultsjsinterface.h"
@@ -489,6 +491,82 @@ void TestAll::testJaspRoundRobin()
 	dataSet = _pkg->dataSet();
 	QVERIFY2(dataSet,									"No dataset!");
 	QVERIFY2(dataSet->jsonForCompare() == compareMe,	"DataSet should be the same after reloading!");
+}
+
+void TestAll::testSyntaxBridgeLoadsJaspDatabase_data()
+{
+	testJaspDataImport_data();
+}
+
+void TestAll::testSyntaxBridgeLoadsJaspDatabase()
+{
+	QFETCH(QString, folder);
+	QFETCH(QString, dataFileAbsolutePath);
+
+	const std::string jaspFile = fq(dataFileAbsolutePath);
+
+	//What Desktop loads from the file is the reference.
+	delete _importer;
+	_importer = nullptr;
+	delete _pkg;
+	_pkg = new DataSetPackage(this);
+
+	JASPImporter::loadDataSet(jaspFile, [](int){});
+
+	DataSet * desktopDataSet = _pkg->dataSet();
+	QVERIFY2(desktopDataSet && desktopDataSet->defaultFilter(), "Desktop loaded no dataset!");
+
+	const Json::Value	expected			= desktopDataSet->jsonForCompare();
+	const int			expectedDataSetId	= desktopDataSet->id(),
+						expectedFilterId	= desktopDataSet->defaultFilter()->id();
+	const size_t		expectedRowCount	= desktopDataSet->rowCount();
+	const intset		expectedDataSetIds	= DatabaseInterface::singleton()->dataSetIds();
+
+	DatabaseInterface::closeInterfaces();
+	delete _pkg;
+	_pkg = nullptr;
+
+	//The steps of syntaxBridgeLoadDataSetFromJaspFileStatus (SyntaxInterface/syntaxbridge.cpp).
+	DataSetProvider * provider = DataSetProvider::getProvider(false, true);
+	auto deleteProvider = qScopeGuard([&]{ delete provider; });
+
+	int			errorCode = 0;
+	Json::Value	manifest;
+	QVERIFY(Json::Reader().parse(ArchiveReader(jaspFile, "manifest.json").readAllData(4096, errorCode), manifest));
+	QCOMPARE(errorCode, 0);
+
+	provider->closeDatabase();
+	ArchiveReader(jaspFile, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float){});
+
+	try
+	{
+		provider->loadDatabase(Version(manifest["jaspVersion"].asString()));
+	}
+	catch(const std::exception & e)
+	{
+		QFAIL((std::string("loadDatabase threw: ") + e.what()).c_str());
+	}
+
+	DataSet * bridgeDataSet = provider->dataSet();
+	QVERIFY2(bridgeDataSet && bridgeDataSet->defaultFilter(), "The bridge loaded no dataset!");
+
+	QCOMPARE(DatabaseInterface::singleton()->dataSetIds(),	expectedDataSetIds);
+	QCOMPARE(bridgeDataSet->id(),							expectedDataSetId);
+	QCOMPARE(bridgeDataSet->defaultFilter()->id(),			expectedFilterId);
+
+	//Reading the filter result back runs "SELECT Filter_<id> FROM DataSet_<id>": with a filter of
+	//another dataset that column does not exist and the query throws.
+	try
+	{
+		bridgeDataSet->defaultFilter()->dbLoadResultAndError();
+	}
+	catch(const std::exception & e)
+	{
+		QFAIL((std::string("Reading the filter threw: ") + e.what()).c_str());
+	}
+
+	QCOMPARE(bridgeDataSet->defaultFilter()->filtered().size(),	expectedRowCount);
+	QVERIFY2(bridgeDataSet->jsonForCompare() == expected,		"The bridge loaded other data than Desktop!");
 }
 
 
