@@ -66,6 +66,9 @@ SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptions(const c
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr);
+// As syntaxBridgeAnalysisOptionsFromJaspFileStatus, with the {value, types} options split into <name> and
+// <name>.types like JASP does for an analysis that does not preload its data (ColumnEncoder::flattenTypesInOptions).
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeFlattenedAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateModuleWrappers(const char* name);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* analysisName);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeParseDescription(const char* modulePath);

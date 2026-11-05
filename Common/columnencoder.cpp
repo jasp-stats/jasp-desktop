@@ -1440,6 +1440,18 @@ ColumnEncoder::perDataSetColsPlusTypes ColumnEncoder::encodeColumnNamesinOptions
 	return getTheseColsPerDataSet;
 }
 
+void ColumnEncoder::flattenTypesInOptions(Json::Value & options)
+{
+	//get() and not operator[]: walking a tree without .meta or sidecar must not create those members.
+	const Json::Value	meta	= options.isObject() ? options.get(".meta",				Json::Value::null) : Json::Value::null,
+						sidecar	= options.isObject() ? options.get(FILTERIDS_MEMBER,	Json::Value::null) : Json::Value::null;
+
+	//Without preloadingData the walk only splits {value, types} and, for plain strings, collects the cols
+	//they name (read from the current encoder, never written) - those are not needed here.
+	perDataSetColsPlusTypes unusedCols;
+	_addTypeToColumnNamesInOptionsRecursively(options, meta, sidecar, 0, -1, false, unusedCols, nullptr);
+}
+
 int ColumnEncoder::sidecarOwnFilterId(const Json::Value & sidecarNode)
 {
 	if(sidecarNode.isInt())
