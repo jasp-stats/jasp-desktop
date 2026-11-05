@@ -220,6 +220,7 @@ GET_PREF_FUNC_BOOL(	aiEnabled,					Settings::AI_ENABLED								)
 GET_PREF_FUNC_BOOL(	rpcServerEnabled,			Settings::RPC_SERVER_ENABLED						)
 GET_PREF_FUNC_STR(	rpcServerIp,				Settings::RPC_SERVER_IP								)
 GET_PREF_FUNC_INT(	rpcServerPort,				Settings::RPC_SERVER_PORT							)
+GET_PREF_FUNC_BOOL(	rpcServerAllowBrowsers,		Settings::RPC_SERVER_ALLOW_BROWSERS					)
 GET_PREF_FUNC_BOOL(	syncDroppedDatafile,		Settings::SYNC_DROPPED_DATAFILE						)
 
 bool PreferencesModel::engineSandbox() const
@@ -442,6 +443,7 @@ SET_PREF_FUNCTION(				bool,		setAiEnabled,				aiEnabled,					aiEnabledChanged,		
 SET_PREF_FUNCTION(				bool,		setRpcServerEnabled,		rpcServerEnabled,			rpcServerEnabledChanged,		Settings::RPC_SERVER_ENABLED						)
 SET_PREF_FUNCTION(				QString,	setRpcServerIp,				rpcServerIp,				rpcServerIpChanged,				Settings::RPC_SERVER_IP								)
 SET_PREF_FUNCTION(				int,		setRpcServerPort,			rpcServerPort,				rpcServerPortChanged,			Settings::RPC_SERVER_PORT							)
+SET_PREF_FUNCTION(				bool,		setRpcServerAllowBrowsers,	rpcServerAllowBrowsers,		rpcServerAllowBrowsersChanged,	Settings::RPC_SERVER_ALLOW_BROWSERS					)
 SET_PREF_FUNCTION(				bool,		setSyncDroppedDatafile,		syncDroppedDatafile,		syncDroppedDatafileChanged,		Settings::SYNC_DROPPED_DATAFILE						)
 
 void PreferencesModel::resetAiDefaults()
@@ -454,6 +456,7 @@ void PreferencesModel::resetAiDefaults()
 	setAiAnnotationPrompt(	Settings::defaultValue(Settings::AI_ANNOTATION_PROMPT).toString());
 	setAiUserAvatar(	Settings::defaultValue(Settings::AI_USER_AVATAR).toString());
 	setRpcServerEnabled(Settings::defaultValue(Settings::RPC_SERVER_ENABLED).toBool());
+	setRpcServerAllowBrowsers(Settings::defaultValue(Settings::RPC_SERVER_ALLOW_BROWSERS).toBool());
 	setAiEnabled(		Settings::defaultValue(Settings::AI_ENABLED).toBool());
 }
 

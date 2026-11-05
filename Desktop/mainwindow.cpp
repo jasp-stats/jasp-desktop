@@ -215,6 +215,11 @@ MainWindow::MainWindow(Application * application, bool batchRun) : QObject(appli
 
 	registerRpcHandlers();
 
+	// Read the preference back instead of trusting the signal's value: forced.json can refuse the change.
+	auto applyRpcAllowBrowsers = [this]() { _rpcServer->setAllowBrowsers(PreferencesModel::prefs()->rpcServerAllowBrowsers()); };
+	applyRpcAllowBrowsers();
+	connect(_preferences, &PreferencesModel::rpcServerAllowBrowsersChanged, this, applyRpcAllowBrowsers);
+
 	if (PreferencesModel::prefs()->rpcServerEnabled() && !_rpcServer->start())
 		Log::log() << "JASP-RPC server failed to start." << std::endl;
 	

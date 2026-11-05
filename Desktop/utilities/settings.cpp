@@ -172,6 +172,7 @@ const Settings::Setting Settings::Values[] = {
 	{"rpcServerEnabled",			false},
 	{"rpcServerIp",					"127.0.0.1"},
 	{"rpcServerPort",				48164},
+	{"rpcServerAllowBrowsers",		false},
 	{"syncDroppedDatafile",			true},
 	// 'Report bugs' link on the welcome page — shown by default, pointing at
 	// the public issue tracker; empty hides the link. Enterprise admins push a

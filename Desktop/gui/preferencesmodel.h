@@ -102,6 +102,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			rpcServerEnabled		READ rpcServerEnabled			WRITE setRpcServerEnabled			NOTIFY rpcServerEnabledChanged			)
 	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
 	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
+	Q_PROPERTY(bool			rpcServerAllowBrowsers	READ rpcServerAllowBrowsers		WRITE setRpcServerAllowBrowsers		NOTIFY rpcServerAllowBrowsersChanged	)
 
 	Q_PROPERTY(bool			syncDroppedDatafile		READ syncDroppedDatafile		WRITE setSyncDroppedDatafile		NOTIFY syncDroppedDatafileChanged		)
 
@@ -239,6 +240,8 @@ class PreferencesModel : public PreferencesModelBase
 	void setRpcServerIp(QString v);
 	int rpcServerPort() const;
 	void setRpcServerPort(int v);
+	bool rpcServerAllowBrowsers() const;
+	void setRpcServerAllowBrowsers(bool v);
 
 	bool syncDroppedDatafile() const;
 		
@@ -393,6 +396,7 @@ signals:
 	void rpcServerEnabledChanged(		bool		rpcServerEnabled);
 	void rpcServerIpChanged(			QString		rpcServerIp);
 	void rpcServerPortChanged(			int			rpcServerPort);
+	void rpcServerAllowBrowsersChanged(bool		rpcServerAllowBrowsers);
 
 	void syncDroppedDatafileChanged(	bool		syncDroppedDatafile);
 

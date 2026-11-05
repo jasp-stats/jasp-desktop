@@ -645,6 +645,7 @@ PrefsScrollView
 				enabled:			!preferencesModel.settingIsForced("rpcServerPort")
 				text:				preferencesModel.rpcServerPort
 				onEditingFinished:		preferencesModel.rpcServerPort = parseInt(text)
+				nextEl:				rpcServerAllowBrowsers
 				anchors
 				{
 					left:			parent.left
@@ -652,7 +653,18 @@ PrefsScrollView
 					right:			parent.right
 					margins:		jaspTheme.generalAnchorMargin
 				}
+				KeyNavigation.tab:	rpcServerAllowBrowsers
 			}
+		}
+
+		CheckBox
+		{
+			id:					rpcServerAllowBrowsers
+			label:				qsTr("Allow RPC connections from web browsers")
+			enabled:			preferencesModel.rpcServerEnabled
+			checked:			preferencesModel.rpcServerAllowBrowsers
+			onCheckedChanged:	preferencesModel.rpcServerAllowBrowsers = checked
+			toolTip:			qsTr("Only for browser-based clients you trust: while this is on, any web page open in your browser can control JASP and run R code on this computer.")
 		}
 	}
 }

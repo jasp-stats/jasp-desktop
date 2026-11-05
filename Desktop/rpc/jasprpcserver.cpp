@@ -55,12 +55,37 @@ bool JaspRpcServer::start()
 
 		const std::string output = _dispatcher.dispatch(input);
 
-		return QHttpServerResponse(
+		QHttpServerResponse response(
 			QByteArray::fromStdString(output),
 			QHttpServerResponse::StatusCode::Ok);
+
+		if (_allowBrowsers) // otherwise rejectionReason() already refused every request with an Origin
+		{
+			QHttpHeaders headers = response.headers();
+			headers.append("Access-Control-Allow-Origin", "*");
+			response.setHeaders(std::move(headers));
+		}
+
+		return response;
 	});
 
-	// No OPTIONS route and no CORS headers: browser pages must not be able to reach this endpoint.
+	// ---- OPTIONS /rpc — CORS pre-flight, answered only when browsers are allowed ----
+	_httpServer.route(_endpointPath,
+					  QHttpServerRequest::Method::Options,
+					  [this](const QHttpServerRequest&)
+	{
+		if (!_allowBrowsers)
+			return QHttpServerResponse(QHttpServerResponse::StatusCode::Forbidden);
+
+		QHttpHeaders corsHeaders;
+		corsHeaders.append("Access-Control-Allow-Origin",  "*");
+		corsHeaders.append("Access-Control-Allow-Methods", "POST, OPTIONS");
+		corsHeaders.append("Access-Control-Allow-Headers", "Content-Type");
+
+		QHttpServerResponse response(QHttpServerResponse::StatusCode::NoContent);
+		response.setHeaders(std::move(corsHeaders));
+		return response;
+	});
 
 	// ---- TCP listener ----
 	_tcpServer = new QTcpServer(this);
@@ -103,13 +128,21 @@ quint16 JaspRpcServer::serverPort() const
 	return _tcpServer ? _tcpServer->serverPort() : 0;
 }
 
+void JaspRpcServer::setAllowBrowsers(bool allow)
+{
+	if (_allowBrowsers != allow)
+		Log::log() << "[JaspRpcServer] Requests from web browsers are " << (allow ? "now accepted." : "refused again.") << std::endl;
+
+	_allowBrowsers = allow;
+}
+
 QString JaspRpcServer::rejectionReason(const QHttpServerRequest& request) const
 {
 	const QHttpHeaders & headers = request.headers();
 
 	// Browsers send Origin with every cross-site POST (even "no-cors" ones); local tools such as jasp-mcp do not.
-	if (headers.contains(QHttpHeaders::WellKnownHeader::Origin))
-		return "requests from web pages (with an Origin header) are not accepted";
+	if (!_allowBrowsers && headers.contains(QHttpHeaders::WellKnownHeader::Origin))
+		return "requests from web browsers (with an Origin header) are not accepted; see Preferences > Advanced > Remote control";
 
 	// value() only returns the first of repeated fields, so a second Host or Content-Type would go unchecked.
 	if (headers.values(QHttpHeaders::WellKnownHeader::Host).size() != 1 || headers.values(QHttpHeaders::WellKnownHeader::ContentType).size() != 1)

@@ -41,9 +41,13 @@ public:
 	/// Return the actual port (useful when port=0 was passed).
 	quint16 serverPort() const;
 
+	/// Also serve web pages (requests with an Origin header, CORS pre-flight). Off by default: any page open in
+	/// the user's browser could then drive JASP, and so run R code.
+	void setAllowBrowsers(bool allow);
+
 private:
-	/// Why a request must be refused, empty when it may be dispatched. Only local non-browser clients
-	/// (e.g. jasp-mcp) are served: web pages could otherwise drive JASP, and so run R code, from the user's browser.
+	/// Why a request must be refused, empty when it may be dispatched. Unless browsers are allowed, only local
+	/// non-browser clients (e.g. jasp-mcp) are served.
 	QString rejectionReason(const QHttpServerRequest& request) const;
 
 	JaspRpcDispatcher& _dispatcher;
@@ -52,6 +56,7 @@ private:
 	QString             _endpointPath;
 	QHttpServer         _httpServer;
 	QTcpServer*         _tcpServer = nullptr;
+	bool                _allowBrowsers = false;
 };
 
 #endif // JASPRPCSERVER_H
