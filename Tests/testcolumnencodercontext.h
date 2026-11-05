@@ -56,6 +56,8 @@ private slots:
 	void pathologicalNamesRawStringsAndBackticksAreHandled();
 	void colsPlusTypesForResolvesColumnsAndTypes();
 	void suggestColumnNamesRanksCloseMatchesFirst();
+	void flattenTypesInOptionsSplitsLikeNonPreloadedEncoding();
+	void flattenTypesInOptionsKeepsColumnNamesPlain();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

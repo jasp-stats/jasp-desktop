@@ -245,9 +245,9 @@ static Json::Value columnEncoderContextJson()
 	).toJson();
 }
 
-static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
+static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr, bool flattenTypes = false)
 {
-	Json::Value status = statusBase("syntaxBridgeAnalysisOptionsFromJaspFile");
+	Json::Value status = statusBase(flattenTypes ? "syntaxBridgeFlattenedAnalysisOptionsFromJaspFile" : "syntaxBridgeAnalysisOptionsFromJaspFile");
 	status["analysisNr"] = analysisNr;
 
 	Json::Value analysesJson;
@@ -285,6 +285,10 @@ static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
 
 	status["ok"] = true;
 	status["options"] = options;
+
+	if (flattenTypes)
+		ColumnEncoder::flattenTypesInOptions(status["options"]);
+
 	return status;
 }
 
@@ -720,6 +724,14 @@ const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * f
 	configureLogging();
 
 	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
+	return statusResult(status);
+}
+
+const char* STDCALL syntaxBridgeFlattenedAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr)
+{
+	configureLogging();
+
+	Json::Value status = analysisOptionsStatus(filePath, analysisNr, true);
 	return statusResult(status);
 }
 
