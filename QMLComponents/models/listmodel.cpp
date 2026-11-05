@@ -118,8 +118,12 @@ void ListModel::_setAllowedType(Term& term) const
 			// If the original type is now allowed, change the type back to it. The original type is the one the variable has
 			// where this list gets it from: for a list whose variables come from another list (e.g. model terms made of the
 			// factors), that is the type in that list, which may differ from the column's own type.
-			columnType sourceType = getVariableSourceType(term.value());
-			if (sourceType != columnType::unknown && type != sourceType && _listView->isTypeAllowed(sourceType))
+			// While the form binds its options, a type given there is the one the user chose for the column (e.g. scale for an
+			// ordinal column) and is kept, unless the variable comes from another list that changed its type.
+			columnType	sourceType		= getVariableSourceType(term.value());
+			bool		keepGivenType	= _listView->form() && _listView->form()->bindingOptions() && sourceType == getVariableRealType(term.value());
+
+			if (!keepGivenType && sourceType != columnType::unknown && type != sourceType && _listView->isTypeAllowed(sourceType))
 				term.setType(sourceType);
 		}
 	}
