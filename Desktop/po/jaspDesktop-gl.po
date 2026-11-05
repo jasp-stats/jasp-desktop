@@ -3,10 +3,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
+"PO-Revision-Date: 2026-11-06 09:51+0000\n"
+"Last-Translator: ecadrian <ecadrian@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
+"X-Generator: Weblate 2026.11.2.dev0\n"
 
 msgctxt "SortMenuModel|"
 msgid "None"
@@ -9632,10 +9638,14 @@ msgid ""
 "file menu and preferences interface, used to open and save files, and to "
 "configure JASP global preferences."
 msgstr ""
+"Facendo clic no botón tipo hamburguesa no recuncho superior esquerdo se abre/"
+"pecha esta interface cos menús de ficheiro e de preferencias, utilizados "
+"para abrir e gardar ficheiros; e para configurar as preferencias xerais de "
+"JASP."
 
 msgctxt "MainWindow|"
 msgid "Modules Library"
-msgstr ""
+msgstr "Biblioteca de módulos"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -9643,104 +9653,104 @@ msgid ""
 "of this area, you can enable/disable installed modules, and you can also "
 "manage all available modules from the online modules store on the left."
 msgstr ""
+"Aquí é onde podes xestionar os módulos analíticos. Na lista todo á dereita "
+"desta área, podes habilitar/inhabilitar módulos instalados; e tamén podes "
+"xestionar tódolos módulos dispoñibles da tenda en liña de módulos, á "
+"esquerda."
 
 msgctxt "MainWindow|"
 msgid "AI Assistant"
-msgstr ""
+msgstr "Asistente da IA"
 
 msgctxt "MainWindow|"
 msgid ""
 "Click the robot icon here or press Ctrl+J to bring up the AI chat "
 "panel.Detailed AI settings can be found in the preferences menu."
 msgstr ""
+"Fai clic aquí na icona do robot ou preme Ctrl+J para que xurda o panel do "
+"chat da IA. A configuración detallada da IA pódese atopar no menú de "
+"Preferencias."
 
 msgctxt "PlotEditor|"
 msgid "Elements"
-msgstr ""
+msgstr "Elementos"
 
 msgctxt "Tutorial|"
 msgid "Getting Started"
-msgstr ""
+msgstr "Comezando"
 
 msgctxt "Tutorial|"
 msgid "Finish"
-msgstr ""
+msgstr "Finalizar"
 
 msgctxt "Tutorial|"
 msgid "Next"
-msgstr ""
+msgstr "Seguinte"
 
 msgctxt "Tutorial|"
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 msgctxt "Tutorial|"
 msgid "Skip the Tutorial"
-msgstr ""
+msgstr "Saltar o Titorial"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Insert element"
-msgstr ""
+msgstr "Insertar elemento"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Remove element"
-msgstr ""
+msgstr "Quitar elemento"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Move element"
-msgstr ""
+msgstr "Mover elemento"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Change column type"
-msgstr ""
+msgstr "Trocar tipo de columna"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Edit number"
-msgstr ""
+msgstr "Editar número"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Edit logical"
-msgstr ""
+msgstr "Editar valores lóxicos"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Edit text"
-msgstr ""
+msgstr "Editar texto"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Clear all"
-msgstr ""
+msgstr "Eliminar todo"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns logicals and can be the root of a filter formula"
 msgstr "devolve os valores lóxicos e pode ser a raíz dunha fórmula de filtrado"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns logicals"
 msgstr "devolve os valores lóxicos"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Addition"
 msgstr "Suma"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Subtraction"
 msgstr "Resta"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Multiplication"
 msgstr "Multiplicación"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Division"
 msgstr "División"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Power (2^3 returns 8)"
 msgstr "Potencia (2^3 devolve 8)"
@@ -9748,130 +9758,113 @@ msgstr "Potencia (2^3 devolve 8)"
 #, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "Módulo: devolve o que queda dunha división. 3%2 devolve 1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Equality: %1"
 msgstr "Igualdade: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Inequality: %1"
 msgstr "Desigualdade: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Less than: %1"
 msgstr "Menor que: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Less than or equal to: %1"
 msgstr "Menor que ou igual a: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Greater than: %1"
 msgstr "Maior que: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Greater than or equal to: %1"
 msgstr "Maior que ou igual a: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "And: %1"
 msgstr "E: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Or: %1"
 msgstr "Ou: %1"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Split: applies filter separately to each subgroup"
 msgstr "Separar: aplica un filtro a cada subgrupo por separado"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "absolute value"
 msgstr "Valor absoluto"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "standard deviation"
 msgstr "Desvío padrón"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "variance"
 msgstr "Varianza"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "summation"
 msgstr "Suma"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "product of values"
 msgstr "Produto de valores"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Standardizes the variable"
 msgstr "Tipifica a variable"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns minimum of values"
 msgstr "Devolve o mínimo dos valores"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns maximum of values"
 msgstr "Devolve o máximo dos valores"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "mean"
 msgstr "Media"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns the sign of values"
 msgstr "Devolve o signo dos valores"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "rounds y to n decimals"
 msgstr "Arredonda y a n decimais"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns number of elements in y"
 msgstr "Devolve o número de elementos de y"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "median"
 msgstr "Mediana"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "if-else statement"
 msgstr "Enunciado se-entón"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
 "Devolve verdadeiro se a cadea contén unha subcadea, cando menos unha vez"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
@@ -9880,42 +9873,35 @@ msgstr ""
 "Combinar con sen-operador para filtrar as filas con valores ausentes (NA) "
 "para unha columna."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Square root"
 msgstr "Raíz cadrada"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Not: %1"
 msgstr "Non: %1"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "natural logarithm"
 msgstr "Logaritmo natural"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "base 2 logarithm"
 msgstr "Logaritmo en base 2"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "base 10 logarithm"
 msgstr "Logaritmo en base 10"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "logarithm of y in 'base'"
 msgstr "Logaritmo de y en 'base'"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "exponential"
 msgstr "Exponencial"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
@@ -9924,7 +9910,6 @@ msgstr ""
 "Transformación Z de Fisher (i.e. a inversa da tanxente hiperbólica) para "
 "transformar correlacións, números entre -1 e 1, á recta real"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
@@ -9933,7 +9918,6 @@ msgstr ""
 "Inversa da transformación Z de Fisher (i.e. a tanxente hiperbólica) para "
 "transformar números reais a números entre -1 e 1"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Logit transform (i.e., the inverse of the standard logit function, or log-"
@@ -9943,7 +9927,6 @@ msgstr ""
 "logaritmo da razón de probabilidades) converte números entre 0 e 1, aos da "
 "recta real."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Inverse logit transform (i.e., the standard logit function) converts numbers "
@@ -9952,18 +9935,16 @@ msgstr ""
 "A transformación Logit inversa (i.e., a función Logit estándar) converte "
 "números da recta real en números entre 0 e 1."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Two-parameter Box-Cox transform (transforms values greater than -shift) to "
 "stabilize variance and attempt to make the data more normal distribution-"
 "like."
 msgstr ""
-"Transformación Box-Cox de dous parámetros (transforma valores maiores que "
-"-desprazamento) para estabilizar a varianza e obter datos máis semellantes "
-"aos dunha distribución Normal."
+"Transformación Box-Cox de dous parámetros (transforma valores maiores que o -"
+"desprazamento) para estabilizar a varianza e tratar de facer os datos máis "
+"semellantes aos dunha distribución Normal."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Two-parameter Box-Cox transform with an automatic determination of the shape "
@@ -9972,16 +9953,14 @@ msgid ""
 "and 'upper' limits."
 msgstr ""
 "Transformación Box-Cox de dous parámetros con determinación automática do "
-"parámetro lambda de forma, de acordo con un dos tres métodos:'loglik', 'sd' "
+"parámetro lambda de forma, de acordo con un dos tres métodos: 'loglik', 'sd' "
 "ou 'movingRange'. A procura do lambda óptimo realízase só entre os límites "
 "'inferior' e 'superior'."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Inverse two-parameter Box-Cox transform."
 msgstr "Inversa da transformación Box-Cox de dous parámetros."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Two-parameter power transform (scale-invariant Box-Box; transforms values "
@@ -9989,10 +9968,9 @@ msgid ""
 "normal distribution-like."
 msgstr ""
 "Transformación potencial de dous parámetros (Box-Cox invariante á escala; "
-"transforma valores maiores que -desprazamento) para estabilizar a varianza, "
-"e tratar de facer os datos máis semellantes á distribución Normal."
+"transforma valores maiores que o -desprazamento) para estabilizar a "
+"varianza, e tratar de facer os datos máis semellantes á distribución Normal."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Two-parameter power transform with an automatic determination of the shape "
@@ -10003,16 +9981,15 @@ msgstr ""
 "parámetro lambda de forma. A procura do lambda óptimo realízase só entre os "
 "límites 'inferior' e 'superior'."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Yeo-Johnson transform (transforms any real values) to stabilize variance and "
 "attempt to make the data more normal distribution-like."
 msgstr ""
-"Transformación Yeo-Johnson (transforma calquera valor real) para estabilizar "
-"a varianza e obter datos máis semellantes aos dunha distribución Normal."
+"Transformación de Yeo-Johnson (transforma calquera valor real) para "
+"estabilizar a varianza e tratar de facer os datos máis semellantes aos dunha "
+"distribución Normal."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Yeo-Johnson transform (transforms any real values) with an automatic "
@@ -10023,7 +10000,6 @@ msgstr ""
 "determinación automática do parámetro lambda de forma. A procura do lambda "
 "óptimo realízase só entre os límites 'inferior' e 'superior'."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "Johnson transform (transforms any real values). The search for optimal "
@@ -10032,18 +10008,15 @@ msgstr ""
 "Transformación de Johnson (transforma calquera valor real). A procura do "
 "lambda óptimo realízase só entre os límites 'inferior' e 'superior'."
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "break your data up in numBreaks levels"
 msgstr "Separa os teus datos en niveles de numBreaks"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
 msgstr ""
-"Substitúe calquera valor ausente (NA) da columna polo valor de replaceWith"
+"Substituír calquera valor ausente (NA) da columna polo valor de replaceWith"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from a Gaussian distribution with specified mean and standard "
@@ -10052,16 +10025,14 @@ msgstr ""
 "Xera datos dunha distribución Normal coa media e o desvío padrón (sd) "
 "indicados"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
 msgstr ""
-"Xera datos dunha distribución t cos graos de liberdade (gl) e parámetro de "
+"Xera datos dunha distribución T cos graos de liberdade (gl) e parámetro de "
 "non centrado (ncp)"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
@@ -10070,7 +10041,6 @@ msgstr ""
 "Xera datos dunha distribución Khi-cadrado cos graos de liberdade (gl) e "
 "parámetro de non centrado (ncp)"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
@@ -10079,7 +10049,6 @@ msgstr ""
 "Xera datos dunha distribución F cos graos de liberdade (gl1, gl2) e o "
 "parámetro de non centrado (ncp) indicados"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
@@ -10088,7 +10057,6 @@ msgstr ""
 "Xera datos dunha distribución Binomial cos ensaios e a probabilidade (Prob) "
 "indicados"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
@@ -10097,19 +10065,16 @@ msgstr ""
 "Xera datos dunha distribución Binomial Negativa cos ensaios e a "
 "probabilidade (Prob) indicados"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
 msgstr ""
 "Xera datos dunha distribución Xeométrica coa probabilidade (Prob) indicada"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
 msgstr "Xera datos dunha distribución Poisson coa frecuencia (lambda) indicada"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
@@ -10117,24 +10082,20 @@ msgstr ""
 "Xera datos dunha distribución Beta cos parámetros de forma (alfa e beta) "
 "indicados"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr "Xera datos dunha distribución Uniforme entre Min e Max"
+msgstr "Xera datos dunha distribución Uniforme entre Mín e Máx"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "generates data from a gamma distribution with specified shape and scale"
 msgstr ""
 "Xera datos dunha distribución Gamma cos parámetros (de forma e escala) "
 "indicados"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "generates data from an exponential distribution with specified rate"
 msgstr "Xera datos dunha distribución Exponencial coa taxa indicada"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
@@ -10143,7 +10104,6 @@ msgstr ""
 "Xera datos dunha distribución Log-Normal coa media logarítmica (meanLog) e o "
 "desvío padrón (sdLog) indicados"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
@@ -10151,65 +10111,54 @@ msgstr ""
 "Xera datos dunha distribución Weibull cos parámetros (de forma e escala) "
 "indicados"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Rowwise mean"
 msgstr "Media por filas"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Rowwise sum"
 msgstr "Suma por filas"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Rowwise standard deviation"
 msgstr "Desvío padrón por filas"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Rowwise variance"
 msgstr "Varianza por filas"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Rowwise median"
 msgstr "Mediana por filas"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Rowwise minimum"
 msgstr "Mínimo por filas"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Rowwise maximum"
 msgstr "Máximo por filas"
 
 msgctxt "ScriptConstructorView|"
 msgid "Filter cleared"
-msgstr ""
+msgstr "Filtro eliminado"
 
-#, fuzzy
 msgctxt "ScriptConstructorView|"
 msgid "Filter applied"
 msgstr "Filtro aplicado"
 
-#, fuzzy
 msgctxt "ScriptConstructorView|"
 msgid "Computed columns code clear(ed)"
-msgstr "Código despexado de columnas calculadas"
+msgstr "Código de columnas calculadas eliminado"
 
-#, fuzzy
 msgctxt "ScriptConstructorView|"
 msgid "Computed columns code applied"
-msgstr "Código aplicado de columnas calculadas"
+msgstr "Código de columnas calculadas aplicado"
 
-#, fuzzy
 msgctxt "ScriptConstructorView|"
 msgid "Please enter all arguments - see fields marked in red."
 msgstr ""
-"Por favor, introduce todos os argumentos (observar os campos marcados en "
+"Por favor, introduce tódolos argumentos (observar os campos marcados en "
 "vermello)."
 
 msgctxt "ScriptConstructorView|"
@@ -10217,13 +10166,13 @@ msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter."
 msgstr ""
+"A fórmula non devolve un conxunto de valores lóxicos, e por iso non se pode "
+"utilizar no filtro."
 
-#, fuzzy
 msgctxt "ScriptConstructorView|"
 msgid "Only one formula per computed column allowed."
 msgstr "Só se permite unha fórmula por columna calculada."
 
-#, fuzzy
 msgctxt "ScriptConstructorView|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr ""
