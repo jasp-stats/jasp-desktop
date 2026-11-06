@@ -410,6 +410,11 @@ private slots:
 	void	testCliSyncExportChainFailsOnBadDataFile();
 	void	testCliSyncExportWaitsForAnalysesToSettle();
 
+	// A module loaded from a folder (the syntax bridge's parseDescription, jaspTools): a source checkout has its
+	// files in inst/, an installed package (what covr tests) at its root.
+	void	testModuleFromFolder_data();
+	void	testModuleFromFolder();
+
 	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
 	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the
 	// JSON stored in .jasp files and the R code that gets sent to the engine.

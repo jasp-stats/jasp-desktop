@@ -50,6 +50,7 @@
 #include "datasetprovider.h"
 #include "version.h"
 #include "mainwindow.h"
+#include "modules/dynamicmodule.h"
 #include "engine/enginerepresentation.h"
 #include "results/resultsjsinterface.h"
 #include "scriptconstructormodel.h"
@@ -8631,6 +8632,57 @@ void TestAll::testScriptConstructorDragKeepsFormulaRows()
 	QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
 	view.setWidth(view.width() + 20);
 	QVERIFY(rowItem() != nullptr);
+}
+
+
+void TestAll::testModuleFromFolder_data()
+{
+	QTest::addColumn<QString>("filesFolder");
+
+	QTest::newRow("source")		<< "inst";
+	QTest::newRow("installed")	<< "";
+}
+
+void TestAll::testModuleFromFolder()
+{
+	QFETCH(QString, filesFolder);
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw); //for its QML engine, which reads Description.qml
+
+	//Inside the session directory, which the MainWindow teardown removes
+	const QString	modulePath	= QString::fromStdString(TempFiles::createTmpFolder()) + "/jaspFake",
+					filesPath	= filesFolder.isEmpty() ? modulePath : modulePath + "/" + filesFolder;
+
+	QVERIFY(QDir().mkpath(filesPath + "/icons"));
+	QVERIFY(QDir().mkpath(filesPath + "/qml"));
+	QVERIFY(_writeTextFile(modulePath + "/DESCRIPTION",	"Package: jaspFake\nVersion: 0.1\nTitle: Fake\nMaintainer: JASP <info@jasp-stats.org>\n"));
+	QVERIFY(_writeTextFile(filesPath + "/qml/Fake.qml",	"import JASP.Controls\nForm {}\n"));
+	QVERIFY(_writeTextFile(filesPath + "/Description.qml",
+		"import QtQuick\nimport JASP.Module\n\nDescription\n{\n\ttitle: \"Fake\"\n\tdescription: \"A fake module\"\n\n"
+		"\tAnalysis\n\t{\n\t\ttitle: \"Fake analysis\"\n\t\tfunc: \"Fake\"\n\t}\n}\n"));
+
+	//What parseDescription in SyntaxInterface/syntaxbridge.cpp does
+	Modules::DynamicModule * module = nullptr;
+	try
+	{
+		module = new Modules::DynamicModule(nullptr, mw->_qml->rootContext(), modulePath, false);
+		module->initialize(mw->_qml->rootContext());
+	}
+	catch(const std::exception & e)
+	{
+		QFAIL((std::string("Loading the module threw: ") + e.what()).c_str());
+	}
+
+	QCOMPARE(module->name(),					std::string("jaspFake"));
+	QCOMPARE(module->menu().size(),				size_t(1));
+	QCOMPARE(module->menu()[0]->function(),		std::string("Fake"));
+
+	delete module;
+	delete exitSpy;
+	delete mw;
+
+	TempFiles::init(ProcessInfo::currentPID());
 }
 
 
