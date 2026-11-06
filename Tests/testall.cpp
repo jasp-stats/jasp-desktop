@@ -334,7 +334,7 @@ void TestAll::testDataImport_data()
 
 	for(const QString & folder : _testLibrary().entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot | QDir::Filter::NoSymLinks))
 	{
-		if(folder == "jasp")
+		if(folder == "jasp" || folder == "archive") //Not data files to import: see testJaspDataImport and testArchiveReaderEmptyEntry
 			continue;
 
 		QDir subDir(_testLibrary());
@@ -492,6 +492,21 @@ void TestAll::testJaspRoundRobin()
 	dataSet = _pkg->dataSet();
 	QVERIFY2(dataSet,									"No dataset!");
 	QVERIFY2(dataSet->jsonForCompare() == compareMe,	"DataSet should be the same after reloading!");
+}
+
+void TestAll::testArchiveReaderEmptyEntry()
+{
+	const std::string archive = fq(_testLibrary().absoluteFilePath("archive/emptyEntry.zip"));
+	int errorCode = 0;
+
+	QVERIFY(ArchiveReader(archive, "notEmpty.txt").readAllData(4096, errorCode) == "abc");
+	QCOMPARE(errorCode, 0);
+
+	QVERIFY(ArchiveReader(archive, "empty.txt").readAllData(4096, errorCode).empty());
+
+	ArchiveReader missing(fq(_testLibrary().absoluteFilePath("archive/doesNotExist.jasp")), "manifest.json");
+	QVERIFY(!missing.archiveExists());
+	QVERIFY(missing.readAllData(4096, errorCode).empty());
 }
 
 void TestAll::testSyntaxBridgeLoadsJaspDatabase_data()

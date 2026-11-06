@@ -119,6 +119,15 @@ static bool readJaspJsonEntry(Json::Value & root, const char * filePath, const c
 		}
 
 		ArchiveReader reader(filePath, entry);
+		if (!reader.archiveExists())
+		{
+			if (error)
+				*error = std::string("JASP archive ") + filePath + " does not exist.";
+			else
+				Log::log() << "JASP archive does not exist." << std::endl;
+			return false;
+		}
+
 		int errorCode = 0;
 		std::string json = reader.readAllData(sizeof(char), errorCode);
 		if (errorCode != 0)

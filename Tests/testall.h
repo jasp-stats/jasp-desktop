@@ -24,6 +24,10 @@ private slots:
 	void	testJaspRoundRobin_data();
 	void	testJaspRoundRobin();
 
+	// Reading an empty entry, or from an archive that does not exist (jaspSyntax given a path it
+	// cannot find), gives an empty string: readAllData used to make a std::string of NULL, a crash.
+	void	testArchiveReaderEmptyEntry();
+
 	// The syntax bridge (jaspSyntax's readDatasetFromJaspFile) opens a .jasp through
 	// DataSetProvider::loadDatabase: it must load the archive's own dataset and filter, the same
 	// data Desktop loads, without adding a dataset of its own to the archive's database.
