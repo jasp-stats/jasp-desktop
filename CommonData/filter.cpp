@@ -580,7 +580,10 @@ QVariant Filter::provideInfo(varInfoType info, const QString& colName, int row) 
 		if (colIndex < 0)
 			return QVariant();
 
-		QModelIndex qColIndex	= index(colIndex, 0),
+		//The column's row in the variable-info model (one row per column): an index of this Filter
+		//itself would be one of its DATA rows, invalid for every column at or past the row count
+		//(a dataset with fewer rows than columns then reported those columns as type unknown).
+		QModelIndex qColIndex	= rowFilteredVarInfo()->index(colIndex, 0),
 					tableCIndex	= rowFilteredData()->index(0, colIndex),
 					tableVIndex	= rowFilteredData()->index(row, colIndex);
 
@@ -727,7 +730,7 @@ void Filter::datasetChanged(int, QStringList changedColumns, QStringList missing
 				   {
 						   changedColumns.clear();
 						   for (int i = 0; i < rowFilteredVarInfo()->rowCount(); i++)
-								   changedColumns.push_back(rowFilteredVarInfo()->data(index(i, 0), VarInfoModelProxy::NameRole).toString());
+								   changedColumns.push_back(rowFilteredVarInfo()->data(rowFilteredVarInfo()->index(i, 0), VarInfoModelProxy::NameRole).toString());
 				   }
 				   emit infoSignaller()->variablesChanged(changedColumns);
 		   }
