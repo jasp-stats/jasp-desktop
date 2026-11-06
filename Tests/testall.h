@@ -30,6 +30,10 @@ private slots:
 	void	testSyntaxBridgeLoadsJaspDatabase_data();
 	void	testSyntaxBridgeLoadsJaspDatabase();
 
+	// The labels of a column loaded through the syntax bridge with levels (an R factor in a data.frame)
+	// follow these levels; the other columns keep their labels ordered by value.
+	void	testSyntaxBridgeKeepsFactorLevelOrder();
+
 	// File extensions are recognized whatever their case, and only in the file name itself: a dot in a
 	// folder name or a hidden file (".bashrc") is no extension.
 	void	testFileTypeFromFileName_data();

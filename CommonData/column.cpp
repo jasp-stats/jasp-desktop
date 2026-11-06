@@ -2435,6 +2435,37 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 	refresh();
 }
 
+void Column::labelsOrderBy(const stringvec & valuesInOrder, bool doDbUpdateEtc)
+{
+	JASPTIMER_SCOPE(Column::labelsOrderBy);
+
+	if (valuesInOrder.empty() || _labels.empty())
+		return;
+
+	std::map<std::string, size_t> orderMap;
+	for (size_t i = 0; i < valuesInOrder.size(); i++)
+		orderMap.insert({valuesInOrder[i], i}); // the first occurrence counts
+
+	const size_t	given	= valuesInOrder.size();
+	size_t			other	= 0;
+
+	for (Label * label : _labels)
+	{
+		auto found = orderMap.find(label->originalValueAsString());
+		if (found == orderMap.end())
+			found = orderMap.find(label->label());
+
+		label->setOrder(found != orderMap.end() ? found->second : given + other++);
+	}
+
+	_sortLabelsByOrder();
+
+	if (doDbUpdateEtc)
+		_dbUpdateLabelOrder(false);
+
+	refresh();
+}
+
 doublevec Column::valuesNumericOrdered()
 {
 	doubleset	values;

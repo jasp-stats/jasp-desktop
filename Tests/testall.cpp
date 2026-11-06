@@ -571,6 +571,35 @@ void TestAll::testSyntaxBridgeLoadsJaspDatabase()
 }
 
 
+void TestAll::testSyntaxBridgeKeepsFactorLevelOrder()
+{
+	delete _importer;
+	_importer = nullptr;
+	DatabaseInterface::closeInterfaces();
+	delete _pkg;
+	_pkg = nullptr;
+
+	//What syntaxBridgeLoadDataSetWithLevels (SyntaxInterface/syntaxbridge.cpp) does with a data.frame
+	DataSetProvider * provider = DataSetProvider::getProvider(false, true);
+	auto deleteProvider = qScopeGuard([&]{ delete provider; });
+
+	provider->loadDataSet({	{ "Activity",	{ "High", "Low", "Sedentary", "Medium", "High"	} },
+							{ "Letters",	{ "b", "c", "a", "b", "a"						} }	},
+						  10, true, QString(),
+						  { { "Activity", { "Sedentary", "Low", "Medium", "High", "Unused" } } });
+
+	auto labelsOf = [&](const std::string & name)
+	{
+		QStringList labels;
+		for (const Label * label : provider->dataSet()->column(name)->labels())
+			labels << tq(label->label());
+		return labels;
+	};
+
+	QCOMPARE(labelsOf("Activity"),	QStringList({ "Sedentary", "Low", "Medium", "High" }));
+	QCOMPARE(labelsOf("Letters"),	QStringList({ "a", "b", "c" }));
+}
+
 void TestAll::testFileTypeFromFileName_data()
 {
 	QTest::addColumn<QString>("path");
