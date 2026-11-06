@@ -121,7 +121,9 @@ void DynamicModule::initialize(QQmlContext * context)
 	setInitialized(true);
 	auto checkForExistence = [&](std::string name, bool isFile = false, bool searchInRootFolder = false)
 	{
-		QString modPath		= _moduleFolder.absolutePath() + (isSource() ? (searchInRootFolder ? "" : "/inst") : ("/" + nameQ())) + "/" + QString::fromStdString(name);
+		// The files of a module from source are in inst/, those of an installed package (e.g. the one covr tests) at its root
+		const bool	inInst	= isSource() && !searchInRootFolder && QFileInfo(_moduleFolder.absolutePath() + "/inst").isDir();
+		QString		modPath	= _moduleFolder.absolutePath() + (isSource() ? (inInst ? "/inst" : "") : ("/" + nameQ())) + "/" + QString::fromStdString(name);
 		QFileInfo checkInfo(modPath);
 
 		std::string errorMsg = "";
