@@ -6,12 +6,6 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
-"PO-Revision-Date: 2026-10-31 08:33+0000\n"
-"Last-Translator: 陳正昌 <chencc99@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
-"projects/jasp/jaspdesktop/zh_Hant/>\n"
-"Language: zh_Hant\n"
-"X-Generator: Weblate 2026.11.dev0\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -445,10 +439,6 @@ msgid "To use JASP Modules enable this option."
 msgstr "開啟此選項，以使用JASP模組。"
 
 msgctxt "PrefsAdvanced|"
-msgid "Browse to your JASP Module folder."
-msgstr "瀏覽JASP的安裝目錄。"
-
-msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
 msgstr "改變CRAN知識庫: "
 
@@ -746,20 +736,12 @@ msgid "Install Developer Module"
 msgstr "安裝開發中模組"
 
 msgctxt "ModulesMenu|"
-msgid "Installing Developer Module"
-msgstr "開發中模組安裝中"
-
-msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
 msgstr "選擇開發中模組"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
 msgstr "安裝選擇的開發人員模組"
-
-msgctxt "ModulesMenu|"
-msgid "Installing developer module now"
-msgstr "安裝開發中模組"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
@@ -2162,10 +2144,6 @@ msgstr "停用動畫功能"
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
 msgstr "使用本機文件對話檔"
-
-msgctxt "ModulesMenu|"
-msgid "Select a developer module by clicking here"
-msgstr "勾選此處以選擇發展人員模式"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
@@ -4271,16 +4249,6 @@ msgid "Development module"
 msgstr "開發模組"
 
 msgctxt "PrefsAdvanced|"
-msgid ""
-"Load modules from a binary in an R-library instead of installing it from "
-"sources."
-msgstr "從 R 函式庫中的二進位檔載入模組，而非從原始碼安裝。"
-
-msgctxt "PrefsAdvanced|"
-msgid "Source folder:"
-msgstr "來源資料夾："
-
-msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
 msgstr "選擇已安裝開發模組的 R 套件庫"
 
@@ -4497,10 +4465,6 @@ msgid ""
 "This will erase the 'renv', 'Modules' and development Module folders in the "
 "appdata."
 msgstr "這將會清除應用程式資料中的「renv」、「Modules」及開發模組資料夾。"
-
-msgctxt "PrefsAdvanced|"
-msgid "Enable renv mode"
-msgstr "啟用 renv 模式"
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
@@ -4955,97 +4919,6 @@ msgid ""
 msgstr ""
 "載入開發中模組發生問題：\n"
 "\n"
-
-msgctxt "DynamicModules|"
-msgid "Missing files or folders"
-msgstr "缺少檔案或資料夾"
-
-msgctxt "DynamicModules|"
-msgid ""
-"The selected folder cannot be installed as a developer module because it "
-"does not contain all the necessary files and folders."
-msgstr "所選資料夾不能安裝為開發人員模組，因為不含所需的檔和資料夾。"
-
-msgctxt "DynamicModules|"
-msgid "Create a inst/Description.qml file."
-msgstr "建立一個 inst/Description.qml 檔。"
-
-msgctxt "DynamicModules|"
-msgid "Create a R directory containing your analysis code."
-msgstr "建立包含分析語法的 R 目錄。"
-
-msgctxt "DynamicModules|"
-msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "建立一個包含您 optionsforms 的 inst/qml 目錄。"
-
-msgctxt "DynamicModules|"
-msgid ""
-"Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr "建立一個包含功能區按鈕圖示的 inst/icons 目錄。"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing %1"
-msgstr "缺少 %1"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 from your development module directory. Without "
-"it your module cannot work, make sure to put it back. For now your old %2 "
-"file will be kept."
-msgstr ""
-"您可能刪除了開發模組目錄中的 %1。沒有它，您的模組無法運作，請將其放回原處。目"
-"前將先保留舊的%2檔。"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had a %1 in your development module directory. "
-"Without it your module cannot work, make sure to create one. How you "
-"installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"開發模組目錄中似乎從未有過 %1。沒有它，您的模組無法運作，請務必確實建立一個模"
-"組。不確定您如何能安裝此模組，您應要卸載開發模組"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "%1 was removed!"
-msgstr "%1 已被刪除！"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 but this file is required for your module to "
-"work. The development module is going to be uninstalled now."
-msgstr "您似乎已刪除 %1，但您的模組需要此檔才能正常工作。現在將卸載開發模組。"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing folder %1"
-msgstr "遺失 %1資料夾"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed the folder %1 from your development module "
-"directory. Without it your module cannot work, make sure to put it back. For "
-"now your old folder will be kept."
-msgstr ""
-"疑似 %1資料夾從發展模組目錄中被移除。需要該模組才能執行程式，請將該模組復原，"
-"目前先保留舊資料夾。"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had the folder %1 in your development module "
-"directory. Without it your module cannot work, make sure to create one. How "
-"you installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"疑似開發模組目錄中從未建置 %1資料夾，需要該檔案夾模組才能執行模組。無法得知開"
-"發模組如何安裝，請將之移除"
 
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
@@ -9568,8 +9441,8 @@ msgid ""
 "press Discover endpoints — the URLs fill in and stay editable."
 msgstr ""
 "僅當您組織的設定與 JASP 預設值不同時才變更這些項目。若留空應用程式 ID，則使"
-"用 JASP 自身的註冊。使用自訂身分識別提供者？請於下方選取、完成 authority 欄位"
-"，然後按「探索端點」— URL 會自動填入並可繼續編輯。"
+"用 JASP 自身的註冊。使用自訂身分識別提供者？請於下方選取、完成 authority 欄"
+"位，然後按「探索端點」— URL 會自動填入並可繼續編輯。"
 
 msgctxt "PrefsAI|"
 msgid "Identity provider:"
@@ -9698,8 +9571,8 @@ msgid ""
 "requires (audience = cognitiveservices.azure.com)."
 msgstr ""
 "勾選：JASP 會送出 ID 權杖，其對象 (audience) 即為用戶端 ID 本身 — 閘道 "
-"(LiteLLM、APIM) 便可驗證 audience = 用戶端 ID，無需發佈範圍，也無需同意步驟"
-"。\n"
+"(LiteLLM、APIM) 便可驗證 audience = 用戶端 ID，無需發佈範圍，也無需同意步"
+"驟。\n"
 "\n"
 "取消勾選 (預設)：JASP 會送出存取權杖，符合直接使用 Azure OpenAI 的要求 "
 "(audience = cognitiveservices.azure.com)。"
@@ -9744,8 +9617,8 @@ msgid ""
 "columns are mentioned. If disabled the full dataset is loaded, just as "
 "before."
 msgstr ""
-"若啟用，data 與 filteredData 僅包含您程式碼中按名稱提及的欄 (及所要求的類型)"
-"，若未提及任何欄則完全不包含。若停用，則會載入完整資料集，與以往相同。"
+"若啟用，data 與 filteredData 僅包含您程式碼中按名稱提及的欄 (及所要求的類"
+"型)，若未提及任何欄則完全不包含。若停用，則會載入完整資料集，與以往相同。"
 
 msgctxt "WelcomePage|"
 msgid "How to Use"
@@ -9788,11 +9661,6 @@ msgstr "建立批次分析需要使用 JASP 企業版。"
 msgctxt "RCommander|"
 msgid "Could not read the analyses returned by the R code"
 msgstr "無法讀取 R 程式碼傳回的分析結果"
-
-#, qt-format
-msgctxt "RCommander|"
-msgid "Analysis not found: %1::%2"
-msgstr "找不到分析：%1::%2"
 
 #, qt-format
 msgctxt "RCommander|"
@@ -10064,4 +9932,36 @@ msgid ""
 "manually kill and engine by right-clicking it. \n"
 "This can be helpful if it stopped responding during some particularly heavy "
 "yet unnecessary calculation.\n"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "Could not create analysis %1: %2"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "Could not create analysis %1 (%2): %3"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "the entry is not valid JSON"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "the entry is not a JASP analysis"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid ""
+"'module' and 'analysis' must be the names of a module and one of its analyses"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "'options' must be a named list"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "module '%1' not found"
 msgstr ""

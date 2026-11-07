@@ -190,10 +190,6 @@ msgid "To use JASP Modules enable this option."
 msgstr "Para usar os Módulos JASP, habilite esta opção."
 
 msgctxt "PrefsAdvanced|"
-msgid "Browse to your JASP Module folder."
-msgstr "Ir até a pasta do módulo JASP."
-
-msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
 msgstr "Altere o repositório CRAN: "
 
@@ -325,20 +321,12 @@ msgid "Install Developer Module"
 msgstr "Instalar Módulo Desenvolvedor"
 
 msgctxt "ModulesMenu|"
-msgid "Installing Developer Module"
-msgstr "Instalando Módulo Desenvolvedor"
-
-msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
 msgstr "Selecionar Módulo Desenvolvedor"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
 msgstr "Instalar módulo de desenvolvedor selecionado"
-
-msgctxt "ModulesMenu|"
-msgid "Installing developer module now"
-msgstr "Instalando módulo de desenvolvedor agora"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
@@ -2219,10 +2207,6 @@ msgstr "Desativar Animações"
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
 msgstr "Usar diálogos de ficheiro nativo"
-
-msgctxt "ModulesMenu|"
-msgid "Select a developer module by clicking here"
-msgstr "Selecione um módulo do desenvolvedor clicando aqui"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
@@ -4402,18 +4386,6 @@ msgid "Development module"
 msgstr "Módulo de desenvolvimento"
 
 msgctxt "PrefsAdvanced|"
-msgid ""
-"Load modules from a binary in an R-library instead of installing it from "
-"sources."
-msgstr ""
-"Carregar módulos de um arquivo binário em uma biblioteca R em vez de "
-"instalar a partir da fonte."
-
-msgctxt "PrefsAdvanced|"
-msgid "Source folder:"
-msgstr "Pasta de origem:"
-
-msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
 msgstr "Escolha a biblioteca R onde você instalou o módulo de desenvolvimento"
 
@@ -4658,10 +4630,6 @@ msgid ""
 msgstr ""
 "Isso irá apagar as pastas 'renv', 'Modules' e os módulos de desenvolvimento "
 "na pasta 'appdata'."
-
-msgctxt "PrefsAdvanced|"
-msgid "Enable renv mode"
-msgstr "Habilitar modo renv"
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
@@ -5132,114 +5100,6 @@ msgid ""
 msgstr ""
 "Houve um problema ao carregar o módulo de desenvolvimento:\n"
 "\n"
-
-#, fuzzy
-msgctxt "DynamicModules|"
-msgid "Missing files or folders"
-msgstr "Faltam ficheiros ou pastas"
-
-#, fuzzy
-msgctxt "DynamicModules|"
-msgid ""
-"The selected folder cannot be installed as a developer module because it "
-"does not contain all the necessary files and folders."
-msgstr ""
-"A pasta selecionada não pode ser instalada como módulo de desenvolvimento "
-"porque não contém todos os ficheiros e pastas necessários."
-
-#, fuzzy
-msgctxt "DynamicModules|"
-msgid "Create a inst/Description.qml file."
-msgstr "Crie um ficheiro inst/Descrição.qml."
-
-#, fuzzy
-msgctxt "DynamicModules|"
-msgid "Create a R directory containing your analysis code."
-msgstr "Crie um diretório R contendo seu código de análise."
-
-#, fuzzy
-msgctxt "DynamicModules|"
-msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "Crie um diretório inst/qml contendo seus formulários de opção."
-
-#, fuzzy
-msgctxt "DynamicModules|"
-msgid ""
-"Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr ""
-"Crie um diretório inst/icons contendo os ícones para seus botões de fitas."
-
-#, fuzzy, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing %1"
-msgstr "Omisso %1"
-
-#, fuzzy, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 from your development module directory. Without "
-"it your module cannot work, make sure to put it back. For now your old %2 "
-"file will be kept."
-msgstr ""
-"Você parece ter removido %1 do diretório do seu módulo de desenvolvimento. "
-"Sem ele o seu módulo não pode funcionar, certifique-se de colocá-lo de "
-"volta. Por enquanto seu antigo ficheiro %2 será mantido."
-
-#, fuzzy, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had a %1 in your development module directory. "
-"Without it your module cannot work, make sure to create one. How you "
-"installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"Você parece nunca ter tido um %1 no diretório do seu módulo de "
-"desenvolvimento. Sem ele o seu módulo não pode funcionar, certifique-se de "
-"criar um. Como você instalou é um pouco misterioso e assim o módulo de "
-"desenvolvimento deve ser desinstalado agora"
-
-#, fuzzy, qt-format
-msgctxt "DynamicModules|"
-msgid "%1 was removed!"
-msgstr "%1 foi removido!"
-
-#, fuzzy, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 but this file is required for your module to "
-"work. The development module is going to be uninstalled now."
-msgstr ""
-"Você parece ter removido %1 mas este ficheiro é necessário para que o seu "
-"módulo funcione. O módulo de desenvolvimento vai ser desinstalado agora."
-
-#, fuzzy, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing folder %1"
-msgstr "Pasta ausente %1"
-
-#, fuzzy, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed the folder %1 from your development module "
-"directory. Without it your module cannot work, make sure to put it back. For "
-"now your old folder will be kept."
-msgstr ""
-"Você parece ter removido a pasta %1 do diretório do seu módulo de "
-"desenvolvimento. Sem ela o seu módulo não pode funcionar, certifique-se de "
-"colocá-lo de volta. Por enquanto, sua antiga pasta será mantida."
-
-#, fuzzy, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had the folder %1 in your development module "
-"directory. Without it your module cannot work, make sure to create one. How "
-"you installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"Você parece nunca ter tido um %1 no diretório do seu módulo de "
-"desenvolvimento. Sem ele o seu módulo não pode funcionar, certifique-se de "
-"criar um. Como você instalou é um pouco misterioso e assim o módulo de "
-"desenvolvimento deve ser desinstalado agora"
 
 #, fuzzy
 msgctxt "DynamicModules|"
@@ -8943,11 +8803,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "RCommander|"
-msgid "Analysis not found: %1::%2"
-msgstr ""
-
-#, qt-format
-msgctxt "RCommander|"
 msgid "Added %1 analyses"
 msgstr ""
 
@@ -9216,4 +9071,36 @@ msgid ""
 "manually kill and engine by right-clicking it. \n"
 "This can be helpful if it stopped responding during some particularly heavy "
 "yet unnecessary calculation.\n"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "Could not create analysis %1: %2"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "Could not create analysis %1 (%2): %3"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "the entry is not valid JSON"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "the entry is not a JASP analysis"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid ""
+"'module' and 'analysis' must be the names of a module and one of its analyses"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "'options' must be a named list"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "module '%1' not found"
 msgstr ""

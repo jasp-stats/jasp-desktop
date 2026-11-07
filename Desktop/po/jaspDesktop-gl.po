@@ -3,16 +3,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
-"PO-Revision-Date: 2026-11-06 09:51+0000\n"
-"Last-Translator: ecadrian <ecadrian@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/gl/>\n"
-"Language: gl\n"
-"X-Generator: Weblate 2026.11.2.dev0\n"
 
 msgctxt "SortMenuModel|"
 msgid "None"
@@ -591,10 +585,6 @@ msgid ""
 msgstr ""
 "Moitas compoñentes cargáronse cun tipo de valor equivocado, e reiniciáronse "
 "cos seus valores por defecto."
-
-msgctxt "PrefsAdvanced|"
-msgid "Browse to your JASP Module folder."
-msgstr "Navegar ata o teu cartafol de Módulos de JASP."
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
@@ -1531,10 +1521,6 @@ msgid "Select a Developer Module"
 msgstr "Escoller un Módulo de Desenvolvemento"
 
 msgctxt "ModulesMenu|"
-msgid "Installing Developer Module"
-msgstr "Instalando un Módulo de Desenvolvemento"
-
-msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
 msgstr "Instalar o módulo de desenvolvemento seleccionado"
 
@@ -1549,10 +1535,6 @@ msgstr "Cargado e listo para usar!"
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
 msgstr "Non está preparado para usar?"
-
-msgctxt "ModulesMenu|"
-msgid "Installing developer module now"
-msgstr "Instalando agora o módulo de desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
@@ -1888,10 +1870,6 @@ msgstr "Agochar o filtro"
 msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Restablecer"
-
-msgctxt "ModulesMenu|"
-msgid "Select a developer module by clicking here"
-msgstr "Escoller un módulo de desenvolvemento facendo clic aquí"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
@@ -4417,18 +4395,6 @@ msgid "Development module"
 msgstr "Módulo de Desenvolvemento"
 
 msgctxt "PrefsAdvanced|"
-msgid ""
-"Load modules from a binary in an R-library instead of installing it from "
-"sources."
-msgstr ""
-"Cargar módulos desde un binario nunha biblioteca de R, en troques de "
-"instalalos desde as fontes."
-
-msgctxt "PrefsAdvanced|"
-msgid "Source folder:"
-msgstr "Cartafol da fonte:"
-
-msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
 msgstr "Elixir a biblioteca de R onde instalaches o Módulo de Desenvolvemento"
 
@@ -4675,10 +4641,6 @@ msgid ""
 msgstr ""
 "Isto vai borrar os cartafoles 'renv', 'Modules' e Módulo de desenvolvemento "
 "no appdata."
-
-msgctxt "PrefsAdvanced|"
-msgid "Enable renv mode"
-msgstr "Habilitar o modo renv"
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
@@ -5152,110 +5114,6 @@ msgid ""
 msgstr ""
 "Houbo un problema ao cargar o módulo de desenvolvemento:\n"
 "\n"
-
-msgctxt "DynamicModules|"
-msgid "Missing files or folders"
-msgstr "Faltan ficheiros ou cartafoles"
-
-msgctxt "DynamicModules|"
-msgid ""
-"The selected folder cannot be installed as a developer module because it "
-"does not contain all the necessary files and folders."
-msgstr ""
-"O cartafol seleccionado non se pode instalar como un módulo de "
-"desenvolvemento porque non contén tódolos cartafoles e ficheiros necesarios."
-
-msgctxt "DynamicModules|"
-msgid "Create a inst/Description.qml file."
-msgstr "Crear un ficheiro inst/Description.qml."
-
-msgctxt "DynamicModules|"
-msgid "Create a R directory containing your analysis code."
-msgstr "Crear un directorio de R que conteña o teu código de análise."
-
-msgctxt "DynamicModules|"
-msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
-"Crear un directorio inst/qml que conteña os teus formularios de opción."
-
-msgctxt "DynamicModules|"
-msgid ""
-"Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr ""
-"Crear un directorio inst/icons que conteña as iconas para os teus botóns de "
-"cinta."
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing %1"
-msgstr "Falta %1"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 from your development module directory. Without "
-"it your module cannot work, make sure to put it back. For now your old %2 "
-"file will be kept."
-msgstr ""
-"Semella que eliminaches %1 do teu directorio de módulos de desenvolvemento. "
-"Como sen iso o teu módulo non pode funcionar, asegúrate de repoñelo. Polo "
-"momento, o teu antigo ficheiro %2 vaise conservar."
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had a %1 in your development module directory. "
-"Without it your module cannot work, make sure to create one. How you "
-"installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"Semella que nunca tiveches un %1 no teu directorio de módulos de "
-"desenvolvemento. Como sen iso o teu módulo non pode funcionar, asegúrate de "
-"crear un. Como o instalaches é un pouco misterioso, por iso o módulo de "
-"desenvolvemento debe desinstalarse agora"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "%1 was removed!"
-msgstr "Eliminouse %1!"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 but this file is required for your module to "
-"work. The development module is going to be uninstalled now."
-msgstr ""
-"Semella que eliminaches %1, pero este ficheiro é necesario para que funcione "
-"o teu módulo. O módulo de desenvolvemento vaise desinstalar agora."
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing folder %1"
-msgstr "Falta o cartafol %1"
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed the folder %1 from your development module "
-"directory. Without it your module cannot work, make sure to put it back. For "
-"now your old folder will be kept."
-msgstr ""
-"Semella que eliminaches o cartafol %1 do teu directorio de módulos de "
-"desenvolvemento. Como sen iso o teu módulo non pode funcionar, asegúrate de "
-"repoñelo. Polo momento, o teu antigo cartafol vaise conservar."
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had the folder %1 in your development module "
-"directory. Without it your module cannot work, make sure to create one. How "
-"you installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"Semella que nunca tiveches o cartafol %1 no teu directorio de módulos de "
-"desenvolvemento. Como sen iso o teu módulo non pode funcionar, asegúrate de "
-"crear un. Como o instalaches é un pouco misterioso, por iso o módulo de "
-"desenvolvemento debe desinstalarse agora"
 
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
@@ -9941,8 +9799,8 @@ msgid ""
 "stabilize variance and attempt to make the data more normal distribution-"
 "like."
 msgstr ""
-"Transformación Box-Cox de dous parámetros (transforma valores maiores que o -"
-"desprazamento) para estabilizar a varianza e tratar de facer os datos máis "
+"Transformación Box-Cox de dous parámetros (transforma valores maiores que o "
+"-desprazamento) para estabilizar a varianza e tratar de facer os datos máis "
 "semellantes aos dunha distribución Normal."
 
 msgctxt "ScriptConstructorRegistry|"
@@ -10494,11 +10352,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "RCommander|"
-msgid "Analysis not found: %1::%2"
-msgstr ""
-
-#, qt-format
-msgctxt "RCommander|"
 msgid "Added %1 analyses"
 msgstr ""
 
@@ -10767,4 +10620,36 @@ msgid ""
 "manually kill and engine by right-clicking it. \n"
 "This can be helpful if it stopped responding during some particularly heavy "
 "yet unnecessary calculation.\n"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "Could not create analysis %1: %2"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "Could not create analysis %1 (%2): %3"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "the entry is not valid JSON"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "the entry is not a JASP analysis"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid ""
+"'module' and 'analysis' must be the names of a module and one of its analyses"
+msgstr ""
+
+msgctxt "RCommander|"
+msgid "'options' must be a named list"
+msgstr ""
+
+#, qt-format
+msgctxt "RCommander|"
+msgid "module '%1' not found"
 msgstr ""
