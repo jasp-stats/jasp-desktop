@@ -181,6 +181,7 @@ void ListModelTermsAvailable::sourceVariableNamesChanged(QMap<QString, QString> 
 		const QString& oldName = it.key(), newName = it.value();
 
 		QSet<int> allIndexes = _allTerms.replaceVariableName(oldName.toStdString(), newName.toStdString());
+		_allSortedTerms.replaceVariableName(oldName.toStdString(), newName.toStdString()); // allTerms(): the order assigned lists sort dropped terms by
 
 		if (allIndexes.size() > 0)
 			allTermsChangedMap[oldName] = newName;
