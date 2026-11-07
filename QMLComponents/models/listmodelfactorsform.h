@@ -55,6 +55,7 @@ public:
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
 	
 	Terms					filterTerms(const Terms& terms, const QStringList& what)			override;
+	columnType				getVariableSourceType(const QString& name)					const	override;
 	void					initFactors(const FactorVec &factors);
 	int						count()														const				{ return int(_factors.size()); }
 	int						countVariables()											const;

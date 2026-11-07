@@ -19,6 +19,7 @@
 #include "factorsformbase.h"
 #include "qutils.h"
 #include "variableslistbase.h"
+#include "sourceitem.h"
 #include "variableinfo.h"
 #include "filter.h"
 #include "log.h"
@@ -53,6 +54,24 @@ void FactorsFormBase::setUpModel()
 	connect(_factorsModel, &ListModelFactorsForm::rowsRemoved, this, &FactorsFormBase::factorsItemsChanged);
 }
 
+void FactorsFormBase::addExplicitDependency()
+{
+	JASPListControl::addExplicitDependency();
+
+	// The terms of the factors come from the available variables list, which gets them from its sources (in a regression
+	// the Covariates and Factors lists): bind this form after these sources, so that the terms of its value find their
+	// variables there with the type these lists gave them. Bound before them, an already initialized form (R syntax)
+	// would drop the terms whose variables are not yet in the available list.
+	// Only bound sources: they are initialized by the binding itself, so this form never waits for a list that is not.
+	if (_availableVariablesListItem)
+		for (SourceItem* sourceItem : _availableVariablesListItem->sourceItems())
+		{
+			JASPListControl* source = sourceItem ? sourceItem->sourceListControl() : nullptr;
+			if (source && source->isBound())
+				addDependency(source);
+		}
+}
+
 void FactorsFormBase::bindTo(const Json::Value& value)
 {
 	Json::Value newValue = value;
@@ -77,6 +96,15 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 			valuePart = termsJson["value"];
 		else
 			valuePart = termsJson;
+
+		// R syntax gives a factor with one variable as a string, not as an array (jsonlite unboxes a vector of length 1)
+		if (valuePart.isString())
+		{
+			Json::Value oneTerm(Json::arrayValue);
+			oneTerm.append(valuePart);
+			valuePart = oneTerm;
+		}
+
 		for (Json::Value& termJson : valuePart)
 		{
 			std::vector<std::string> components;

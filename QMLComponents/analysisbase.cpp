@@ -389,6 +389,18 @@ Filter *AnalysisBase::filter() const
 	return _filter;
 }
 
+bool AnalysisBase::isColumnFreeOrMine(const QString & columnName) const
+{
+	// This base analysis (R syntax mode, unit tests) creates no columns of its own, so a column name is free
+	// when the data the form works on has no such column. Without its own filter the form uses the shown one.
+	const Filter * filter = _filter ? _filter.data() : (Workspace::singleton() ? Workspace::singleton()->shownFilter() : nullptr);
+
+	if(!filter || !filter->data())
+		return true;
+
+	return !filter->data()->column(columnName);
+}
+
 bool AnalysisBase::usesDataSet(int dataSetId) const
 {
 	//A multi-dataset aware analysis operates on exactly the datasets its options reference (plus
