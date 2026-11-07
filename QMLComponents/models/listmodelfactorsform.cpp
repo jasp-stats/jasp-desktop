@@ -60,6 +60,20 @@ QVariant ListModelFactorsForm::data(const QModelIndex &index, int role) const
 	return ListModel::data(index, role);
 }
 
+columnType ListModelFactorsForm::getVariableSourceType(const QString &name) const
+{
+	// The terms of the factors come from the available variables list of the form (in a regression for example
+	// from the Covariates and Factors lists): a variable keeps the type it has there, not its column type.
+	// Otherwise an untyped term (R syntax) gets the column type: an ordinal column put in Covariates (scale only) would be
+	// scale as a main effect but ordinal in an interaction, i.e. another column for the analysis.
+	JASPListControl* availableList = _factorsForm ? _factorsForm->availableVariablesList() : nullptr;
+
+	if (availableList && availableList->model())
+		return availableList->model()->getVariableSourceType(name);
+
+	return ListModel::getVariableSourceType(name);
+}
+
 void ListModelFactorsForm::initFactors(const FactorVec &factors)
 {
 	beginResetModel();
