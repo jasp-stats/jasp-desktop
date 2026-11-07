@@ -309,8 +309,11 @@ Json::Value FactorsFormBase::createFilterIds() const
 //the legacy/engine shape (roundtrip pinned by the qml factors-form provenance suite).
 Json::Value FactorsFormBase::createStorageValue() const
 {
-	if (!_factorsModel)
-		return createEngineValue();
+	// Before the first bindTo the factors model is still empty, but the null-path initialization
+	//(JASPControl::_setInitialized, via selfRebindFormat) binds this value: it must be the
+	//initNumberFactors defaults of createJson, not an empty list.
+	if (!_factorsModel || !initialized())
+		return createJson();
 
 	const ListModelFactorsForm::FactorVec &factors = _factorsModel->getFactors();
 	Json::Value boundValue(Json::arrayValue);
