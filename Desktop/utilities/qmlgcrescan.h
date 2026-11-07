@@ -28,14 +28,23 @@ class QQmlEngine;
 ///
 /// installQmlGcRescan repeats Qt's own pass, to completion, right before marking ends (the MarkReady step of Qt's private GC state machine),
 /// then starts a fresh time slice so that Qt rescans the JS stack and drains (InitCallDestroyObjects) before any JS runs again.
-/// Not covered: JS that runs during the later, interruptible steps of the same cycle (destroying objects, sweeping).
+/// Not covered: QObjects that JS parents or roots during the later, interruptible steps of the same cycle (destroying objects, sweeping).
 /// Cost: one blocking step per GC cycle that grows with the number of QML objects, about 6 ms per open analysis form
 /// (under 0.1 ms in a fresh session, 144 ms with 25 Parametric Survival analyses; Qt 6.11.1, Windows).
+///
+/// A second bug of the same collector: the identifiers held by identifier hashes (the property names of every QQmlContext) are marked only at the start of a cycle,
+/// and an identifier that already exists, unmarked, is not marked when a hash takes it during the cycle (IdentifierTable::resolveStringEntry, IdentifierHash::addEntry).
+/// JASP's controls intern "isDynamic" with a failed contextProperty lookup, and RowControls then sets it on every row's context: rows created during a cycle
+/// (a saved form with a ComponentsList whose rows have a rowComponent) keep a swept string, and the next cycle crashes in QV4::MarkStack::drain.
+/// So the hook also marks all identifier hashes again at MarkReady (incremental cycles) and right before every sweep (DoSweep).
+/// Cost: under 1.5 ms per cycle with 23 Network Meta-Analysis forms open, where the weak-value rescan takes 31 ms.
+///
 /// It must be called for every QQmlEngine that builds analysis forms; only MainWindow's engine is hooked (not SyntaxInterface's).
 /// Uses Qt's private API (Qt::QmlPrivate): compiled only for Qt >= 6.8, and installed only when the Qt at run time is the version it was built with.
 /// Tested with Qt 6.11.1; the Qt logic it relies on is equivalent from 6.8.0 through 6.12 and dev.
-/// Remove it once Qt repeats the weak-value pass before sweeping. Check with Qt >= 6.11, which has the validator: with QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1,
-/// QV4_GC_TIMELIMIT=1 and the installQmlGcRescan call removed, creating a few Parametric Survival analyses then logs no "Cross Validation Error".
+/// Remove it once Qt repeats the weak-value pass before sweeping and marks an identifier when a hash takes it during a cycle (neither is the case in Qt dev, 2026-11).
+/// Check with Qt >= 6.11, which has the validator: with QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1, QV4_GC_TIMELIMIT=1 and the installQmlGcRescan call removed,
+/// creating a few Parametric Survival analyses and opening a saved analysis with ComponentsList rows then log no "Cross Validation Error".
 ///
 void installQmlGcRescan(QQmlEngine * engine);
 
