@@ -2049,6 +2049,9 @@ void MainWindow::fileEventRequestHandler(FileEvent *event)
 		_resultsJsInterface->exportPreviewHTML();
 		_package->setAnalysesData(_analyses->asJson());
 
+		if (!event->isTmp())
+			_package->removeAutoSaveInfo();
+
 		std::string snapshotError;
 		if (!JASPExporter::createSnapshot(event->isTmp() ? "jasp_autosave_snapshot_" : "jasp_snapshot_", &snapshotError))
 		{
