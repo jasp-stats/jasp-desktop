@@ -216,6 +216,60 @@
 			}
 		},
 		{
+			"name": "analysis_setTitle",
+			"summary": "Set the title of an analysis, as editing it in the results does. Analyses created over RPC start with the title '<name> (AI)'.",
+			"x-displayName": "Set Analysis Title",
+			"x-failOnStateDiverged": true,
+			"params": [
+				{
+					"name": "analysisId",
+					"required": true,
+					"description": "The integer identifier of the analysis.",
+					"schema": {
+						"type": "integer"
+					}
+				},
+				{
+					"name": "title",
+					"required": true,
+					"description": "The new title. An empty string restores the analysis' default title.",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_setTitle_result",
+				"description": "Identity of the analysis and its title.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success' when the title was set."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "The analysis id, echoed back."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name."
+						},
+						"title": {
+							"type": "string",
+							"description": "The title the analysis has now."
+						}
+					},
+					"required": ["status", "analysisId", "title"]
+				}
+			}
+		},
+		{
 			"name": "analysis_run",
 			"summary": "Set options and run an analysis, blocking up to timeoutMs for the R engine to finish. Combines setOptions + results in one call. Use analysis_results to poll if the timeout fires.",
 			"x-displayName": "Run Analysis",
@@ -1031,6 +1085,52 @@
 						}
 					},
 					"required": ["status", "loaded"]
+				}
+			}
+		},
+		{
+			"name": "file_save",
+			"summary": "Save the workspace as a .jasp file, like File > Save As without a dialog, also when no data is loaded. Overwrites an existing file. Waits for running analyses first, so a file never holds unfinished results. Afterwards the workspace is unmodified and its current file is the saved one.",
+			"x-displayName": "Save JASP File",
+			"params": [
+				{
+					"name": "path",
+					"required": true,
+					"description": "Absolute path of the .jasp file to write. Its folder must exist.",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "timeoutMs",
+					"required": false,
+					"description": "Maximum milliseconds to wait for running analyses and the save together. When it runs out while analyses are unfinished nothing is saved.",
+					"schema": {
+						"type": "integer",
+						"default": 30000
+					}
+				}
+			],
+			"result": {
+				"name": "file_save_result",
+				"description": "The saved file, or status 'error' with a message when it was not saved.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "'success' when the file was saved, otherwise 'error'."
+						},
+						"path": {
+							"type": "string",
+							"description": "The path of the saved file."
+						},
+						"modified": {
+							"type": "boolean",
+							"description": "Whether the workspace counts as modified after the save."
+						}
+					},
+					"required": ["status", "path", "modified"]
 				}
 			}
 		},

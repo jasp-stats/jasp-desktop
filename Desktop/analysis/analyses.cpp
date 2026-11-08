@@ -1531,6 +1531,22 @@ void Analyses::registerRpcHandlers()
 		return response;
 	});
 
+	disp->registerMethodByName("analysis_setTitle", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		a->setTitle(params["title"].asString());
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
+		response["title"] = a->title();
+		return response;
+	});
+
 	disp->registerMethodByName("analysis_run", [](const Json::Value& params) -> Json::Value
 	{
 		int analysisId = params["analysisId"].asInt();
