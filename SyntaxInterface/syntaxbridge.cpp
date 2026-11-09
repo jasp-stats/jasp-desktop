@@ -348,6 +348,24 @@ static void clearQmlFormCache()
 	}
 }
 
+//QmlUtils::setupQMLEngine sets the `dataSetInfo` context property (rowCount, dataAvailable... that
+//forms bind to, e.g. `max: dataSetInfo.rowCount`) to the VariableInfo of the Workspace that exists at
+//that moment. The Workspace owns that VariableInfo, and the bridge replaces the Workspace on every
+//reset (each unnamed loadDataSet, a .jasp load, clearing the dataset state): the property then points
+//at a deleted object and reads as null in QML, so such bindings fail and the form rejects valid values.
+//Desktop keeps one Workspace for its whole life, which is why it never needed this.
+static void syncDataSetInfoContextProperty()
+{
+	if (!gl_qmlEngine)
+		return;
+
+	QObject		* varInfo = Workspace::singleton() ? Workspace::singleton()->varInfo() : nullptr;
+	QQmlContext	* context = gl_qmlEngine->rootContext();
+
+	if (context->contextProperty("dataSetInfo").value<QObject*>() != varInfo)
+		context->setContextProperty("dataSetInfo", varInfo);
+}
+
 static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
 {
 	bool providerWillBeRecreated = gl_initialized && gl_initializedDbInMemory != dbInMemory;
@@ -359,6 +377,7 @@ static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
 
 	DataSetProvider * provider = DataSetProvider::getProvider(dbInMemory, resetDataSet, gl_application);
 	gl_initializedDbInMemory = dbInMemory;
+	syncDataSetInfoContextProperty();
 	return provider;
 }
 
@@ -560,6 +579,7 @@ const char* STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * fileP
 		provider->closeDatabase();
 		ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float) {});
 		provider->loadDatabase(jaspVersion);
+		syncDataSetInfoContextProperty();   //loadDatabase replaced the Workspace
 		status["databaseUpgraded"] = true;
 		createDataBridge(false);
 
@@ -609,6 +629,9 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	//next request's dataset reads silently get handed the previous run's dataset/filter/columns.
 	if (gl_dataBridge)
 		gl_dataBridge->setMultiDataSetQueue({});
+
+	//Whatever replaced the Workspace since the last request, the form must see the current one.
+	syncDataSetInfoContextProperty();
 
 	std::string qmlFileStr		= qmlFile,
 				versionStr		= version,
