@@ -1024,6 +1024,15 @@ bool init(bool dbInMemory)
 
 	qputenv("QT_QPA_PLATFORM", "minimal");
 
+	// Qt's incremental QML garbage collector (Qt 6.10, 6.11) can lose an identifier that QQmlContext::setContextProperty
+	// adds while a collection is half done (IdentifierHash::add has no write barrier): the "isDynamic" context property of
+	// the rows of a ComponentsList (RowControls) then reads as unset, so their controls register as form controls and every
+	// next row gets "2 controls have the same name". The bridge has no event loop, so a collection stays half done across
+	// the creation of forms (it happened at the 2nd parse of jaspSurvival's Parametric Survival form).
+	// A non-incremental collection (time limit 0) never leaves a collection half done. Desktop's engine has installQmlGcRescan.
+	if (!qEnvironmentVariableIsSet("QV4_GC_TIMELIMIT"))
+		qputenv("QV4_GC_TIMELIMIT", "0");
+
 	gl_application = new QGuiApplication(gl_applicationArgc, gl_applicationArgv.data());
 	gl_qmlEngine = new QQmlEngine();
 
