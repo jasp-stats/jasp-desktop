@@ -112,20 +112,27 @@ QString Upgrade::module() const
 
 void Upgrade::registerStep(QQuickItem * parent)
 {
-	Upgrades * upgrades = qobject_cast<Upgrades*>(parent);
-	
-	if(!upgrades && parent)
-		throw upgradeLoadError(fq(toString()), "An Upgrade Item must always be a child of Upgrades");
-
-	if(upgrades != _upgrades)
+	try
 	{
-		if(_upgrades)
-			_upgrades->removeStep(this);
+		Upgrades * upgrades = qobject_cast<Upgrades*>(parent);
 
-		_upgrades = upgrades;
+		if(!upgrades && parent)
+			throw upgradeLoadError(fq(toString()), "An Upgrade Item must always be a child of Upgrades");
 
-		if(_upgrades)
-			_upgrades->addStep(this);
+		if(upgrades != _upgrades)
+		{
+			if(upgrades)
+				upgrades->addStep(this); //First, so that this step stays out of upgrades if it cannot be added
+
+			if(_upgrades)
+				_upgrades->removeStep(this);
+
+			_upgrades = upgrades;
+		}
+	}
+	catch(upgradeLoadError & error) //See Upgrades::addLoadError
+	{
+		Upgrades::addLoadError(error.what());
 	}
 }
 

@@ -6,9 +6,18 @@
 namespace Modules
 {
 
+std::vector<std::string> Upgrades::_loadErrors;
+
 Upgrades::Upgrades()
 {
 
+}
+
+std::vector<std::string> Upgrades::takeLoadErrors()
+{
+	std::vector<std::string> errors;
+	errors.swap(_loadErrors);
+	return errors;
 }
 
 bool Upgrades::findClosestVersion(const std::string & function, Version & version)

@@ -17,11 +17,12 @@ void ChangeRemove::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool 
 		throw upgradeError("Could not erase option '" + name + "' because options does not contain it.", true);
 
 	options.removeMember(name);
-	msgs.erase(name);
+	if(!inMeta) //the msgs are about the options, applying this to .meta as well must not touch them again
+		msgs.erase(name);
 
 	msgs[logId].push_back(prefixLog + "Removed option '" + name + "'");
 
-	if(msg() != "")
+	if(!inMeta && msg() != "")
 		msgs[name].push_back(fq(msg()));
 }
 

@@ -113,16 +113,13 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		return nullptr;
 	}
 
-	Analysis				*	analysis		= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), optionsJson);
+	Analysis				*	analysis		= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), optionsJson, wasUpgraded ? &msgs : nullptr);
 
 	if(msgs.count(Modules::analysisLog))
 	{
 		QStringList msgAna = tq(msgs[Modules::analysisLog]);
 		analysis->setErrorInResults(fq(msgAna.join("\n")));
 	}
-
-	if(wasUpgraded)
-		analysis->setUpgradeMsgs(msgs);
 
 	if(!TempFiles::stateFileExists(id))
 		analysis->_storedWithoutState = true; //This will trigger the "you need a refresh" on resize
@@ -147,9 +144,13 @@ Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, const Json::V
 	return create(Json::nullValue, analysisEntry, _nextId++, Analysis::Empty, true, "", "", options);
 }
 
-Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, const std::string & title, const Version & optionsVersion, const Json::Value & options)
+Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, const std::string & title, const Version & optionsVersion, const Json::Value & options, const Modules::UpgradeMsgs * upgradeMsgs)
 {
 	Analysis *analysis = new Analysis(id, analysisEntry, title, optionsVersion, options);
+
+	//The upgrade messages must be set before storeAnalysis, because the form may be created (and read them in AnalysisForm::bindTo) from there on
+	if(upgradeMsgs)
+		analysis->setUpgradeMsgs(*upgradeMsgs);
 
 	analysis->checkDefaultTitleFromJASPFile(analysisData);
 
