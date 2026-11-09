@@ -26,7 +26,9 @@
 
 #include <QString>
 #include <QMap>
+#include <QEventLoop>
 #include <QAbstractListModel>
+#include <functional>
 #include <sstream>
 
 class RibbonModel;
@@ -233,7 +235,15 @@ private:
 	///< error is set, or the timeout passes. Used by handlers that report identity/options derived
 	///< from the form - awareness (multiDataSetAware) only exists once the form's selection hosts
 	///< registered, and the form is instantiated by the QML delegate a few event-loop passes late.
-	static void			_rpcWaitForFormInitialized(Analysis* a, int timeoutMs);
+	///< Returns false when the analysis was removed meanwhile (see _rpcWaitWhileExists).
+	static bool			_rpcWaitForFormInitialized(Analysis* a, int timeoutMs);
+	///< Block (bounded) until the analysis finished. Returns false when it was removed meanwhile (see _rpcWaitWhileExists).
+	static bool			_rpcWaitUntilFinished(Analysis* a, int timeoutMs);
+	///< A blocking RPC waits in a nested event loop, where the user can still remove the analysis, close the
+	///< workspace or reload its module: that deletes the analysis. The wait then ends at once and this returns
+	///< false, and the caller must not touch `a` any more. `setup` connects what else ends the wait.
+	static bool			_rpcWaitWhileExists(Analysis* a, int timeoutMs, const std::function<void(QEventLoop&)>& setup);
+	static Json::Value	_rpcAnalysisRemovedError(int analysisId);
 	static void			_rpcWriteIdentity(Json::Value& response, Analysis* a);
 	static void			_rpcWriteStatus(Json::Value& response, Analysis* a);
 	static void			_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc);

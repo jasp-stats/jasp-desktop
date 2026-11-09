@@ -29,6 +29,7 @@
 #include <QSet>
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <QPointer>
 #include <QRegularExpression>
 #include <json/value.h>
 #include "log.h"
@@ -1015,16 +1016,50 @@ Analysis* Analyses::_rpcResolveAnalysis(int analysisId, Json::Value& errorRespon
 	return a;
 }
 
-void Analyses::_rpcWaitForFormInitialized(Analysis* a, int timeoutMs)
+bool Analyses::_rpcWaitWhileExists(Analysis* a, int timeoutMs, const std::function<void(QEventLoop&)>& setup)
+{
+	const size_t		id = a->id();
+	QPointer<Analysis>	alive(a);
+
+	JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+		[&](QEventLoop& loop, QTimer&)
+		{
+			setup(loop);
+			QObject::connect(a, &QObject::destroyed, &loop, &QEventLoop::quit);
+		});
+
+	//The second check: removed, but its deleteLater did not run yet when the timeout ended the wait.
+	return alive && analyses()->get(id) == a;
+}
+
+bool Analyses::_rpcWaitUntilFinished(Analysis* a, int timeoutMs)
+{
+	return _rpcWaitWhileExists(a, timeoutMs,
+		[a](QEventLoop& loop)
+		{
+			QObject::connect(a, &Analysis::statusChanged, &loop,
+				[&loop](Analysis* analysis) {
+					if (analysis->isFinished())
+						loop.quit();
+				});
+		});
+}
+
+Json::Value Analyses::_rpcAnalysisRemovedError(int analysisId)
+{
+	return JaspRpcDispatcher::errorResult("Analysis " + std::to_string(analysisId) + " was removed while waiting for it");
+}
+
+bool Analyses::_rpcWaitForFormInitialized(Analysis* a, int timeoutMs)
 {
 	//Pre-check before entering: between here and the connects below no event is processed,
 	//so the state cannot change under us. A form that is already up (or a QML that already
 	//failed) needs no wait at all.
-	if (!a || (a->form() && a->form()->initialized()) || a->qmlError() != "")
-		return;
+	if ((a->form() && a->form()->initialized()) || a->qmlError() != "")
+		return true;
 
-	JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
-		[&](QEventLoop& loop, QTimer&)
+	return _rpcWaitWhileExists(a, timeoutMs,
+		[a](QEventLoop& loop)
 		{
 			auto settle = [&loop, a]()
 			{
@@ -1463,7 +1498,9 @@ void Analyses::registerRpcHandlers()
 		//form's selection hosts - and options/meta come from real component state. A QML error
 		//ends the wait immediately, exactly like a timeout would.
 		int timeoutMs = params.isMember("timeoutMs") ? params["timeoutMs"].asInt() : 10000;
-		_rpcWaitForFormInitialized(a, timeoutMs);
+		const int analysisId = static_cast<int>(a->id());
+		if (!_rpcWaitForFormInitialized(a, timeoutMs))
+			return _rpcAnalysisRemovedError(analysisId);
 
 		Json::Value response = JaspRpcDispatcher::successResult();
 		_rpcWriteIdentity(response, a);
@@ -1601,14 +1638,8 @@ void Analyses::registerRpcHandlers()
 		}
 
 		// Blocking wait for R engine to finish
-		JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
-			[&](QEventLoop& loop, QTimer&) {
-				QObject::connect(a, &Analysis::statusChanged, &loop,
-					[&loop](Analysis* analysis) {
-						if (analysis->isFinished())
-							loop.quit();
-					});
-			});
+		if (!_rpcWaitUntilFinished(a, timeoutMs))
+			return _rpcAnalysisRemovedError(analysisId);
 
 		Json::Value response = JaspRpcDispatcher::successResult();
 		_rpcWriteIdentity(response, a);
@@ -1699,14 +1730,8 @@ void Analyses::registerRpcHandlers()
 					"Analysis has form validation errors: " + formErrorMsg);
 		}
 
-		JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
-			[&](QEventLoop& loop, QTimer&) {
-				QObject::connect(a, &Analysis::statusChanged, &loop,
-					[&loop](Analysis* analysis) {
-						if (analysis->isFinished())
-							loop.quit();
-					});
-			});
+		if (!_rpcWaitUntilFinished(a, timeoutMs))
+			return _rpcAnalysisRemovedError(analysisId);
 
 		// Build response — may be finished or still running if timeout fired
 		Json::Value response = JaspRpcDispatcher::successResult();
