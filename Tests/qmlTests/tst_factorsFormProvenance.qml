@@ -43,6 +43,7 @@ Item
 		{
 			id:					factorsFF
 			name:				"factorsFF"
+			availableVariablesListName: "availableFF" // a control name must be unique in a form: not twice the default name
 			initNumberFactors:	2
 			baseName:			"Fac"
 			baseTitle:			"Factor"
@@ -55,6 +56,7 @@ Item
 		{
 			id:					factorsInt
 			name:				"factorsInt"
+			availableVariablesListName: "availableInt"
 			initNumberFactors:	1
 			baseName:			"IntFac"
 			baseTitle:			"Int Factor"

@@ -234,7 +234,7 @@ public:
 	virtual void					filterDoneHandler(	int dataSetID, const QString & name, const QString & error);
 
 	virtual QString					friendlyName() const;
-	virtual void					addExplicitDependency();
+	void							addExplicitDependency();
 	bool							hasLabelOrInfo() const;
 
 
