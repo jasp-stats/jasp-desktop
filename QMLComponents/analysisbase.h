@@ -96,7 +96,7 @@ public:
 	virtual Q_INVOKABLE	QString				helpFile()													const	{ return ""; }
 	virtual Q_INVOKABLE void				createForm(QQuickItem* parentItem=nullptr);
 	virtual				void				destroyForm();
-	virtual				bool				isColumnFreeOrMine(const QString & columnName)				const	{ return false; }
+	virtual				bool				isColumnFreeOrMine(const QString & columnName)				const;
 	virtual				DataSet *			dataSet()													const	{ return nullptr; }
 
 	// ---- VariableInfoProvider over the selection-host registry -------------
