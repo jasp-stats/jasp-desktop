@@ -457,6 +457,11 @@ void AnalysisForm::_setUp()
 
 	sortControls(controls);
 
+	// setAnalysisUp sets the controls up again when the options are set again (setOptions): without clearing,
+	// every control would be in this list once more, and bindTo would bind each control several times. That hid
+	// any value a control loses during the bind, since its last bind restored it, unlike a JASP file or the syntax bridge.
+	_dependsOrderedCtrls.clear();
+
 	for (JASPControl* control : controls)
 	{
 		_dependsOrderedCtrls.push_back(control);
