@@ -47,6 +47,7 @@ public:
 	void			bindTo(const Json::Value& value)					override;
 	ListModel*		model()										const	override	{ return _factorsModel; }
 	void			setUpModel()										override;
+	void			setUp()												override;
 	bool			containsVariables()							const	override	{ return true; };
 
 	// (per-factor provenance): the transient `.filterIds` sidecar node of this

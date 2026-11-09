@@ -427,7 +427,12 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		+ FunctionLineIndent + "}\n";
 	}
 
+	// Only the arguments of the call are options: the form gives the others their default, as in JASP, where a default
+	// can depend on other options (`checked: secondaryFactor.count === 0`). The default of an argument is the default
+	// of its control in an empty form, so passing it would override what the form gives once the call's options are set.
 	result += "\n"
+	+ FunctionLineIndent + "# Options not given in the call get their default from the form, which can depend on the other options.\n"
+	+ FunctionLineIndent + "options <- options[names(options) %in% names(match.call())[-1L]]\n"
 	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + moduleName + "\", \"" + analysisName + "\", \"" + qmlFileName + "\", options, version, " + (preloadData ? "TRUE" : "FALSE") + (multiDataSetAware ? ", datasets = datasets" : "") + "))\n"
 	+ "}";
 

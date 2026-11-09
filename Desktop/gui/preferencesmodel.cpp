@@ -86,25 +86,6 @@ void PreferencesModel::browseSpreadsheetEditor()
 	
 }
 
-void PreferencesModel::browseDeveloperFolder()
-{
-	QString defaultfolder = developerFolder();
-	if (defaultfolder.isEmpty())
-	{
-#ifdef _WIN32
-		defaultfolder = "c:\\";
-#else
-		defaultfolder = "~";
-#endif
-	}
-	
-	QString folder = MessageForwarder::browseOpenFolder(tr("Select a folder..."), defaultfolder);
-	
-	if (!folder.isEmpty())
-		setDeveloperFolder(folder);	
-}
-
-
 void PreferencesModel::browseDeveloperLibPathFolder()
 {
 	QString defaultfolder = directLibpathFolder();
@@ -174,7 +155,6 @@ GET_PREF_FUNC_BOOL(	normalizedNotation,				Settings::NORMALIZED_NOTATION						)
 GET_PREF_FUNC_FLT(	ribbonBarHeightScale,			Settings::RIBBON_BAR_HEIGHT_SCALE					)
 GET_PREF_FUNC_BOOL(	useDefaultEditor,				Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
 GET_PREF_FUNC_STR(	customEditor,					Settings::SPREADSHEET_EDITOR_NAME					)
-GET_PREF_FUNC_STR(	developerFolder,				Settings::DEVELOPER_FOLDER							)
 GET_PREF_FUNC_BOOL(	useDefaultPPI,					Settings::PPI_USE_DEFAULT							)
 GET_PREF_FUNC_INT(	customPPI,						Settings::PPI_CUSTOM_VALUE							)
 GET_PREF_FUNC_WHT(	whiteBackground,				Settings::IMAGE_BACKGROUND							)
@@ -212,7 +192,6 @@ GET_PREF_FUNC_BOOL( moduleStoreEnabled,				Settings::MODULE_STORE_ENABLED						)
 GET_PREF_FUNC_INT(	maxScaleLevels,					Settings::MAX_SCALE_LEVELS							)
 GET_PREF_FUNC_BOOL(	pdfLandscape,					Settings::PDF_LANDSCAPE								)
 GET_PREF_FUNC_INT(	pdfPageSize,					Settings::PDF_PAGESIZE								)
-GET_PREF_FUNC_BOOL( directLibpathEnabled,			Settings::DIRECT_LIBPATH_ENABLED					)
 GET_PREF_FUNC_STR(	directLibpathFolder,			Settings::DIRECT_LIBPATH_FOLDER						)
 GET_PREF_FUNC_STR(	directDevModName,				Settings::DIRECT_DEVMOD_NAME						)
 GET_PREF_FUNC_STR(	localConfigurationPATH,			Settings::LOCAL_CONFIGURATION_PATH              	)
@@ -353,9 +332,9 @@ void PreferencesModel::setFixedDecimals(bool newFixedDecimals)
 {
 	if (fixedDecimals() == newFixedDecimals)
 		return;
-	
-	Settings::setValue(Settings::FIXED_DECIMALS, newFixedDecimals);
-	
+
+	if(!Settings::setValue(Settings::FIXED_DECIMALS, newFixedDecimals)) return;
+
 	emit fixedDecimalsChanged(newFixedDecimals);
 	emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
@@ -364,9 +343,9 @@ void PreferencesModel::setNumDecimals(int newNumDecimals)
 {
 	if (numDecimals() == newNumDecimals)
 		return;
-	
-	Settings::setValue(Settings::NUM_DECIMALS, newNumDecimals);
-	
+
+	if(!Settings::setValue(Settings::NUM_DECIMALS, newNumDecimals)) return;
+
 	emit numDecimalsChanged(newNumDecimals);
 	
 	if(fixedDecimals())
@@ -395,24 +374,24 @@ void PreferencesModel::onDefaultPPIChanged(int)
 #define SET_PREF_FUNCTION(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
 void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 {																		\
-		if(GET_FUNC() == newVal) return;									\
-		Settings::setValue(SETTING, newVal);								\
-		emit NOTIFY(newVal);												\
+	if(GET_FUNC() == newVal) return;									\
+	if(!Settings::setValue(SETTING, newVal)) return;			\
+	emit NOTIFY(newVal);												\
 }
 
 #define SET_PREF_FUNCTION_EMIT_NO_ARG(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
 void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 {																		\
-		if(GET_FUNC() == newVal) return;									\
-		Settings::setValue(SETTING, newVal);								\
-		emit NOTIFY();														\
+	if(GET_FUNC() == newVal) return;									\
+	if(!Settings::setValue(SETTING, newVal)) return;			\
+	emit NOTIFY();														\
 }
 
 void PreferencesModel::setCurrentThemeName(QString _currentThemeName)
 {
 	if (currentThemeName() == _currentThemeName) return;
-	
-	Settings::setValue(Settings::THEME_NAME, _currentThemeName);
+
+	if(!Settings::setValue(Settings::THEME_NAME, _currentThemeName)) return;
 	JaspTheme::setCurrentThemeFromName(_currentThemeName);
 	
 	emit currentThemeNameChanged(_currentThemeName);
@@ -424,7 +403,6 @@ SET_PREF_FUNCTION(				bool,		setUseDefaultEditor,		useDefaultEditor,			useDefaul
 SET_PREF_FUNCTION(				QString,	setCustomEditor,			customEditor,				customEditorChanged,			Settings::SPREADSHEET_EDITOR_NAME					)
 SET_PREF_FUNCTION(				bool,		setUseDefaultPPI,			useDefaultPPI,				useDefaultPPIChanged,			Settings::PPI_USE_DEFAULT							)
 SET_PREF_FUNCTION(				bool,		setDeveloperMode,			developerMode,				developerModeChanged,			Settings::DEVELOPER_MODE							)
-SET_PREF_FUNCTION(				QString,	setDeveloperFolder,			developerFolder,			developerFolderChanged,			Settings::DEVELOPER_FOLDER							)
 SET_PREF_FUNCTION(				int,		setCustomPPI,				customPPI,					customPPIChanged,				Settings::PPI_CUSTOM_VALUE							)
 SET_PREF_FUNCTION(				float,		setRibbonBarHeightScale,	ribbonBarHeightScale,		ribbonBarHeightScaleChanged,	Settings::RIBBON_BAR_HEIGHT_SCALE					)
 SET_PREF_FUNCTION(				bool,		setLogToFile,				logToFile,					logToFileChanged,				Settings::LOG_TO_FILE								)
@@ -459,7 +437,6 @@ SET_PREF_FUNCTION(				bool,		setModuleStoreEnabled,		moduleStoreEnabled,			modul
 SET_PREF_FUNCTION(				int,		setMaxScaleLevels,			maxScaleLevels,				maxScaleLevelsChanged,			Settings::MAX_SCALE_LEVELS							)
 SET_PREF_FUNCTION(				bool,		setPdfLandscape,			pdfLandscape,				pdfLandscapeChanged,			Settings::PDF_LANDSCAPE								)
 SET_PREF_FUNCTION(				int,		setPdfPageSize,				pdfPageSize,				pdfPageSizeChanged,				Settings::PDF_PAGESIZE								)
-SET_PREF_FUNCTION(				bool,		setDirectLibpathEnabled,	directLibpathEnabled,		directLibpathEnabledChanged,	Settings::DIRECT_LIBPATH_ENABLED					)
 SET_PREF_FUNCTION(				QString,	setDirectDevModName,		directDevModName,			directDevModNameChanged,		Settings::DIRECT_DEVMOD_NAME						)
 SET_PREF_FUNCTION(				QString,	setLocalConfigurationPATH,	localConfigurationPATH,		localConfigurationPATHChanged,	Settings::LOCAL_CONFIGURATION_PATH					)
 SET_PREF_FUNCTION(				bool,   	setRemoteConfiguration, 	remoteConfiguration,		remoteConfigurationChanged,     Settings::REMOTE_CONFIGURATION  					)
@@ -500,9 +477,9 @@ void PreferencesModel::setGithubPatCustom(QString newPat)
 {
 	if (githubPatCustom() == newPat)
 		return;
-	
-	Settings::setValue(Settings::GITHUB_PAT_CUSTOM, encrypt(newPat));
-	
+
+	if(!Settings::setValue(Settings::GITHUB_PAT_CUSTOM, encrypt(newPat))) return;
+
 	emit githubPatCustomChanged();
 }
 
@@ -529,8 +506,8 @@ void PreferencesModel::setUiScale(double newUiScale)
 	
 	if (std::abs(uiScale() - newUiScale) < 0.001)
 		return;
-	
-	Settings::setValue(Settings::UI_SCALE, newUiScale);
+
+	if(!Settings::setValue(Settings::UI_SCALE, newUiScale)) return;
 	_uiScale = newUiScale;
 	
 	emit uiScaleChanged();
@@ -540,8 +517,8 @@ void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
 {
 	if (modulesRemembered() == newModulesRemembered)
 		return;
-	
-	Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
+
+	if(!Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'))) return;
 	emit modulesRememberedChanged();
 }
 
@@ -549,8 +526,8 @@ void PreferencesModel::setSafeGraphics(bool newSafeGraphics)
 {
 	if (safeGraphics() == newSafeGraphics)
 		return;
-	
-	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics);
+
+	if(!Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics)) return;
 	emit modulesRememberChanged(newSafeGraphics);
 	
 	MessageForwarder::showWarning(tr("Safe Graphics mode changed"), tr("You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP"));
@@ -604,8 +581,8 @@ void PreferencesModel::setThresholdScale(int newThresholdScale)
 {
 	if (thresholdScale() == newThresholdScale)
 		return;
-	
-	Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
+
+	if(!Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale)) return;
 	emit thresholdScaleChanged(newThresholdScale);
 	
 }
@@ -717,7 +694,7 @@ void PreferencesModel::_setEmptyValues(const QStringList& values)
 {
 	if (values != emptyValues())
 	{
-		Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"));
+		if(!Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"))) return;
 		emit emptyValuesChanged();
 	}
 }
@@ -737,14 +714,14 @@ void PreferencesModel::setDirectLibpathFolder(QString libpath)
 {
 	if (libpath != "")
 	{
-		Settings::setValue(Settings::DIRECT_LIBPATH_FOLDER, libpath);
+		if(!Settings::setValue(Settings::DIRECT_LIBPATH_FOLDER, libpath)) return;
 		emit directLibpathFolderChanged();
 	}
 }
 
 void PreferencesModel::setEngineSandbox(bool engineSandbox) {
 	if(engineSandbox != PreferencesModel::engineSandbox()) {
-		Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox);
+		if(!Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox)) return;
 
 #if defined(_WIN32) || defined(__APPLE__)
 		MessageForwarder::showWarning(tr("Engine Sandbox setting changed"), tr("The Engine Sandbox setting has been changed, this will only take full effect after JASP is restarted."));

@@ -115,10 +115,16 @@ void ListModel::_setAllowedType(Term& term) const
 			term.setType(_listView->defaultType());
 		else
 		{
-			// If the real type is now allowed, change the type to its original one.
-			columnType realType = getVariableRealType(term.value());
-			if (type != realType && _listView->isTypeAllowed(realType))
-				term.setType(realType);
+			// If the original type is now allowed, change the type back to it. The original type is the one the variable has
+			// where this list gets it from: for a list whose variables come from another list (e.g. model terms made of the
+			// factors), that is the type in that list, which may differ from the column's own type.
+			// While the form binds its options, a type given there is the one the user chose for the column (e.g. scale for an
+			// ordinal column) and is kept, unless the variable comes from another list that changed its type.
+			columnType	sourceType		= getVariableSourceType(term.value());
+			bool		keepGivenType	= _listView->form() && _listView->form()->bindingOptions() && sourceType == getVariableRealType(term.value());
+
+			if (!keepGivenType && sourceType != columnType::unknown && type != sourceType && _listView->isTypeAllowed(sourceType))
+				term.setType(sourceType);
 		}
 	}
 
@@ -477,6 +483,24 @@ QString ListModel::getVariableDescription(const QString &name) const
 columnType ListModel::getVariableRealType(const QString& name) const
 {
 	return (columnType)requestInfo(varInfoType::VariableType, name).toInt();
+}
+
+columnType ListModel::getVariableSourceType(const QString& name) const
+{
+	// A variable that comes from another list keeps the type it has there: that list may have changed it
+	// (e.g. a list allowing only nominal turns an ordinal column into a nominal one).
+	for (SourceItem* sourceItem : _listView->sourceItems())
+	{
+		const ListModel* sourceModel = sourceItem->isAnalysisDataSet() ? nullptr : sourceItem->sourceListModel();
+		if (!sourceModel)
+			continue;
+
+		int index = sourceModel->terms().indexOfValue(name);
+		if (index >= 0 && sourceModel->terms().at(index).type() != columnType::unknown)
+			return sourceModel->terms().at(index).type();
+	}
+
+	return getVariableRealType(name);
 }
 
 QString ListModel::getVariablePreview(const QString& name) const

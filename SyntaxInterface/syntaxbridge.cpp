@@ -36,6 +36,7 @@
 #include "tempfiles.h"
 #include "analysisbase.h"
 #include "analysisform.h"
+#include "preferencesmodelbase.h"
 #include "log.h"
 #include "utilities/qmlutils.h"
 #include "dirs.h"
@@ -119,6 +120,15 @@ static bool readJaspJsonEntry(Json::Value & root, const char * filePath, const c
 		}
 
 		ArchiveReader reader(filePath, entry);
+		if (!reader.archiveExists())
+		{
+			if (error)
+				*error = std::string("JASP archive ") + filePath + " does not exist.";
+			else
+				Log::log() << "JASP archive does not exist." << std::endl;
+			return false;
+		}
+
 		int errorCode = 0;
 		std::string json = reader.readAllData(sizeof(char), errorCode);
 		if (errorCode != 0)
@@ -245,9 +255,9 @@ static Json::Value columnEncoderContextJson()
 	).toJson();
 }
 
-static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
+static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr, bool flattenTypes = false)
 {
-	Json::Value status = statusBase("syntaxBridgeAnalysisOptionsFromJaspFile");
+	Json::Value status = statusBase(flattenTypes ? "syntaxBridgeFlattenedAnalysisOptionsFromJaspFile" : "syntaxBridgeAnalysisOptionsFromJaspFile");
 	status["analysisNr"] = analysisNr;
 
 	Json::Value analysesJson;
@@ -285,6 +295,10 @@ static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
 
 	status["ok"] = true;
 	status["options"] = options;
+
+	if (flattenTypes)
+		ColumnEncoder::flattenTypesInOptions(status["options"]);
+
 	return status;
 }
 
@@ -335,6 +349,24 @@ static void clearQmlFormCache()
 	}
 }
 
+//QmlUtils::setupQMLEngine sets the `dataSetInfo` context property (rowCount, dataAvailable... that
+//forms bind to, e.g. `max: dataSetInfo.rowCount`) to the VariableInfo of the Workspace that exists at
+//that moment. The Workspace owns that VariableInfo, and the bridge replaces the Workspace on every
+//reset (each unnamed loadDataSet, a .jasp load, clearing the dataset state): the property then points
+//at a deleted object and reads as null in QML, so such bindings fail and the form rejects valid values.
+//Desktop keeps one Workspace for its whole life, which is why it never needed this.
+static void syncDataSetInfoContextProperty()
+{
+	if (!gl_qmlEngine)
+		return;
+
+	QObject		* varInfo = Workspace::singleton() ? Workspace::singleton()->varInfo() : nullptr;
+	QQmlContext	* context = gl_qmlEngine->rootContext();
+
+	if (context->contextProperty("dataSetInfo").value<QObject*>() != varInfo)
+		context->setContextProperty("dataSetInfo", varInfo);
+}
+
 static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
 {
 	bool providerWillBeRecreated = gl_initialized && gl_initializedDbInMemory != dbInMemory;
@@ -346,6 +378,7 @@ static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
 
 	DataSetProvider * provider = DataSetProvider::getProvider(dbInMemory, resetDataSet, gl_application);
 	gl_initializedDbInMemory = dbInMemory;
+	syncDataSetInfoContextProperty();
 	return provider;
 }
 
@@ -434,6 +467,11 @@ void STDCALL syntaxBridgeShutdown()
 
 int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
 {
+	return syntaxBridgeLoadDataSetWithLevels(syntaxBridgeDataSet, nullptr, dbInMemory, threshold, orderLabelsByValue);
+}
+
+int STDCALL syntaxBridgeLoadDataSetWithLevels(const SyntaxBridgeDataSet* syntaxBridgeDataSet, const SyntaxBridgeColumnLevels* columnLevels, bool dbInMemory, int threshold, bool orderLabelsByValue)
+{
 	if (!init(dbInMemory))
 	{
 		Log::log() << "Error during initialization" << std::endl;
@@ -458,7 +496,8 @@ int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataS
 		                 : resetDataProvider(dbInMemory, true);
 	}
 
-	std::map<std::string, stringvec > dataSet;
+	std::map<std::string, stringvec >	dataSet,
+										levels;
 
 	for (int colNr = 0; colNr < syntaxBridgeDataSet->columnCount; colNr++)
 	{
@@ -467,12 +506,25 @@ int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataS
 		for (int rowNr = 0; rowNr < syntaxBridgeDataSet->rowCount; rowNr++)
 			values.push_back(column.values[rowNr]);
 		dataSet[column.name] = values;
+
+		if (columnLevels && columnLevels[colNr].levelCount > 0 && columnLevels[colNr].levels)
+		{
+			stringvec & columnLevelValues = levels[column.name];
+			for (int levelNr = 0; levelNr < columnLevels[colNr].levelCount; levelNr++)
+				if (columnLevels[colNr].levels[levelNr])
+					columnLevelValues.push_back(columnLevels[colNr].levels[levelNr]);
+		}
 	}
+
+	//Desktop's type-guess threshold IS its thresholdScale preference, so module QML reading
+	//preferencesModel.thresholdScale (e.g. a hidden option) sees the threshold this data was imported with.
+	PreferencesModelBase::preferences()->setThresholdScale(threshold);
 
 	//A named dataset goes into the workspace as its own DataSet (with id + encoder prefix, titled);
 	//an unnamed one keeps the legacy behaviour of filling the shown dataset.
 	provider->loadDataSet(dataSet, threshold, orderLabelsByValue,
-	                      syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name ? tq(syntaxBridgeDataSet->name) : QString());
+	                      syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name ? tq(syntaxBridgeDataSet->name) : QString(),
+	                      levels);
 
 	//Either way the just-loaded dataset is the shown one: hand its REAL database id back so
 	//callers (jaspSyntax, jaspTools) can refer to it by the invariant instead of the title.
@@ -532,6 +584,7 @@ const char* STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * fileP
 		provider->closeDatabase();
 		ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float) {});
 		provider->loadDatabase(jaspVersion);
+		syncDataSetInfoContextProperty();   //loadDatabase replaced the Workspace
 		status["databaseUpgraded"] = true;
 		createDataBridge(false);
 
@@ -581,6 +634,9 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	//next request's dataset reads silently get handed the previous run's dataset/filter/columns.
 	if (gl_dataBridge)
 		gl_dataBridge->setMultiDataSetQueue({});
+
+	//Whatever replaced the Workspace since the last request, the form must see the current one.
+	syncDataSetInfoContextProperty();
 
 	std::string qmlFileStr		= qmlFile,
 				versionStr		= version,
@@ -720,6 +776,14 @@ const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * f
 	configureLogging();
 
 	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
+	return statusResult(status);
+}
+
+const char* STDCALL syntaxBridgeFlattenedAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr)
+{
+	configureLogging();
+
+	Json::Value status = analysisOptionsStatus(filePath, analysisNr, true);
 	return statusResult(status);
 }
 
@@ -987,6 +1051,15 @@ bool init(bool dbInMemory)
 	gl_applicationArgc = static_cast<int>(gl_applicationArgvStorage.size());
 
 	qputenv("QT_QPA_PLATFORM", "minimal");
+
+	// Qt's incremental QML garbage collector (Qt 6.10, 6.11) can lose an identifier that QQmlContext::setContextProperty
+	// adds while a collection is half done (IdentifierHash::add has no write barrier): the "isDynamic" context property of
+	// the rows of a ComponentsList (RowControls) then reads as unset, so their controls register as form controls and every
+	// next row gets "2 controls have the same name". The bridge has no event loop, so a collection stays half done across
+	// the creation of forms (it happened at the 2nd parse of jaspSurvival's Parametric Survival form).
+	// A non-incremental collection (time limit 0) never leaves a collection half done. Desktop's engine has installQmlGcRescan.
+	if (!qEnvironmentVariableIsSet("QV4_GC_TIMELIMIT"))
+		qputenv("QV4_GC_TIMELIMIT", "0");
 
 	gl_application = new QGuiApplication(gl_applicationArgc, gl_applicationArgv.data());
 	gl_qmlEngine = new QQmlEngine();

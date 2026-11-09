@@ -496,23 +496,6 @@ FocusScope
 
 				MenuButton
 				{
-					id:					addDeveloperModuleButton
-					text:				folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install Developer Module") : qsTr("Installing Developer Module")) : qsTr("Select a Developer Module")
-					width:				modules.buttonWidth
-					height:				modules.buttonHeight
-					anchors.leftMargin: modules.buttonMargin
-					onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
-					toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install selected developer module") : qsTr("Installing developer module now")) : qsTr("Select a developer module by clicking here")
-					visible:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
-					enabled:			dynamicModules.developersModuleInstallButtonEnabled
-					focus:				currentIndex === -1
-					activeFocusOnTab:	false
-
-					readonly property bool folderSelected: preferencesModel.developerFolder != ""
-				}
-
-				MenuButton
-				{
 					id:					addDeveloperModuleDirectButton
 					text:				moduleSelected ? qsTr("Install Developer Module") : qsTr("Select a Developer Module")
 					width:				modules.buttonWidth
@@ -520,11 +503,11 @@ FocusScope
 					anchors.leftMargin: modules.buttonMargin
 					onClicked: 			moduleSelected ? dynamicModules.installJASPDeveloperModule() : fileMenuModel.showAdvancedPreferences()
 					toolTip:			moduleSelected ? qsTr("Install selected developer module") : qsTr("Select a developer module by filling in the relevant preferences")
-					visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
+					visible:			preferencesModel.developerMode
 					focus:				currentIndex === -1
 					activeFocusOnTab:	false
 
-					readonly property bool moduleSelected: preferencesModel.directLibpathEnabled && preferencesModel.directLibpathFolder != "" && preferencesModel.directDevModName != ""
+					readonly property bool moduleSelected: preferencesModel.directLibpathFolder != "" && preferencesModel.directDevModName != ""
 				}
 
 				QTC.ToolSeparator

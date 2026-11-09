@@ -43,7 +43,7 @@ public:
 	///< With a title: named load for the multi-dataset (syntax-mode) flow - replaces the contents
 	///< of the dataset with that title or adds a new one; every titled dataset gets a real id and
 	///< encoder prefix. Without: legacy behaviour, fill the shown dataset.
-	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true, const QString & title = QString());
+	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true, const QString & title = QString(), const std::map<std::string, stringvec > & levels = {}); ///< levels: the labels of these columns (e.g. R factors) follow this order
 	///< id of the first dataset loaded since the last resetDataSet() (the primary of a syntax-mode
 	///< multi-dataset run, matching the wrapper's datasets[[1]]); -1 when nothing was loaded yet.
 	int							firstLoadedDataSetId() const { return _firstLoadedDataSetId; }
@@ -52,7 +52,8 @@ public:
 	///< Reopen the current database exactly the way opening a .jasp does: throw the Workspace
 	///< away and dbLoad a fresh one (every dataset and stored filter restored from db rows, ids
 	///< included - see DataSet::dbLoad's eager filter materialisation). loadDatabase() is the
-	///< syntax-bridge flow for a foreign database; this one reopens the database at hand.
+	///< syntax-bridge flow for a foreign database (upgraded first, then loaded the same way);
+	///< this one reopens the database at hand.
 	void						reloadWorkspace();
 
 	QVariant					provideInfo(varInfoType info, const QString& colName = "", int row = 0)		const	override;

@@ -28,6 +28,9 @@ struct unexpectedEngineReply  : public std::runtime_error
 ///How many milliseconds do we wait for an engine to be killed if it gets stuck in some analysis?
 #define ENGINE_KILLTIME 750
 
+///How many milliseconds does EngineSync::resumeEngines() wait for the engines to resume before it leaves them to EngineSync::process()?
+#define ENGINE_RESUME_TIMEOUT 10000
+
 ///After how many seconds is an engine allowed to shutdown due to boredom?
 #define ENGINE_BORED_SHUTDOWN (30 * 60)
 

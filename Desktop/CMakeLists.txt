@@ -198,6 +198,8 @@ target_link_libraries(
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
 )
 
+target_link_libraries(JASPDesktopLib PRIVATE Qt::QmlPrivate) #Only qmlgcrescan.cpp uses Qt's private QML API
+
 target_link_libraries(
     JASP
 	PUBLIC
@@ -207,6 +209,8 @@ target_link_libraries(
 if(APPLE)
   # Keychain backend in Desktop/auth/secretvault.cpp (SecItemAdd et al.)
   target_link_libraries(JASPDesktopLib PUBLIC "-framework Security")
+  # Managed preferences (MDM) in Desktop/utilities/settings.cpp (CFPreferencesAppValueIsForced et al.)
+  target_link_libraries(JASPDesktopLib PUBLIC "-framework CoreFoundation")
 endif()
 
 if(APPLE)

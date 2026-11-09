@@ -73,8 +73,8 @@ void DataSetProvider::reloadWorkspace()
 {
 	//Open the database at hand afresh, like DataSetPackage does for a .jasp: the Workspace dies,
 	//a new one dbLoads every dataset out of the restored rows (ids preserved, stored filters
-	//materialised eagerly). The syntax bridge's loadDatabase() is not this: it loads a foreign
-	//file into the legacy single-dataset shape.
+	//materialised eagerly). The syntax bridge's loadDatabase() does the same for a foreign
+	//database, after upgrading it from the JASP version that wrote it.
 	delete _workspace;
 	_workspace = nullptr;
 
@@ -104,7 +104,7 @@ QVariant DataSetProvider::data(const QModelIndex & index, int role) const
 	else								return QVariant(); //QAbstractTableModel::data(index, role);
 }
 
-void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSetStrings, int threshold, bool orderLabelsByValue, const QString & title)
+void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSetStrings, int threshold, bool orderLabelsByValue, const QString & title, const std::map<std::string, stringvec > & levels)
 {
 	// With a title this is a named (multi-)dataset load: a dataset with that title gets its
 	// contents replaced, otherwise a new DataSet is added to the workspace (each through
@@ -154,7 +154,14 @@ void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & data
 			return dataSetStrings.at(it.first)[r];
 		};
 
-		dataSet()->column(colNr)->initFromLookups(it.first, rowCount, lookup, lookup, it.first, columnType::unknown, {}, threshold, orderLabelsByValue);
+		//The labels of a column with levels (an R factor) follow these, not the order of their values
+		auto		columnLevels	= levels.find(it.first);
+		const bool	hasLevels		= columnLevels != levels.end() && !columnLevels->second.empty();
+
+		dataSet()->column(colNr)->initFromLookups(it.first, rowCount, lookup, lookup, it.first, columnType::unknown, {}, threshold, orderLabelsByValue && !hasLevels);
+
+		if (hasLevels)
+			dataSet()->column(colNr)->labelsOrderBy(columnLevels->second);
 
 		colNr++;
 	}
@@ -184,9 +191,14 @@ void DataSetProvider::loadDatabase(const Version & jaspVersion)
 		_db->load();
 		_db->upgradeDBFromVersion(jaspVersion);
 
+		//Load the datasets the archive holds the way Desktop opens a .jasp (ids and stored filters
+		//kept). createDataSet() would dbCreate a NEW DataSet row + filter in this database first, and
+		//the stored dataset then queried that foreign Filter_<n> column in its own table.
 		_workspace = new Workspace(this);
-		_workspace->createDataSet();
-		dataSet()->dbLoad(1, [](float p) {}, jaspVersion);
+		_workspace->dbLoad([](float) {}, jaspVersion);
+
+		if (!dataSet())
+			_workspace->createDataSet();
 
 		dataSet()->encoder().setCurrentNames(dataSet()->getColumnTypesMap());
 	}

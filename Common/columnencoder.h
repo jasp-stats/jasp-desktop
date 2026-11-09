@@ -264,6 +264,13 @@ public:
 	/// (classic encoding always runs against the current encoder).
 	static	perDataSetColsPlusTypes	encodeColumnNamesinOptionsPerDataSet(Json::Value & options, bool preloadingData, const EncoderFor & encoderFor, int primaryDataSetId);
 
+	/// Splits every `{value, types}` term option of a SAVED options tree (a .jasp file's analyses.json)
+	/// into `<name>` and `<name>.types`, exactly like encodeColumnNamesinOptions() does for an analysis
+	/// that does not preload its data (the same walk, preloadingData = false), but without the encoding
+	/// pass: the column names stay plain. Used by the syntax bridge to give R users (jaspTools) the
+	/// options of a .jasp file in the shape the analysis gets them, with names they can edit.
+	static	void				flattenTypesInOptions(Json::Value & options);
+
 	// ----------------------------------------------------------------------------------------------
 	// `.filterIds` sidecar (generators produce, request encoding consumes, stripped at the
 	// engine boundary before R sees the options). Grammar of one sidecar node, placed at the

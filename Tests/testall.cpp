@@ -47,7 +47,10 @@
 #include "data/datasetloader.h"
 #include "data/expanddataproxymodel.h"
 #include "archivereader.h"
+#include "datasetprovider.h"
+#include "version.h"
 #include "mainwindow.h"
+#include "modules/dynamicmodule.h"
 #include "engine/enginerepresentation.h"
 #include "results/resultsjsinterface.h"
 #include "scriptconstructormodel.h"
@@ -334,7 +337,7 @@ void TestAll::testDataImport_data()
 
 	for(const QString & folder : _testLibrary().entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot | QDir::Filter::NoSymLinks))
 	{
-		if(folder == "jasp")
+		if(folder == "jasp" || folder == "archive") //Not data files to import: see testJaspDataImport and testArchiveReaderEmptyEntry
 			continue;
 
 		QDir subDir(_testLibrary());
@@ -494,6 +497,126 @@ void TestAll::testJaspRoundRobin()
 	QVERIFY2(dataSet->jsonForCompare() == compareMe,	"DataSet should be the same after reloading!");
 }
 
+void TestAll::testArchiveReaderEmptyEntry()
+{
+	const std::string archive = fq(_testLibrary().absoluteFilePath("archive/emptyEntry.zip"));
+	int errorCode = 0;
+
+	QVERIFY(ArchiveReader(archive, "notEmpty.txt").readAllData(4096, errorCode) == "abc");
+	QCOMPARE(errorCode, 0);
+
+	QVERIFY(ArchiveReader(archive, "empty.txt").readAllData(4096, errorCode).empty());
+
+	ArchiveReader missing(fq(_testLibrary().absoluteFilePath("archive/doesNotExist.jasp")), "manifest.json");
+	QVERIFY(!missing.archiveExists());
+	QVERIFY(missing.readAllData(4096, errorCode).empty());
+}
+
+void TestAll::testSyntaxBridgeLoadsJaspDatabase_data()
+{
+	testJaspDataImport_data();
+}
+
+void TestAll::testSyntaxBridgeLoadsJaspDatabase()
+{
+	QFETCH(QString, folder);
+	QFETCH(QString, dataFileAbsolutePath);
+
+	const std::string jaspFile = fq(dataFileAbsolutePath);
+
+	//What Desktop loads from the file is the reference.
+	delete _importer;
+	_importer = nullptr;
+	delete _pkg;
+	_pkg = new DataSetPackage(this);
+
+	JASPImporter::loadDataSet(jaspFile, [](int){});
+
+	DataSet * desktopDataSet = _pkg->dataSet();
+	QVERIFY2(desktopDataSet && desktopDataSet->defaultFilter(), "Desktop loaded no dataset!");
+
+	const Json::Value	expected			= desktopDataSet->jsonForCompare();
+	const int			expectedDataSetId	= desktopDataSet->id(),
+						expectedFilterId	= desktopDataSet->defaultFilter()->id();
+	const size_t		expectedRowCount	= desktopDataSet->rowCount();
+	const intset		expectedDataSetIds	= DatabaseInterface::singleton()->dataSetIds();
+
+	DatabaseInterface::closeInterfaces();
+	delete _pkg;
+	_pkg = nullptr;
+
+	//The steps of syntaxBridgeLoadDataSetFromJaspFileStatus (SyntaxInterface/syntaxbridge.cpp).
+	DataSetProvider * provider = DataSetProvider::getProvider(false, true);
+	auto deleteProvider = qScopeGuard([&]{ delete provider; });
+
+	int			errorCode = 0;
+	Json::Value	manifest;
+	QVERIFY(Json::Reader().parse(ArchiveReader(jaspFile, "manifest.json").readAllData(4096, errorCode), manifest));
+	QCOMPARE(errorCode, 0);
+
+	provider->closeDatabase();
+	ArchiveReader(jaspFile, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float){});
+
+	try
+	{
+		provider->loadDatabase(Version(manifest["jaspVersion"].asString()));
+	}
+	catch(const std::exception & e)
+	{
+		QFAIL((std::string("loadDatabase threw: ") + e.what()).c_str());
+	}
+
+	DataSet * bridgeDataSet = provider->dataSet();
+	QVERIFY2(bridgeDataSet && bridgeDataSet->defaultFilter(), "The bridge loaded no dataset!");
+
+	QCOMPARE(DatabaseInterface::singleton()->dataSetIds(),	expectedDataSetIds);
+	QCOMPARE(bridgeDataSet->id(),							expectedDataSetId);
+	QCOMPARE(bridgeDataSet->defaultFilter()->id(),			expectedFilterId);
+
+	//Reading the filter result back runs "SELECT Filter_<id> FROM DataSet_<id>": with a filter of
+	//another dataset that column does not exist and the query throws.
+	try
+	{
+		bridgeDataSet->defaultFilter()->dbLoadResultAndError();
+	}
+	catch(const std::exception & e)
+	{
+		QFAIL((std::string("Reading the filter threw: ") + e.what()).c_str());
+	}
+
+	QCOMPARE(bridgeDataSet->defaultFilter()->filtered().size(),	expectedRowCount);
+	QVERIFY2(bridgeDataSet->jsonForCompare() == expected,		"The bridge loaded other data than Desktop!");
+}
+
+
+void TestAll::testSyntaxBridgeKeepsFactorLevelOrder()
+{
+	delete _importer;
+	_importer = nullptr;
+	DatabaseInterface::closeInterfaces();
+	delete _pkg;
+	_pkg = nullptr;
+
+	//What syntaxBridgeLoadDataSetWithLevels (SyntaxInterface/syntaxbridge.cpp) does with a data.frame
+	DataSetProvider * provider = DataSetProvider::getProvider(false, true);
+	auto deleteProvider = qScopeGuard([&]{ delete provider; });
+
+	provider->loadDataSet({	{ "Activity",	{ "High", "Low", "Sedentary", "Medium", "High"	} },
+							{ "Letters",	{ "b", "c", "a", "b", "a"						} }	},
+						  10, true, QString(),
+						  { { "Activity", { "Sedentary", "Low", "Medium", "High", "Unused" } } });
+
+	auto labelsOf = [&](const std::string & name)
+	{
+		QStringList labels;
+		for (const Label * label : provider->dataSet()->column(name)->labels())
+			labels << tq(label->label());
+		return labels;
+	};
+
+	QCOMPARE(labelsOf("Activity"),	QStringList({ "Sedentary", "Low", "Medium", "High" }));
+	QCOMPARE(labelsOf("Letters"),	QStringList({ "a", "b", "c" }));
+}
 
 void TestAll::testFileTypeFromFileName_data()
 {
@@ -7132,7 +7255,7 @@ void TestAll::testUpgradeMsgsAreSetBeforeAnalysisIsStored()
 	disconnect(inserted);
 
 	QVERIFY(analysis);
-	QCOMPARE(analysis->boundValues()["number"].asInt(), 3); //so the upgrade did run
+	QCOMPARE(analysis->pendingOptions()["number"].asInt(), 3); //so the upgrade did run (no form in backendless mode, so the options stay parked)
 	QCOMPARE(formMsgsWhenStored,	stringvec({"form message"}));
 	QCOMPARE(controlMsgsWhenStored,	stringvec({"control message"}));
 	QVERIFY(analysis->needsRefresh());
@@ -8667,6 +8790,57 @@ void TestAll::testScriptConstructorDragKeepsFormulaRows()
 	QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
 	view.setWidth(view.width() + 20);
 	QVERIFY(rowItem() != nullptr);
+}
+
+
+void TestAll::testModuleFromFolder_data()
+{
+	QTest::addColumn<QString>("filesFolder");
+
+	QTest::newRow("source")		<< "inst";
+	QTest::newRow("installed")	<< "";
+}
+
+void TestAll::testModuleFromFolder()
+{
+	QFETCH(QString, filesFolder);
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw); //for its QML engine, which reads Description.qml
+
+	//Inside the session directory, which the MainWindow teardown removes
+	const QString	modulePath	= QString::fromStdString(TempFiles::createTmpFolder()) + "/jaspFake",
+					filesPath	= filesFolder.isEmpty() ? modulePath : modulePath + "/" + filesFolder;
+
+	QVERIFY(QDir().mkpath(filesPath + "/icons"));
+	QVERIFY(QDir().mkpath(filesPath + "/qml"));
+	QVERIFY(_writeTextFile(modulePath + "/DESCRIPTION",	"Package: jaspFake\nVersion: 0.1\nTitle: Fake\nMaintainer: JASP <info@jasp-stats.org>\n"));
+	QVERIFY(_writeTextFile(filesPath + "/qml/Fake.qml",	"import JASP.Controls\nForm {}\n"));
+	QVERIFY(_writeTextFile(filesPath + "/Description.qml",
+		"import QtQuick\nimport JASP.Module\n\nDescription\n{\n\ttitle: \"Fake\"\n\tdescription: \"A fake module\"\n\n"
+		"\tAnalysis\n\t{\n\t\ttitle: \"Fake analysis\"\n\t\tfunc: \"Fake\"\n\t}\n}\n"));
+
+	//What parseDescription in SyntaxInterface/syntaxbridge.cpp does
+	Modules::DynamicModule * module = nullptr;
+	try
+	{
+		module = new Modules::DynamicModule(nullptr, mw->_qml->rootContext(), modulePath, false);
+		module->initialize(mw->_qml->rootContext());
+	}
+	catch(const std::exception & e)
+	{
+		QFAIL((std::string("Loading the module threw: ") + e.what()).c_str());
+	}
+
+	QCOMPARE(module->name(),					std::string("jaspFake"));
+	QCOMPARE(module->menu().size(),				size_t(1));
+	QCOMPARE(module->menu()[0]->function(),		std::string("Fake"));
+
+	delete module;
+	delete exitSpy;
+	delete mw;
+
+	TempFiles::init(ProcessInfo::currentPID());
 }
 
 

@@ -31,6 +31,7 @@
 #include "controls/componentslistbase.h"
 #include "controls/variablesformbase.h"
 #include "controls/rowcontrols.h"
+#include "models/listmodel.h"
 #include "log.h"
 #include "controls/jaspcontrol.h"
 #include "rsyntax/rsyntax.h"
@@ -40,6 +41,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QTimer>
+#include <QScopeGuard>
 #include "preferencesmodelbase.h"
 #include "workspace.h"
 #include "columnencoder.h"	// FILTERIDS_SELF for the collision-tolerant sidecar placement
@@ -456,6 +458,11 @@ void AnalysisForm::_setUp()
 
 	sortControls(controls);
 
+	// setAnalysisUp sets the controls up again when the options are set again (setOptions): without clearing,
+	// every control would be in this list once more, and bindTo would bind each control several times. That hid
+	// any value a control loses during the bind, since its last bind restored it, unlike a JASP file or the syntax bridge.
+	_dependsOrderedCtrls.clear();
+
 	for (JASPControl* control : controls)
 	{
 		_dependsOrderedCtrls.push_back(control);
@@ -546,6 +553,11 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 {
 	std::set<std::string> controlsJsonWrong;
 
+	// While the options are written, a control bound to a value must keep it although a QML binding of its
+	// default changes it, when a control that binding reads is bound after it (JASPControl::_resetBindingValue).
+	_bindingOptions = true;
+	auto endOfBinding = qScopeGuard([this]() { _bindingOptions = false; });
+
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
 		BoundControl* boundControl = control->boundControl();
@@ -621,6 +633,54 @@ void AnalysisForm::addFormError(const QString & error)
 	emit errorsChanged();
 }
 
+// The Engine `.meta` of the controls in the rows of a list control (e.g. a variables list in the rows of a
+// ComponentsList): the walk of createOptionsJson only sees the controls of the form, so without this the values
+// of such a row control are never encoded (and R gets column names it cannot find in its data).
+// Like the deleted mirror did for every row control, the meta is placed under the names of its parent lists only
+// (not under a row key): the encoder applies the meta of a list to each of its rows.
+static void placeRowControlsEngineMeta(Json::Value & metaRoot, JASPControl * control, const QVector<std::string> & names)
+{
+	JASPListControl	*	listControl	= qobject_cast<JASPListControl*>(control);
+	ListModel		*	model		= listControl ? listControl->model() : nullptr;
+
+	if (!model)
+		return;
+
+	for (RowControls * rowControls : model->getAllRowControls())
+	{
+		if (!rowControls)
+			continue;
+
+		for (JASPControl * rowControl : rowControls->getJASPControlsMap())
+		{
+			if (!rowControl || !rowControl->isBound() || !rowControl->boundControl() || rowControl->name().isEmpty())
+				continue;
+
+			const std::string	rowName	= rowControl->name().toStdString();
+			const Json::Value	rowMeta	= rowControl->boundControl()->createEngineMeta();
+
+			if ((rowMeta.isObject() || rowMeta.isArray()) && rowMeta.size() > 0)
+			{
+				Json::Value * node = &metaRoot;
+				for (const std::string & name : names)
+					node = &((*node)[name]);
+
+				Json::Value & slot = (*node)[rowName];
+
+				if (slot.isObject() && rowMeta.isObject())
+					for (const std::string & member : rowMeta.getMemberNames())
+						slot[member] = rowMeta[member];	// keep the meta already placed for the controls of its own rows
+				else
+					slot = rowMeta;
+			}
+
+			QVector<std::string> rowNames = names;
+			rowNames.push_back(rowName);
+			placeRowControlsEngineMeta(metaRoot, rowControl, rowNames);
+		}
+	}
+}
+
 // see the header for the contract. This IS the options tree now (the
 //the mirror-era equality proof is history (the mirror is deleted; the golden harness
 //tst_generatedOptionsJson*.qml keeps the shape pinned). Two rules define it:
@@ -661,6 +721,10 @@ Json::Value AnalysisForm::createOptionsJson(BoundControl::JsonFormat format)
 			Json::Value optionMeta = boundControl->createEngineMeta();
 			if ((optionMeta.isObject() || optionMeta.isArray()) && optionMeta.size() > 0)
 				AnalysisBase::placeOptionMeta(metaRoot, parentNames, name, optionMeta);
+
+			QVector<std::string> names = parentNames;
+			names.push_back(name);
+			placeRowControlsEngineMeta(metaRoot, control, names);
 
 			Json::Value optionFilterIds = boundControl->createFilterIds();
 			if (!optionFilterIds.isNull())

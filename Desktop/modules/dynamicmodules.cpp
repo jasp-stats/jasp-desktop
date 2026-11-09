@@ -32,6 +32,8 @@
 #include "engine/enginesync.h"
 #include "modules/description/description.h"
 #include "mainwindow.h"
+#include "gui/preferencesmodel.h"
+#include "rpc/jasprpcdispatcher.h"
 
 
 #ifdef __APPLE__
@@ -50,6 +52,8 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 
 	if(!std::filesystem::exists(_modulesInstallDirectory))
 		std::filesystem::create_directories(_modulesInstallDirectory);
+
+	registerRpcHandlers();
 }
 
 DynamicModules::~DynamicModules()
@@ -249,15 +253,6 @@ void DynamicModules::replaceModule(Modules::DynamicModule * module)
 
 void DynamicModules::uninstallModule(const std::string & moduleName)
 {
-	if(moduleName == developmentModuleName())
-	{
-		delete _devModDescriptionWatcher;
-		delete _devModRWatcher;
-
-		_devModDescriptionWatcher	= nullptr;
-		_devModRWatcher				= nullptr;
-	}
-
 	bool	registerForDynamicUninstall		= true,
 			replacedWithBundled = bundledModuleInFilesystem(moduleName);
 
@@ -268,7 +263,7 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 		unloadModule(moduleName);
 		_modules[moduleName]->setInstalled(false);
 
-		if(_modules[moduleName]->isBundled() || _modules[moduleName]->isLibpathDevMod())
+		if(_modules[moduleName]->isBundled() || _modules[moduleName]->isDevMod())
 			registerForDynamicUninstall = false;
 
 		for(int i=int(_moduleNames.size()) - 1; i>=0; i--)
@@ -400,10 +395,6 @@ void DynamicModules::installationPackagesFailed(const QString & moduleName, cons
 
 	_moduleBundlesNeedingInstall.erase(moduleName.toStdString());
 
-	if(moduleName.toStdString() == developmentModuleName())
-		setDevelopersModuleInstallButtonEnabled(true);
-	
-	
 	MessageForwarder::showWarning(
 				tq("Installation of Module %1 failed").arg(moduleName),
 				tr("The installation of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));	
@@ -488,32 +479,29 @@ void DynamicModules::refreshDeveloperModule(bool R, bool Qml)
 	}
 }
 
-void DynamicModules::installJASPDeveloperModule()
+bool DynamicModules::installJASPDeveloperModule()
 {
-	bool	directLibpathEnabled	= Settings::value(Settings::DIRECT_LIBPATH_ENABLED).toBool();
-	QString modulePath				= directLibpathEnabled ? QDir::cleanPath(Settings::value(Settings::DIRECT_LIBPATH_FOLDER).toString().trimmed()) : Settings::value(Settings::DEVELOPER_FOLDER).toString();
+	QString modulePath = QDir::cleanPath(Settings::value(Settings::DIRECT_LIBPATH_FOLDER).toString().trimmed());
 
 	if(modulePath == "")
 	{
 		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
-		return;
+		return false;
 	}
 	else if(!QDir(modulePath).exists())
 	{
 		Log::log() << modulePath << " doesnt seem to exist according to QDir, it gives: '" << QDir(modulePath).absolutePath() << "'." << std::endl;
 
 		MessageForwarder::showWarning(tr("Select an exisiting folder"), tr("To install a development module you need to select and existing folder, you selected '%1' but it doesn't exist.").arg(modulePath));
-		return;
+		return false;
 	}
-
-	setDevelopersModuleInstallButtonEnabled(false);
 
 	try
 	{
 		emit storeAnalysesJson();
 
 		QQmlContext * context = MainWindow::singleton()->giveRootQmlContext();
-		Modules::DynamicModule * devMod = directLibpathEnabled ? new Modules::DynamicModule(this, context, modulePath) : new Modules::DynamicModule(this, context);
+		Modules::DynamicModule * devMod = new Modules::DynamicModule(this, context, modulePath);
 
 		std::string origin	= devMod->modulePackage(),
 					name	= devMod->name(),
@@ -527,71 +515,18 @@ void DynamicModules::installJASPDeveloperModule()
 			replaceModule(devMod);
 
 		_modules[name] = devMod;
-		if(directLibpathEnabled) {
-			initializeModule(devMod);
-		}
+		bool initialized = initializeModule(devMod);
 		
 		emit reloadAnalysesJson();
+		return initialized;
 	}
 	catch(std::exception & e)
 	{
 		MessageForwarder::showWarning(tr("Problem initializing module"), tr("There was a problem loading the developer module:\n\n") + e.what());
-		setDevelopersModuleInstallButtonEnabled(true);
 		
 		emit reloadAnalysesJson();
+		return false;
 	}
-}
-
-void DynamicModules::startWatchingDevelopersModule()
-{
-	std::string origin	= _devModSourceDirectory.absolutePath().toStdString(),
-	            name	= developmentModuleName(),
-	            dest	= moduleDirectory(name);
-
-	bool	rFound		= false,
-	        qmlFound	= false,
-	        iconsFound	= false;
-
-	QString descFound	= "";
-
-	for(const QFileInfo & entry : _devModSourceDirectory.entryInfoList(QDir::Filter::Dirs | QDir::Filter::Files | QDir::Filter::NoDotAndDotDot))
-		if(entry.isDir() && entry.fileName().toLower() == "inst")
-		{
-			QDir instDir(entry.absoluteFilePath());
-			for(const QFileInfo & entryinst : instDir.entryInfoList(QDir::Filter::Dirs | QDir::Filter::Files | QDir::Filter::NoDotAndDotDot))
-				if(entryinst.isFile() && Modules::DynamicModule::isDescriptionFile(entryinst.fileName()))
-					descFound = entryinst.fileName();
-				else if(entryinst.isDir())
-				{
-					QString dir = entryinst.fileName().toLower();
-
-					if(dir == "qml")	qmlFound	= true;
-					if(dir == "icons")	iconsFound	= true;
-				}
-		}
-		else if(entry.isDir() && entry.fileName().toLower() == "qml")
-			qmlFound = true;
-		else if(entry.isDir() && entry.fileName().toLower() == "icons")
-			iconsFound = true;
-		else if(entry.isDir() && entry.fileName().toUpper() == "R")
-			rFound = true;
-		else if(entry.isFile() && Modules::DynamicModule::isDescriptionFile(entry.fileName()))
-				descFound = entry.fileName();
-
-	if(!(descFound != "" && rFound && qmlFound && iconsFound))
-	{
-		MessageForwarder::showWarning(tr("Missing files or folders"), tr("The selected folder cannot be installed as a developer module because it does not contain all the necessary files and folders.") + "\n" +
-			(descFound != ""	? "" : (tr("Create a inst/Description.qml file.") + "\n")) +
-			(rFound				? "" : (tr("Create a R directory containing your analysis code.") + "\n")) +
-			(qmlFound			? "" : (tr("Create a inst/qml directory containing your optionsforms.") + "\n")) +
-			(iconsFound			? "" : (tr("Create a inst/icons directory containing the icons for your ribbonbuttons.") + "\n")));
-		return;
-	}
-
-	devModCopyDescription(descFound);
-	devModWatchFolder("R",		_devModRWatcher);
-	devModWatchFolder("help",	_devModHelpWatcher);
-	//QML is watched by Analysis itself
 }
 
 void DynamicModules::insertCommonModuleNames(std::set<std::string> commonModules) 
@@ -633,144 +568,6 @@ void DynamicModules::refreshCommonModules(const QStringList& overrideCommon)
 	}
 }
 
-///This function says it's copying something, and maybe it did that before, but it doesn't seem to be doing so now.
-void DynamicModules::devModCopyDescription(QString filename)
-{
-	const QString descJson = "inst/" + filename;
-
-	QFileInfo src(_devModSourceDirectory.filePath(descJson));
-	QFileInfo dst(QString::fromStdString(moduleDirectory(developmentModuleName()) + developmentModuleName() + "/")  + descJson);
-
-	if(!src.exists())
-	{
-		if(dst.exists())
-			MessageForwarder::showWarning(tr("Missing %1").arg(descJson), tr("You seem to have removed %1 from your development module directory. Without it your module cannot work, make sure to put it back. For now your old %2 file will be kept.").arg(descJson).arg(descJson));
-		else
-		{
-			MessageForwarder::showWarning(tr("Missing %1").arg(descJson), tr("You seem to have never had a %1 in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now").arg(descJson));
-			uninstallModule(developmentModuleName());
-		}
-		return;
-	}
-
-	QFile	srcFile(src.absoluteFilePath()),
-			dstFile(dst.absoluteFilePath());
-
-	delete _devModDescriptionWatcher;
-
-	_devModDescriptionWatcher	= new QFileSystemWatcher({src.absoluteFilePath()}, this);
-
-	connect(_devModDescriptionWatcher, &QFileSystemWatcher::fileChanged, [=](const QString & path)
-	{
-		if(path != src.absoluteFilePath())
-			throw std::runtime_error("This watcher ought to watch just a single file! ("+src.absoluteFilePath().toStdString()+")");
-
-		if(src.exists()) //file changed because it still exists
-		{
-			Log::log() << "Watched file " << descJson.toStdString() << " was modified." << std::endl;
-
-			QFile	srcFileChanged(src.absoluteFilePath()),
-					dstFileChanged(dst.absoluteFilePath());
-
-			this->_modules[this->developmentModuleName()]->reloadDescription(MainWindow::singleton()->giveRootQmlContext());
-			this->regenerateDeveloperModuleRPackage();
-		}
-		else
-		{
-			MessageForwarder::showWarning(tr("%1 was removed!").arg(descJson), tr("You seem to have removed %1 but this file is required for your module to work. The development module is going to be uninstalled now.").arg(descJson));
-			uninstallModule(developmentModuleName());
-		}
-	});
-}
-
-void DynamicModules::devModWatchFolder(QString folder, QFileSystemWatcher * & watcher)
-{
-	QString infix	= folder.toUpper() != "R" ? "inst/" : "",
-			dstPath = QString::fromStdString(developmentModuleName()) + "/" + infix + folder;
-	QDir	src		= _devModSourceDirectory.absoluteFilePath(infix + folder),
-			modDir	= QString::fromStdString(moduleDirectory(developmentModuleName())),
-			dst		= modDir.absoluteFilePath(dstPath);
-
-	if(!src.exists())
-	{
-		if(folder != "help") //help is not really necessary
-		{
-			if(dst.exists())
-				MessageForwarder::showWarning(tr("Missing folder %1").arg(folder), tr("You seem to have removed the folder %1 from your development module directory. Without it your module cannot work, make sure to put it back. For now your old folder will be kept.").arg(folder));
-			else
-			{
-				MessageForwarder::showWarning(tr("Missing folder %1").arg(folder), tr("You seem to have never had the folder %1 in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now").arg(folder));
-				uninstallModule(developmentModuleName());
-			}
-		}
-		return;
-	}
-
-	delete watcher;
-	watcher = new QFileSystemWatcher({_devModSourceDirectory.absoluteFilePath(folder)}, this);
-
-	static const std::map<std::string, std::set<std::string>> _acceptedFilesInFolders = {{"", {"json"}}, {"r", {"r"}}, {"qml", {"qml"}}, {"icons", {"svg", "png", "ico", "jpg", "gif"}}, {"help", {"md", "html"}}};
-
-	QStringList extensionFilter;
-	for(const std::string & extension :  _acceptedFilesInFolders.at(folder.toLower().toStdString()))
-		extensionFilter << "*." + QString::fromStdString(extension) << "*." + QString::fromStdString(extension).toUpper();
-
-	std::set<QString> filesInSource;
-
-	for(QFileInfo entry : src.entryInfoList(extensionFilter, QDir::Filter::Files))
-	{
-		QFile	srcFile(entry.absoluteFilePath()),
-				dstFile(dst.filePath(folder != "help" ? entry.fileName() : entry.fileName().toLower()));
-
-		filesInSource.insert(dstFile.fileName());
-
-		watcher->addPath(entry.absoluteFilePath());
-	}
-
-	if(folder.toUpper() != "R")
-		for(QFileInfo entry : dst.entryInfoList(QDir::Filter::Files))
-		{
-			QFile dstFile(entry.absoluteFilePath());
-
-			if(filesInSource.count(dstFile.fileName()) == 0)
-				dstFile.remove();
-		}
-
-	connect(watcher, &QFileSystemWatcher::fileChanged, [&](const QString & path)
-	{
-		//If only a file changes then update this single file
-		QFileInfo srcFileChanged(path);
-
-		QFile	srcFile(path),
-				dstFile(dst.filePath(folder != "help" ? srcFileChanged.fileName() : srcFileChanged.fileName().toLower()));
-
-		if(folder.toUpper() == "R")
-			this->regenerateDeveloperModuleRPackage();
-
-		if(folder == "help")		emit	this->reloadHelpPage();
-	});
-
-	connect(watcher, &QFileSystemWatcher::directoryChanged, [&](QString path)
-	{
-		Log::log() << "Watched folder " << folder.toStdString() << " had a changed directory (file added or removed) on path: " << path.toStdString() << std::endl;
-
-		if(folder.toUpper() == "R")
-			this->regenerateDeveloperModuleRPackage();
-
-		if(folder == "help")			emit	this->reloadHelpPage();
-	});
-}
-
-void DynamicModules::regenerateDeveloperModuleRPackage()
-{
-	if(_modules.count(developmentModuleName()) == 0)
-		throw std::runtime_error("void DynamicModules::regenerateDeveloperModuleRPackage() called but the development module is not initialized...");
-
-	auto * devMod = _modules[developmentModuleName()];
-	if(devMod->isLibpathDevMod())
-		emit dynamicModuleChanged(devMod);
-}
-
 QString DynamicModules::moduleDirectoryQ(const QString & moduleName)	const
 {
 	if(moduleName == tq(developmentModuleName()))	return developmentModuleFolder();
@@ -785,15 +582,6 @@ std::string DynamicModules::moduleDirectory(const std::string & moduleName)	cons
 std::wstring DynamicModules::moduleDirectoryW(const std::string & moduleName)	const
 {
 	return moduleDirectoryQ(tq(moduleName)).toStdWString();
-}
-
-void DynamicModules::setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled)
-{
-	if (_devModInstallButtonOn == developersModuleInstallButtonEnabled)
-		return;
-
-	_devModInstallButtonOn = developersModuleInstallButtonEnabled;
-	emit developersModuleInstallButtonEnabledChanged(_devModInstallButtonOn);
 }
 
 QString DynamicModules::getDescriptionFormattedFromArchive(QString archiveFilePath)
@@ -893,5 +681,110 @@ const QStringList DynamicModules::loadedModulesTitles() const
 			mods << _modules.at(mod)->titleQ();
 
 	return mods;
+}
+
+///Runs work with the dialogs of MessageForwarder::showWarning turned into the returned messages,
+///so an RPC call reports what the GUI would show instead of blocking on a modal box.
+static Json::Value collectWarnings(const std::function<void()> & work)
+{
+	Json::Value									messages(Json::arrayValue);
+	const MessageForwarder::WarningHandler		previous = MessageForwarder::warningHandler();
+
+	MessageForwarder::setWarningHandler([&messages](const QString & title, const QString & message, bool)
+	{
+		messages.append(fq(title.isEmpty() ? message : title + ": " + message));
+	});
+
+	try			{ work(); }
+	catch(...)	{ MessageForwarder::setWarningHandler(previous); throw; }
+
+	MessageForwarder::setWarningHandler(previous);
+	return messages;
+}
+
+void DynamicModules::registerRpcHandlers()
+{
+	auto * disp = JaspRpcDispatcher::singleton();
+	if (!disp)
+		return;
+
+	//A developer module runs R code from any folder the caller names, so, like the GUI's "Install Developer Module" button, this needs developer mode.
+	const std::string developerModeOff = "Developer modules can only be loaded in developer mode: enable it under Preferences > Advanced.";
+
+	disp->registerMethodByName("module_installDeveloper", [this, developerModeOff](const Json::Value & params) -> Json::Value
+	{
+		if (!PreferencesModel::prefs()->developerMode())
+			return JaspRpcDispatcher::errorResult(developerModeOff);
+
+		const QString	libPath		= QDir::cleanPath(tq(params["libPath"].asString()).trimmed()),
+						moduleName	= tq(params["moduleName"].asString()).trimmed();
+
+		if (!QDir::isAbsolutePath(libPath))
+			return JaspRpcDispatcher::errorResult("libPath must be an absolute path, got '" + fq(libPath) + "'.");
+
+		if (moduleName.isEmpty() || !QFileInfo(QDir(libPath).filePath(moduleName)).isDir())
+			return JaspRpcDispatcher::errorResult("No package '" + fq(moduleName) + "' in the R library '" + fq(libPath) + "': install the module there first, e.g. R CMD INSTALL --library=<libPath> <module source>.");
+
+		//One developer module at a time, as in the GUI: a different one replaces the current one.
+		//(developmentModuleName() keeps the last developer module's name, so check that it is still loaded as one.)
+		Modules::DynamicModule * current = dynamicModule(developmentModuleName());
+		if (current && current->isDevMod() && current->name() != fq(moduleName))
+			uninstallJASPDeveloperModule();
+
+		//The preferences the GUI's "Install module from libpath" fields set, so Preferences shows what is loaded.
+		PreferencesModel * prefs = PreferencesModel::prefs();
+		prefs->setDirectLibpathFolder(libPath);
+		prefs->setDirectDevModName(moduleName);
+
+		bool		installed	= false;
+		Json::Value	warnings	= collectWarnings([&]() { installed = installJASPDeveloperModule(); });
+
+		Modules::DynamicModule * devMod = installed ? dynamicModule(developmentModuleName()) : nullptr;
+
+		if (!devMod)
+		{
+			std::string message = "Loading developer module '" + fq(moduleName) + "' from '" + fq(libPath) + "' failed.";
+			for (const Json::Value & warning : warnings)
+				message += "\n" + warning.asString();
+
+			return JaspRpcDispatcher::errorResult(message);
+		}
+
+		Json::Value analyses(Json::arrayValue);
+		for (const Modules::AnalysisEntry * entry : devMod->menu())
+			if (entry->isAnalysis() && !entry->isSeparator())
+			{
+				Json::Value analysis;
+				analysis["name"]  = entry->function();
+				analysis["title"] = entry->title();
+				analyses.append(analysis);
+			}
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["name"]		= devMod->name();
+		response["title"]		= devMod->title();
+		response["analyses"]	= analyses;
+		response["warnings"]	= warnings;
+		return response;
+	});
+
+	disp->registerMethodByName("module_uninstallDeveloper", [this, developerModeOff](const Json::Value &) -> Json::Value
+	{
+		if (!PreferencesModel::prefs()->developerMode())
+			return JaspRpcDispatcher::errorResult(developerModeOff);
+
+		const std::string			name	= developmentModuleName();
+		Modules::DynamicModule	*	devMod	= dynamicModule(name);
+
+		if (!devMod || !devMod->isDevMod())
+			return JaspRpcDispatcher::errorResult("No developer module is loaded.");
+
+		uninstallJASPDeveloperModule();
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["name"]			= name;
+		response["bundledRestored"]	= dynamicModule(name) != nullptr;
+		return response;
+	});
 }
 

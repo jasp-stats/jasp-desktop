@@ -33,7 +33,7 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 	_model->sourceTermsReset();
 
 	Json::Value valuePart = _isValueWithTypes(value) ? value["value"] : value;
-	std::string selectedValue = valuePart.asString();
+	std::string selectedValue = _scalarAsString(valuePart);
 
 	const Terms& terms = _model->terms();
 	int index = -1;
@@ -117,9 +117,12 @@ int ComboBoxBase::_getStartIndex() const
 
 Json::Value ComboBoxBase::createJson() const
 {
+	return _jsonOfIndex(_getStartIndex());
+}
+
+Json::Value ComboBoxBase::_jsonOfIndex(int index) const
+{
 	const Terms & terms = _model->terms();
-	
-	int index = _getStartIndex();
 
 	if (terms.size() == 0)									index = -1;
 	else if (index == -1 || (index >= int(terms.size())))	index = 0;
@@ -137,10 +140,26 @@ Json::Value ComboBoxBase::createJson() const
 		return selected;
 }
 
+// A DropDown stores its value as a string, but R syntax (and jaspTools) naturally give a numeric
+// value as a number (`quantilesType = 3`): accept it, as the string the values of the DropDown are matched with.
 bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 {
-	return optionValue.type() == Json::stringValue ||
-		(optionValue.type() == Json::objectValue && optionValue.isMember("value") && optionValue["value"].isString());
+	auto isScalar = [](const Json::Value & v) { return v.isString() || v.isNumeric(); };
+
+	return isScalar(optionValue) ||
+		(optionValue.type() == Json::objectValue && optionValue.isMember("value") && isScalar(optionValue["value"]));
+}
+
+// The string a value of the DropDown is compared with: jsoncpp's asString() writes a real 3 as "3.0",
+// which matches no value, so an integral number is written as an integer.
+std::string ComboBoxBase::_scalarAsString(const Json::Value &value)
+{
+	if (value.isString())	return value.asString();
+	if (!value.isNumeric())	return "";
+	if (value.isInt64())	return std::to_string(value.asInt64());
+	if (value.isUInt64())	return std::to_string(value.asUInt64());
+
+	return QString::number(value.asDouble(), 'g', 15).toStdString();
 }
 
 // the combo holds ONE selected variable, so the sidecar is a scalar (schema:
@@ -400,7 +419,11 @@ Json::Value ComboBoxBase::createEngineValue() const
 {
 	if (_valueAwaitsModel)
 		return boundValue();
-	return createJson();
+
+	// createJson() is the DEFAULT of the DropDown: it starts from startValue whatever is selected
+	// (`startValue: "viridis"` would otherwise replace every other palette the user or the options chose).
+	// Once the control is initialized, its value is the current selection.
+	return initialized() ? _jsonOfIndex(_currentIndex) : createJson();
 }
 
 QString	ComboBoxBase::generateMDHelp(int depth) const

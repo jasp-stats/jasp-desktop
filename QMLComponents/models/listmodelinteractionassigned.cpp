@@ -54,8 +54,16 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms, const Terms::Re
                 newTerms.add(oldInteraction);
         }
     }
-	_setTerms(newTerms);
-    ListModelAssignedInterface::initTerms(this->terms(), allValuesMap);
+	bindTerms(newTerms, allValuesMap);
+}
+
+void ListModelInteractionAssigned::bindTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap)
+{
+	// The terms of a bound value are complete: keeping the interactions of the old terms (as initTerms does) would
+	// add back the default interactions an already initialized form (the syntax bridge's cached forms, R syntax)
+	// gave this list when its sources were bound, although the value leaves them out.
+	_setTerms(terms);
+	ListModelAssignedInterface::initTerms(this->terms(), allValuesMap);
 }
 
 void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)

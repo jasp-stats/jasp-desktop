@@ -27,7 +27,7 @@
 using namespace std;
 
 ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView)
-	: ListModel(tableView), _tableView(tableView), _tableTerms(TableTerms(this))
+	: ListModel(tableView), _tableView(tableView), _tableTerms(TableTerms(this)), _boundTableTerms(TableTerms(this))
 {
 	connect(DesktopCommunicator::singleton(),	&DesktopCommunicator::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
@@ -196,15 +196,14 @@ void ListModelTableViewBase::setSize(int rows, int columns, bool emitStuff)
 		}
 		else if (rows > rowCount())
 		{
-			size_t oldRowCount = rowCount();
-			for (int i = 0; i < rows - oldRowCount; i++)
+			while (rowCount() < rows)
 			{
-				_tableTerms.rowNames.push_back(getDefaultRowName(rowCount()));
+				_tableTerms.rowNames.push_back(_newRowName(rowCount()));
 				int colIndex = 0;
 				for (QVector<QVariant> & value : _tableTerms.values)
 				{
 					while (value.size() < _tableTerms.rowNames.size())
-						value.push_back(_tableView->defaultValue(colIndex, value.length()));
+						value.push_back(_newCellValue(colIndex, value.length()));
 					colIndex++;
 				}
 			}
@@ -225,13 +224,14 @@ void ListModelTableViewBase::setSize(int rows, int columns, bool emitStuff)
 		}
 		else if (columns > columnCount())
 		{
-			size_t oldColumnCount = columnCount();
-			for (int i = 0; i < columns - oldColumnCount; i++)
+			while (columnCount() < columns)
 			{
-				_tableTerms.colNames.push_back(getDefaultColName(columnCount()));
-				QVector<QVariant> values;
+				// The index of the new column must be taken before its name is added (that changes columnCount()).
+				int					colIndex = columnCount();
+				QVector<QVariant>	values;
 				for (int rowIndex = 0; rowIndex < _tableTerms.rowNames.length(); rowIndex++)
-					values.push_back(_tableView->defaultValue(columnCount(), rowIndex));
+					values.push_back(_newCellValue(colIndex, rowIndex));
+				_tableTerms.colNames.push_back(_newColName(colIndex));
 				_tableTerms.values.push_back(values);
 			}
 
@@ -497,10 +497,47 @@ void ListModelTableViewBase::initTableTerms(const TableTerms& terms)
 			for (int row = col.size(); row < _tableTerms.rowNames.size(); row++)
 				col.push_back(1);
 
+	_boundTableTerms = _tableTerms;
+
 	endResetModel();
 
 	emit columnCountChanged();
 	emit rowCountChanged();
+}
+
+// The size of a table is often a QML binding on other controls (`columnCount: 1 + parseInt(numberOfLevels.value)`).
+// While the options are bound, these controls may change for a moment after the table got its value: a control bound
+// after the table sets another one (`onValueChanged: numberOfLevels.value = 3`), which then gets its loaded value back
+// (JASPControl::_resetBindingValue). The table shrinks and grows back, and the cells it grows back with must be the
+// loaded ones, not the defaults: otherwise every column beyond the temporary size is lost (jaspQualityControl's
+// General Full Factorial design lost all levels beyond the 3rd when its options were loaded).
+bool ListModelTableViewBase::_restoringBoundTerms() const
+{
+	return _tableView->initializedWithValue() && _tableView->form() && _tableView->form()->bindingOptions();
+}
+
+QVariant ListModelTableViewBase::_newCellValue(int col, int row) const
+{
+	if (_restoringBoundTerms() && col < _boundTableTerms.values.size() && row < _boundTableTerms.values[col].size())
+		return _boundTableTerms.values[col][row];
+
+	return _tableView->defaultValue(col, row);
+}
+
+QString ListModelTableViewBase::_newColName(int col) const
+{
+	if (_restoringBoundTerms() && col < _boundTableTerms.colNames.size())
+		return _boundTableTerms.colNames[col];
+
+	return getDefaultColName(size_t(col));
+}
+
+QString ListModelTableViewBase::_newRowName(int row) const
+{
+	if (_restoringBoundTerms() && row < _boundTableTerms.rowNames.size())
+		return _boundTableTerms.rowNames[row];
+
+	return getDefaultRowName(size_t(row));
 }
 
 QString ListModelTableViewBase::getDefaultColName(size_t index) const

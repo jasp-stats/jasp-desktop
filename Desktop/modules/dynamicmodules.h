@@ -26,7 +26,6 @@
 #include <QObject>
 #include "version.h"
 #include "modules/dynamicmodule.h"
-#include <QFileSystemWatcher>
 #include "modules/upgrader/upgradeDefinitions.h"
 
 /// 
@@ -36,7 +35,6 @@ class DynamicModules : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(bool			developersModuleInstallButtonEnabled	READ developersModuleInstallButtonEnabled	WRITE setDevelopersModuleInstallButtonEnabled	NOTIFY developersModuleInstallButtonEnabledChanged	)
 	Q_PROPERTY(bool			dataLoaded								READ dataLoaded								WRITE setDataLoaded								NOTIFY dataLoadedChanged							)
 	Q_PROPERTY(QStringList	loadedModules							READ loadedModules																			NOTIFY loadedModulesChanged							)
 	Q_PROPERTY(QStringList	loadedModulesTitles						READ loadedModulesTitles																	NOTIFY loadedModulesChanged							)
@@ -80,7 +78,7 @@ public:
 
 	Q_INVOKABLE void		installJASPModule(				const QString & filepath);
 	Q_INVOKABLE	void		uninstallJASPModule(			const QString & moduleName);
-	Q_INVOKABLE void		installJASPDeveloperModule();
+	Q_INVOKABLE bool		installJASPDeveloperModule();
 
 	Q_INVOKABLE QString		getDescriptionFormattedFromArchive(QString archiveFilePath);
 
@@ -93,9 +91,6 @@ public:
 	static std::string  defaultDevelopmentModuleName()	{ return Modules::DynamicModule::defaultDevelopmentModuleName(); }
 	static QString		developmentModuleFolder()		{ return Modules::DynamicModule::developmentModuleFolder().absoluteFilePath(); }
 
-	void startWatchingDevelopersModule();
-
-	bool developersModuleInstallButtonEnabled() const { return _devModInstallButtonOn; }
 	bool dataLoaded()							const { return _dataLoaded;	}
 
 	void insertCommonModuleNames(std::set<std::string> commonModules);
@@ -115,7 +110,6 @@ public slots:
 	void unInstallationPackagesFailed(	const QString		& moduleName, const QString & errorMessage);
 	void registerForInstalling(			const std::string	& moduleName);
 	void registerForUninstall(			const std::string	& moduleName);
-	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
 	void setDataLoaded(bool dataLoaded);
 	void uninstallJASPDeveloperModule();
 	void refreshDeveloperModule(bool R = true, bool Qml = true);
@@ -135,9 +129,6 @@ signals:
 	void reloadQmlImportPaths();
 	bool isModuleInstallRequestActive(const QString & moduleName) const;
 
-	void reloadHelpPage();
-
-	void developersModuleInstallButtonEnabledChanged(bool developersModuleInstallButtonEnabled);
 	void moduleEnabledChanged(QString moduleName, bool enabled);
 	void dataLoadedChanged(bool dataLoaded);
 	void loadedModulesChanged();
@@ -146,10 +137,8 @@ signals:
 
 private:
 	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
-	void						devModCopyDescription(QString filename);
-	void						devModWatchFolder(QString folder, QFileSystemWatcher * & watcher);
-	void						regenerateDeveloperModuleRPackage();
 	void						registerForInstallingSubFunc(const std::string & moduleName);
+	void						registerRpcHandlers();
 
 private:
 	static DynamicModules								*	_singleton;
@@ -162,13 +151,7 @@ private:
 	QString													_currentInstallMsg			= "",
 															_currentInstallName			= "";
 	bool													_currentInstallDone			= false,
-															_devModInstallButtonOn		= true,
 															_dataLoaded					= false;
-	QDir													_devModSourceDirectory;
-	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
-														*	_devModUpgradesWatcher		= nullptr,
-														*	_devModRWatcher				= nullptr,
-														*	_devModHelpWatcher			= nullptr;
 	Modules::DynamicModule								*	_devModule					= nullptr;
 };
 

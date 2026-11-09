@@ -49,8 +49,21 @@ TestQml::TestQml(QObject *parent)
 		{
 			second->addFilter();
 			second->createFilter("ReopenMe", true);
-			ws->setShownDataSet(first);
 		}
+
+		//A dataset with fewer rows than columns, like the small data sets of module unit tests:
+		//the type of a column at or past the row count must still be known
+		//(see tst_fewRowsVariableTypes.qml). FewA is scale, the others are ordinal.
+		std::map<std::string, stringvec > fewRowsSet;
+		fewRowsSet["FewA"] = {"0.5", "1.5", "2.5"};
+		fewRowsSet["FewB"] = {"5", "6", "7"};
+		fewRowsSet["FewC"] = {"20", "30", "40"};
+		fewRowsSet["FewD"] = {"3", "1", "2"};
+		fewRowsSet["FewE"] = {"30", "10", "20"};
+		prov->loadDataSet(fewRowsSet, 10, true, "FewRows");
+
+		if(ws)
+			ws->setShownDataSet(first);
 
 		//Then reopen the database the way File > Open does: the workspace is rebuilt from the
 		//stored rows and every test runs against a *reopened file* - the state the eager filter

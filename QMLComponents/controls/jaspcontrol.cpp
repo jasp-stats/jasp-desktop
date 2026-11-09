@@ -74,6 +74,14 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 
 JASPControl::~JASPControl()
 {
+	// Other controls keep raw pointers to this one in their _depends set (e.g. a row control with a source in the form, or a row component whose
+	// ListModel rebuilds its rows): remove them, otherwise AnalysisForm::sortControls (and dependingControlsAreInitialized) would follow a dangling pointer.
+	for (JASPControl* dependent : _dependents)
+		dependent->_depends.erase(this);
+	for (JASPControl* dependency : _depends)
+		if (dependency)
+			dependency->_dependents.erase(this);
+
 	//first we disconnect the children because reconnectWithYourChildren connected them to the parent
 	//These might get triggered during the destructor of QQuickItem and then crash jasp...
 	for (JASPControl* child : getChildJASPControls(_childControlsArea))
@@ -157,7 +165,10 @@ void JASPControl::_resetBindingValue()
 	// If a control gets a value from a JASP file, this value may differ from its default value sets by a QML binding:
 	// this QML binding may then change the value during the initialization of the form.
 	// In this case, restore the original value.
-	if (isBound() && hasUserInteractiveValue() && initializedWithValue() && form() && !form()->initialized())
+	// This holds as well when the options of an already initialized form are bound again: the syntax bridge parses
+	// every R syntax call (and jaspTools every test) with a cached form, `checked: secondaryFactor.count === 0` must
+	// not override the `colorAnyway = FALSE` it was given.
+	if (isBound() && hasUserInteractiveValue() && initializedWithValue() && form() && form()->bindingOptions())
 		boundControl()->resetBoundValue();
 }
 
@@ -402,13 +413,21 @@ bool JASPControl::addDependency(JASPControl *item)
 	if (_depends.count(item) > 0 || this == item || !item)
 		return false;
 
-	_depends.insert(item);
+	_insertDependency(item);
 	return true;
 }
 
 void JASPControl::removeDependency(JASPControl *item)
 {
-	_depends.erase(item);
+	if (_depends.erase(item) > 0 && item)
+		item->_dependents.erase(this);
+}
+
+void JASPControl::_insertDependency(JASPControl *item)
+{
+	_depends.insert(item);
+	if (item)
+		item->_dependents.insert(this);
 }
 
 QString JASPControl::friendlyName() const
@@ -871,7 +890,7 @@ void JASPControl::_addExplicitDependency(const QVariant& depends)
 
 	JASPControl* control = depends.value<JASPControl*>();
 	if (control)
-		_depends.insert(control);
+		_insertDependency(control);
 	else if (depends.canConvert<QString>())
 	{
 		//A depends name may legitimately target an OPTION that has no control registered in this
@@ -883,7 +902,7 @@ void JASPControl::_addExplicitDependency(const QVariant& depends)
 		//in sortControls, so a form never has to declare `depends: "<selectionOption>"` itself.)
 		JASPControl* depControl = form() ? form()->getControl(depends.toString()) : nullptr;
 		if (depControl && depControl != this)
-			_depends.insert(depControl);
+			_insertDependency(depControl);
 	}
 	else if (depends.canConvert<QVariantList>())
 	{
@@ -935,6 +954,10 @@ void JASPControl::cleanUp()
 
 void JASPControl::_setInitialized(const Json::Value &value)
 {
+	// Until this control is bound, it is not initialized with the value of this bind: a value change during its own
+	// bindTo must not be 'restored' by _resetBindingValue to the value of a previous bind of the same form.
+	_initializedWithValue = false;
+
 	BoundControl* bControl = boundControl();
 	if (bControl)
 	{

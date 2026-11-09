@@ -53,6 +53,18 @@ void FactorsFormBase::setUpModel()
 	connect(_factorsModel, &ListModelFactorsForm::rowsRemoved, this, &FactorsFormBase::factorsItemsChanged);
 }
 
+void FactorsFormBase::setUp()
+{
+	JASPListControl::setUp();
+
+	// The terms of the factors come from the available variables list, which gets them from its sources (in a regression
+	// the Covariates and Factors lists, which SourceItem makes dependencies of the available list): bind this form after
+	// them, so that the terms of its value find their variables there with the type these lists gave them. Bound before
+	// them, an already initialized form (R syntax) would drop the terms whose variables are not yet in the available list.
+	if (_availableVariablesListItem)
+		addDependency(_availableVariablesListItem);
+}
+
 void FactorsFormBase::bindTo(const Json::Value& value)
 {
 	Json::Value newValue = value;
@@ -77,6 +89,15 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 			valuePart = termsJson["value"];
 		else
 			valuePart = termsJson;
+
+		// R syntax gives a factor with one variable as a string, not as an array (jsonlite unboxes a vector of length 1)
+		if (valuePart.isString())
+		{
+			Json::Value oneTerm(Json::arrayValue);
+			oneTerm.append(valuePart);
+			valuePart = oneTerm;
+		}
+
 		for (Json::Value& termJson : valuePart)
 		{
 			std::vector<std::string> components;
@@ -132,7 +153,7 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 				}
 				else
 					for (const std::string& component : components)
-						types.push_back(model()->getVariableRealType(tq(component)));
+						types.push_back(model()->getVariableSourceType(tq(component)));
 				initTerms.add(Term(components, types));
 			}
 			termId++;

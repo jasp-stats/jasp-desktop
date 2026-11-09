@@ -197,8 +197,8 @@ Item
 		// the Storage round-trip reach the same bytes (same VALUES; the moved ids lived only in the
 		// stripped keys / the sidecar, asserted live below). goldenReattach is the pending-stamp
 		// re-attach bind, which omits aloneA/rCodeBoxB and therefore holds their defaults.
-		readonly property string goldenAware: `{".meta":{"comboA":{"shouldEncode":true},"depA":{"shouldEncode":true},"depB":{"shouldEncode":true},"factorLevelsA":{"encodeThis":["FacA 1","LevA 1","LevA 2"],"shouldEncode":true},"fixedB":{"shouldEncode":true}},"aloneA":{"types":["scale"],"value":["TestDoubles"]},"codeSet":"2","comboA":{"types":"ordinal","value":"TestInts"},"dataSetA":"2","dataSetB":"3","depA":{"types":["ordinal"],"value":["TestInts"]},"depB":{"types":["ordinal"],"value":["TestInts"]},"factorLevelsA":[{"levels":["LevA 1","LevA 2"],"name":"FacA 1"}],"fixedB":{"types":["nominal"],"value":["SecondOnly"]},"plotHeight":320,"plotWidth":480,"rCodeBoxB":"y ~ TestInts","swA":true}`
-		readonly property string goldenReattach: `{".meta":{"comboA":{"shouldEncode":true},"depA":{"shouldEncode":true},"depB":{"shouldEncode":true},"factorLevelsA":{"encodeThis":["FacA 1","LevA 1","LevA 2"],"shouldEncode":true},"fixedB":{"shouldEncode":true}},"aloneA":{"types":[],"value":[]},"codeSet":"2","comboA":{"types":"ordinal","value":"TestInts"},"dataSetA":"2","dataSetB":"3","depA":{"types":["ordinal"],"value":["TestInts"]},"depB":{"types":["ordinal"],"value":["TestInts"]},"factorLevelsA":[{"levels":["LevA 1","LevA 2"],"name":"FacA 1"}],"fixedB":{"types":["nominal"],"value":["SecondOnly"]},"plotHeight":320,"plotWidth":480,"rCodeBoxB":"","swA":true}`
+		readonly property string goldenAware: `{".meta":{"comboA":{"shouldEncode":true},"depA":{"shouldEncode":true},"depB":{"shouldEncode":true},"factorLevelsA":{"encodeThis":["FacA 1","LevA 1","LevA 2"],"shouldEncode":true},"fixedB":{"shouldEncode":true}},"aloneA":{"types":["scale"],"value":["TestDoubles"]},"codeSet":"2","comboA":{"types":"ordinal","value":"TestInts"},"dataSetA":"2","dataSetB":"3","depA":{"types":["scale"],"value":["TestInts"]},"depB":{"types":["scale"],"value":["TestInts"]},"factorLevelsA":[{"levels":["LevA 1","LevA 2"],"name":"FacA 1"}],"fixedB":{"types":["nominal"],"value":["SecondOnly"]},"plotHeight":320,"plotWidth":480,"rCodeBoxB":"y ~ TestInts","swA":true}`
+		readonly property string goldenReattach: `{".meta":{"comboA":{"shouldEncode":true},"depA":{"shouldEncode":true},"depB":{"shouldEncode":true},"factorLevelsA":{"encodeThis":["FacA 1","LevA 1","LevA 2"],"shouldEncode":true},"fixedB":{"shouldEncode":true}},"aloneA":{"types":[],"value":[]},"codeSet":"2","comboA":{"types":"ordinal","value":"TestInts"},"dataSetA":"2","dataSetB":"3","depA":{"types":["scale"],"value":["TestInts"]},"depB":{"types":["scale"],"value":["TestInts"]},"factorLevelsA":[{"levels":["LevA 1","LevA 2"],"name":"FacA 1"}],"fixedB":{"types":["nominal"],"value":["SecondOnly"]},"plotHeight":320,"plotWidth":480,"rCodeBoxB":"","swA":true}`
 
 		// the options that the mirror stamped in the bound aware state (paths, no ids: id
 		// equality is pinned live by the flagship/coverage tests; presence + shape here)
@@ -599,6 +599,10 @@ Item
 			verify(plain.indexOf("data = NULL,") >= 0, "non-aware wrapper keeps the data argument")
 			verify(plain.indexOf("datasets = NULL,") < 0, "non-aware wrapper has no datasets argument")
 			verify(plain.indexOf("jaspBase::storeDataSet(data)") >= 0, "non-aware wrapper keeps the store block")
+			verify(plain.indexOf("options <- options[names(options) %in% names(match.call())[-1L]]") >= 0,
+				"only the arguments of the call are passed as options, the form gives the others their default")
+			verify(wrapper.indexOf("options <- options[names(options) %in% names(match.call())[-1L]]") >= 0,
+				"also in the aware wrapper (after its selection options were resolved from all arguments)")
 			verify(plain.indexOf("selectionOptions <- c(") < 0, "non-aware wrapper has no selection resolution block")
 		}
 	}

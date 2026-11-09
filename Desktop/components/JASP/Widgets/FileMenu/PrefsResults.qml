@@ -24,6 +24,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:						displayExactPVals
+			enabled:				!preferencesModel.settingIsForced("exactPVals")
 			label:					qsTr("Display exact p-values")
 			checked:				preferencesModel.exactPValues
 			onCheckedChanged:		preferencesModel.exactPValues = checked
@@ -34,6 +35,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:						useNormalizedNotation
+			enabled:				!preferencesModel.settingIsForced("normalizedNotation")
 			label:					qsTr("Use exponent notation") //the default now is normalizedNotation. https://github.com/jasp-stats/INTERNAL-jasp/issues/1872
 			checked:				!preferencesModel.normalizedNotation
 			onCheckedChanged:		preferencesModel.normalizedNotation = !checked
@@ -48,6 +50,7 @@ PrefsScrollView
 			CheckBox
 			{
 				id:						fixDecs
+				enabled:				!preferencesModel.settingIsForced("fixedDecimals")
 				label:					qsTr("Fix the number of decimals")
 				checked:				preferencesModel.fixedDecimals
 				onCheckedChanged:		preferencesModel.fixedDecimals = checked
@@ -60,7 +63,7 @@ PrefsScrollView
 				id:						numDecs
 				value:					preferencesModel.numDecimals
 				onValueChanged:			preferencesModel.numDecimals = value
-				enabled:				preferencesModel.fixedDecimals
+				enabled:				preferencesModel.fixedDecimals && !preferencesModel.settingIsForced("numDecimals")
 
 				KeyNavigation.tab:			useDefaultPPICheckbox
 
@@ -82,6 +85,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					useDefaultPPICheckbox
+			enabled:			!preferencesModel.settingIsForced("PPIUseDefault")
 			label:				qsTr("Use PPI of screen in plots: ") + "(" + preferencesModel.defaultPPI + ")"
 			checked:			preferencesModel.useDefaultPPI
 			onCheckedChanged:	preferencesModel.useDefaultPPI = checked
@@ -102,7 +106,7 @@ PrefsScrollView
 			stepSize:				16
 
 			text:					qsTr("Custom PPI: ")
-			enabled:				!preferencesModel.useDefaultPPI
+			enabled:				!preferencesModel.useDefaultPPI && !preferencesModel.settingIsForced("PPICustomValue")
 
 			x:						jaspTheme.subOptionOffset
 
@@ -116,6 +120,7 @@ PrefsScrollView
 			RadioButton
 			{
 				id:					whiteBackgroundButton
+				enabled:			!preferencesModel.settingIsForced("ImageBackground")
 				text:				qsTr("White")
 				checked:			preferencesModel.whiteBackground
 				onCheckedChanged:	preferencesModel.whiteBackground = checked
@@ -127,6 +132,7 @@ PrefsScrollView
 			RadioButton
 			{
 				id:					transparentBackgroundButton
+				enabled:			!preferencesModel.settingIsForced("ImageBackground")
 				text:				qsTr("Transparent")
 				checked:			!preferencesModel.whiteBackground
 				onCheckedChanged:	preferencesModel.whiteBackground = !checked
@@ -150,6 +156,7 @@ PrefsScrollView
 			RadioButton
 			{
 				id:					pdfOrientationPortrait
+				enabled:			!preferencesModel.settingIsForced("pdfLandscape")
 				label:				qsTr("Portrait")
 				checked:			!preferencesModel.pdfLandscape
 				onCheckedChanged:	if (checked) preferencesModel.pdfLandscape = false
@@ -160,6 +167,7 @@ PrefsScrollView
 			RadioButton
 			{
 				id:					pdfOrientationLandscape
+				enabled:			!preferencesModel.settingIsForced("pdfLandscape")
 				label:				qsTr("Landscape")
 				checked:			preferencesModel.pdfLandscape
 				onCheckedChanged:	if (checked) preferencesModel.pdfLandscape = true
@@ -171,6 +179,7 @@ PrefsScrollView
 		DropDown
 		{
 			id:				pdfPageSize
+			enabled:		!preferencesModel.settingIsForced("pdfPageSize")
 			label:			qsTr("Page size")
 			values:			preferencesModel.pdfPageSizeModel
 			startValue: 	preferencesModel.pdfPageSize
@@ -189,6 +198,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					showRSyntaxInResults
+			enabled:			!preferencesModel.settingIsForced("showRSyntaxInResults")
 			label:				qsTr("Show R syntax")
 			checked:			preferencesModel.showRSyntaxInResults
 			onCheckedChanged:	preferencesModel.showRSyntaxInResults = checked
@@ -202,6 +212,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					storeStateEtc
+			enabled:			!preferencesModel.settingIsForced("storeStateEtc")
 			label:				qsTr("Store analysis state and plot in jasp-files")
 			checked:			preferencesModel.storeStateEtc
 			onCheckedChanged:	preferencesModel.storeStateEtc = checked
@@ -215,6 +226,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					showInteractiveDefault
+			enabled:			!preferencesModel.settingIsForced("showInteractiveDefault")
 			label:				qsTr("Show interactive plots by default, where possible.")
 			checked:			preferencesModel.showInteractiveDefault
 			onCheckedChanged:	preferencesModel.showInteractiveDefault = checked

@@ -22,6 +22,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					rememberModulesSelected
+			enabled:			!preferencesModel.settingIsForced("modulesRemember")
 			label:				qsTr("Remember enabled modules")
 			checked:			preferencesModel.modulesRemember
 			onCheckedChanged:	preferencesModel.modulesRemember = checked
@@ -52,12 +53,13 @@ PrefsScrollView
 			PrefsTextInput
 			{
 				id:					cranRepoUrl
+				enabled:			!preferencesModel.settingIsForced("cranRepositoryURL")
 
 				text:				preferencesModel.cranRepoURL
 				onEditingFinished:	preferencesModel.cranRepoURL = text
 				nextEl:				githubPatDefault
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:			cranRepoUrlLabel.right
@@ -72,6 +74,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					githubPatDefault
+			enabled:			!preferencesModel.settingIsForced("GITHUB_PAT_UseDefault")
 			label:				qsTr("Use default PAT for Github")
 			checked:			preferencesModel.githubPatUseDefault
 			onCheckedChanged:	preferencesModel.githubPatUseDefault = checked
@@ -103,13 +106,14 @@ PrefsScrollView
 			PrefsTextInput
 			{
 				id:					githubPatCustomToken
+				enabled:			!preferencesModel.settingIsForced("GITHUB_PAT_Custom")
 
 				text:				preferencesModel.githubPatCustom
 				onEditingFinished:	preferencesModel.githubPatCustom = text
 
 				nextEl:				developerMode
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:			githubPatCustomLabel.right
@@ -126,6 +130,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					developerMode
+			enabled:			!preferencesModel.settingIsForced("developerMode")
 			label:				qsTr("Developer mode")
 			checked:			preferencesModel.developerMode
 			onCheckedChanged:	preferencesModel.developerMode = checked
@@ -142,7 +147,7 @@ PrefsScrollView
 			checked:			preferencesModel.generateMarkdown
 			onCheckedChanged:	preferencesModel.generateMarkdown = checked
 			visible:			preferencesModel.developerMode
-			enabled:			preferencesModel.developerMode
+			enabled:			preferencesModel.developerMode && !preferencesModel.settingIsForced("generateMarkdownHelp")
 			KeyNavigation.tab:	moduleLibraryUrl
 
 		}
@@ -171,12 +176,13 @@ PrefsScrollView
 			PrefsTextInput
 			{
 				id:					moduleLibraryUrl
+				enabled:			!preferencesModel.settingIsForced("moduleLibraryURL")
 
 				text:				preferencesModel.moduleLibraryURL
 				onEditingFinished:	preferencesModel.moduleLibraryURL = text
 				nextEl:				cleanModulesFolder
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:		moduleLibraryUrlLabel.right
@@ -195,7 +201,7 @@ PrefsScrollView
 			toolTip:			qsTr("This will erase the 'renv', 'Modules' and development Module folders in the appdata.")
 			onClicked:			mainWindow.clearModulesFoldersUser();
 
-			KeyNavigation.tab:		directLibpathDevModEnabled
+			KeyNavigation.tab:		directLibPathLabel
 			activeFocusOnTab:		true
 		}
 	}
@@ -208,76 +214,22 @@ PrefsScrollView
 		visible:			preferencesModel.developerMode
 		enabled:			preferencesModel.developerMode
 
-		CheckBox
-		{
-			id:					directLibpathDevModEnabled
-			label:				qsTr("Enable renv mode") //We should really remove the old way and this checkbox
-			checked:			preferencesModel.directLibpathEnabled
-			onCheckedChanged:	preferencesModel.directLibpathEnabled = checked
-			toolTip:			qsTr("Load modules from a binary in an R-library instead of installing it from sources.")
-			visible:			preferencesModel.developerMode
-
-			KeyNavigation.tab:	browseDeveloperFolderButton
-		}
-
-
-		Item
-		{
-			width:				parent.width
-			height:				browseDeveloperFolderButton.height
-			enabled:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
-			visible:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
-
-
-			RoundedButton
-			{
-				id:						browseDeveloperFolderButton
-				text:					qsTr("Source folder:")
-				onClicked:				preferencesModel.browseDeveloperFolder()
-				anchors.left:			parent.left
-				anchors.leftMargin:		jaspTheme.subOptionOffset
-				toolTip:				qsTr("Browse to your JASP Module folder.")
-
-				KeyNavigation.tab:		developerFolderText.textInput
-				activeFocusOnTab:		true
-
-			}
-
-			PrefsTextInput
-			{
-				id:					developerFolderText
-
-				text:				preferencesModel.developerFolder
-				onEditingFinished:	preferencesModel.developerFolder = text
-				nextEl:				directLibPathLabel
-
-				height:				browseDeveloperFolderButton.height
-				anchors
-				{
-					left:			browseDeveloperFolderButton.right
-					right:			parent.right
-					margins:		jaspTheme.generalAnchorMargin
-				}
-			}
-		}
-
 		Item
 		{
 			id:					directLibpath
-			enabled:			preferencesModel.directLibpathEnabled
-			visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 			width:				parent.width
 			height:				cranRepoUrl.height
 
 			RoundedButton
 			{
 				id:						directLibPathLabel
+				enabled:				!preferencesModel.settingIsForced("directLibpathFolder")
 				text:					qsTr("Project library:")
 				width:					Math.max(directDevModName.implicitWidth, directLibPathLabel.implicitWidth)
 				onClicked:				preferencesModel.browseDeveloperLibPathFolder()
 				activeFocusOnTab:		true
 				KeyNavigation.tab:		directLibpathFolder.textInput
-				KeyNavigation.backtab:	directLibpathDevModEnabled
+				KeyNavigation.backtab:	cleanModulesFolder
 
 				anchors
 				{
@@ -292,13 +244,14 @@ PrefsScrollView
 			PrefsTextInput
 			{
 				id:					directLibpathFolder
+				enabled:			!preferencesModel.settingIsForced("directLibpathFolder")
 
 				text:				preferencesModel.directLibpathFolder
 				onEditingFinished:	preferencesModel.directLibpathFolder = text
 
 				nextEl:				moduleName
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:			directLibPathLabel.right
@@ -315,8 +268,6 @@ PrefsScrollView
 		Item {
 
 			id:					directDevMod
-			enabled:			preferencesModel.developerMode &&preferencesModel.directLibpathEnabled
-			visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
 			width:				parent.width
 			height:				cranRepoUrl.height
 
@@ -337,13 +288,14 @@ PrefsScrollView
 			PrefsTextInput
 			{
 				id:					moduleName
+				enabled:			!preferencesModel.settingIsForced("directDevModName")
 
 				text:				preferencesModel.directDevModName
 				onEditingFinished:	preferencesModel.directDevModName = text
 
 				nextEl:				useConf
 
-				height:				browseDeveloperFolderButton.height
+				height:				directLibPathLabel.height
 				anchors
 				{
 					left:			directDevModName.right
@@ -364,6 +316,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					useConf
+			enabled:			!preferencesModel.settingIsForced("useConfigurationFile")
 			label:				qsTr("Use a configuration file.")
 			checked:			preferencesModel.useConfigurationFile
 			onCheckedChanged:	preferencesModel.useConfigurationFile = checked
@@ -380,6 +333,7 @@ PrefsScrollView
 			CheckBox
 			{
 				id:					useRemoteConf
+				enabled:			!preferencesModel.settingIsForced("remoteConfiguration")
 				label:				qsTr("Use remote configuration file.")
 				checked:			preferencesModel.remoteConfiguration
 				onCheckedChanged:	preferencesModel.remoteConfiguration = checked
@@ -411,11 +365,12 @@ PrefsScrollView
 				PrefsTextInput
 				{
 					id:					remoteConfURL
+					enabled:			!preferencesModel.settingIsForced("remoteConfigurationURL")
 
 					text:				preferencesModel.remoteConfigurationURL
 					onEditingFinished:	preferencesModel.remoteConfigurationURL = text
 
-					height:				browseDeveloperFolderButton.height
+					height:				directLibPathLabel.height
 					anchors
 					{
 						left:			remoteSettingsLabel.right
@@ -437,6 +392,7 @@ PrefsScrollView
 				RoundedButton
 				{
 					id:					browseLocalconfButton
+					enabled:			!preferencesModel.settingIsForced("localConfigurationPath")
 					width:				Math.max(remoteSettingsLabel.implicitWidth, browseLocalconfButton.implicitWidth)
 					text:				qsTr("Select configuration file")
 					onClicked:			preferencesModel.browseConfigurationFile()
@@ -450,6 +406,7 @@ PrefsScrollView
 				PrefsTextInput
 				{
 					id:					browseLocalconfFolderText
+					enabled:			!preferencesModel.settingIsForced("localConfigurationPath")
 
 					text:				preferencesModel.localConfigurationPATH
 					onEditingFinished:	preferencesModel.localConfigurationPATH = text
@@ -476,6 +433,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					logToFile
+			enabled:			!preferencesModel.settingIsForced("logToFile")
 			label:				qsTr("Log to file")
 			checked:			preferencesModel.logToFile
 			onCheckedChanged:	preferencesModel.logToFile = checked
@@ -487,6 +445,7 @@ PrefsScrollView
 			SpinBox
 			{
 				id:					maxLogFilesSpinBox
+				enabled:			!preferencesModel.settingIsForced("logFilesMax")
 				value:				preferencesModel.logFilesMax
 				onValueChanged:		if(value !== "") preferencesModel.logFilesMax = value
 				from:				5 //Less than 5 makes no sense as on release you get 1 for Desktop and 4 from the Engines
@@ -518,6 +477,7 @@ PrefsScrollView
 		SpinBox
 		{
 			id:					maxEngineCount
+			enabled:			!preferencesModel.settingIsForced("maxEngineCount")
 			value:				preferencesModel.maxEngines
 			onValueChanged:		if(value != "") preferencesModel.maxEngines = value
 			from:				1
@@ -534,7 +494,7 @@ PrefsScrollView
 		{
 			id:					engineSandbox
 			visible:			Qt.platform.os === "windows" || Qt.platform.os === "osx"
-			enabled:			Qt.platform.os === "windows" || Qt.platform.os === "osx"
+			enabled:			(Qt.platform.os === "windows" || Qt.platform.os === "osx") && !preferencesModel.settingIsForced("engineSandbox")
 			label:				qsTr("Sandbox engines")
 			checked:			preferencesModel.engineSandbox
 			onCheckedChanged:	preferencesModel.engineSandbox = checked
@@ -599,6 +559,7 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					rpcServerEnabled
+			enabled:			!preferencesModel.settingIsForced("rpcServerEnabled")
 			label:				qsTr("Enable JASP-RPC server")
 			checked:			preferencesModel.rpcServerEnabled
 			onCheckedChanged:		preferencesModel.rpcServerEnabled = checked
@@ -626,6 +587,7 @@ PrefsScrollView
 			PrefsTextInput
 			{
 				id:					rpcServerIp
+				enabled:			!preferencesModel.settingIsForced("rpcServerIp")
 				text:				preferencesModel.rpcServerIp
 				onEditingFinished:		preferencesModel.rpcServerIp = text
 				nextEl:				rpcServerPort
@@ -660,6 +622,7 @@ PrefsScrollView
 			PrefsTextInput
 			{
 				id:					rpcServerPort
+				enabled:			!preferencesModel.settingIsForced("rpcServerPort")
 				text:				preferencesModel.rpcServerPort
 				onEditingFinished:		preferencesModel.rpcServerPort = parseInt(text)
 				anchors

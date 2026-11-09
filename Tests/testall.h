@@ -24,6 +24,20 @@ private slots:
 	void	testJaspRoundRobin_data();
 	void	testJaspRoundRobin();
 
+	// Reading an empty entry, or from an archive that does not exist (jaspSyntax given a path it
+	// cannot find), gives an empty string: readAllData used to make a std::string of NULL, a crash.
+	void	testArchiveReaderEmptyEntry();
+
+	// The syntax bridge (jaspSyntax's readDatasetFromJaspFile) opens a .jasp through
+	// DataSetProvider::loadDatabase: it must load the archive's own dataset and filter, the same
+	// data Desktop loads, without adding a dataset of its own to the archive's database.
+	void	testSyntaxBridgeLoadsJaspDatabase_data();
+	void	testSyntaxBridgeLoadsJaspDatabase();
+
+	// The labels of a column loaded through the syntax bridge with levels (an R factor in a data.frame)
+	// follow these levels; the other columns keep their labels ordered by value.
+	void	testSyntaxBridgeKeepsFactorLevelOrder();
+
 	// File extensions are recognized whatever their case, and only in the file name itself: a dot in a
 	// folder name or a hidden file (".bashrc") is no extension.
 	void	testFileTypeFromFileName_data();
@@ -411,6 +425,11 @@ private slots:
 	// A mistake in an Upgrades.qml (like two Upgrades from the same version) must give a warning, and not
 	// terminate JASP because the error was thrown while Qt was still creating the QML.
 	void	testBrokenUpgradesQmlGivesWarning();
+
+	// A module loaded from a folder (the syntax bridge's parseDescription, jaspTools): a source checkout has its
+	// files in inst/, an installed package (what covr tests) at its root.
+	void	testModuleFromFolder_data();
+	void	testModuleFromFolder();
 
 	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
 	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the

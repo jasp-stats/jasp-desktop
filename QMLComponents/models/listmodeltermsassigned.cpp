@@ -98,10 +98,10 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 	Terms termsToAddWithRightTypes = termsToAdd;
 	for (Term & term : termsToAddWithRightTypes)
 	{
-		// If the real type is now allowed, change the type to its original one.
-		columnType realType = getVariableRealType(term.value());
-		if (term.type() != realType && listView()->isTypeAllowed(realType))
-			term.setType(realType);
+		// If the original type is now allowed, change the type back to it: the type the variable has in the list it comes from.
+		columnType sourceType = getVariableSourceType(term.value());
+		if (sourceType != columnType::unknown && term.type() != sourceType && listView()->isTypeAllowed(sourceType))
+			term.setType(sourceType);
 	}
 
 

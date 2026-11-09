@@ -139,6 +139,30 @@ void makeTwoDataSets(ColumnEncoder & one, ColumnEncoder & two)
 	two.setCurrentNames(names({{"Score", columnType::scale}, {"Response", columnType::nominal}}));
 }
 
+Json::Value parseJsonOrFail(const std::string & text)
+{
+	Json::Value			value;
+	Json::Reader		reader;
+	if(!reader.parse(text, value))
+		throw std::runtime_error("Test fixture is not valid JSON: " + reader.getFormattedErrorMessages());
+	return value;
+}
+
+//The saved (analyses.json) shape of options: term options as {value, types}, also nested in rows.
+Json::Value savedOptionsWithTerms()
+{
+	return parseJsonOrFail(R"({
+		".meta":		{ "variables": { "shouldEncode": true }, "modelTerms": { "shouldEncode": true } },
+		"variables":	{ "types": ["scale", "nominal"], "value": ["x", "y"] },
+		"split":		{ "types": [], "value": "" },
+		"modelTerms":	{ "optionKey": "components", "types": ["scale", "nominal"], "value": [ { "components": ["x"] }, { "components": ["y"] } ] },
+		"syntax":		{ "optionKey": "value", "types": ["scale"], "value": ["x"], "model": "x ~ 1", "columns": ["x"] },
+		"rows":			[ { "name": "first", "coefficientAlpha": { "types": [], "value": "" } }, { "name": "second", "coefficientAlpha": { "types": ["scale"], "value": "x" } } ],
+		"nested":		{ "splitBy": { "types": ["nominal"], "value": "group" } },
+		"checked":		true
+	})");
+}
+
 Json::Value twoDataSetOptions()
 {
 	Json::Value options(Json::objectValue);
@@ -809,6 +833,62 @@ void TestColumnEncoderContext::colsPlusTypesForResolvesColumnsAndTypes()
 	QVERIFY2(requested.count({"LL.nominal",				columnType::nominal})	== 1, "A typed reference did not keep its name and get the asked type.");
 	QVERIFY2(requested.count({"part length.ordinal",	columnType::ordinal})	== 1, "A typed reference to a non-syntactic columnname was not resolved.");
 	QVERIFY2(requested.size() == 3, "colsPlusTypesFor resolved something that is not a column (reference).");
+}
+
+void TestColumnEncoderContext::flattenTypesInOptionsSplitsLikeNonPreloadedEncoding()
+{
+	Json::Value options = savedOptionsWithTerms();
+	ColumnEncoder::flattenTypesInOptions(options);
+
+	QCOMPARE(options["variables"],				parseJsonOrFail(R"(["x", "y"])"));
+	QCOMPARE(options["variables.types"],		parseJsonOrFail(R"(["scale", "nominal"])"));
+	QCOMPARE(options["split"].asString(),		std::string(""));
+	QVERIFY(options.isMember("split.types") && options["split.types"].isArray() && options["split.types"].empty());
+
+	//an optionKey without other members: its rows become the value, one type per row
+	QCOMPARE(options["modelTerms"],				parseJsonOrFail(R"([ { "components": ["x"] }, { "components": ["y"] } ])"));
+	QCOMPARE(options["modelTerms.types"],		parseJsonOrFail(R"(["scale", "nominal"])"));
+
+	//an optionKey with other members keeps its saved shape
+	QCOMPARE(options["syntax"]["model"].asString(),	std::string("x ~ 1"));
+	QCOMPARE(options["syntax"]["value"],			parseJsonOrFail(R"(["x"])"));
+	QCOMPARE(options["syntax.types"],				parseJsonOrFail(R"(["scale"])"));
+
+	//nested term options get their .types next to them
+	QCOMPARE(options["rows"][0]["coefficientAlpha"].asString(),	std::string(""));
+	QVERIFY(options["rows"][0].isMember("coefficientAlpha.types"));
+	QCOMPARE(options["rows"][1]["coefficientAlpha"].asString(),	std::string("x"));
+	QCOMPARE(options["rows"][1]["coefficientAlpha.types"],		parseJsonOrFail(R"(["scale"])"));
+	QVERIFY(!options.isMember("rows.types"));
+	QCOMPARE(options["nested"]["splitBy"].asString(),			std::string("group"));
+	QCOMPARE(options["nested"]["splitBy.types"],				parseJsonOrFail(R"(["nominal"])"));
+
+	QVERIFY(options["checked"].asBool());
+	QCOMPARE(options[".meta"], savedOptionsWithTerms()[".meta"]);
+
+	//It IS the non-preloadData walk of encodeColumnNamesinOptions(): with no columns to encode, that gives the very same tree.
+	Json::Value encoded = savedOptionsWithTerms();
+	ColumnEncoder::encodeColumnNamesinOptions(encoded, false);
+	QCOMPARE(QString::fromStdString(options.toStyledString()), QString::fromStdString(encoded.toStyledString()));
+}
+
+void TestColumnEncoderContext::flattenTypesInOptionsKeepsColumnNamesPlain()
+{
+	ColumnEncoder::columnEncoder()->setCurrentNames(names({{"x", columnType::scale}, {"y", columnType::nominal}}));
+
+	Json::Value options = savedOptionsWithTerms();
+	options.removeMember(".meta");
+	ColumnEncoder::flattenTypesInOptions(options);
+
+	QCOMPARE(options["variables"],			parseJsonOrFail(R"(["x", "y"])"));
+	QCOMPARE(options["variables.types"],	parseJsonOrFail(R"(["scale", "nominal"])"));
+	QVERIFY(!options.isMember(".meta"));				//not created by the walk
+	QVERIFY(!options.isMember(ColumnEncoder::FILTERIDS_MEMBER));
+
+	//whereas the encoding does replace these names
+	Json::Value encoded = savedOptionsWithTerms();
+	ColumnEncoder::encodeColumnNamesinOptions(encoded, false);
+	QVERIFY(encoded["variables"][0].asString() != "x");
 }
 
 void TestColumnEncoderContext::suggestColumnNamesRanksCloseMatchesFirst()

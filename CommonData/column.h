@@ -195,6 +195,7 @@ Q_INVOKABLE	bool					isComputedRCode()		const	{ return _codeType == computedColu
 			void					labelsReverse();
 			void					valuesReverse();
 			void					labelsOrderByValue(bool doDbUpdateEtc=true);
+			void					labelsOrderBy(const stringvec & valuesInOrder, bool doDbUpdateEtc=true); ///< Labels whose value (or label) is in valuesInOrder get its order (e.g. the levels of an R factor), the others keep theirs after them
 
 			std::string				operator[](				size_t row); ///< Display value/label for row
 			std::string				getValue(				size_t row,	bool fancyEmptyValue = false, bool ignoreEmptyValue = false, bool sepas = true, columnType asType = columnType::unknown)	const; ///< Returns the ("original") value. Basically whatever the user would like to see as value. Stored internally as json

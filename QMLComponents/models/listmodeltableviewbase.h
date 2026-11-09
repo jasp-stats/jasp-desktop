@@ -127,8 +127,17 @@ protected slots:
 	void formulaCheckSucceededSlot();
 
 protected:
+	///< The value of a cell that setSize adds: the default value of the table, except while the form binds options
+	///< (AnalysisForm::bindingOptions) to a table that got a value: then the cell keeps the value it had in that
+	///< bound value, if it had one. See initTableTerms.
+				QVariant			_newCellValue(int col, int row)										const;
+				QString				_newColName(int col)												const;
+				QString				_newRowName(int row)												const;
+				bool				_restoringBoundTerms()												const;
+
 	TableViewBase			*	_tableView		= nullptr;
-	TableTerms					_tableTerms;
+	TableTerms					_tableTerms,
+								_boundTableTerms;	///< the terms of the last initTableTerms (the value the table was bound to)
 
 	const size_t				_maxColumn		= 10,
 								_maxRow			= 100;

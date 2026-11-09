@@ -61,7 +61,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 		{
 			columnType type = types.size() > componentId ? types[componentId] : columnType::unknown;
 			if (type == columnType::unknown)
-				type = variableTypeMap.contains(component) ? variableTypeMap[component] : _listView->model()->getVariableRealType(component);
+				type = variableTypeMap.contains(component) ? variableTypeMap[component] : _listView->model()->getVariableSourceType(component);
 
 			// Ensure that the type is allowed (if it is unknown, this is not a variable, so don't check the type)
 			if (type != columnType::unknown && !_listView->isTypeAllowed(type))
@@ -79,7 +79,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	//stored; every consumer that reads this option reads the generated form anyway.
 	BoundControlBase::bindTo(_makeOption(terms, allControlValues));
 
-	_termsModel->initTerms(terms, allControlValues);
+	_termsModel->bindTerms(terms, allControlValues);
 }
 
 Json::Value BoundControlTerms::createJson() const

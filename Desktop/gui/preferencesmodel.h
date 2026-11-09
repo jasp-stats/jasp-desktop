@@ -30,11 +30,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(double		uiScale					READ uiScale					WRITE setUiScale					NOTIFY uiScaleChanged					)
 	Q_PROPERTY(float		ribbonBarHeightScale	READ ribbonBarHeightScale		WRITE setRibbonBarHeightScale		NOTIFY ribbonBarHeightScaleChanged		)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
-	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
-	Q_PROPERTY(bool			directLibpathEnabled	READ directLibpathEnabled		WRITE setDirectLibpathEnabled		NOTIFY directLibpathEnabledChanged		)
 	Q_PROPERTY(QString		directLibpathFolder		READ directLibpathFolder		WRITE setDirectLibpathFolder		NOTIFY directLibpathFolderChanged		)
 	Q_PROPERTY(QString		directDevModName		READ directDevModName			WRITE setDirectDevModName			NOTIFY directDevModNameChanged			)
-	Q_PROPERTY(int			thresholdScale			READ thresholdScale				WRITE setThresholdScale				NOTIFY thresholdScaleChanged			)
 	Q_PROPERTY(bool			logToFile				READ logToFile					WRITE setLogToFile					NOTIFY logToFileChanged					)
 	Q_PROPERTY(int			logFilesMax				READ logFilesMax				WRITE setLogFilesMax				NOTIFY logFilesMaxChanged				)
 	Q_PROPERTY(int			maxFlickVelocity		READ maxFlickVelocity			WRITE setMaxFlickVelocity			NOTIFY maxFlickVelocityChanged			)
@@ -68,7 +65,6 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			dbShowWarning			READ dbShowWarning				WRITE setDbShowWarning				NOTIFY dbShowWarningChanged				)
 	Q_PROPERTY(QString		dataLabelNA				READ dataLabelNA				WRITE setDataLabelNA				NOTIFY dataLabelNAChanged				)
 	Q_PROPERTY(bool			guiQtTextRender			READ guiQtTextRender			WRITE setGuiQtTextRender			NOTIFY guiQtTextRenderChanged			)
-	Q_PROPERTY(bool			reportingMode			READ reportingMode				WRITE setReportingMode				NOTIFY reportingModeChanged				)
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions			WRITE setShowAllROptions			NOTIFY showAllROptionsChanged			)
 	Q_PROPERTY(bool			showRSyntaxInResults	READ showRSyntaxInResults		WRITE setShowRSyntaxInResults		NOTIFY showRSyntaxInResultsChanged		)
 	Q_PROPERTY(bool			ALTNavModeActive		READ ALTNavModeActive			WRITE setALTNavModeActive			NOTIFY ALTNavModeActiveChanged			)
@@ -135,10 +131,9 @@ public:
 	double			uiScale()								override;
 	float			ribbonBarHeightScale()					const override;
 	QString			customEditor()							const;
-	QString			developerFolder()						const;
 	QString			fixedDecimalsForJS()					const;
 	QStringList		emptyValues()							const;
-	int				thresholdScale()						const;
+	int				thresholdScale()						const override;
 	bool			logToFile()								const;
 	int				logFilesMax()							const;
 	int				maxFlickVelocity()						const override;
@@ -172,7 +167,7 @@ public:
 	bool			dbShowWarning()							const;
 	QString			dataLabelNA()							const;
 	bool			guiQtTextRender()						const;
-	bool			reportingMode()							const;
+	bool			reportingMode()							const override;
 	bool			showRSyntax()							const override;
 	bool			showAllROptions()						const override;
 	bool			showRSyntaxInResults()					const;
@@ -188,7 +183,6 @@ public:
 	QVariantList	pdfPageSizeModel()						const { return _pdfPageSizeModel; }
 	int				pdfPageSize()							const;
 	bool			pdfLandscape()							const;
-	bool			directLibpathEnabled()					const;
 	QString			directLibpathFolder()					const;
 	QString			directDevModName()						const;
 
@@ -272,17 +266,15 @@ public:
 	void setDeveloperMode(				bool		developerMode)					override;
 	void setWhiteBackground(			bool		whiteBackground);
 	void setPlotBackground(				QString		plotBackground);
-	void setDeveloperFolder(			QString		developerFolder);
 	void setUseDefaultEditor(			bool		useDefaultEditor);
 	void browseSpreadsheetEditor();
-	void browseDeveloperFolder();
 	void browseDeveloperLibPathFolder();
 	void browseEngineSandboxDir();
 	void browseConfigurationFile();
 	void removeEmptyValue(				QString		value);
 	void addEmptyValue(					QString		value);
 	void resetEmptyValues();
-	void setThresholdScale(				int			thresholdScale);
+	void setThresholdScale(				int			thresholdScale)				override;
 	void setLogToFile(					bool		logToFile);
 	void setLogFilesMax(				int			logFilesMax);
 	void setMaxFlickVelocity(			int			maxFlickVelocity);
@@ -312,7 +304,7 @@ public:
 	void setDataLabelNA(				QString		dataLabelNA);
 	void setGuiQtTextRender(			bool		newGuiQtTextRender);
 	void onGuiQtTextRenderChanged(		bool		newGuiQtTextRenderSetting);
-	void setReportingMode(				bool		reportingMode);
+	void setReportingMode(				bool		reportingMode)					override;
 	void setShowRSyntax(				bool		showRSyntax)					override;
 	void setShowAllROptions(			bool		showAllROptions)				override;
 	void setShowRSyntaxInResults(		bool		showRSyntax);
@@ -322,7 +314,6 @@ public:
 	void setMaxScaleLevels(				int			maxScaleLevels);
 	void setPdfPageSize(				int			pdfPageSize);
 	void setPdfLandscape(				bool		pdfLandscape);
-	void setDirectLibpathEnabled(		bool		setDirectLibpathEnabled);
 	void setDirectLibpathFolder(		QString		libpath);
 	void setDirectDevModName(			QString		 name);
 	void setEngineSandbox(				bool		engineSandbox);
@@ -349,10 +340,8 @@ signals:
 	void customPPIChanged(				int			customPPI);
 	void defaultPPIChanged(				int			defaultPPI);
 	void emptyValuesChanged();
-	void developerFolderChanged(		QString		developerFolder);
 	void plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
 	void plotBackgroundChanged(			QString		plotBackground);
-	void thresholdScaleChanged(			int			thresholdScale);
 	void logToFileChanged(				bool		logToFile);
 	void logFilesMaxChanged(			int			logFilesMax);
 	void modulesRememberChanged(		bool		modulesRemember);
@@ -378,7 +367,6 @@ signals:
 	void maxEnginesAdminChanged();
 	void dataLabelNAChanged(			QString		dataLabelNA);
 	void guiQtTextRenderChanged(		bool		guiQtTextRender);
-	void reportingModeChanged(			bool		reportingMode);
 	void showRSyntaxInResultsChanged(	bool		showRSyntax);
 	void aboutToChangeEmptyValues(		QStringList newValues);
 	void orderByValueByDefaultChanged(	bool		orderByValueByDefault);
@@ -388,7 +376,6 @@ signals:
 	void maxScaleLevelsChanged(			int			maxScaleLevels);
 	void pdfPageSizeChanged(			int			pdfPageSize);
 	void pdfLandscapeChanged(			bool		pdfLandscape);
-	void directLibpathEnabledChanged(	bool		directLibpathEnabled);
 	void directLibpathFolderChanged();
 	void directDevModNameChanged(		QString		name);
 	void engineSandboxChanged(			bool		engineSandbox);

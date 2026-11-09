@@ -203,8 +203,8 @@ int64_t ArchiveReader::readData(char *data, int64_t maxSize, int &errorCode)
 std::string ArchiveReader::readAllData(int blockSize, int &errorCode)
 {
     int64_t size = bytesAvailable();
-	if (size == 0)
-		return NULL;
+	if (size == 0) //No archive, no entry or an empty one. (NULL here made a std::string of a null pointer: a crash)
+		return std::string();
 
 	size++;
 

@@ -1135,6 +1135,22 @@ void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *
 }
 
 
+//Analyses ask for columns by their encoded names, but code in the R Commander can use a plain column name:
+//readDataSetToEnd(columns = "y1"). Those are encoded here, as everything else in the commander is, and a name
+//that is no column at all becomes an R error that tryCatch can handle. The Engine's reader cannot do this itself,
+//it would throw an MSVC exception into this DLL (see rbridge_encodeColumnName).
+static std::string jaspRCPP_encodedColumnNameRequested(const std::string & name)
+{
+	if(jaspRCPP_shouldDecodeColumnName(name))	return name;
+	if(jaspRCPP_shouldEncodeColumnName(name))
+	{
+		std::cerr << "You are trying to read from a dataset with an unencoded columnName (" << name << ")! Instead of crashing the engine we will now encode it for you. But either there is a bug in a JASP control or you are calling functions you shouldn't be calling." << std::endl;
+		return jaspRCPP_encodeColumnName(name);
+	}
+
+	throw std::runtime_error("'" + name + "' is not a column of the dataset");
+}
+
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax)
 {
 	std::map<std::string, columnType>	columnsRequested;
@@ -1158,9 +1174,12 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 		if(Rf_isString(cols))
 		{
 			std::vector<std::string> tmps = Rcpp::as<std::vector<std::string>>(cols);
-			for (const std::string & tmp : tmps)
-				if(tmp != "")
+			for (const std::string & requested : tmps)
+				if(requested != "")
 				{
+					// This really shouldnt be necessary but we do it in case something unencoded manages to get all the way here: (see https://github.com/jasp-stats/jasp-desktop/pull/6376)
+					const std::string tmp = jaspRCPP_encodedColumnNameRequested(requested);
+
 					if(columnsOrder.count(tmp) == 0)
 					{
 						columnsRequested[tmp]	= SetThis;
@@ -1171,7 +1190,7 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 						columnsRequested[tmp] = SetThis; //If type is unknown then we simply overwrite it with a manually specified type of analysis
 
 					else if( !(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == SetThis) ) //Only give an error if the type is different from what is requested
-						Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", tmp.c_str());
+						Rf_error("You've specified column '%s' for more than one columntype!!!\nNo clue which one we should give back...", requested.c_str());
 				}
 		}
 	};
@@ -1550,14 +1569,26 @@ void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibrary)
 		Rf_error("jaspRCPP_postProcessLocalPackageInstall did not receive a string, it should get that and the string should represent some kind of R library path.");
 }
 
+//The Engine's encoder and decoder return nullptr for a name they do not know (they cannot throw into this
+//DLL, see rbridge_encodeColumnName), so throw here instead: Rcpp turns that into an R error, as on Linux and macOS.
+static std::string jaspRCPP_enDecodeOrThrow(EnDecodeDef enDecoder, const std::string & in, const std::string & notAColumn)
+{
+	const char * out = enDecoder(in.c_str());
+
+	if(!out)
+		throw std::runtime_error("'" + in + "' " + notAColumn);
+
+	return out;
+}
+
 Rcpp::String jaspRCPP_encodeColumnNameRcpp(const Rcpp::String & in)
 {
-	return encodeColumnName(std::string(in).c_str());
+	return jaspRCPP_encodeColumnName(in);
 }
 
 Rcpp::String jaspRCPP_decodeColumnNameRcpp(const Rcpp::String & in)
 {
-	return decodeColumnName(std::string(in).c_str());
+	return jaspRCPP_decodeColumnName(in);
 }
 
 
@@ -1609,12 +1640,12 @@ bool jaspRCPP_shouldDecodeColumnName(std::string in)
 
 std::string jaspRCPP_encodeColumnName(std::string in)
 {
-	return encodeColumnName(in.c_str());
+	return jaspRCPP_enDecodeOrThrow(encodeColumnName, in, "is not a columnName!");
 }
 
 std::string jaspRCPP_decodeColumnName(std::string in)
 {
-	return decodeColumnName(in.c_str());
+	return jaspRCPP_enDecodeOrThrow(decodeColumnName, in, "is not an encoded columnName!");
 }
 
 // ------------------- Below here be dragons -------------------- //
