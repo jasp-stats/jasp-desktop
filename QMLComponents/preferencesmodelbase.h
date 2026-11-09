@@ -10,6 +10,8 @@ class PreferencesModelBase : public QObject
 	Q_PROPERTY(bool		animationsOn		READ animationsOn											NOTIFY animationsOnChanged		)
 	Q_PROPERTY(bool		showRSyntax			READ showRSyntax			WRITE setShowRSyntax			NOTIFY showRSyntaxChanged		)
 	Q_PROPERTY(bool		developerMode		READ developerMode			WRITE setDeveloperMode			NOTIFY developerModeChanged		)
+	Q_PROPERTY(int		thresholdScale		READ thresholdScale			WRITE setThresholdScale			NOTIFY thresholdScaleChanged	)
+	Q_PROPERTY(bool		reportingMode		READ reportingMode			WRITE setReportingMode			NOTIFY reportingModeChanged		)
 
 public:
 	explicit PreferencesModelBase(QObject *parent = nullptr);
@@ -24,6 +26,8 @@ public:
 	virtual bool	animationsOn()			const	{ return false; }
 	virtual bool	developerMode()			const	{ return false;	}
 	virtual QString	developerModeName()		const	{ return "";	}
+	virtual int		thresholdScale()		const	{ return _thresholdScale;	} ///< Desktop's default is Settings' ThresholdScale (10); the syntax bridge follows the threshold of its data import
+	virtual bool	reportingMode()			const	{ return _reportingMode;	}
 
 	static PreferencesModelBase* preferences();
 
@@ -34,6 +38,8 @@ public slots:
 	virtual void	setShowAllROptions(bool showAllROptions)		{}
 	virtual bool	ALTNavModeActive()						const	{ return false; }
 	virtual void	setDeveloperMode(bool developerMode)			{};
+	virtual void	setThresholdScale(int thresholdScale);
+	virtual void	setReportingMode(bool reportingMode);
 
 signals:
 	void ribbonBarHeightScaleChanged(float height);
@@ -48,11 +54,18 @@ signals:
 	void animationsOnChanged();
 	void languageCodeChanged();
 	void developerModeChanged(		bool	developerMode);
+	void thresholdScaleChanged(		int		thresholdScale);
+	void reportingModeChanged(		bool	reportingMode);
 
 
 
 protected:
 	static PreferencesModelBase* _singleton;
+
+private:
+	//Only used when no derived class (Desktop's PreferencesModel) overrides these, i.e. in the syntax bridge and the QML tests.
+	int		_thresholdScale	= 10;
+	bool	_reportingMode	= false;
 
 };
 

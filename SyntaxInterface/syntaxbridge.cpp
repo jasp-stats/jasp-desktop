@@ -36,6 +36,7 @@
 #include "tempfiles.h"
 #include "analysisbase.h"
 #include "analysisform.h"
+#include "preferencesmodelbase.h"
 #include "log.h"
 #include "utilities/qmlutils.h"
 #include "dirs.h"
@@ -514,6 +515,10 @@ int STDCALL syntaxBridgeLoadDataSetWithLevels(const SyntaxBridgeDataSet* syntaxB
 					columnLevelValues.push_back(columnLevels[colNr].levels[levelNr]);
 		}
 	}
+
+	//Desktop's type-guess threshold IS its thresholdScale preference, so module QML reading
+	//preferencesModel.thresholdScale (e.g. a hidden option) sees the threshold this data was imported with.
+	PreferencesModelBase::preferences()->setThresholdScale(threshold);
 
 	//A named dataset goes into the workspace as its own DataSet (with id + encoder prefix, titled);
 	//an unnamed one keeps the legacy behaviour of filling the shown dataset.
