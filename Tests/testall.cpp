@@ -6139,7 +6139,7 @@ void TestAll::testAnalysisProviderAggregatesSelectionHosts()
 	TestSelectionHost * hostSame = new TestSelectionHost(aNamed);
 	form.registerDataSetSelectionOption("hostSame", hostSame);
 	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 1);
-	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList({ aNamed->id() }));
+	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList{ aNamed->id() });
 	QVERIFY(!analysis.selectionNamespaceIsMerged());
 	QCOMPARE(namespaceSpy.count(), 2);						//registry changed (MAYBE semantics: the
 															//aggregate itself did not - consumers
@@ -6182,7 +6182,7 @@ void TestAll::testAnalysisProviderAggregatesSelectionHosts()
 	//eager unregister immediately shrinks the aggregate again:
 	delete hostB;
 	QCOMPARE(namespaceSpy.count(), 4);
-	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList({ aNamed->id() }));
+	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList{ aNamed->id() });
 	delete hostSame;
 	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 1);
 	delete hostA;
