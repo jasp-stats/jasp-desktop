@@ -24,84 +24,132 @@ Rectangle
 
 	signal back()
 
-	implicitHeight:	content.implicitHeight + 2 * jaspTheme.contentMargin
 	color:			jaspTheme.controlBackgroundColor
 	border.width:	1
 	border.color:	jaspTheme.borderColor
 	radius:			jaspTheme.borderRadius
 
-	Column
+	// The FactorsForm gives the view the height of its lists, so the page does not move: the title and Back stay, the
+	// terms scroll.
+	Label
 	{
-		id:			content
-		x:			jaspTheme.contentMargin
-		y:			jaspTheme.contentMargin
-		width:		parent.width - 2 * jaspTheme.contentMargin
-		spacing:	4 * jaspTheme.uiScale
+		id:		titleLabel
+		x:		jaspTheme.contentMargin
+		y:		jaspTheme.contentMargin
+		text:	view.title
+	}
 
-		Label { text: view.title }
-
-		Label
+	Flickable
+	{
+		id:					termsFlickable
+		contentHeight:		content.implicitHeight
+		clip:				true
+		boundsBehavior:		Flickable.StopAtBounds
+		onContentHeightChanged: returnToBounds()
+		anchors
 		{
-			visible:	view.rows.length === 0
-			text:		qsTr("No terms: assign them with Back.")
-			color:		jaspTheme.textDisabled
+			top:			titleLabel.bottom
+			topMargin:		4 * jaspTheme.uiScale
+			bottom:			buttons.top
+			bottomMargin:	4 * jaspTheme.uiScale
+			left:			parent.left
+			leftMargin:		jaspTheme.contentMargin
+			right:			parent.right
+			rightMargin:	jaspTheme.contentMargin
 		}
 
-		Repeater
+		Column
 		{
-			model: view.rows
+			id:			content
+			width:		termsFlickable.width - (scrollBar.visible ? scrollBar.width + 4 * jaspTheme.uiScale : 0)
+			spacing:	4 * jaspTheme.uiScale
 
-			RowLayout
+			Label
 			{
-				id:			rowItem
-				required property var	modelData
-				required property int	index
+				visible:	view.rows.length === 0
+				text:		qsTr("No terms: assign them with Back.")
+				color:		jaspTheme.textDisabled
+			}
 
-				width:		content.width
-				spacing:	8 * jaspTheme.uiScale
+			Repeater
+			{
+				model: view.rows
 
-				Label // the full term: the point of this view
+				RowLayout
 				{
-					text:					rowItem.modelData.label
-					wrapMode:				Text.WrapAtWordBoundaryOrAnywhere
-					Layout.fillWidth:		true
-				}
+					id:			rowItem
+					required property var	modelData
+					required property int	index
 
-				Image
-				{
-					source:					jaspTheme.iconPath + "cross.png"
-					Layout.preferredWidth:	jaspTheme.iconSize
-					Layout.preferredHeight:	jaspTheme.iconSize
+					width:		content.width
+					spacing:	8 * jaspTheme.uiScale
 
-					QtControls.ToolTip.text:				qsTr("Remove this term from the model")
-					QtControls.ToolTip.visible:				removeMouseArea.containsMouse
-					QtControls.ToolTip.toolTip.background:	Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
-
-					MouseArea
+					Label // the full term: the point of this view
 					{
-						id:				removeMouseArea
-						anchors.fill:	parent
-						hoverEnabled:	true
-						cursorShape:	Qt.PointingHandCursor
-						onClicked:		{ var form = view.factorsForm, model = view.factorIndex, term = rowItem.index; Qt.callLater(function() { form.removeModelTerm(model, term); }); }
+						text:					rowItem.modelData.label
+						wrapMode:				Text.WrapAtWordBoundaryOrAnywhere
+						Layout.fillWidth:		true
+					}
+
+					Image
+					{
+						source:					jaspTheme.iconPath + "cross.png"
+						Layout.preferredWidth:	jaspTheme.iconSize
+						Layout.preferredHeight:	jaspTheme.iconSize
+
+						QtControls.ToolTip.text:				qsTr("Remove this term from the model")
+						QtControls.ToolTip.visible:				removeMouseArea.containsMouse
+						QtControls.ToolTip.toolTip.background:	Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
+
+						MouseArea
+						{
+							id:				removeMouseArea
+							anchors.fill:	parent
+							hoverEnabled:	true
+							cursorShape:	Qt.PointingHandCursor
+							onClicked:		{ var form = view.factorsForm, model = view.factorIndex, term = rowItem.index; Qt.callLater(function() { form.removeModelTerm(model, term); }); }
+						}
 					}
 				}
 			}
 		}
+	}
 
-		Item
+	JASPScrollBar
+	{
+		id:				scrollBar
+		flickable:		termsFlickable
+		manualAnchor:	true
+		vertical:		true
+		anchors
 		{
-			width:	content.width
-			height:	backButton.height
+			top:		termsFlickable.top
+			bottom:		termsFlickable.bottom
+			right:		termsFlickable.right
+		}
+	}
 
-			Button
-			{
-				id:				backButton
-				anchors.right:	parent.right
-				text:			qsTr("Back")
-				toolTip:		qsTr("Back to the models")
-				onClicked:		view.back()
-			}
+	Item
+	{
+		id:		buttons
+		height:	backButton.height
+		anchors
+		{
+			bottom:			parent.bottom
+			bottomMargin:	jaspTheme.contentMargin
+			left:			parent.left
+			leftMargin:		jaspTheme.contentMargin
+			right:			parent.right
+			rightMargin:	jaspTheme.contentMargin
+		}
+
+		Button
+		{
+			id:				backButton
+			anchors.right:	parent.right
+			text:			qsTr("Back")
+			toolTip:		qsTr("Back to the models")
+			onClicked:		view.back()
 		}
 	}
 }

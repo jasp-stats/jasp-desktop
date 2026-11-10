@@ -34,7 +34,7 @@ import QtQuick.Controls as QtControls
     \li \b allowTypeChange (bool) - Allow changing variable type icons. Default: false.
     \li \b addInteractionsByDefault (bool) - Automatically add interactions. Default: false.
     \li \b nested (bool) - Use nested factor structure. Default: false. Not applied while the term specification is active.
-    \li \b advancedAvailable (bool) - Offer the term specification. Default: false (the option, its layout and saved files stay exactly as before). A "Specify" button in the corner of the available list opens a table, full width, where the terms of all models are defined once: "(Intercept)" (see interceptMode), then a base term for every variable (plain, or treatment coded), whose specification can be changed but which cannot be removed; + adds a row for another term (choose its variable, then its transformation (continuous) or coding (categorical)), or a constant offset (a number), which x removes; "Reset" switches the specification off and clears the defined terms; "Back" returns to the lists. The available list then offers these terms by name ("x", "log(x)", "f (reference b)", "offset(2)", ...) and "(Intercept)"; they are assigned to the models as usual (interactions with shift-click), and the models are not forced to be nested. The intercept and offsets are never part of an interaction (the form removes such terms). An icon in the corner of each model's list shows that model full width, with its terms in full (each removable). The option then carries per model the optionKey member (`components`), `intercept`, `definitions` and `terms`; read it with jaspBase::prepareModelTerms(). It must not change at runtime, and `availableVariablesList.source` must be a plain value (the form replaces it while the specification is on and puts it back).
+    \li \b advancedAvailable (bool) - Offer the term specification. Default: false (the option, its layout and saved files stay exactly as before). A "Specify" button in the corner of the available list opens a table, full width, where the terms of all models are defined once: "(Intercept)" (see interceptMode), then a base term for every variable (plain, or treatment coded), whose specification can be changed but which cannot be removed; + adds a row for another term (choose its variable, then its transformation (continuous) or coding (categorical)), or a constant offset (a number), which x removes; "Reset" switches the specification off and clears the defined terms; "Back" returns to the lists. The available list then offers these terms by name ("x", "log(x)", "f (reference b)", "offset(2)", ...) and "(Intercept)"; they are assigned to the models as usual (interactions with shift-click), and the models are not forced to be nested. The intercept and offsets are never part of an interaction (the form removes such terms). An icon in the corner of each model's list shows that model full width, with its terms in full (each removable). The table and a model shown full width keep the height of the lists (their rows scroll), so the page does not move. The option then carries per model the optionKey member (`components`), `intercept`, `definitions` and `terms`; read it with jaspBase::prepareModelTerms(). It must not change at runtime, and `availableVariablesList.source` must be a plain value (the form replaces it while the specification is on and puts it back).
     \li \b advanced (bool) - Whether the term specification is on (with advancedAvailable). Set it to true in QML to start new analyses with it: every initial model with "(Intercept)", and a variable added later goes into the model that takes new variables. A saved analysis keeps what it had. Default: false.
     \li \b restrictionAvailable (bool) - Add a "Restriction" column (fixed coefficients) to the term specification. Default: false.
     \li \b interceptMode (string) - "optional": "(Intercept)" is a term, assigned to every model when the specification starts and removable from each; "forced": every model has an intercept; "none": no model has one (e.g. Cox regression). Default: "optional".
@@ -65,7 +65,7 @@ FactorsFormBase
 {
 	id:					   factorsForm
 
-	implicitHeight		: editing ? definitionsView.implicitHeight : expandedModel >= 0 ? modelView.implicitHeight : listsHeight
+	implicitHeight		: listsHeight	// also while the specification table or a model full width replaces the lists: the page does not move
 	implicitWidth		: jaspForm.width
 	height				: implicitHeight
 	width				: implicitWidth
@@ -148,6 +148,7 @@ FactorsFormBase
 		factorIndex:	factorsForm.expandedModel
 		visible:		factorsForm.expandedModel >= 0
 		width:			parent.width
+		height:			factorsForm.listsHeight
 		anchors.top:	parent.top
 		onBack:			factorsForm.expandedModel = -1
 	}
@@ -158,6 +159,7 @@ FactorsFormBase
 		factorsForm:	factorsForm
 		visible:		factorsForm.editing
 		width:			parent.width
+		height:			factorsForm.listsHeight
 		anchors.top:	parent.top
 		onBack:			factorsForm.editing = false
 	}

@@ -34,7 +34,6 @@ Rectangle
 
 	signal back()
 
-	implicitHeight:	content.implicitHeight + 2 * jaspTheme.contentMargin
 	color:			jaspTheme.controlBackgroundColor
 	border.width:	1
 	border.color:	jaspTheme.borderColor
@@ -100,227 +99,287 @@ Rectangle
 		return row.choices.map(function(choice) { return { label: view.specificationLabels[choice.value] || choice.title, value: choice.value }; });
 	}
 
-	Column
+	// The FactorsForm gives the view the height of its lists, so the page does not move: the header and the buttons stay,
+	// the rows scroll.
+	readonly property real	rowsWidth:	width - 2 * jaspTheme.contentMargin - (scrollBar.visible ? scrollBar.width + 4 * jaspTheme.uiScale : 0)
+	property bool			followEnd:	false	// a row was added: show the end of the rows once it is there
+
+	RowLayout
 	{
-		id:			content
+		id:			header
 		x:			jaspTheme.contentMargin
 		y:			jaspTheme.contentMargin
-		width:		parent.width - 2 * jaspTheme.contentMargin
-		spacing:	4 * jaspTheme.uiScale
+		width:		view.rowsWidth
+		spacing:	8 * jaspTheme.uiScale
+		Label { text: qsTr("Variable");			Layout.preferredWidth: view.variableWidth												}
+		Label { text: qsTr("Restriction");		Layout.preferredWidth: view.restrictionWidth;	visible: view.factorsForm.restrictionAvailable	}
+		Label { text: qsTr("Specification");	Layout.fillWidth: true																	}
+	}
 
-		RowLayout
+	Flickable
+	{
+		id:					rowsFlickable
+		contentHeight:		content.implicitHeight
+		clip:				true
+		boundsBehavior:		Flickable.StopAtBounds
+		anchors
 		{
-			width:		content.width
-			spacing:	8 * jaspTheme.uiScale
-			Label { text: qsTr("Variable");			Layout.preferredWidth: view.variableWidth												}
-			Label { text: qsTr("Restriction");		Layout.preferredWidth: view.restrictionWidth;	visible: view.factorsForm.restrictionAvailable	}
-			Label { text: qsTr("Specification");	Layout.fillWidth: true																	}
+			top:			header.bottom
+			topMargin:		4 * jaspTheme.uiScale
+			bottom:			buttons.top
+			bottomMargin:	4 * jaspTheme.uiScale
+			left:			parent.left
+			leftMargin:		jaspTheme.contentMargin
+			right:			parent.right
+			rightMargin:	jaspTheme.contentMargin
 		}
 
-		Repeater
+		onContentHeightChanged:
 		{
-			model: view.rows
-
-			RowLayout
+			if (view.followEnd)
 			{
-				id:			rowItem
-				required property var modelData
-				readonly property var	row:			modelData
-				readonly property bool	intercept:		row.kind === "intercept"
-				readonly property var	parameters:		intercept ? ({}) : row.parameters
-				readonly property string specification:	intercept ? "" : row.specification
-				readonly property bool	fixed:			intercept || row.base		// its variable cannot change (the intercept, the base term of a variable)
-				readonly property bool	hasVariable:	!intercept && row.variable !== ""
-				readonly property bool	constant:		!intercept && row.specification === "offsetConstant"	// a constant offset: a number, no variable
+				view.followEnd	= false;
+				contentY		= Math.max(0, contentHeight - height);
+			}
+			else
+				returnToBounds();
+		}
 
-				// committed after the current event: a Tab moves the focus first, so the rebuilt row can give it back
-				function set(key, value) { var form = view.factorsForm, id = row.id, text = String(value); Qt.callLater(function() { form.setDefinitionValue(id, key, text); }); } // a new closure each time: callLater merges calls of one function
-				function focusOn(key) { view.focusKey = row.id + ":" + key; }
-				function hadFocus(key) { return view.focusKey === row.id + ":" + key; }
+		Column
+		{
+			id:			content
+			width:		view.rowsWidth
+			spacing:	4 * jaspTheme.uiScale
 
-				width:		content.width
-				spacing:	8 * jaspTheme.uiScale
+			Repeater
+			{
+				model: view.rows
 
-				Label
+				RowLayout
 				{
-					visible:				rowItem.fixed
-					text:					rowItem.intercept ? rowItem.row.label : rowItem.row.variable
-					elide:					Text.ElideRight
-					Layout.preferredWidth:	view.variableWidth
-				}
+					id:			rowItem
+					required property var modelData
+					readonly property var	row:			modelData
+					readonly property bool	intercept:		row.kind === "intercept"
+					readonly property var	parameters:		intercept ? ({}) : row.parameters
+					readonly property string specification:	intercept ? "" : row.specification
+					readonly property bool	fixed:			intercept || row.base		// its variable cannot change (the intercept, the base term of a variable)
+					readonly property bool	hasVariable:	!intercept && row.variable !== ""
+					readonly property bool	constant:		!intercept && row.specification === "offsetConstant"	// a constant offset: a number, no variable
 
-				DropDown // an added term: its variable is chosen first, which gives it a specification
-				{
-					visible:			!rowItem.fixed
-					isBound:			false
-					fieldWidth:			view.variableWidth
-					addEmptyValue:		true
-					placeholderText:	qsTr("Choose a variable")
-					values:				rowItem.fixed ? [] : rowItem.row.variables.map(function(variable) { return { label: variable, value: variable }; })
-											.concat(rowItem.row.offsetChoice ? [{ label: qsTr("Constant offset"), value: rowItem.row.offsetChoice }] : []) // when the form offers it
-					startValue:			rowItem.fixed ? "" : (rowItem.constant ? rowItem.row.offsetChoice : rowItem.row.variable)
-					info:				qsTr("The variable this term is made of, or Constant offset: a number added to the linear predictor (its coefficient fixed at 1).")
-					onActivated:		(index) => rowItem.set("variable", index > 0 ? values[index - 1].value : "") // index 0 is the empty entry; `value` is updated only after this handler
-				}
+					// committed after the current event: a Tab moves the focus first, so the rebuilt row can give it back
+					function set(key, value) { var form = view.factorsForm, id = row.id, text = String(value); Qt.callLater(function() { form.setDefinitionValue(id, key, text); }); } // a new closure each time: callLater merges calls of one function
+					function focusOn(key) { view.focusKey = row.id + ":" + key; scrollBar.scrollToElement(rowItem); }
+					function hadFocus(key) { return view.focusKey === row.id + ":" + key; }
 
-				TextField
-				{
-					visible:			view.factorsForm.restrictionAvailable
-					enabled:			rowItem.intercept || (rowItem.hasVariable && rowItem.specification !== "offset") // an offset has no coefficient (a constant offset has no variable)
-					isBound:			false
-					fieldWidth:			view.restrictionWidth
-					value:				rowItem.row.restriction // not its default: clearing the field gives "free"
-					placeholderText:	qsTr("free")
-					info:				qsTr("Fix the coefficient(s) of this term; leave empty to estimate them. Terms with several coefficients take one value per coefficient, separated by commas.")
-					onEditingFinished:	rowItem.set("restriction", displayValue)
-					onActiveFocusChanged:	if (activeFocus) rowItem.focusOn("restriction")
-					Component.onCompleted:	if (rowItem.hadFocus("restriction")) forceActiveFocus()
-				}
+					width:		content.width
+					spacing:	8 * jaspTheme.uiScale
+					onYChanged:	if (view.focusKey.indexOf(row.id + ":") === 0) scrollBar.scrollToElement(rowItem)	// a rebuilt row placed after its field got the focus back
 
-				Label
-				{
-					visible:				rowItem.intercept
-					text:					view.factorsForm.interceptMode === "forced" ? qsTr("In every model") : qsTr("A term of every model unless removed from it")
-					color:					jaspTheme.textDisabled
-					elide:					Text.ElideRight
-					Layout.fillWidth:		true
-				}
-
-				DropDown
-				{
-					visible:			rowItem.hasVariable
-					isBound:			false
-					fieldWidth:			view.specificationWidth
-					values:				rowItem.intercept ? [] : view.specificationValues(rowItem.row)
-					startValue:			rowItem.specification
-					info:				qsTr("How the variable enters the models: transformed (continuous variables) or coded (categorical variables).")
-					onActivated:		(index) => rowItem.set("specification", values[index].value)
-				}
-
-				Repeater // the parameters of the specification, as the catalogue lists them (FactorsFormBase::definitionRows)
-				{
-					model: rowItem.intercept ? [] : rowItem.row.parameterInfo
-
-					Loader
+					Label
 					{
-						id:							editor
-						required property var		modelData
-						readonly property var		parameter:	modelData
-						readonly property string	current:	rowItem.parameters[parameter.name] || ""
-						readonly property string	title:		view.parameterLabels[parameter.name] || parameter.title
+						visible:				rowItem.fixed
+						text:					rowItem.intercept ? rowItem.row.label : rowItem.row.variable
+						elide:					Text.ElideRight
+						Layout.preferredWidth:	view.variableWidth
+					}
 
-						sourceComponent: parameter.type === "integer" ? integerEditor : (parameter.type === "choice" || parameter.type === "level") ? choiceEditor : textEditor
+					DropDown // an added term: its variable is chosen first, which gives it a specification
+					{
+						visible:			!rowItem.fixed
+						isBound:			false
+						fieldWidth:			view.variableWidth
+						addEmptyValue:		true
+						placeholderText:	qsTr("Choose a variable")
+						values:				rowItem.fixed ? [] : rowItem.row.variables.map(function(variable) { return { label: variable, value: variable }; })
+												.concat(rowItem.row.offsetChoice ? [{ label: qsTr("Constant offset"), value: rowItem.row.offsetChoice }] : []) // when the form offers it
+						startValue:			rowItem.fixed ? "" : (rowItem.constant ? rowItem.row.offsetChoice : rowItem.row.variable)
+						info:				qsTr("The variable this term is made of, or Constant offset: a number added to the linear predictor (its coefficient fixed at 1).")
+						onActivated:		(index) => rowItem.set("variable", index > 0 ? values[index - 1].value : "") // index 0 is the empty entry; `value` is updated only after this handler
+					}
 
-						Component
+					TextField
+					{
+						visible:			view.factorsForm.restrictionAvailable
+						enabled:			rowItem.intercept || (rowItem.hasVariable && rowItem.specification !== "offset") // an offset has no coefficient (a constant offset has no variable)
+						isBound:			false
+						fieldWidth:			view.restrictionWidth
+						value:				rowItem.row.restriction // not its default: clearing the field gives "free"
+						placeholderText:	qsTr("free")
+						info:				qsTr("Fix the coefficient(s) of this term; leave empty to estimate them. Terms with several coefficients take one value per coefficient, separated by commas.")
+						onEditingFinished:	rowItem.set("restriction", displayValue)
+						onActiveFocusChanged:	if (activeFocus) rowItem.focusOn("restriction")
+						Component.onCompleted:	if (rowItem.hadFocus("restriction")) forceActiveFocus()
+					}
+
+					Label
+					{
+						visible:				rowItem.intercept
+						text:					view.factorsForm.interceptMode === "forced" ? qsTr("In every model") : qsTr("A term of every model unless removed from it")
+						color:					jaspTheme.textDisabled
+						elide:					Text.ElideRight
+						Layout.fillWidth:		true
+					}
+
+					DropDown
+					{
+						visible:			rowItem.hasVariable
+						isBound:			false
+						fieldWidth:			view.specificationWidth
+						values:				rowItem.intercept ? [] : view.specificationValues(rowItem.row)
+						startValue:			rowItem.specification
+						info:				qsTr("How the variable enters the models: transformed (continuous variables) or coded (categorical variables).")
+						onActivated:		(index) => rowItem.set("specification", values[index].value)
+					}
+
+					Repeater // the parameters of the specification, as the catalogue lists them (FactorsFormBase::definitionRows)
+					{
+						model: rowItem.intercept ? [] : rowItem.row.parameterInfo
+
+						Loader
 						{
-							id: textEditor	// number, location
-							TextField
+							id:							editor
+							required property var		modelData
+							readonly property var		parameter:	modelData
+							readonly property string	current:	rowItem.parameters[parameter.name] || ""
+							readonly property string	title:		view.parameterLabels[parameter.name] || parameter.title
+
+							sourceComponent: parameter.type === "integer" ? integerEditor : (parameter.type === "choice" || parameter.type === "level") ? choiceEditor : textEditor
+
+							Component
 							{
-								isBound:			false
-								label:				editor.title
-								fieldWidth:			view.parameterWidth * (rowItem.constant ? 2 : editor.parameter.type === "location" ? 1.75 : 1) // a location also takes "median"
-								value:				editor.current
-								placeholderText:	editor.parameter.placeholder || ""
-								info:				view.parameterInfos[editor.parameter.name] || ""
-								onEditingFinished:	rowItem.set(editor.parameter.name, displayValue)
-								onActiveFocusChanged:	if (activeFocus) rowItem.focusOn(editor.parameter.name)
-								Component.onCompleted:	if (rowItem.hadFocus(editor.parameter.name)) forceActiveFocus()
+								id: textEditor	// number, location
+								TextField
+								{
+									isBound:			false
+									label:				editor.title
+									fieldWidth:			view.parameterWidth * (rowItem.constant ? 2 : editor.parameter.type === "location" ? 1.75 : 1) // a location also takes "median"
+									value:				editor.current
+									placeholderText:	editor.parameter.placeholder || ""
+									info:				view.parameterInfos[editor.parameter.name] || ""
+									onEditingFinished:	rowItem.set(editor.parameter.name, displayValue)
+									onActiveFocusChanged:	if (activeFocus) rowItem.focusOn(editor.parameter.name)
+									Component.onCompleted:	if (rowItem.hadFocus(editor.parameter.name)) forceActiveFocus()
+								}
 							}
-						}
-						Component
-						{
-							id: integerEditor
-							IntegerField
+							Component
 							{
-								isBound:			false
-								label:				editor.title
-								min:				editor.parameter.min || 1
-								defaultValue:		Number(editor.current || editor.parameter.min || 1)
-								onEditingFinished:	rowItem.set(editor.parameter.name, displayValue)
-								onActiveFocusChanged:	if (activeFocus) rowItem.focusOn(editor.parameter.name)
-								Component.onCompleted:	if (rowItem.hadFocus(editor.parameter.name)) forceActiveFocus()
+								id: integerEditor
+								IntegerField
+								{
+									isBound:			false
+									label:				editor.title
+									min:				editor.parameter.min || 1
+									defaultValue:		Number(editor.current || editor.parameter.min || 1)
+									onEditingFinished:	rowItem.set(editor.parameter.name, displayValue)
+									onActiveFocusChanged:	if (activeFocus) rowItem.focusOn(editor.parameter.name)
+									Component.onCompleted:	if (rowItem.hadFocus(editor.parameter.name)) forceActiveFocus()
+								}
 							}
-						}
-						Component
-						{
-							id: choiceEditor	// a choice of the catalogue, or a level of the factor
-							DropDown
+							Component
 							{
-								isBound:		false
-								label:			editor.title
-								values:			editor.parameter.type === "level"
-													? rowItem.row.levels.map(function(level) { return { label: level, value: level }; })
-													: editor.parameter.choices.map(function(choice) { return { label: view.choiceLabels[choice.value] || choice.title, value: choice.value }; })
-								startValue:		editor.current
-								onActivated:	(index) => rowItem.set(editor.parameter.name, values[index].value)
+								id: choiceEditor	// a choice of the catalogue, or a level of the factor
+								DropDown
+								{
+									isBound:		false
+									label:			editor.title
+									values:			editor.parameter.type === "level"
+														? rowItem.row.levels.map(function(level) { return { label: level, value: level }; })
+														: editor.parameter.choices.map(function(choice) { return { label: view.choiceLabels[choice.value] || choice.title, value: choice.value }; })
+									startValue:		editor.current
+									onActivated:	(index) => rowItem.set(editor.parameter.name, values[index].value)
+								}
 							}
 						}
 					}
-				}
 
-				Item { visible: !rowItem.intercept; Layout.fillWidth: true; implicitHeight: 1 }
+					Item { visible: !rowItem.intercept; Layout.fillWidth: true; implicitHeight: 1 }
 
-				Image
-				{
-					source:					jaspTheme.iconPath + "cross.png"
-					opacity:				rowItem.row.removable ? 1 : 0	// keeps the column
-					Layout.preferredWidth:	jaspTheme.iconSize
-					Layout.preferredHeight:	jaspTheme.iconSize
-
-					QtControls.ToolTip.text:				qsTr("Remove this term (from every model)")
-					QtControls.ToolTip.visible:				rowItem.row.removable && removeMouseArea.containsMouse
-					QtControls.ToolTip.toolTip.background:	Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
-
-					MouseArea
+					Image
 					{
-						id:				removeMouseArea
-						anchors.fill:	parent
-						enabled:		rowItem.row.removable
-						hoverEnabled:	true
-						cursorShape:	Qt.PointingHandCursor
-						onClicked:		{ var form = view.factorsForm, id = rowItem.row.id; Qt.callLater(function() { form.removeDefinition(id); }); }
+						source:					jaspTheme.iconPath + "cross.png"
+						opacity:				rowItem.row.removable ? 1 : 0	// keeps the column
+						Layout.preferredWidth:	jaspTheme.iconSize
+						Layout.preferredHeight:	jaspTheme.iconSize
+
+						QtControls.ToolTip.text:				qsTr("Remove this term (from every model)")
+						QtControls.ToolTip.visible:				rowItem.row.removable && removeMouseArea.containsMouse
+						QtControls.ToolTip.toolTip.background:	Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
+
+						MouseArea
+						{
+							id:				removeMouseArea
+							anchors.fill:	parent
+							enabled:		rowItem.row.removable
+							hoverEnabled:	true
+							cursorShape:	Qt.PointingHandCursor
+							onClicked:		{ var form = view.factorsForm, id = rowItem.row.id; Qt.callLater(function() { form.removeDefinition(id); }); }
+						}
 					}
 				}
 			}
 		}
+	}
 
-		Item
+	JASPScrollBar
+	{
+		id:				scrollBar
+		flickable:		rowsFlickable
+		manualAnchor:	true
+		vertical:		true
+		anchors
 		{
-			width:	content.width
-			height:	Math.max(addButton.height, backButton.height)
+			top:		rowsFlickable.top
+			bottom:		rowsFlickable.bottom
+			right:		rowsFlickable.right
+		}
+	}
 
-			MenuButton
+	Item
+	{
+		id:		buttons
+		height:	Math.max(addButton.height, backButton.height)
+		anchors
+		{
+			bottom:			parent.bottom
+			bottomMargin:	jaspTheme.contentMargin
+			left:			parent.left
+			leftMargin:		jaspTheme.contentMargin
+			right:			parent.right
+			rightMargin:	jaspTheme.contentMargin
+		}
+
+		MenuButton
+		{
+			id:					addButton
+			width:				height
+			radius:				height
+			anchors.left:		parent.left
+			iconSource:			jaspTheme.iconPath + "round_addition.png"
+			toolTip:			qsTr("Add a term: choose its variable, then its specification")
+			onClicked:			{ view.followEnd = true; view.factorsForm.addDefinition(); }
+		}
+
+		Row
+		{
+			anchors.right:	parent.right
+			spacing:		8 * jaspTheme.uiScale
+
+			Button
 			{
-				id:					addButton
-				width:				height
-				radius:				height
-				anchors.left:		parent.left
-				iconSource:			jaspTheme.iconPath + "round_addition.png"
-				toolTip:			qsTr("Add a term: choose its variable, then its specification")
-				onClicked:			view.factorsForm.addDefinition()
+				id:			resetButton
+				text:		qsTr("Reset")
+				opacity:	control.hovered ? 1 : 0.55
+				toolTip:	qsTr("Remove the term specification: every model gets the variables of its terms again, and the defined terms are cleared.")
+				onClicked:	view.factorsForm.resetDefinitions()
 			}
 
-			Row
+			Button
 			{
-				anchors.right:	parent.right
-				spacing:		8 * jaspTheme.uiScale
-
-				Button
-				{
-					id:			resetButton
-					text:		qsTr("Reset")
-					opacity:	control.hovered ? 1 : 0.55
-					toolTip:	qsTr("Remove the term specification: every model gets the variables of its terms again, and the defined terms are cleared.")
-					onClicked:	view.factorsForm.resetDefinitions()
-				}
-
-				Button
-				{
-					id:			backButton
-					text:		qsTr("Back")
-					toolTip:	qsTr("Back to the models: the available list now offers the terms defined here.")
-					onClicked:	view.back()
-				}
+				id:			backButton
+				text:		qsTr("Back")
+				toolTip:	qsTr("Back to the models: the available list now offers the terms defined here.")
+				onClicked:	view.back()
 			}
 		}
 	}
