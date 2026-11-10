@@ -1,7 +1,8 @@
-# Standalone reproducer: QtQml GC crash (dangling identifier-hash root)
+# Standalone reproducer: two missing-barrier defects in QtQml's incremental GC
 
 Crashes unpatched Qt 6.12.0 (`qtdeclarative`) with a SIGSEGV in the QML JS
-garbage collector, using only public Qt API — no JASP, no fuzzer, ~1 second.
+garbage collector, or (scenario `weak`) demonstrates the missed-wrapper
+condition, using only public Qt API — no JASP, no fuzzer, seconds per run.
 
 ```
 #0  QV4::Heap::Base::mark()                      (black-bit write into a freed chunk)
@@ -12,90 +13,89 @@ garbage collector, using only public Qt API — no JASP, no fuzzer, ~1 second.
     ...  GCStateMachine::transition/step <- MemoryManager::runGC <- allocString
 ```
 
-(Same defect as JASP's fuzz-test crash; there the fault point is one frame
-deeper — the dangling entry is popped in `MarkStack::drain` and the zeroed
-header dereference faults. Both are the same dangling root.)
+(Same defect family as JASP's fuzz-test crash; there the fault point is one
+frame deeper — the dangling entry is popped in `MarkStack::drain` and the
+zeroed header dereference faults.)
 
 ## Build & run
 
 ```bash
 cmake -B build && cmake --build build
-./build/repro                # SIGSEGV in ~1 s on unpatched Qt 6.12.0
+./build/repro intern            # scenario 1: dangling identifier-hash root
+./build/repro weak              # scenario 2: weak-values pass misses rooted wrappers
 ```
 
-## The bug
+Both scenarios share a prelude (a large live heap so a mark phase cannot finish
+within one GC slice) and set `QV4_GC_TIMELIMIT=1` internally (1 ms slices, so
+the mutator regularly runs mid-cycle; a toy-size heap otherwise completes whole
+cycles atomically). The production crashes happen with default settings because
+real QML churn dwarfs these toy loops.
 
-`IdentifierHashData::entries` is a **GC root**: `IdentifierTable::markObjects()`
+## Scenario 1 (`intern`): dangling identifier-hash root
+
+`IdentifierHashData::entries` is a GC root: `IdentifierTable::markObjects()`
 marks the `PropertyKey`s stored in every registered hash's `entries` array at
-the start of every cycle (`MarkGlobalObject`), and the entries are never
-pruned. So every key stored into a hash must be marked if a GC cycle is
-ongoing.
+the start of every cycle, and the entries are never pruned. The FIRST intern of
+a name is safe (`PropertyKey::fromStringOrSymbol` carries an insertion
+barrier). But re-interning an EXISTING name into another hash goes through
+`IdentifierTable::asPropertyKey(const QString&)` -> `resolveStringEntry()`,
+which finds the existing table entry and returns its identifier WITHOUT any
+barrier; `IdentifierHash::addEntry()` then stores it into the new hash's root
+array unmarked. When the previous holder hash was destroyed earlier in the same
+cycle and the re-intern lands after `MarkGlobalObject` but before `DoSweep`,
+the sweep frees the string while the root array keeps the dangling pointer; the
+next cycle's marking crashes.
 
-The **first** intern of a name is safe:
-`IdentifierTable::asPropertyKey(const QString&)` → `resolveStringEntry()`
-creates the string and calls the table's `addEntry()`, which assigns
-`str->identifier = PropertyKey::fromStringOrSymbol(...)` — and
-`fromStringOrSymbol` contains an insertion barrier (`WriteBarrier::markCustom`)
-that marks the string black immediately.
+The trigger: `QQmlContext::setContextProperty()` with a name whose previous
+holder context was destroyed. Each round interns a fresh name into a
+short-lived holder context, then destroys it; an older name is re-interned into
+a fresh long-lived context at a randomized delay.
 
-But **re-interning an existing name into another hash** takes the found path in
-`resolveStringEntry()`, which returns the existing entry's identifier **without
-any barrier**, and `IdentifierHash::addEntry()` then stores that key into the
-new hash's root `entries` array unmarked. When that store happens after
-`MarkGlobalObject` of an ongoing cycle, the string is white at `DoSweep`:
+## Scenario 2 (`weak`): the weak-values pass misses rooted wrappers
 
-* it is freed by the allocator sweep, and
-* the table's `sweep()` drops it from its own arrays (they are not roots and
-  are pruned), while
-* the new hash's `entries` array — a root that is never pruned — keeps the
-  dangling pointer.
+Early in each cycle the collector walks all QObjectWrappers once
+(`MarkWeakValues`) and marks those whose QObject — or the root of its parent
+chain — keeps them alive (`QQmlData::keepAliveDuringGarbageCollection`: no
+QQmlData, `indestructible`, or `rootObjectInCreation`). A QObject that becomes
+rooted AFTER the pass ran in the current cycle (`setParent()` into a keep-alive
+chain — routine while QML forms are built) keeps a wrapper the collector never
+marks: the destroy phase tears it down and the sweep frees it while the QObject
+is still alive and rooted. Under real form churn this is the crash JASP works
+around with `installQmlGcRescan` (`Desktop/utilities/qmlgcrescan.cpp`).
 
-The next cycle's `IdentifierTable::markObjects()` →
-`IdentifierHashData::markObjects()` pushes that pointer and the collector
-crashes on the freed string.
+The trigger: component-created QML objects (own `keepAlive()` is false once
+creation completes; `JavaScriptOwnership` clears `indestructible`) get a
+wrapper via a QVariant-based JS store (`newQObject()` would set
+CppOwnership->indestructible and make the wrapper unmissable), the JS reference
+is dropped so the wrapper is only weakly held, and a random-delayed
+`setParent()` under a plain C++ QObject (no QQmlData, hence a permanent
+keep-alive anchor) lands after the pass. The rooted victims must outlive one
+full GC cycle (a missed wrapper is only freed at that cycle's sweep).
 
-Three conditions must coincide, which is why the crash is timing-sensitive but
-routine under real QML churn (JASP hits it within seconds of
-create/destroy-analyses fuzzing):
-
-1. a name that is (re-)interned into a *new* context's name cache while its
-   previous holder hash is dead,
-2. an ongoing incremental GC cycle that has already run `MarkGlobalObject`,
-3. the store happening before that cycle's `DoSweep`.
-
-## How the repro forces those conditions
-
-* Each round interns a **fresh** name into a short-lived holder context, then
-  destroys that context: the string loses its only root (the identifier table's
-  own arrays are not roots).
-* Every round re-interns an **older** name (holder already destroyed) into a
-  fresh long-lived context — the unbarriered found-path store.
-* Delays are randomized so the re-intern probes every phase of the GC cycle;
-  whenever it lands after `MarkGlobalObject` but before `DoSweep`, the round
-  produces a dangling root, and the next cycle crashes.
-* A prelude grows a live heap so the mark phase cannot finish within one GC
-  slice, and `QV4_GC_TIMELIMIT=1` shortens the slices to ~1 ms so the mutator
-  regularly runs mid-cycle. (The env var only amplifies the window; the
-  production crash happens with default settings because real QML churn is far
-  bigger than this toy loop.)
+The missed-wrapper condition is made observable by a 10-line instrumentation in
+Qt's destroy phase (`InitCallDestroyObjects`): flag every wrapper that is about
+to be destroyed while its QObject is rooted under a keep-alive chain — see
+`[WEAK-MISS]` in the run output of an instrumented build. Note Qt's own
+cross-validator (`QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1`) does NOT catch this
+defect: it re-marks before the destroy phase, so misses that materialize in the
+cross-validate-to-sweep window are invisible to it.
 
 ## A/B verification (Qt 6.12.0, x86_64 Linux)
 
-| libQt6Qml                                   | result                     |
-|---------------------------------------------|----------------------------|
-| stock 6.12.0                                | SIGSEGV, 3/3 runs, ~1 s    |
-| 6.12.0 + one-barrier fix (see below)        | clean, 4/4 runs            |
+| check                                              | unpatched 6.12.0        | with the two fixes |
+|----------------------------------------------------|-------------------------|--------------------|
+| `intern`: SIGSEGV in the collector                 | 3/3 runs, ~1 s          | clean 4/4 runs     |
+| `intern` + cross-validator                         | 817 "String" errors/run | 0 errors           |
+| `weak`: wrappers destroyed while rooted (`[WEAK-MISS]`) | 25 / 25 / 25 per run | 0 / 0 / 0       |
+| JASPQuickTest                                      | 180 pass / 4 pre-existing failures | identical |
 
-The fix adds the missing insertion barrier where the key is stored into the
-root array — `IdentifierHash::addEntry()`, mirroring the pattern
-`asPropertyKeyImpl()` already uses:
+The fixes (both one-liners in spirit, kept next to this reproducer):
 
-```cpp
-d->entries[idx].identifier = identifier;
-if (Heap::StringOrSymbol *storedId = identifier.asStringOrSymbol())
-    WriteBarrier::markCustom(d->identifierTable->engine, [storedId](QV4::MarkStack *ms) {
-        storedId->mark(ms);
-    });
-```
+* `Docs/development/qt612-identifierhash-writebarrier.patch` — insertion barrier
+  in `IdentifierHash::addEntry` (scenario 1), mirroring the pattern
+  `asPropertyKeyImpl()` already uses.
+* `Docs/development/qt612-weakvalues-rerun.patch` — re-run the weak-value pass
+  to completion at `MarkReady` (scenario 2), i.e. JASP's `installQmlGcRescan`
+  logic as a Qt patch. Once Qt ships it, JASP can remove the hook.
 
 Full write-up including the JASP-side evidence: `Docs/development/qv4-gc-crash.md`.

@@ -1,58 +1,72 @@
-// Minimal reproducer for a dangling-identifier GC crash in QtQml
-// (qtdeclarative 6.12.0, SIGSEGV in QV4::MarkStack::drain).
+// Minimal reproducer for two missing-barrier defects in QtQml's incremental
+// garbage collector (qtdeclarative 6.12.0), SIGSEGV / missed objects.
 //
-// Root cause:
-//   IdentifierHashData::entries is a GC root: IdentifierTable::markObjects marks
-//   the PropertyKeys stored in every registered hash's entries array every cycle,
-//   and the entries are never pruned. When a PropertyKey is stored into a NEW
-//   hash, the string it points at must be (re-)marked if a GC cycle is ongoing.
-//   The FIRST intern of a name goes through PropertyKey::fromStringOrSymbol(),
-//   which does exactly that (insertion barrier). But RE-interning an EXISTING
-//   name into another hash goes through IdentifierTable::asPropertyKey(const
-//   QString&) -> resolveStringEntry(), which finds the existing table entry and
-//   returns its identifier WITHOUT any write barrier. IdentifierHash::addEntry()
-//   then stores that key into the (root) entries array unmarked.
+// Scenario "intern" (default) — dangling identifier-hash root:
+//   IdentifierHashData::entries is a GC root: IdentifierTable::markObjects()
+//   marks the PropertyKeys stored in every registered hash's entries array at
+//   the start of every cycle, and the entries are never pruned. The FIRST
+//   intern of a name is safe (PropertyKey::fromStringOrSymbol carries an
+//   insertion barrier). But re-interning an EXISTING name into another hash
+//   goes through IdentifierTable::asPropertyKey(const QString&) ->
+//   resolveStringEntry(), which finds the existing table entry and returns its
+//   identifier WITHOUT any barrier; IdentifierHash::addEntry() then stores it
+//   into the new hash's root array unmarked. When the previous holder hash was
+//   destroyed earlier in the same cycle and the re-intern lands after
+//   MarkGlobalObject but before DoSweep, the sweep frees the string while the
+//   root array keeps the dangling pointer; the next cycle's marking crashes:
+//   SIGSEGV in QV4::MarkStack::drain / Heap::Base::mark.
 //
-//   If, at that moment,
-//     - a GC cycle is ongoing and past MarkGlobalObject (so the hash roots were
-//       already marked this cycle), and
-//     - no other live root references the string (the hash it was originally
-//       interned into has been destroyed),
-//   the string is white at DoSweep: it is freed while the new hash's entries
-//   array keeps pointing at it. The next cycle's IdentifierTable::markObjects
-//   pushes that dangling pointer and MarkStack::drain dereferences the zeroed
-//   header of the freed string -> SIGSEGV.
+//   The trigger: QQmlContext::setContextProperty() with a name whose previous
+//   holder context was destroyed. Each round interns a fresh name into a
+//   short-lived holder context, then destroys it; an older name is re-interned
+//   into a fresh long-lived context at a randomized delay.
 //
-// Repro outline (public API only):
-//   1. Intern a fresh name into a temporary QQmlContext each round, then destroy
-//      that context: the string loses its only GC root and remains referenced
-//      only by the identifier table arrays, which are NOT roots (they are pruned
-//      at sweep).
-//   2. Re-intern older names into fresh long-lived contexts. This takes the
-//      existing-table-entry path, which stores into the new context's root name
-//      cache WITHOUT a write barrier. Delayed so the re-intern lands in a later
-//      GC cycle than the first intern (the first intern's barrier only keeps the
-//      string black until the next sweep resets the black bits).
-//   3. Everything runs on timer ticks inside a running event loop: with an event
-//      loop, Qt's incremental GC advances between ticks via queued event-loop
-//      callbacks, so the mutator (the next tick) regularly runs mid-cycle, past
-//      MarkGlobalObject but before DoSweep - exactly the crash window. (Without
-//      an event loop the GC only advances on allocation pressure and the timing
-//      phase-locks.)
+// Scenario "weak" — QObjectWrapper missed by the weak-values pass:
+//   Early in each cycle the collector walks all QObjectWrappers once
+//   (MarkWeakValues) and marks those whose QObject — or the root of its parent
+//   chain — keeps them alive (QQmlData::keepAliveDuringGarbageCollection: no
+//   QQmlData, indestructible, or rootObjectInCreation). A QObject that becomes
+//   rooted (e.g. setParent() into a keep-alive chain) AFTER the pass ran in the
+//   current cycle keeps a wrapper the collector never marks; the sweep frees
+//   the wrapper (and its property/method storage) while the QObject is still
+//   alive and in use. Under real QML form churn this is the crash JASP
+//   works around with installQmlGcRescan (Desktop/utilities/qmlgcrescan.cpp).
+//
+//   The trigger: component-created QML objects (their own keepAlive() is false
+//   once creation completes) get a wrapper via a QVariant-based JS store
+//   (newQObject() would set CppOwnership->indestructible and make the wrapper
+//   unmissable), the JS reference is dropped so the wrapper is only weakly
+//   held, and a random-delayed setParent() under a plain C++ QObject (which has
+//   no QQmlData, hence is a permanent keep-alive anchor) lands after the pass.
+//
+// Both scenarios share a prelude (a large live heap so a mark phase cannot
+// finish within one GC slice) and QV4_GC_TIMELIMIT=1 (1 ms slices, so the
+// mutator regularly runs mid-cycle; a toy-size heap otherwise completes whole
+// cycles atomically). The production crashes happen with default settings
+// because real QML churn dwarfs these toy loops.
 //
 // Build:  cmake -B build && cmake --build build
-// Run:    ./build/repro [iterations] [preludeStrings]
-// A/B:    unpatched libQt6Qml -> SIGSEGV in QV4::MarkStack::drain;
-//         LD_LIBRARY_PATH pointing at a libQt6Qml with the one-barrier fix in
-//         QV4::IdentifierHash::addEntry -> runs to completion.
+// Run:    ./build/repro intern|weak [iterations] [preludeStrings]
+//
+// A/B (Qt 6.12.0, x86_64 Linux):
+//   intern + unpatched libQt6Qml  -> SIGSEGV 3/3 runs in ~1 s
+//   intern + one-barrier fix      -> clean 4/4 runs
+//   weak   + crossvalidator       -> "Cross Validation Error ... Object" per
+//                                    cycle on the unpatched lib, none with the
+//                                    weak-pass-rerun fix (the same metric JASP
+//                                    used to validate its installQmlGcRescan).
 
 #include <QCoreApplication>
+#include <QPointer>
+#include <QQmlComponent>
 #include <QQmlContext>
+#include <QQmlError>
 #include <QQmlEngine>
 #include <QJSValue>
 #include <QList>
 #include <QLoggingCategory>
-
+#include <QUrl>
+#include <QVariant>
 #include <cstdio>
 #include <cstdlib>
 
@@ -63,27 +77,10 @@ static void stderrHandler(QtMsgType, const QMessageLogContext &, const QString &
     std::fprintf(stderr, "%s\n", msg.toUtf8().constData());
 }
 
-int main(int argc, char **argv)
+static void growPrelude(QQmlEngine &engine, int preludeStrings)
 {
-    // Shorten the incremental GC slices to ~1 ms. With the default ~5 ms budget
-    // a whole mark phase of a small heap fits into one slice and the mutator
-    // never runs mid-cycle; with 1 ms slices the mark phase yields constantly
-    // and the window between MarkGlobalObject and DoSweep is wide open. (The
-    // production crash this reproduces happens with default settings under
-    // real-world QML churn; see the accompanying write-up.)
-    qputenv("QV4_GC_TIMELIMIT", "1");
-
-    QCoreApplication app(argc, argv);
-    qInstallMessageHandler(stderrHandler);
-    const int iterations = argc > 1 ? std::atoi(argv[1]) : 100000;
-    const int preludeStrings = argc > 2 ? std::atoi(argv[2]) : 300000;
-
-    QQmlEngine engine;
-    QQmlContext *root = engine.rootContext();
-
-    // Prelude: a large live heap so the mark phase spans several incremental
-    // GC slices and the mutator runs between MarkGlobalObject and DoSweep.
-    QJSValue global = engine.globalObject();
+    // A large live heap so the mark phase spans several incremental GC slices
+    // and the mutator runs between MarkGlobalObject and DoSweep.
     QJSValue prelude = engine.evaluate(QStringLiteral(
         "var a = new Array(%1);"
         "for (var i = 0; i < a.length; ++i) a[i] = 'persistent' + i;"
@@ -91,7 +88,14 @@ int main(int argc, char **argv)
     if (prelude.isError())
         std::fprintf(stderr, "PRELUDE ERROR: %s\n", prelude.toString().toUtf8().constData());
     else
-        global.setProperty(QStringLiteral("keep"), prelude);
+        engine.globalObject().setProperty(QStringLiteral("keep"), prelude);
+}
+
+// Bug: dangling identifier-hash root after re-interning an existing name into
+// a new hash while its previous holder hash is dead (see header).
+static void runInternScenario(QQmlEngine &engine, int iterations)
+{
+    QQmlContext *root = engine.rootContext();
 
     // Garbage churn: keeps incremental GC cycles coming throughout the run.
     QJSValue scratch = engine.newArray(1);
@@ -115,11 +119,10 @@ int main(int argc, char **argv)
     QList<QQmlContext *> holders;
     holders.reserve(holderLifetime + 2);
 
-    int i = 0;
-    for (; i < iterations; ++i) {        // Destroy the expired holder: its name's string loses its last GC root.
-        if (i >= holderLifetime) {
+    for (int i = 0; i < iterations; ++i) {
+        // Destroy the expired holder: its name's string loses its last GC root.
+        if (i >= holderLifetime)
             delete holders.takeFirst();
-        }
 
         // Intern a fresh name into a fresh holder context.
         const QString name = QStringLiteral("sharedProp%1").arg(i);
@@ -152,6 +155,136 @@ int main(int argc, char **argv)
             std::fflush(stdout);
         }
     }
-    std::printf("survived %d iterations\n", i);
+
+    qDeleteAll(keepAlive);
+    qDeleteAll(holders);
+    std::printf("survived %d iterations\n", iterations);
+}
+
+// Bug: the weak-values pass decides keep-alive once per cycle; a QObject rooted
+// after the pass keeps a wrapper the collector never marks (see header).
+static void runWeakScenario(QQmlEngine &engine, int iterations)
+{
+    // A plain C++ QObject has no QQmlData, so
+    // QQmlData::keepAliveDuringGarbageCollection(anchor) == true forever:
+    // anything parented under it is kept alive through the weak pass's
+    // parent-chain check.
+    QObject anchor;
+
+    // A component-created QML object has QQmlData; with JavaScriptOwnership its
+    // indestructible flag is cleared (qjsengine.cpp: ownership != CppOwnership
+    // => indestructible = false), so the object's own keepAlive() is false
+    // while it is unparented and its wrapper is missable.
+    const QString victimQml = QStringLiteral("import QtQml\nQtObject { property int p: 1 }\n");
+    QQmlComponent victimComponent(&engine);
+    // A file-scheme URL: unknown schemes (e.g. a custom one) load asynchronously
+    // and create() would fail with "Component is not ready". The file itself
+    // does not need to exist; setData() supplies the source.
+    victimComponent.setData(victimQml.toUtf8(), QUrl::fromLocalFile(QStringLiteral("repro-victim.qml")));
+    if (victimComponent.isError()) {
+        const QList<QQmlError> errs = victimComponent.errors();
+        for (const QQmlError &e : errs)
+            std::fprintf(stderr, "COMPONENT ERROR: %s\n", e.toString().toUtf8().constData());
+    }
+
+    QList<QPointer<QObject>> pending;   // victims awaiting parenting (QPointer: the
+                                        // collector may legitimately delete unparented,
+                                        // JS-owned, unreferenced victims)
+    QList<QPointer<QObject>> rooted;    // parented under the anchor (wrapper SHOULD be kept)
+    int parentedCount = 0;
+    int createFailCount = 0;
+    int deadCount = 0;
+
+    QJSValue scratch = engine.newArray(1);
+    long long n = 0;
+
+    for (int i = 0; i < iterations; ++i) {
+        // 1. A fresh victim whose wrapper is only weakly held: create the object,
+        //    make the engine wrap it via a QVariant-based JS store (newQObject()
+        //    would set CppOwnership -> indestructible and make the wrapper
+        //    unmissable), then drop the JS reference again.
+        QObject *victim = victimComponent.create();
+        if (!victim)
+            ++createFailCount;
+        engine.setObjectOwnership(victim, QQmlEngine::JavaScriptOwnership);
+        const QString propName = QStringLiteral("victim%1").arg(i);
+        engine.globalObject().setProperty(propName, engine.toScriptValue(QVariant::fromValue(victim)));
+        engine.globalObject().deleteProperty(propName);
+        pending.append(victim);
+
+        // Root an older victim under the keep-alive anchor after a SHORT random
+        // delay: the wrapper dies at the first sweep after its creation, so the
+        // parenting must land within a cycle. If it lands after the weak pass
+        // already ran in the current cycle, the pass never marks the wrapper
+        // even though the object is now rooted; the sweep frees the wrapper
+        // while the QObject is alive and rooted.
+        if (pending.size() > 2 + (std::rand() % 25)) {
+            QPointer<QObject> v = pending.takeFirst();
+            if (v) {                    // skip victims the collector already deleted
+                v->setParent(&anchor);
+                ++parentedCount;
+                rooted.append(v);
+            } else {
+                ++deadCount;
+            }
+        }
+
+        // Keep the live set small so the incremental GC keeps running: victims
+        // not parented in time and victims past their usefulness are deleted
+        // from C++ (their wrappers then become ordinary garbage). The rooted
+        // victims must outlive ONE full GC cycle (~5000 rounds here): a wrapper
+        // that is missed by the weak pass is only freed at that cycle's sweep,
+        // so deleting them earlier hides the bug entirely.
+        while (pending.size() > 40) {
+            QPointer<QObject> old = pending.takeFirst();
+            if (old)
+                delete old.data();
+        }
+        while (rooted.size() > 8000) {
+            QPointer<QObject> old = rooted.takeFirst();
+            if (old)
+                delete old.data();
+        }
+
+        // Garbage churn, with jitter (same rationale as the intern scenario).
+        int jitter = std::rand() % 60;
+        for (int g = 0; g < 6 + jitter; ++g)
+            scratch.setProperty(0, QStringLiteral("junk%1").arg(n++));
+
+        if ((i % 5000) == 0) {
+            std::printf("iteration %d\n", i);
+            std::fflush(stdout);
+        }
+    }
+
+    std::printf("parented %d victims, dead-at-take %d, create-fails %d\n",
+                parentedCount, deadCount, createFailCount);
+    std::printf("survived %d iterations\n", iterations);
+}
+
+int main(int argc, char **argv)
+{
+    // Shorten the incremental GC slices to ~1 ms. With the default ~5 ms budget
+    // a whole mark phase of a small heap fits into one slice and the mutator
+    // never runs mid-cycle; with 1 ms slices the mark phase yields constantly
+    // and the window between MarkGlobalObject and DoSweep is wide open. (The
+    // production crashes this reproduces happen with default settings under
+    // real-world QML churn; see the accompanying write-up.)
+    qputenv("QV4_GC_TIMELIMIT", "1");
+
+    QCoreApplication app(argc, argv);
+    qInstallMessageHandler(stderrHandler);
+
+    const QString scenario = argc > 1 ? QString::fromLatin1(argv[1]) : QStringLiteral("intern");
+    const int iterations = argc > 2 ? std::atoi(argv[2]) : 100000;
+    const int preludeStrings = argc > 3 ? std::atoi(argv[3]) : 300000;
+
+    QQmlEngine engine;
+    growPrelude(engine, preludeStrings);
+
+    if (scenario == QLatin1String("weak"))
+        runWeakScenario(engine, iterations);
+    else
+        runInternScenario(engine, iterations);
     return 0;
 }

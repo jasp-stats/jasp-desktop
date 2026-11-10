@@ -233,20 +233,57 @@ variants alike.
 
 ## Standalone reproducer (no JASP)
 
-`Docs/development/qt612-gc-repro/` contains a ~100-line public-API reproducer
-(QQmlEngine + `setContextProperty` churn, see its README) that crashes stock
-Qt 6.12.0 deterministically:
+`Docs/development/qt612-gc-repro/` contains a ~290-line public-API reproducer
+with two scenarios (see its README) that exercises both defects on stock
+Qt 6.12.0:
 
-| libQt6Qml | result |
-|---|---|
-| stock 6.12.0 | SIGSEGV 3/3 runs, ~1 s, backtrace: `Heap::Base::mark` ← `IdentifierHashData::markObjects` ← `markGlobalObject` ← `allocString` |
-| 6.12.0 + one-barrier fix | clean 4/4 runs |
+| check | unpatched 6.12.0 | with the two fixes |
+|---|---|---|
+| `intern` scenario: SIGSEGV in the collector | 3/3 runs, ~1 s | clean 4/4 runs |
+| `intern` + cross-validator | 817 "String" errors/run | 0 errors |
+| `weak` scenario: wrappers destroyed while rooted (`[WEAK-MISS]`) | 25 / 25 / 25 per run | 0 / 0 / 0 |
+| JASPQuickTest | 180 pass / 4 pre-existing failures | identical |
 
 It sets `QV4_GC_TIMELIMIT=1` internally to widen the incremental-GC window
 (with the default ~5 ms slice budget a toy-size heap completes whole cycles
 atomically and the mutator never runs mid-cycle); the production crash needs no
 env vars because real QML churn dwarfs the toy loop. This reproducer is the
-artifact to attach to the Qt bug report.
+artifact to attach to the Qt bug reports.
+
+## Second defect: the weak-values pass misses QObjects rooted mid-cycle
+
+Qt's incremental GC decides QObjectWrapper keep-alive once per cycle
+(`MarkWeakValues`, early): a wrapper is kept if its QObject — or the root of
+its parent chain — satisfies `QQmlData::keepAliveDuringGarbageCollection` (no
+QQmlData, `indestructible`, or `rootObjectInCreation`). A QObject that becomes
+rooted *after* the pass ran in the current cycle (parented into a keep-alive
+chain while a form is built) keeps a wrapper the collector never marks: the
+destroy phase tears it down and the sweep frees it while the QObject is still
+alive and in use. This is the defect JASP's `installQmlGcRescan`
+(`Desktop/utilities/qmlgcrescan.cpp`, upstream #6372) works around by re-running
+the weak pass to completion at `MarkReady`.
+
+It is independent of the identifier-hash defect: different structure
+(`PersistentValueStorage` weak slots vs `IdentifierHashData::entries`), different
+phase, and each fix leaves the other defect untouched — JASP crashed on the
+identifier-hash defect *with* the rescan installed, and the reproducer's `weak`
+scenario produces missed wrappers with the identifier-hash barrier in place.
+Both share only the crash site (`MarkStack::drain`), which is why they were easy
+to conflate.
+
+Fix (Qt-side, one block in `markReady`):
+`Docs/development/qt612-weakvalues-rerun.patch` — re-run
+`InitMarkWeakValues` + `MarkWeakValues` to completion at `MarkReady`, then hand
+back a fresh slice so `InitCallDestroyObjects` redrains before anything is
+destroyed. Verified with the reproducer's `weak` scenario: an instrumented
+build flagging wrappers destroyed while their QObject is rooted reports
+25/25/25 misses per run unpatched and 0/0/0 with the patch; JASPQuickTest is
+identical to stock. Note Qt's own cross-validator does **not** detect this
+defect (it re-marks before the destroy phase, so misses materializing in the
+cross-validate-to-sweep window are invisible to it) — the JASP hook's
+cross-validate numbers (48-137 missed objects per form creation -> 0) measured
+the earlier part of the window. Once Qt ships the patch, JASP can remove
+`installQmlGcRescan` (as its header already anticipates).
 
 ## Forensics (assembly level, from a coredump)
 

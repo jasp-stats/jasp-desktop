@@ -222,11 +222,16 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
   qtdeclarative build (sweep-time `[DANGLING-ROOT]` detector + intern-origin
   backtraces naming `QQmlContext::setContextProperty`) and Qt's own
   cross-validator (`Cross Validation Error ... With type "String"` every run
-  before the fix, zero after). Fix = one write barrier in `IdentifierHash::addEntry`
-  (`Docs/development/qt612-identifierhash-writebarrier.patch`): JASP repro seed
-  clean 4/4, cross-validation errors 4→0, 5-module sweep clean, JASPQuickTest
-  unchanged; **standalone reproducer (no JASP): `Docs/development/qt612-gc-repro/`,
-  SIGSEGV 3/3 on stock Qt 6.12.0, clean 4/4 with the fix**.
+  before the fix, zero after). Fixes = one write barrier in `IdentifierHash::addEntry`
+  (`Docs/development/qt612-identifierhash-writebarrier.patch`) plus — for the
+  sibling defect, the weak-values pass missing QObjects rooted mid-cycle (what
+  `installQmlGcRescan` works around) — a weak-pass re-run at `MarkReady`
+  (`Docs/development/qt612-weakvalues-rerun.patch`): JASP repro seed clean 4/4,
+  cross-validation errors 4→0, 5-module sweep clean, JASPQuickTest unchanged;
+  **standalone reproducer (no JASP): `Docs/development/qt612-gc-repro/` —
+  `intern` scenario SIGSEGV 3/3 on stock Qt 6.12.0, clean 4/4 with the fix;
+  `weak` scenario 25/25/25 missed wrappers unpatched, 0/0/0 with the rescan
+  patch**.
   Until Qt ships this, `QV4_MM_CROSS_VALIDATE_INCREMENTAL_GC=1` (0/3, doubles mark
   cost) and `QV4_GC_TIMELIMIT=0` (0/8, timing-dependent) are empirical stop-gaps.
   Full write-up: `Docs/development/qv4-gc-crash.md`.
