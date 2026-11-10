@@ -9,8 +9,9 @@ import JASP.Controls
 //    and a term of a factor was dropped from the model (an ordinal column in Factors, an interaction).
 //  - A term gets the type its variable has in these sources (an ordinal column in Covariates is scale), not the
 //    type of the column.
-// And a computed column name is free when the data set has no column with this name: the base analysis of the
-// syntax bridge refused every name ("already exists and is not created by this analysis").
+// And the base analysis of the syntax bridge accepts every computed column name: it refused every name ("already
+// exists and is not created by this analysis"), then only the names of the columns of the data set. But it adds no
+// column to the data, and the data of a later step of an analysis has the columns its earlier step created.
 //
 // Fixture (Tests/testqml.cpp): TestInts (ordinal), TestLetters (nominal), TestDoubles (scale), TestNominal (nominal).
 Item
@@ -121,7 +122,7 @@ Item
 			compare(JSON.stringify(modelTerms()[1].components.value), JSON.stringify([["TestDoubles"]]), "The variable is the term of the model")
 		}
 
-		function test_computedColumnNameIsFreeWhenNoColumnHasIt()
+		function test_computedColumnNameIsAccepted()
 		{
 			try
 			{
@@ -129,7 +130,7 @@ Item
 				compare(newColumnST.hasError, false, "No column has this name")
 
 				sourceTermsForm.setOptions({ newColumnST: "TestInts" })
-				compare(newColumnST.hasError, true, "A column of the data set has this name")
+				compare(newColumnST.hasError, false, "A column of the data set has this name: an earlier run made it")
 			}
 			finally
 			{
