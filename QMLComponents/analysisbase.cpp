@@ -391,14 +391,11 @@ Filter *AnalysisBase::filter() const
 
 bool AnalysisBase::isColumnFreeOrMine(const QString & columnName) const
 {
-	// This base analysis (R syntax mode, unit tests) creates no columns of its own, so a column name is free
-	// when the data the form works on has no such column. Without its own filter the form uses the shown one.
-	const Filter * filter = _filter ? _filter.data() : (Workspace::singleton() ? Workspace::singleton()->shownFilter() : nullptr);
-
-	if(!filter || !filter->data())
-		return true;
-
-	return !filter->data()->column(columnName);
+	// This base analysis (R syntax mode, unit tests) never adds a column to the data it is given, so it cannot
+	// overwrite a column of somebody else: every name is fine. A name that is already a column must be accepted
+	// too, as no column records which analysis made it here: the data of a later step of an analysis (the audit
+	// workflow: selection, then evaluation) has the columns its earlier step created.
+	return true;
 }
 
 bool AnalysisBase::usesDataSet(int dataSetId) const

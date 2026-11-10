@@ -4677,6 +4677,19 @@ void TestAll::testLoadFilteredDataFilterFirstProvenance()
 	bridge.updateOptionsAccordingToMeta(options);
 	QVERIFY(!options["filtered"].isMember("rowIndices"));
 	QVERIFY(!options["filtered"].isMember("values"));
+
+	//5) A filter that was never run has no result (the syntax bridge has no engine to run the filter
+	//of a filtered tableview): no row is selected, and no read past the end of the empty result.
+	Filter * neverRun = a->createFilter("neverRun", true);
+	QVERIFY(neverRun);
+	QVERIFY(neverRun->filtered().size() < static_cast<size_t>(a->rowCount()));
+
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "neverRun";
+	options[".filterIds"].removeMember("filtered");
+	bridge.updateOptionsAccordingToMeta(options);
+	QCOMPARE(options["filtered"]["rowIndices"].size(), 0u);
+	QCOMPARE(options["filtered"]["values"].size(), 0u);
 }
 
 void TestAll::testPrepareMultiDataSetRunPrimarySliceKey()

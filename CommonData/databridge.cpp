@@ -495,8 +495,17 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 								values		= Json::arrayValue;
 					doublevec	dbls		= col->dataAsRDoubles({}); //We dont pass a filter because we need to know the rowindices.
 
-					for(size_t r=0; r<dbls.size(); r++)
-						if(filter->filtered()[r])
+					//A filter that was never run (the syntax bridge has no engine to run the filter of a
+					//filtered tableview) or that is not yet rerun for the current data has no result, or one
+					//of another length: the rows it says nothing about are not selected.
+					const boolvec & filtered = filter->filtered();
+
+					if(filtered.size() != dbls.size())
+						Log::log() << "DataBridge::updateOptionsAccordingToMeta: filter '" << filter->name() << "' has a result for " << filtered.size()
+								   << " rows, column '" << colName << "' has " << dbls.size() << " rows." << std::endl;
+
+					for(size_t r=0; r<dbls.size() && r<filtered.size(); r++)
+						if(filtered[r])
 						{
 							rowIndices	.append(int(r+1));
 							values		.append(dbls[r]);
