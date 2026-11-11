@@ -202,9 +202,14 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	Q_INVOKABLE QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware = false);
 	/// `version`, `module` and `function` say for which version of which analysis the options were written: with them the Upgrades.qml of the module is applied before the options are bound.
 	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg, const std::string & version = "", Modules::DynamicModule * module = nullptr, const std::string & function = "", Modules::UpgradeMsgs * upgradeMsgs = nullptr);
+	/// parseOptions for the qml tests: { ok, error, options, msgs (those of the form) } as json
+	Q_INVOKABLE QString		parseOptionsToJson(const QString & rawOptions, const QString & version = "");
 	/// Brings the options of R syntax (already with their control names, see RSyntax::parseRSyntaxOptions) that was written for `version` of `function` up to date with the Upgrades.qml of `module`.
+	/// The list options of the upgraded options get the same normalisation as parseRSyntaxOptions gives (RSyntax::normalizeListOptions).
 	/// Without a module or a version nothing is done. Returns false, with an errorMsg, when the options cannot be upgraded.
-	bool					upgradeRSyntaxOptions(Json::Value & options, const Json::Value & version, Modules::DynamicModule * module, const std::string & function, Modules::UpgradeMsgs & msgs, std::string & errorMsg) const;
+	bool					upgradeRSyntaxOptions(Json::Value & options, const Json::Value & version, Modules::DynamicModule * module, const std::string & function, Modules::UpgradeMsgs & msgs, std::string & errorMsg);
+	/// Adds a message of the form (msgs[""]) for each option that is no control of the form: such an option is ignored when the options are bound.
+	void					addUnknownOptionMsgs(const Json::Value & options, Modules::UpgradeMsgs & msgs) const;
 	/// Shows the messages of an upgrade above the form and on the controls of the options they are about
 	void					addUpgradeWarnings(const Modules::UpgradeMsgs & msgs);
 	void					setAnalysis(AnalysisBase *	analysis);

@@ -203,6 +203,8 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 					return;
 				}
 
+				addUnknownOptionMsgs(options, upgradeMsgs);
+
 				blockValueChangeSignal(true);
 				bindTo(Json::nullValue);
 				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
@@ -415,7 +417,7 @@ void AnalysisForm::clearAllErrors()
 	emit warningsChanged();
 }
 
-bool AnalysisForm::upgradeRSyntaxOptions(Json::Value & options, const Json::Value & version, Modules::DynamicModule * module, const std::string & function, Modules::UpgradeMsgs & msgs, std::string & errorMsg) const
+bool AnalysisForm::upgradeRSyntaxOptions(Json::Value & options, const Json::Value & version, Modules::DynamicModule * module, const std::string & function, Modules::UpgradeMsgs & msgs, std::string & errorMsg)
 {
 	// R gives a single string, but a vector of one is just as fine
 	const Json::Value &	versionJson	= version.isArray() && version.size() == 1 ? version[0] : version;
@@ -429,7 +431,16 @@ bool AnalysisForm::upgradeRSyntaxOptions(Json::Value & options, const Json::Valu
 		std::string upgradedFunction = function;
 
 		if (module->upgradeOptions(upgradedFunction, Version(versionStr), options, msgs))
+		{
 			Log::log() << "The options of R syntax for '" << function << "' were upgraded from version " << versionStr << (upgradedFunction != function ? " and are now meant for '" + upgradedFunction + "'" : "") << std::endl;
+
+			// parseRSyntaxOptions ran before the upgrade, so it did not know the list options that the upgrade renamed or added
+			if (!_rSyntax->normalizeListOptions(options))
+			{
+				errorMsg = fq(getError(true));
+				return false;
+			}
+		}
 	}
 	catch (const Version::encodingError &)
 	{
@@ -450,6 +461,13 @@ bool AnalysisForm::upgradeRSyntaxOptions(Json::Value & options, const Json::Valu
 	}
 
 	return true;
+}
+
+void AnalysisForm::addUnknownOptionMsgs(const Json::Value & options, Modules::UpgradeMsgs & msgs) const
+{
+	// These would be dropped without a word when the options are bound: a typo, or an option of an older version that no Upgrade knows
+	for (const QString & optionName : _rSyntax->optionsWithoutControl(options))
+		msgs[""].push_back(fq(tr("The option '%1' is not known and is ignored").arg(optionName)));
 }
 
 void AnalysisForm::addUpgradeWarnings(const Modules::UpgradeMsgs & msgs)
@@ -491,6 +509,9 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 				return false;
 			}
 
+			if (!version.empty()) // A wrapper always gives its version; without one the options are those of a caller that knows what it sends
+				addUnknownOptionMsgs(parsedOptions, msgs);
+
 			bindTo(parsedOptions);
 			addUpgradeWarnings(msgs);
 
@@ -530,6 +551,24 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 	}
 
 	return true;
+}
+
+QString AnalysisForm::parseOptionsToJson(const QString & rawOptions, const QString & version)
+{
+	Json::Value				parsedOptions,
+							result(Json::objectValue);
+	std::string				errorMsg;
+	Modules::UpgradeMsgs	msgs;
+
+	result["ok"]		= parseOptions(fq(rawOptions), parsedOptions, errorMsg, fq(version), nullptr, "", &msgs);
+	result["error"]		= errorMsg;
+	result["options"]	= parsedOptions;
+	result["msgs"]		= Json::arrayValue;
+
+	for (const std::string & msg : msgs[""])
+		result["msgs"].append(msg);
+
+	return tq(result.toStyledString());
 }
 
 void AnalysisForm::_setUp()

@@ -506,6 +506,26 @@ bool RSyntax::parseRSyntaxOptions(Json::Value &options) const
 			}
 		}
 
+	}
+
+	if (!normalizeListOptions(options))
+		return false;
+
+	for (FormulaBase* formula : _formulas)
+		formula->parseRSyntaxOptions(options);
+
+	return !hasError();
+}
+
+bool RSyntax::normalizeListOptions(Json::Value &options) const
+{
+	if (!options.isObject())
+		return true;
+
+	for (const std::string& member : options.getMemberNames())
+	{
+		QString controlName = tq(member);
+
 		JASPListControl* listControl = qobject_cast<JASPListControl*>(_form->getControl(controlName));
 		if (listControl)
 		{
@@ -547,10 +567,28 @@ bool RSyntax::parseRSyntaxOptions(Json::Value &options) const
 		}
 	}
 
-	for (FormulaBase* formula : _formulas)
-		formula->parseRSyntaxOptions(options);
+	return true;
+}
 
-	return !hasError();
+QStringList RSyntax::optionsWithoutControl(const Json::Value &options) const
+{
+	QStringList result, formulaOptions;
+
+	if (!options.isObject())
+		return result;
+
+	for (FormulaBase* formula : _formulas)
+		formulaOptions << formula->name() << formula->extraOptions(true) << formula->extraOptions(false);
+
+	for (const std::string& member : options.getMemberNames())
+	{
+		const QString name = tq(member);
+
+		if (!name.startsWith('.') && !_form->getControl(name) && !formulaOptions.contains(name)) // .meta and the like are not options
+			result.append(name);
+	}
+
+	return result;
 }
 
 void RSyntax::addError(const QString &msg) const
