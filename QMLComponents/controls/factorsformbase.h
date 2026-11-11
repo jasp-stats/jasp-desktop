@@ -108,7 +108,9 @@ protected:
 	///< (the self-rebind landmine, factors flavour): the Engine builder carries
 	/// no per-term filterIds, so the null-path self-rebind must round-trip the Storage
 	/// shape - same rule and rationale as BoundControlTerms::selfRebindFormat.
-	BoundControl::JsonFormat	selfRebindFormat()										const	override	{ return BoundControl::Storage; }
+	/// Only once initialized: the Storage shape is built from the factors model, which is still empty at the first
+	/// bind. A form without value must then get its defaults (createJson: the initNumberFactors factors to start with).
+	BoundControl::JsonFormat	selfRebindFormat()										const	override	{ return initialized() ? BoundControl::Storage : BoundControl::Engine; }
 
 	GENERIC_SET_FUNCTION(InitNumberFactors,	_initNumberFactors,		initNumberFactorsChanged,	int	)
 

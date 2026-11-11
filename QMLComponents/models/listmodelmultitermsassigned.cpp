@@ -93,6 +93,7 @@ void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const Terms::Rel
 	_setTerms();
 
 	_rowControlsValues = allValuesMap;
+	_rowControlsValuesAreLoadedOptions = false;
 	endResetModel();
 
 }
