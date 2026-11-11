@@ -129,9 +129,6 @@ SpecialSourcesTestCase
 		var options = form.options()
 		reloadOptions(options)
 		checkModels([["TestDoubles"], ["TestDoubles(locked)", "TestLetters"], ["TestDoubles(locked)", "TestLetters(locked)", "TestInts"]], "After reload")
-		// Known issue: since 85024a2c01, ListModel::_setAllowedType sets the type of a term back to the real type of its variable
-		// when this real type is allowed, so a type changed by the user is lost when the options are loaded.
-		expectFailContinue("", "A changed type is set back to the real type of the variable when the options are loaded")
 		compare(model(2).getVariableType("TestInts"),		1, "The changed type is kept after reload")
 		compare(model(1).getVariableType("TestLetters"),	2, "The type of TestLetters is kept after reload")
 

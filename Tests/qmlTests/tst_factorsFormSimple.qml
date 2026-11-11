@@ -91,10 +91,7 @@ SpecialSourcesTestCase
 		moveVariables(available(), factor(1), ["TestLetters"])
 		checkList(tabList("Factor2"), ["TestLetters"], "The VariablesList of the second tab gets the variables of its factor")
 		compare(factor(1).getVariableType("TestLetters"),		2, "The nominal TestLetters is used as ordinal (only ordinal and scale are allowed)")
-		// Known issue: since 85024a2c01, ListModel::_setAllowedType sets the type of a term back to the real type of its variable
-		// when this real type is allowed (here the VariablesList of the tab allows all types), so the type of its source is lost.
 		var tabListOfFactor2 = tabList("Factor2")
-		expectFailContinue("", "The VariablesList of the tab gets the real type of the variable instead of the type in its source")
 		compare(tabListOfFactor2.getVariableType("TestLetters"),	2, "The VariablesList of the tab gets the type of the variable in its factor")
 
 		// Set some values in the tabs
@@ -136,9 +133,6 @@ SpecialSourcesTestCase
 		compare(drop("Factor1", "TestInts").currentValue,		"Factor2",	"DropDown restored after reload")
 		compare(drop("Factor2", "TestLetters").currentValue,	"Factor1",	"DropDown restored after reload")
 		compare(drop("Factor1", "TestInts").currentText,		"Anxiety",	"The renamed title is restored after reload")
-		// Known issue: since 85024a2c01, ListModel::_setAllowedType sets the type of a term back to the real type of its variable
-		// when this real type is allowed, so a type changed by the user is lost when the options are loaded.
-		expectFailContinue("", "A changed type is set back to the real type of the variable when the options are loaded")
 		compare(factor(0).getVariableType("TestDoubles"),		2,			"The changed type is kept after reload")
 
 		// Remove a factor: its tab is removed, and the DropDowns do not have it anymore

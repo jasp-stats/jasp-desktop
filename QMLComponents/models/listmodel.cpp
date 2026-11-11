@@ -90,8 +90,11 @@ void ListModel::_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm
 {
 	beginResetModel();
 	if (initRowControls)
+	{
 		// If some row controls are not used anymore, they will be removed during setUpRowControls
 		_rowControlsValues = allValuesMap;
+		_rowControlsValuesAreLoadedOptions = false;
+	}
 
 	_setTerms(terms);
 	endResetModel();
@@ -318,6 +321,22 @@ void ListModel::setRowComponent(QQmlComponent* rowComponent)
 	_rowComponent = rowComponent;
 }
 
+bool ListModel::_bindingFormOptions() const
+{
+	return listView() && listView()->form() && listView()->form()->bindingOptions();
+}
+
+void ListModel::_forgetLoadedRowControlsValues()
+{
+	// The values of the row controls kept during the bind of the options of the form (see setUpRowControls) are of no use
+	// once this bind is done: the row controls have then their own values.
+	if (_rowControlsValuesAreLoadedOptions && !_bindingFormOptions())
+	{
+		_rowControlsValues.clear();
+		_rowControlsValuesAreLoadedOptions = false;
+	}
+}
+
 void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 {
 	if (_rowComponent == nullptr)
@@ -325,6 +344,8 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 
 	if (!onlyRemove)
 	{
+		_forgetLoadedRowControlsValues();
+
 		QList<TermRowKey> usedValueKeys;
 
 		int row = 0;
@@ -354,11 +375,17 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 			row++;
 		}
 
-		// These values are used only once to initialize the row controls: afterwards the row controls have the right values.
+		// These values are only there to initialize the row controls: afterwards the row controls have the right values.
 		// If they were kept, a next reset of the row controls (when the source changes) would set them back to these old values.
-		// They are removed after the loop, as same-name rows behind different filters may share one (name, -1) fallback entry.
-		for (const TermRowKey& usedKey : usedValueKeys)
-			_rowControlsValues.remove(usedKey);
+		if (_bindingFormOptions())
+			// But as long as the form binds its options, a row may be deleted and created again by the bind of another control
+			// (a FactorsForm is bound after the controls using its titles or its factors): it must then get its loaded values again.
+			// They are forgotten at the first set up after the bind (_forgetLoadedRowControlsValues).
+			_rowControlsValuesAreLoadedOptions = true;
+		else
+			// They are removed after the loop, as same-name rows behind different filters may share one (name, -1) fallback entry.
+			for (const TermRowKey& usedKey : usedValueKeys)
+				_rowControlsValues.remove(usedKey);
 	}
 	
 	// Disconnect and delete all controls that are not used anymore
@@ -395,7 +422,16 @@ Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
 				JASPControl* control = it.value();
 				BoundControl* boundControl = control->boundControl();
 				if (boundControl)
-					componentValues[it.key()] = boundControl->boundValue();
+				{
+					// A list with row controls does not get the changes of these controls in its bound value (each control owns
+					// its value): its value must be built from its row controls. Otherwise a list nested in the rows of this
+					// list gives the values its rows had when its terms changed for the last time.
+					JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
+					if (listControl && listControl->hasRowComponent() && control->initialized())
+						componentValues[it.key()] = boundControl->createJson(BoundControl::Engine);
+					else
+						componentValues[it.key()] = boundControl->boundValue();
+				}
 			}
 		}
 

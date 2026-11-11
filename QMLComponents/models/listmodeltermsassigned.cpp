@@ -108,6 +108,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 	if (dropItemIndex < 0 && maxRows == 1)
 		dropItemIndex = 0; // for single row, per default replace old item by new one.
 
+	_forgetLoadedRowControlsValues();
 	for (const auto& it : rowValues.toStdMap())
 		_rowControlsValues[it.first] = it.second;
 

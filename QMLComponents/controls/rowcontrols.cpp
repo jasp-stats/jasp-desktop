@@ -121,7 +121,14 @@ void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 			// It it exists, reuse the current value.
 			BoundControl* boundItem = control->boundControl();
 			if (boundItem)
-				optionValue = boundItem->boundValue();
+			{
+				// A list with row controls does not get the changes of these controls in its bound value (each control owns its value):
+				// its current value must be built from its row controls, otherwise they would be set back to the values of its last bind.
+				if (listView && listView->hasRowComponent() && control->initialized())
+					optionValue = boundItem->createJson(BoundControl::Storage);
+				else
+					optionValue = boundItem->boundValue();
+			}
 
 			// a late selection host's freshly created option control binds the
 			//RESOLVED filter id the form stashed at registration (the successor of the value the
