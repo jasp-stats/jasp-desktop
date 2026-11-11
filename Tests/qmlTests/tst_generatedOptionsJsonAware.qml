@@ -598,6 +598,15 @@ Item
 			const plain = awareForm.generateWrapper("jaspTestModule", "multiDataSetFunc", "testMultiDataSet.qml", "Test", true, false)
 			verify(plain.indexOf("data = NULL,") >= 0, "non-aware wrapper keeps the data argument")
 			verify(plain.indexOf("datasets = NULL,") < 0, "non-aware wrapper has no datasets argument")
+
+			// both take extra options (those of an older version, upgraded by the form), which `mget` must not see as an argument
+			for (const generated of [wrapper, plain])
+			{
+				verify(/,\n\s*\.\.\.\) \{/.test(generated), "the ellipsis is the last argument")
+				verify(generated.indexOf('mget(setdiff(names(formals(sys.function())), "..."), envir') >= 0, "the ellipsis is not fetched as an option")
+				verify(generated.indexOf("options <- c(options, list(...))") >= 0, "the extra options join the options")
+				verify(generated.indexOf("#' @param ...") >= 0, "the ellipsis is documented")
+			}
 			verify(plain.indexOf("jaspBase::storeDataSet(data)") >= 0, "non-aware wrapper keeps the store block")
 			verify(plain.indexOf("options <- options[names(options) %in% names(match.call())[-1L]]") >= 0,
 				"only the arguments of the call are passed as options, the form gives the others their default")
