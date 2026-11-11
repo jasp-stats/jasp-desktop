@@ -177,6 +177,11 @@ public:
 	bool hasUpgradesToApply(const std::string	& function,			const Version	& version);
 	void applyUpgrade(		const std::string	& function,			const Version	& version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken);
 
+	/// Brings options that were written for `fromVersion` of `function` up to date with the Upgrades.qml of this module, one Upgrade after the other.
+	/// This is what R syntax needs (AnalysisForm::upgradeRSyntaxOptions): only the module of the analysis itself is involved, so no Upgrader and no ModulesMap.
+	/// Returns whether any Upgrade was applied, `function` is then the (possibly renamed) function the options are now meant for. Throws upgradeError when an upgrade loops.
+	bool upgradeOptions(	std::string			& function,			const Version	& fromVersion, Json::Value & options, UpgradeMsgs & msgs);
+
 	void loadDescriptionFromFolder(									QQmlContext * context, const std::string & folderPath, bool onlyIfNotLoadedYet = true);
 	void loadDescriptionFromArchive(								QQmlContext * context, const std::string & archivePath);
 	void loadRequiredModulesFromFolder(								const std::string & folderPath)			{ loadRequiredModulesFromDESCRIPTIONTxt( tq( getDESCRIPTIONFromFolder ( folderPath  ) ) ); }

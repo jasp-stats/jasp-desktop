@@ -426,6 +426,10 @@ private slots:
 	// terminate JASP because the error was thrown while Qt was still creating the QML.
 	void	testBrokenUpgradesQmlGivesWarning();
 
+	// R syntax carries the version it was written for: the Upgrades.qml of the module of the analysis alone
+	// (no Upgrader, no DynamicModules) brings its options up to date, one Upgrade after the other.
+	void	testRSyntaxOptionsAreUpgradedByTheirModule();
+
 	// A module loaded from a folder (the syntax bridge's parseDescription, jaspTools): a source checkout has its
 	// files in inst/, an installed package (what covr tests) at its root.
 	void	testModuleFromFolder_data();

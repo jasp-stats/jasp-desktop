@@ -45,6 +45,7 @@
 #include "preferencesmodelbase.h"
 #include "workspace.h"
 #include "columnencoder.h"	// FILTERIDS_SELF for the collision-tolerant sidecar placement
+#include "modules/dynamicmodule.h"
 
 using namespace std;
 
@@ -187,16 +188,29 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 			Json::Value jsonResult;
 			parser.parse(fq(result), jsonResult);
 			Json::Value options = jsonResult["options"];
+
 			clearControlError(rSyntaxControl);
 			clearFormErrors();
 			if (_rSyntax->parseRSyntaxOptions(options))
 			{
+				// The wrapper gives back the version the syntax was written for: when that is an older one, the Upgrades.qml of the module knows how to get its options up to date.
+				Modules::UpgradeMsgs	upgradeMsgs;
+				std::string				upgradeError;
+
+				if (!upgradeRSyntaxOptions(options, jsonResult["version"], _analysis->dynamicModule(), _analysis->name(), upgradeMsgs, upgradeError))
+				{
+					addControlError(rSyntaxControl, tq(upgradeError));
+					return;
+				}
+
 				blockValueChangeSignal(true);
 				bindTo(Json::nullValue);
 				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
 				// For this, bind all controls to null and wait for the controls to be completely destroyed.
-				QTimer::singleShot(0, this, [this, options](){
+				QTimer::singleShot(0, this, [this, options, upgradeMsgs](){
+					clearFormWarnings(); // Those of the syntax that ran before this one, bindTo sets those of the analysis itself again
 					bindTo(options);
+					addUpgradeWarnings(upgradeMsgs);
 					blockValueChangeSignal(false, false);
 					_analysis->boundValueChangedHandler();
 				});
@@ -401,7 +415,62 @@ void AnalysisForm::clearAllErrors()
 	emit warningsChanged();
 }
 
-bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg)
+bool AnalysisForm::upgradeRSyntaxOptions(Json::Value & options, const Json::Value & version, Modules::DynamicModule * module, const std::string & function, Modules::UpgradeMsgs & msgs, std::string & errorMsg) const
+{
+	// R gives a single string, but a vector of one is just as fine
+	const Json::Value &	versionJson	= version.isArray() && version.size() == 1 ? version[0] : version;
+	const std::string	versionStr	= versionJson.isString() || versionJson.isNumeric() ? versionJson.asString() : "";
+
+	if (!module || versionStr.empty())
+		return true; // Nothing that says the options are from an older version
+
+	try
+	{
+		std::string upgradedFunction = function;
+
+		if (module->upgradeOptions(upgradedFunction, Version(versionStr), options, msgs))
+			Log::log() << "The options of R syntax for '" << function << "' were upgraded from version " << versionStr << (upgradedFunction != function ? " and are now meant for '" + upgradedFunction + "'" : "") << std::endl;
+	}
+	catch (const Version::encodingError &)
+	{
+		errorMsg = fq(tr("The version '%1' is not understood").arg(tq(versionStr)));
+		return false;
+	}
+	catch (const Modules::upgradeError & e)
+	{
+		errorMsg = fq(tr("The options of version %1 could not be upgraded: %2").arg(tq(versionStr)).arg(tq(e.what())));
+		return false;
+	}
+
+	// ChangeIncompatible: there is no way to get these options to work with the current version
+	if (msgs.count(Modules::analysisLog) && !msgs[Modules::analysisLog].empty())
+	{
+		errorMsg = fq(tq(msgs[Modules::analysisLog]).join("\n"));
+		return false;
+	}
+
+	return true;
+}
+
+void AnalysisForm::addUpgradeWarnings(const Modules::UpgradeMsgs & msgs)
+{
+	for (const auto & [optionName, optionMsgs] : msgs)
+	{
+		if (optionMsgs.empty() || optionName == Modules::analysisLog || optionName == Modules::logId)
+			continue;
+
+		if (optionName.empty())
+		{
+			for (const std::string & msg : optionMsgs)
+				if (!msg.empty())
+					addFormWarning(tq(msg));
+		}
+		else if (JASPControl * control = getControl(tq(optionName)))
+			control->addControlWarning(msgsListToString(tq(optionMsgs)));
+	}
+}
+
+bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg, const std::string & version, Modules::DynamicModule * module, const std::string & function, Modules::UpgradeMsgs * upgradeMsgs)
 {
 	Json::Reader jsonReader;
 
@@ -413,7 +482,21 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 	{
 		if (_rSyntax->parseRSyntaxOptions(parsedOptions))
 		{
+			// Options written for an older version of the module are first brought up to date, see runScriptRequestDone
+			Modules::UpgradeMsgs msgs;
+
+			if (!upgradeRSyntaxOptions(parsedOptions, version, module, function, msgs, errorMsg))
+			{
+				addFormError(tq(errorMsg));
+				return false;
+			}
+
 			bindTo(parsedOptions);
+			addUpgradeWarnings(msgs);
+
+			if (upgradeMsgs)
+				*upgradeMsgs = msgs;
+
 			// report the options as GENERATED from the now-bound components
 			//(Engine shape: values + send-time .meta minus provenance + the transient
 			//`.filterIds` sidecar), not from a stored mirror. The syntax bridge feeds

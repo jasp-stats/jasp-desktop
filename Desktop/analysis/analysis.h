@@ -125,7 +125,7 @@ public:
 	Q_INVOKABLE	QString			helpFile()			const	override	{ return _helpFile;							}
 	const	Json::Value		&	imgOptions()		const				{ return _imgOptions;						}
 	const	Json::Value		&	imgResults()		const				{ return _imgResults;						}
-	Modules::DynamicModule	*	dynamicModule()		const				{ return _dynamicModule;					}
+	Modules::DynamicModule	*	dynamicModule()		const	override	{ return _dynamicModule;					}
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}

@@ -11,6 +11,7 @@
 
 
 class AnalysisForm;
+namespace Modules { class DynamicModule; }
 class DataSet;
 class Filter;
 
@@ -124,6 +125,7 @@ public:
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue)													const	{ return defaultValue;		}
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)	const	{ return defaultValue;		}
 	virtual bool				optionLocked(const QString& name)																				const	{ return false; };
+	virtual	Modules::DynamicModule * dynamicModule()																								const	{ return nullptr;			} ///< The module this analysis comes from, the dummy analysis of the syntax bridge has none
 	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
 
 	// ---- the components own the state, JSON is generated on demand --------

@@ -374,6 +374,52 @@ void DynamicModule::applyUpgrade(const std::string	& function,	const Version & v
 	_upgrades->applyUpgrade(function, version, analysesJson, msgs, stepsTaken);
 }
 
+bool DynamicModule::upgradeOptions(std::string & function, const Version & fromVersion, Json::Value & options, UpgradeMsgs & msgs)
+{
+	if(!_upgrades)
+		return false;
+
+	//The Upgrade items work on an analysis as it is stored in a jasp file, so give them one:
+	Json::Value analysisJson(Json::objectValue);
+
+	analysisJson["name"]							= function;
+	analysisJson["options"]							= options;
+	analysisJson["dynamicModule"]					= asJsonForJaspFile(function);
+	analysisJson["dynamicModule"]["moduleVersion"]	= fromVersion.asString();
+
+	StepsTaken	stepsTaken; //Upgrade::applyUpgrade throws when it would take a step for the second time
+	Version		version		= fromVersion;
+	const bool	hadMeta		= options.isMember(".meta");
+
+	while(hasUpgradesToApply(function, version))
+	{
+		applyUpgrade(function, version, analysisJson, msgs, stepsTaken);
+
+		function	= analysisJson["dynamicModule"]["analysisEntry"].asString();
+		version		= Version(analysisJson["dynamicModule"]["moduleVersion"].asString());
+	}
+
+	//These are only meant for the log, see Upgrader::_upgradeOptionsFromJaspFile
+	if(msgs.count(logId))
+	{
+		for(const std::string & optionLog : msgs[logId])
+			Log::log() << optionLog << std::endl;
+
+		msgs.erase(logId);
+	}
+
+	if(stepsTaken.empty())
+		return false;
+
+	options = analysisJson["options"];
+
+	//Upgrade::applyUpgrade also tries each change on .meta, which makes one up when there was none (as in options that come from R syntax)
+	if(!hadMeta)
+		options.removeMember(".meta");
+
+	return true;
+}
+
 void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 {
 	if(_description && _description != description)
