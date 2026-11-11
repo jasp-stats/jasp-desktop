@@ -42,7 +42,7 @@
 #include "dirs.h"
 #include "utilities/appdirs.h"
 #include "modules/dynamicmodule.h"
-#include "utilities/warningstolog.h"
+#include "utilities/messageforwarder.h"
 #include "archivereader.h"
 #include "databaseinterface.h"
 #include "columnencoder.h"
@@ -1110,7 +1110,7 @@ bool init(bool dbInMemory)
 	qputenv("QT_QPA_PLATFORM", "minimal");
 
 	// A module with a broken Upgrades.qml is reported with a warning, and there are no widgets here to show it with
-	sendWarningsToLog();
+	MessageForwarder::sendWarningsToLog();
 
 	// Qt's incremental QML garbage collector (Qt 6.10, 6.11) can lose an identifier that QQmlContext::setContextProperty
 	// adds while a collection is half done (IdentifierHash::add has no write barrier): the "isDynamic" context property of

@@ -1,5 +1,4 @@
 #include "messageforwarder.h"
-#include "warningstolog.h"
 #include "utilities/desktopcommunicator.h"
 #include <QMessageBox>
 #include <QPushButton>
@@ -91,9 +90,9 @@ QString MessageForwarder::constrainToSandboxStartDir(const QString &initialPath)
 MessageForwarder * MessageForwarder::_singleton = nullptr;
 MessageForwarder::WarningHandler MessageForwarder::_warningHandler;
 
-void sendWarningsToLog()
+void MessageForwarder::sendWarningsToLog()
 {
-	MessageForwarder::setWarningHandler([](const QString & title, const QString & message, bool) { Log::log() << "Warning '" << fq(title) << "': " << fq(message) << std::endl; });
+	setWarningHandler([](const QString & title, const QString & message, bool) { Log::log() << "Warning '" << fq(title) << "': " << fq(message) << std::endl; });
 }
 
 QMessageBox *MessageForwarder::getInfoBox(const QString &title, const QString &message)

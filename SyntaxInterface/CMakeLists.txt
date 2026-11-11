@@ -28,6 +28,7 @@ target_link_libraries(
 		$<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
 		QMLComponentsplugin
 		Qt::Core
+		Qt::Widgets # already linked through QMLComponents; named here for its headers (messageforwarder.h)
 		Qt::Quick
 		Qt::QuickControls2
 )
