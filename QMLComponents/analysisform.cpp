@@ -30,6 +30,11 @@
 #include "controls/textinputbase.h"
 #include "controls/componentslistbase.h"
 #include "controls/variablesformbase.h"
+#include "controls/tableviewbase.h"
+#include "controls/factorsformbase.h"
+#include "controls/factorlevellistbase.h"
+#include "controls/inputlistbase.h"
+#include "controls/colorpickerbase.h"
 #include "controls/rowcontrols.h"
 #include "models/listmodel.h"
 #include "log.h"
@@ -1899,13 +1904,19 @@ Json::Value AnalysisForm::_controlOptionMeta(JASPControl* ctrl, bool includeDesc
 		break;
 
 	case JASPControl::ControlType::ComponentsList:
+	case JASPControl::ControlType::TabView: // TabView IS a ComponentsListBase: same rows, displayed as tabs
 	{
 		entry["kind"] = "array";
-		if (includeDescriptions)
-			entry["instruction"] = "Set to an array of objects. Each object requires a 'value' field (a unique row identifier, e.g. [\"Exponential\"]). Additional properties per object are described in rowControls. If value is missing or empty, the row is silently dropped.";
-		entry["shape"] = ctrl->boundControl()->createJson();
-
 		auto* compList = qobject_cast<ComponentsListBase*>(ctrl);
+		if (includeDescriptions)
+		{
+			const std::string rowIdKey = compList ? fq(compList->optionKeyValue()) : "value";
+			entry["instruction"] = "Set to an array of objects. Each object requires a '" + rowIdKey + "' field (a unique row identifier). Additional properties per object are described in rowControls. If '" + rowIdKey + "' is missing or empty, the row is silently dropped.";
+		}
+		entry["shape"] = ctrl->boundControl()->createJson();
+		if (compList)
+			entry["rowKey"] = fq(compList->optionKeyValue());
+
 		if (compList && compList->model())
 		{
 			const auto& allRowControls = compList->model()->getAllRowControls();
@@ -1952,6 +1963,62 @@ Json::Value AnalysisForm::_controlOptionMeta(JASPControl* ctrl, bool includeDesc
 				}
 			}
 		}
+		break;
+	}
+
+	case JASPControl::ControlType::TableView:
+	{
+		entry["kind"] = "table";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to an array of column objects: every object needs 'name' (column name string), 'levels' (array of row-name strings, identical for every column) and 'values' (array with exactly one entry per level: string, integer or double; null/bool/object entries become empty cells).";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		break;
+	}
+
+	case JASPControl::ControlType::FactorsForm:
+	{
+		entry["kind"] = "factors";
+		auto* factorsForm = qobject_cast<FactorsFormBase*>(ctrl);
+		const std::string factorKey = factorsForm ? fq(factorsForm->optionKeyValue()) : "value";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to an array of factor objects: every object needs 'name' (unique factor name string), 'title' (display title string) and '" + factorKey + "' (array of terms; a term is a variable name string, or an array of strings for an interaction).";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		entry["rowKey"] = factorKey;
+		break;
+	}
+
+	case JASPControl::ControlType::FactorLevelList:
+	{
+		entry["kind"] = "levels";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to an array of factor objects: every object needs 'name' (factor name string) and 'levels' (array of level-name strings).";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		auto* levelList = qobject_cast<FactorLevelListBase*>(ctrl);
+		if (levelList)
+		{
+			if (!levelList->factorName().isEmpty())
+				entry["factorName"] = levelList->factorName().toStdString();
+			if (!levelList->levelName().isEmpty())
+				entry["levelName"] = levelList->levelName().toStdString();
+		}
+		break;
+	}
+
+	case JASPControl::ControlType::InputListView:
+	{
+		entry["kind"] = "array";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to an array of values: plain strings, or objects that carry the row key when rows have their own controls (see the shape example).";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		break;
+	}
+
+	case JASPControl::ControlType::ColorPicker:
+	{
+		entry["kind"] = "string";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to a color string.";
+		entry["shape"] = ctrl->boundControl()->createJson();
 		break;
 	}
 
