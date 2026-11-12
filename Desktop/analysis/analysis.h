@@ -180,6 +180,7 @@ public:
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 
 	const stringvec &		upgradeMsgsForOption(const std::string & name)		const	override;
+	void					clearUpgradeMsgs()											override	{ _msgs.clear(); }
 	const Version	&		moduleVersion()										const	override	{ return _dynamicModule ? _dynamicModule->version() : AppInfo::version; }
 
 	const Json::Value	&	getRSource(const std::string & name)		const	override	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }

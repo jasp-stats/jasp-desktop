@@ -7273,6 +7273,22 @@ void TestAll::testUpgradeMsgsAreSetBeforeAnalysisIsStored()
 	QCOMPARE(controlMsgsWhenStored,	stringvec({"control message"}));
 	QVERIFY(analysis->needsRefresh());
 
+	{
+		//The form shows the messages once: a later bind (applying R syntax) must not bring them back after the user closed them
+		AnalysisForm form;
+		form._analysis = analysis; //Not setAnalysis: no QML controls to set up here
+		auto detach = qScopeGuard([&](){ form._analysis = nullptr; });
+
+		form.bindTo(Json::nullValue);
+		QCOMPARE(form._formWarnings, QStringList({"form message"}));
+		QVERIFY(analysis->upgradeMsgsForOption("").empty());
+		QVERIFY(analysis->upgradeMsgsForOption("number").empty());
+
+		form.clearFormWarnings();
+		form.bindTo(Json::nullValue);
+		QVERIFY2(form._formWarnings.isEmpty(), qPrintable(form._formWarnings.join("; ")));
+	}
+
 	delete exitSpy;
 	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
 

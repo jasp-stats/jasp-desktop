@@ -747,6 +747,10 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 	for(const QString & upgradeMsg : tq(_analysis->upgradeMsgsForOption("")))
 		if(upgradeMsg != "")
 			addFormWarning(upgradeMsg);
+
+	//The messages are about the upgrade of the loaded options, which is done now: shown once is enough.
+	//Otherwise a later bind (applying R syntax) shows them again, also after the user closed them.
+	_analysis->clearUpgradeMsgs();
 }
 
 void AnalysisForm::addFormError(const QString & error)

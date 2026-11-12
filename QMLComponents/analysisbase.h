@@ -89,6 +89,7 @@ public:
 	virtual				void				preprocessMarkdownHelp(const QString& md)					const	{}
 	virtual				QString				helpFile()															{ return "";				}
 	virtual				const stringvec   & upgradeMsgsForOption(const std::string& name)				const	{ return emptyStringVec;	}
+	virtual				void				clearUpgradeMsgs()													{}
 	virtual				const Json::Value & resultsMeta()												const 	{ return Json::Value::null;	}
 	virtual				const Json::Value & getRSource(const std::string& name)							const 	{ return Json::Value::null;	}
 	virtual				void				initialized(AnalysisForm* form, bool isNewAnalysis)					{}
