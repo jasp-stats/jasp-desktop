@@ -7360,6 +7360,25 @@ void TestAll::testRSyntaxOptionsAreUpgradedByTheirModule()
 	}
 
 	{
+		//R syntax only gives the options that were set: a rename of an option that is not there is skipped,
+		//also for a development module (which gets every other change error thrown at it)
+		const std::string		devModuleName = Modules::DynamicModule::_developmentModuleName;
+		auto					resetDevModule = qScopeGuard([&](){ Modules::DynamicModule::_developmentModuleName = devModuleName; });
+		Json::Value				options;
+		Modules::UpgradeMsgs	msgs;
+		std::string				function = "upgradeMsgTest";
+
+		Modules::DynamicModule::_developmentModuleName = fq(moduleName);
+		options["other"] = 1;
+
+		QVERIFY(module->upgradeOptions(function, Version("0.1"), options, msgs));
+		QVERIFY(!options.isMember("number"));
+		QVERIFY(!options.isMember("count"));
+		QCOMPARE(options["other"].asInt(), 1);
+		QCOMPARE(options["extra"].asInt(), 3);
+	}
+
+	{
 		//Options of a version that needs no upgrade are left alone
 		Json::Value				options;
 		Modules::UpgradeMsgs	msgs;

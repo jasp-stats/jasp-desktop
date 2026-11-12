@@ -35,6 +35,8 @@
 #include "upgrader/upgradeDefinitions.h"
 #include "enginedefinitions.h"
 
+class TestAll;
+
 namespace Modules
 {
 
@@ -175,7 +177,7 @@ public:
 	void loadDESCRIPTION(		  QString		  descriptionText);
 	void loadUpgradesQML(	QQmlContext * context, const QString		& upgradesTxt,		const QUrl		& url);
 	bool hasUpgradesToApply(const std::string	& function,			const Version	& version);
-	void applyUpgrade(		const std::string	& function,			const Version	& version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken);
+	void applyUpgrade(		const std::string	& function,			const Version	& version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken, bool sparseOptions = false);
 
 	/// Brings options that were written for `fromVersion` of `function` up to date with the Upgrades.qml of this module, one Upgrade after the other.
 	/// This is what R syntax needs (AnalysisForm::upgradeRSyntaxOptions): only the module of the analysis itself is involved, so no Upgrader and no ModulesMap.
@@ -257,6 +259,8 @@ private:
 	Upgrades		*	_upgrades			= nullptr;
 
 	static std::string			_developmentModuleName;
+
+	friend class ::TestAll; ///< marks a test module as the development module (Upgrade::isModuleDev) without a developer-mode library path
 	static const std::string	_moduleDirPostfix;
 
 	QString patchLibPathHelperFunc(QString libpath);

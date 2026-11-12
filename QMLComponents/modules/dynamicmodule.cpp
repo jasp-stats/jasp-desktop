@@ -366,12 +366,12 @@ bool DynamicModule::hasUpgradesToApply(const std::string & function, const Versi
 	return _upgrades != nullptr && _upgrades->hasUpgradesToApply(function, version);
 }
 
-void DynamicModule::applyUpgrade(const std::string	& function,	const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken)
+void DynamicModule::applyUpgrade(const std::string	& function,	const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken, bool sparseOptions)
 {
 	if(!analysesJson.isMember("dynamicModule"))
 		analysesJson["dynamicModule"] = asJsonForJaspFile(function);
-	
-	_upgrades->applyUpgrade(function, version, analysesJson, msgs, stepsTaken);
+
+	_upgrades->applyUpgrade(function, version, analysesJson, msgs, stepsTaken, sparseOptions);
 }
 
 bool DynamicModule::upgradeOptions(std::string & function, const Version & fromVersion, Json::Value & options, UpgradeMsgs & msgs)
@@ -393,7 +393,7 @@ bool DynamicModule::upgradeOptions(std::string & function, const Version & fromV
 
 	while(hasUpgradesToApply(function, version))
 	{
-		applyUpgrade(function, version, analysisJson, msgs, stepsTaken);
+		applyUpgrade(function, version, analysisJson, msgs, stepsTaken, true); //R syntax only gives the options that differ from the defaults
 
 		function	= analysisJson["dynamicModule"]["analysisEntry"].asString();
 		version		= Version(analysisJson["dynamicModule"]["moduleVersion"].asString());
