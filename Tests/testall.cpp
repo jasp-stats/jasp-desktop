@@ -7412,6 +7412,19 @@ void TestAll::testRSyntaxOptionsAreUpgradedByTheirModule()
 	AnalysisForm form;
 
 	{
+		//Applied R syntax whose options end up the same as before (only the version changed) does not change any control,
+		//but the text area must still get the syntax of the form back instead of keeping what was typed
+		AnalysisBase	analysis(&form);
+		QSignalSpy		syntaxSpy(&form, &AnalysisForm::rSyntaxTextChanged);
+
+		form._analysis = &analysis;
+		auto detach = qScopeGuard([&](){ form._analysis = nullptr; });
+
+		form.runScriptRequestDone(R"({"options": {}, "version": "0.6"})", AnalysisForm::rSyntaxControlName, false);
+		QTRY_VERIFY(syntaxSpy.count() > 0);
+	}
+
+	{
 		Json::Value				options, version(Json::arrayValue);
 		Modules::UpgradeMsgs	msgs;
 		std::string				error;

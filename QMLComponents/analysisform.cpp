@@ -215,6 +215,9 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 					addUpgradeWarnings(upgradeMsgs);
 					blockValueChangeSignal(false, false);
 					_analysis->boundValueChangedHandler();
+					// The text area still shows what the user typed, and when the options end up the same as before (e.g. only the version was changed)
+					// no control changes, so nothing else asks for the syntax again: show the syntax of the options as they are now.
+					emit rSyntaxTextChanged();
 				});
 			}
 		}
