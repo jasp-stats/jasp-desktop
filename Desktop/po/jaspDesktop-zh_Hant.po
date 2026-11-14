@@ -6,6 +6,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
+"PO-Revision-Date: 2026-11-08 05:51+0000\n"
+"Last-Translator: 陳正昌 <chencc99@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
+"X-Generator: Weblate 2026.11.2.dev0\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -9937,31 +9943,31 @@ msgstr ""
 #, qt-format
 msgctxt "RCommander|"
 msgid "Could not create analysis %1: %2"
-msgstr ""
+msgstr "無法建立分析 %1：%2"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "Could not create analysis %1 (%2): %3"
-msgstr ""
+msgstr "無法建立分析 %1 (%2)：%3"
 
 msgctxt "RCommander|"
 msgid "the entry is not valid JSON"
-msgstr ""
+msgstr "此項目不是有效的 JSON"
 
 msgctxt "RCommander|"
 msgid "the entry is not a JASP analysis"
-msgstr ""
+msgstr "此項目不是 JASP 分析"
 
 msgctxt "RCommander|"
 msgid ""
 "'module' and 'analysis' must be the names of a module and one of its analyses"
-msgstr ""
+msgstr "'模組' 與 '分析' 必須是某個模組及其其中一項分析的名稱"
 
 msgctxt "RCommander|"
 msgid "'options' must be a named list"
-msgstr ""
+msgstr "'選項' 必須是具名清單"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "module '%1' not found"
-msgstr ""
+msgstr "找不到模組「%1」"
