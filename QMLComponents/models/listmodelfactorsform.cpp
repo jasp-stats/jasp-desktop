@@ -31,6 +31,7 @@ ListModelFactorsForm::ListModelFactorsForm(JASPListControl* listView)
 	_factorsForm = qobject_cast<FactorsFormBase*>(listView);
 	_needsSource = false;
 	connect(_factorsForm, &FactorsFormBase::nestedChanged, this, &ListModelFactorsForm::nestedChangedHandler);
+	connect(_factorsForm, &FactorsFormBase::advancedToggled, this, &ListModelFactorsForm::nestedChangedHandler);	// off again: nested again
 }
 
 QHash<int, QByteArray> ListModelFactorsForm::roleNames() const
@@ -88,7 +89,7 @@ void ListModelFactorsForm::initFactors(const FactorVec &factors)
 	Terms previousTerms;
 	for (Factor factor : factors)
 	{
-		if (_factorsForm->nested())
+		if (_factorsForm->nestedActive())
 			factor.initTerms.setUndraggableTerms(previousTerms);
 		_factors.push_back(factor);
 		index++;
@@ -131,11 +132,13 @@ void ListModelFactorsForm::addFactor()
 	QString name = _factorsForm->baseName() + index;
 	QString title = _factorsForm->baseTitle() + " " + index;
 	Terms terms;
-	if (_factors.size() > 0 && _factorsForm->nested())
+	if (_factors.size() > 0 && _factorsForm->nestedActive())
 	{
 		terms = _factors[_factors.size() - 1].listView->model()->terms();
 		terms.setDraggable(false);
 	}
+	else
+		terms = _factorsForm->initialModelTerms();	// with the term specification: the intercept
 
 	_factors.push_back(Factor(name, title, terms));
 
@@ -218,7 +221,7 @@ void ListModelFactorsForm::factorAdded(int index, VariablesListBase* listView)
 
 void ListModelFactorsForm::ensureNesting()
 {
-	if (_ensuringNesting || !_factorsForm->nested() || !_factorsForm->initialized()) return;
+	if (_ensuringNesting || !_factorsForm->nestedActive() || !_factorsForm->initialized()) return;
 
 	ListModelDraggable	*currentModel	= qobject_cast<ListModelDraggable*>(sender()),
 						*onderModel		= nullptr,
@@ -264,12 +267,17 @@ void ListModelFactorsForm::ensureNesting()
 }
 
 
+const Terms& ListModelFactorsForm::Factor::terms() const
+{
+	return listView ? listView->model()->terms() : initTerms;
+}
+
 void ListModelFactorsForm::nestedChangedHandler()
 {
 	if (!_factorsForm->initialized())
 		return;
 
-	if (_factorsForm->nested())
+	if (_factorsForm->nestedActive())
 	{
 		for (int i = 0; i < _factors.size() - 1; i++)
 		{

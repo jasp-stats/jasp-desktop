@@ -43,6 +43,7 @@ void FactorsFormBase::setUpModel()
 	_availableVariablesListName = property("availableVariablesListName").toString();
 	QVariant availableListVariant = property("availableVariablesList");
 	_availableVariablesListItem = qobject_cast<JASPListControl *>(availableListVariant.value<QObject *>());
+	_universeList = qobject_cast<JASPListControl *>(property("variablesUniverse").value<QObject *>());
 
 	connect(this, &FactorsFormBase::initializedChanged, this, &FactorsFormBase::countVariablesChanged);
 	connect(_factorsModel, &ListModelFactorsForm::modelReset, this, &FactorsFormBase::factorsTitlesChanged);
@@ -167,6 +168,8 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 		factor[fq(_optionKeyValue)] = newTerms;
 	}
 
+	_bindAdvanced(newValue, factors);
+
 	BoundControlBase::bindTo(newValue);
 	
 	_factorsModel->initFactors(factors);
@@ -182,6 +185,28 @@ Json::Value FactorsFormBase::createJson() const
 		row["name"] = fq(baseName() + QString::number(i + startIndex()));
 		row["title"] = fq(baseTitle() + " " + QString::number(i + startIndex()));
 		row[fq(_optionKeyValue)] = Json::Value(Json::objectValue);
+
+		// a form whose QML switches the term specification on (advanced: true) starts new analyses with it, each model
+		// with its intercept term; a saved analysis without the key stays basic
+		if (_advancedAvailable && _advanced)
+		{
+			row["advanced"] = true;
+			Json::Value terms(Json::objectValue), value(Json::arrayValue), types(Json::arrayValue);
+			for (const Term & term : initialModelTerms())
+			{
+				Json::Value components(Json::arrayValue), componentTypes(Json::arrayValue);
+				for (const QString & component : term.components())
+				{
+					components.append(fq(component));
+					componentTypes.append(columnTypeToString(columnType::unknown));
+				}
+				value.append(allowInteraction() ? components : components[0]);
+				types.append(allowInteraction() ? componentTypes : componentTypes[0]);
+			}
+			terms["value"]				= value;
+			terms["types"]				= types;
+			row[fq(_optionKeyValue)]	= terms;
+		}
 
 		result.append(row);
 	}
@@ -200,6 +225,9 @@ bool FactorsFormBase::isJsonValid(const Json::Value &value) const
 			if (!valid) break;
 		}
 	}
+
+	if (valid && _advancedAvailable)
+		valid = _advancedJsonValid(value);
 
 	return valid;
 }
@@ -252,6 +280,8 @@ Json::Value FactorsFormBase::createEngineValue() const
 		termsJson["value"] = valuePart;
 		termsJson["types"] = terms.types();
 		factorJson[fq(_optionKeyValue)] = termsJson;
+		if (advancedActive())
+			_advancedEngineMembers(factor, factorJson);
 		boundValue.append(factorJson);
 	}
 	
@@ -314,7 +344,19 @@ Json::Value FactorsFormBase::createFilterIds() const
 			ids.append(id >= 0 ? Json::Value(id) : Json::Value());
 		}
 
-		perFactor.append(ids);
+		if (!advancedActive())
+			perFactor.append(ids);
+		else
+		{
+			// term specification on: a per-model OBJECT naming the positional ids of each encoded member (`components`
+			// and `definitions`), which the encoder's generic object walk follows, as the structured createEngineMeta
+			Json::Value members(Json::objectValue), engineValue(Json::objectValue);
+			_advancedEngineMembers(factor, engineValue, &members, hostId);
+			for (const Json::Value & memberIds : members)
+				for (const Json::Value & id : memberIds)
+					any = any || !id.isNull();
+			perFactor.append(members);
+		}
 	}
 
 	return any ? perFactor : Json::nullValue;
@@ -345,6 +387,17 @@ Json::Value FactorsFormBase::createStorageValue() const
 		factorJson["title"]		= fq(factor.title);
 		factorJson[fq(_optionKeyValue)] = terms.getStorageOptions(Terms::RelatedValuesPerTerm(), fq(_optionKeyValue), "",
 																		allowInteraction(), false, false);
+		if (_advancedAvailable)
+		{
+			// the file keeps every definition (also while the specification is off)
+			std::vector<const TermDefinition *> definitions;
+			for (const TermDefinition & definition : _definitions)
+				definitions.push_back(&definition);
+
+			factorJson["advanced"]				= _advanced;
+			factorJson["definitions"]			= _definitionsJson(false, definitions);
+			factorJson["interceptRestriction"]	= fq(_interceptRestriction);
+		}
 		boundValue.append(factorJson);
 	}
 
@@ -366,8 +419,12 @@ void FactorsFormBase::factorAdded(int index, QVariant item)
 	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::resetModelTerms, Qt::QueuedConnection);
 	connect(listView->model(), &ListModel::termsChanged, this, &FactorsFormBase::countVariablesChanged);
 	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::ensureNesting);
+	connect(listView->model(), &ListModel::termsChanged, this, &FactorsFormBase::_removeInvalidInteractions, Qt::QueuedConnection);	// after the drop that made them
+	connect(listView->model(), &ListModel::termsChanged, this, [this]() { _modelsRevision++; emit modelsChanged(); });				// the full-width view of a model
 
 	listView->setInitialized();
+
+	_connectUniverse();
 }
 
 

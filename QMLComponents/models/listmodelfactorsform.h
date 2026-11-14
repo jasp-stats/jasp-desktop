@@ -44,6 +44,8 @@ public:
 		Terms						initTerms;
 		Factor(const QString& _name, const QString& _title, const Terms& _initTerms) :
 			name(_name), title(_title), listView(nullptr), initTerms(_initTerms) {}
+
+		const Terms&	terms()	const;	///< the live terms of its list, or initTerms before the list exists
 	};
 
 	typedef std::vector<Factor> FactorVec;
@@ -60,6 +62,7 @@ public:
 	int						count()														const				{ return int(_factors.size()); }
 	int						countVariables()											const;
 	const FactorVec&		getFactors()												const				{ return _factors;	}
+	Factor*					factor(int index)																{ return index >= 0 && index < int(_factors.size()) ? &_factors[index] : nullptr; }
 	
 	void					addFactor();
 	void					removeFactor();

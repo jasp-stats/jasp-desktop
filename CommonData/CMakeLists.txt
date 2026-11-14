@@ -19,6 +19,9 @@ make_includable(../Engine/jaspBase/R/transformJohnson.R					jaspBase_transformJo
 make_includable(../Engine/jaspBase/R/transformYeoJohnson.R				jaspBase_transformYeoJohnson.h)
 make_includable(../Engine/jaspBase/R/transformPower.R					jaspBase_transformPower.h)
 make_includable(../Engine/jaspBase/R/columnFormula.R					jaspBase_columnFormula.h)
+# the term specifications of FactorsForm (one string literal: MSVC allows 16380 bytes); a change reconfigures
+make_includable(../Engine/jaspBase/inst/modelTermSpecifications.json	jaspBase_modelTermSpecifications.h)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../Engine/jaspBase/inst/modelTermSpecifications.json)
 
 make_includable(R/jaspEncodedFrame.R									jaspEncodedFrame.h)
 make_includable(R/batchAnalysis.R										batchAnalysis.h)

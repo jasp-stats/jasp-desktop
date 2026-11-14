@@ -68,6 +68,8 @@ QualifiedColumnPicker 1.0 QualifiedColumnPicker.qml
 QualifiedColumnValidator 1.0 QualifiedColumnValidator.qml
 
 # Internal / Helper Controls
+FactorsFormDefinitions 1.0 FactorsFormDefinitions.qml
+FactorsFormModelView 1.0 FactorsFormModelView.qml
 AssignButton 1.0 AssignButton.qml
 CrossButton 1.0 CrossButton.qml
 HelpButton 1.0 HelpButton.qml

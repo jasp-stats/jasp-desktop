@@ -971,8 +971,10 @@ void JASPControl::_setInitialized(const Json::Value &value)
 		//erased the stamps and the intake re-stamped the terms with the control's own host,
 		//silently re-routing a typed copy or a host-restamped term onto the wrong
 		//dataset).
+		// A control bound for the first time has no state to round-trip yet: it starts from its default (createJson()),
+		// e.g. the initial factors of a FactorsForm, whose Storage value would still be empty.
 		bControl->bindTo(value == Json::nullValue
-			? (bControl->selfRebindFormat() == BoundControl::Storage ? bControl->createJson(BoundControl::Storage) : bControl->createJson())
+			? (_initialized && bControl->selfRebindFormat() == BoundControl::Storage ? bControl->createJson(BoundControl::Storage) : bControl->createJson())
 			: value);
 	}
 
