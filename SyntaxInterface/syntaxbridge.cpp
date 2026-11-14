@@ -42,6 +42,7 @@
 #include "dirs.h"
 #include "utilities/appdirs.h"
 #include "modules/dynamicmodule.h"
+#include "utilities/messageforwarder.h"
 #include "archivereader.h"
 #include "databaseinterface.h"
 #include "columnencoder.h"
@@ -69,6 +70,7 @@ static QGuiApplication			*			gl_application					= nullptr;
 static QQmlEngine				*			gl_qmlEngine					= nullptr;
 static DataBridge				*			gl_dataBridge					= nullptr;
 static QMap<QString, std::pair<QDateTime, AnalysisForm* > >	gl_qmlFormMap;
+static QMap<QString, std::pair<QDateTime, Modules::DynamicModule* > >	gl_moduleMap; ///< per module folder, see moduleOfQmlFile
 static int									gl_applicationArgc				= 0;
 static std::vector<std::string>				gl_applicationArgvStorage;
 static std::vector<char*>					gl_applicationArgv;
@@ -221,6 +223,50 @@ static const char* statusError(Json::Value status, const std::string & error)
 	configureLogging();
 	Log::log() << error << std::endl;
 	return statusResult(status);
+}
+
+/// The module a qml form comes from, with its Upgrades.qml loaded: <module>/inst/qml/Form.qml in the sources of a module, <package>/qml/Form.qml in an installed one.
+/// Loading a module is not cheap and every wrapper call asks for it, so it is kept until its Upgrades.qml changes.
+/// Gives nullptr when there is no module to load there: the options are then simply not upgraded.
+static Modules::DynamicModule * moduleOfQmlFile(const QString & qmlFile)
+{
+	QDir moduleDir = QFileInfo(qmlFile).absoluteDir(); // .../qml
+
+	if (!moduleDir.cdUp())
+		return nullptr;
+
+	if (moduleDir.dirName() == "inst" && !moduleDir.exists("DESCRIPTION"))
+		moduleDir.cdUp();
+
+	const QString	modulePath	= moduleDir.absolutePath();
+	const bool		inInst		= QFileInfo(modulePath + "/inst").isDir(); // same rule as DynamicModule::initialize
+	const QDateTime	modified	= QFileInfo(modulePath + (inInst ? "/inst/" : "/") + tq(Modules::DynamicModule::getQmlUpgradesFilename())).lastModified();
+
+	if (gl_moduleMap.contains(modulePath) && gl_moduleMap[modulePath].first == modified)
+		return gl_moduleMap[modulePath].second;
+
+	if (gl_moduleMap.contains(modulePath) && gl_moduleMap[modulePath].second)
+		gl_moduleMap[modulePath].second->deleteLater();
+
+	Modules::DynamicModule * module = nullptr;
+
+	try
+	{
+		module = new Modules::DynamicModule(gl_application, gl_qmlEngine->rootContext(), modulePath, false);
+		module->initialize(gl_qmlEngine->rootContext());
+	}
+	catch (const std::exception & e)
+	{
+		Log::log() << "Could not load the module of " << fq(qmlFile) << " from " << fq(modulePath) << ": " << e.what() << std::endl;
+
+		if (module)
+			module->deleteLater();
+		module = nullptr;
+	}
+
+	gl_moduleMap[modulePath] = std::make_pair(modified, module);
+
+	return module;
 }
 
 static ColumnEncoder * extraColumnEncoder()
@@ -708,7 +754,12 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	// parseOptions now REPORTS the generated Engine tree (values + send-time .meta
 	//minus provenance + the transient .filterIds sidecar), not a stored mirror - the
 	//binding below wrote every value through its control, so this is the same state, generated.
-	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg))
+	//The wrapper passes the version its syntax was written for: the Upgrades.qml of the module of the form
+	//brings options of an older version up to date before they are bound, like the desktop does for a jasp file.
+	Modules::UpgradeMsgs		upgradeMsgs;
+	Modules::DynamicModule	*	module			= versionStr.empty() ? nullptr : moduleOfQmlFile(tq(qmlFileStr));
+
+	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg, versionStr, module, analysisNameStr, &upgradeMsgs))
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
 
 	//Establish the request context before any encoding happens: provideAndUpdateDataSet() points the
@@ -750,6 +801,12 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	//into the syntax-bridge caller, exactly like Engine::runAnalysis does before
 	//rbridge_runModuleCall.
 	DataBridge::stripTransientProvenanceForR(parsedOptions);
+
+	//What the upgrade had to say, per option ("" is the analysis as a whole)
+	for (const auto & [optionName, optionMsgs] : upgradeMsgs)
+		for (const std::string & msg : optionMsgs)
+			if (!msg.empty())
+				status["upgradeMsgs"][optionName].append(msg);
 
 	status["ok"] = true;
 	status["options"] = parsedOptions;
@@ -1051,6 +1108,9 @@ bool init(bool dbInMemory)
 	gl_applicationArgc = static_cast<int>(gl_applicationArgvStorage.size());
 
 	qputenv("QT_QPA_PLATFORM", "minimal");
+
+	// A module with a broken Upgrades.qml is reported with a warning, and there are no widgets here to show it with
+	MessageForwarder::sendWarningsToLog();
 
 	// Qt's incremental QML garbage collector (Qt 6.10, 6.11) can lose an identifier that QQmlContext::setContextProperty
 	// adds while a collection is half done (IdentifierHash::add has no write barrier): the "isDynamic" context property of

@@ -256,6 +256,28 @@ Item
 
 		// ---- the non-aware matrix ----------------------------------------------------------------
 
+		function test_parse_options_reports_the_options_no_control_has()
+		{
+			// With a version (a wrapper always gives one) the options that would be dropped by the bind are reported;
+			// a single string is still a fine value for a list (RSyntax::normalizeListOptions).
+			const withVersion = JSON.parse(plainForm.parseOptionsToJson(JSON.stringify({ intP: 3, depP: "TestInts", intQ: 4, ".meta": {} }), "0.1"))
+
+			verify(withVersion.ok, "the options are parsed: " + withVersion.error)
+			compare(withVersion.msgs.length, 1, "only the option that is no control is reported: " + JSON.stringify(withVersion.msgs))
+			verify(withVersion.msgs[0].indexOf("'intQ'") >= 0, withVersion.msgs[0])
+			compare(withVersion.options.intP, 3, "the known options are bound")
+			compare(JSON.stringify(withVersion.options.depP.value), JSON.stringify(["TestInts"]), "a single string became the list of the control")
+			verify(withVersion.options.intQ === undefined, "the unknown option is not an option of the form")
+			verify(plainForm.warnings.indexOf("intQ") >= 0, "and the form shows it: " + plainForm.warnings)
+
+			// Without a version nothing is said, as before
+			const noVersion = JSON.parse(plainForm.parseOptionsToJson(JSON.stringify({ intP: 5, intQ: 4 })))
+
+			verify(noVersion.ok, noVersion.error)
+			compare(noVersion.msgs.length, 0, JSON.stringify(noVersion.msgs))
+			compare(noVersion.options.intP, 5)
+		}
+
 		function test_scalars_fields_and_radios_match_mirror()
 		{
 			plainForm.setOptions({

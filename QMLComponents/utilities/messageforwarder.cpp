@@ -90,6 +90,11 @@ QString MessageForwarder::constrainToSandboxStartDir(const QString &initialPath)
 MessageForwarder * MessageForwarder::_singleton = nullptr;
 MessageForwarder::WarningHandler MessageForwarder::_warningHandler;
 
+void MessageForwarder::sendWarningsToLog()
+{
+	setWarningHandler([](const QString & title, const QString & message, bool) { Log::log() << "Warning '" << fq(title) << "': " << fq(message) << std::endl; });
+}
+
 QMessageBox *MessageForwarder::getInfoBox(const QString &title, const QString &message)
 {
 	QMessageBox *msgBox = new QMessageBox(nullptr);

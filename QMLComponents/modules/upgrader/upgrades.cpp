@@ -46,12 +46,12 @@ bool Upgrades::findClosestVersion(const std::string & function, Version & versio
 }
 
 
-void Upgrades::applyUpgrade(const std::string & function, const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken)
+void Upgrades::applyUpgrade(const std::string & function, const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken, bool sparseOptions)
 {
 	Version closest = version;
 
 	if(findClosestVersion(function, closest))
-		_steps[closest][function]->applyUpgrade(function, version, analysesJson, msgs, stepsTaken);
+		_steps[closest][function]->applyUpgrade(function, version, analysesJson, msgs, stepsTaken, sparseOptions);
 }
 
 void Upgrades::setModule(QString module)

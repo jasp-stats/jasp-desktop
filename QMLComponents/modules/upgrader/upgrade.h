@@ -30,7 +30,8 @@ public:
 	Upgrade();
 	~Upgrade();
 
-	void applyUpgrade(const std::string & function, const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken);
+	/// sparseOptions: the options only hold what was set explicitly (R syntax), so a change on an option that is not there is skipped, also for a development module.
+	void applyUpgrade(const std::string & function, const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken, bool sparseOptions = false);
 
 	QString toString();
 	

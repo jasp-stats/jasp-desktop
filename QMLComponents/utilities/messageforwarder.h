@@ -27,6 +27,8 @@ public:
 	using WarningHandler = std::function<void(const QString &, const QString &, bool)>;
 	static void setWarningHandler(WarningHandler handler) { _warningHandler = std::move(handler); }
 	static WarningHandler warningHandler() { return _warningHandler; }
+	/// showWarning opens a QMessageBox, which a process without widgets (the syntax bridge) cannot do: after this call the warnings are written to the log instead.
+	static void sendWarningsToLog();
 
 	static QMessageBox* getInfoBox(const QString& title, const QString& message);
 
