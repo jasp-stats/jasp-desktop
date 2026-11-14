@@ -111,6 +111,7 @@ public:
 				bool				filePathIsNonSaveable(const QString &path) const;
 				
 				void				setAnalysesData(const Json::Value & analysesData);
+				void				removeAutoSaveInfo()								{ _analysesData.removeMember("autoSaveDescription"); _analysesData.removeMember("autoSaveFileName"); } ///< Only autosave files need it for the list of recovery files, and it can hold local paths
 				void				setArchiveVersion(Version archiveVersion)			{ _archiveVersion				= archiveVersion;	}
 				void				setJaspVersion(Version jaspVersion)					{ _jaspVersion					= jaspVersion;		}
 				void				updateDbToCurrentVersion();							///< Should be ran immediately after loading the jasp file

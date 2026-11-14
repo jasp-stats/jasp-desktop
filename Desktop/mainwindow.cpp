@@ -16,6 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 #include <QDir>
+#include <QElapsedTimer>
 #include <algorithm>
 
 #include <QFile>
@@ -45,6 +46,7 @@
 
 #include "gui/preferencesmodel.h"
 #include "data/exporters/jaspexporter.h"
+#include "data/jaspencryptiondata.h"
 #include "utilities/application.h"
 #include "gui/jaspversionchecker.h"
 #include "ALTNavigation/altnavcontrol.h"
@@ -1986,7 +1988,99 @@ void MainWindow::registerRpcHandlers()
 	   return response;
 	});
 
-	Log::log() << "[RPC] Registered data_load, data_load_status, and data_info handlers." << std::endl;
+	// --- file_save ---
+	disp->registerMethodByName("file_save", [this](const Json::Value& params) -> Json::Value
+	{
+		const QFileInfo	target(tq(params["path"].asString()));
+		const QString	path		= target.absoluteFilePath();
+		const int		timeoutMs	= params.get("timeoutMs", 30000).asInt();
+		auto			fail		= [](const std::string & message) { return JaspRpcDispatcher::errorResult(message); };
+
+		if (!target.isAbsolute() || Utils::getTypeFromFileName(params["path"].asString()) != Utils::FileType::jasp)
+			return fail("path must be an absolute path to a .jasp file, got: '" + params["path"].asString() + "'");
+
+		if (!target.dir().exists())
+			return fail("The folder of '" + fq(path) + "' does not exist.");
+
+		//Without this check Utils::renameOverwrite clears the read-only flag and replaces the file anyway.
+		if (target.isDir() || (target.exists() && !target.isWritable()))
+			return fail("'" + fq(path) + "' is not writable.");
+
+		for (const auto& [id, job] : _rpcJobs)
+			if (job.status == "running")
+				return fail("A data load is in progress (job " + std::to_string(id) + "), wait for it to finish before saving.");
+
+		if (!dataAvailable() && _analyses->count() == 0)
+			return fail("There is nothing to save: no data is loaded and there are no analyses.");
+
+		//The exporter would ask for the missing password in a dialog.
+		JaspEncryptionData * encryption = JaspEncryptionData::getInstance();
+		if (encryption->encryptionActive() && !encryption->paramsSet())
+			return fail("This workspace saves encrypted but has no password, and saving would ask for one in a dialog; use File > Save As in JASP.");
+
+		QElapsedTimer elapsed;
+		elapsed.start();
+
+		//A saved file must hold finished results, and its index.html comes from the results page.
+		auto readyToSave = [this]() { return _analyses->allFinished() && _resultsJsInterface->resultsLoaded(); };
+
+		if (!readyToSave())
+			JaspRpcDispatcher::waitAndProcessEvents(timeoutMs, [&](QEventLoop& loop, QTimer&)
+			{
+				auto * pollTimer = new QTimer(&loop);
+				QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() { if (readyToSave()) loop.quit(); });
+				pollTimer->start(100);
+			});
+
+		if (!readyToSave())
+		{
+			std::string waitingFor = _resultsJsInterface->resultsLoaded() ? "" : " results page,";
+
+			_analyses->applyToAll([&waitingFor](Analysis * analysis)
+			{
+				if (!analysis->isFinished())
+					waitingFor += " analysis " + std::to_string(analysis->id()) + " (" + Analysis::statusToString(analysis->status()) + "),";
+			});
+			waitingFor.pop_back();
+
+			return fail("Nothing was saved: still waiting after " + std::to_string(timeoutMs) + " ms for" + waitingFor + ".");
+		}
+
+		auto * event = new FileEvent(this, FileEvent::FileSave);
+		event->setSilent(true); //The failure goes back in the response instead of into a "Save failed" dialog.
+		event->setPath(path);
+
+		bool		finalized	= false,
+					saved		= false;
+		std::string	message;
+
+		//finalized comes after fileEventRequestFinalize: the current file is set and the modified flag cleared.
+		JaspRpcDispatcher::waitAndProcessEvents(std::max(1, timeoutMs - int(elapsed.elapsed())), [&](QEventLoop& loop, QTimer&)
+		{
+			QObject::connect(event, &FileEvent::finalized, &loop, [&]()
+			{
+				finalized	= true;
+				saved		= event->isSuccessful();
+				message		= fq(event->message());
+				loop.quit();
+			});
+
+			event->starts();
+		});
+
+		if (!finalized)
+			return fail("Timed out after " + std::to_string(timeoutMs) + " ms while saving '" + fq(path) + "'; the save may still finish.");
+
+		if (!saved)
+			return fail("Could not save '" + fq(path) + "': " + message);
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["path"]		= fq(_package->currentFile());
+		response["modified"]	= _package->isModified();
+		return response;
+	});
+
+	Log::log() << "[RPC] Registered data_load, data_load_status, data_info, and file_save handlers." << std::endl;
 }
 
 bool MainWindow::startDetached(const QString & applicationPath, const QStringList & args) const
@@ -2048,6 +2142,9 @@ void MainWindow::fileEventRequestHandler(FileEvent *event)
 	{
 		_resultsJsInterface->exportPreviewHTML();
 		_package->setAnalysesData(_analyses->asJson());
+
+		if (!event->isTmp())
+			_package->removeAutoSaveInfo();
 
 		std::string snapshotError;
 		if (!JASPExporter::createSnapshot(event->isTmp() ? "jasp_autosave_snapshot_" : "jasp_snapshot_", &snapshotError))
