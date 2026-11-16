@@ -206,10 +206,14 @@ protected:
 			///< -1 when there is no explicit selection host — see _setAllowedType.
 			int		_currentSelectionFilterId()							const;
 
+			void	_forgetLoadedRowControlsValues();
+			bool	_bindingFormOptions()								const;
+
 			bool							_needsSource			= true;
 			RowControlMap						_rowControlsMap;			// keyed by row identity (TermRowKey), see getAllRowControls
 			QQmlComponent *					_rowComponent			= nullptr;
 			Terms::RelatedValuesPerTerm		_rowControlsValues;
+			bool							_rowControlsValuesAreLoadedOptions	= false;	///< see _forgetLoadedRowControlsValues
 			QList<BoundControl *>			_rowControlsConnected;
 			QList<int>						_selectedItems;
 			QStringList						_columnsUsedForLabels;

@@ -147,7 +147,8 @@ void ListModelTermsAvailable::sourceTermsReset()
 		if (!term.value().isEmpty() && !_allTerms.containsValue(term.value()))
 			addedTerms.add(term);
 
-	if (oldTerms != newTerms)
+	// The Terms comparison checks only the values: a label may also have changed (for example the title of a factor)
+	if (oldTerms != newTerms || oldTerms.labels() != newTerms.labels())
 	{
 		initTerms(newTerms);
 		_connectAllSourcesControls();
@@ -305,5 +306,9 @@ void ListModelTermsAvailable::addAssignedModel(ListModelAssignedInterface *assig
 void ListModelTermsAvailable::removeAssignedModel(ListModelAssignedInterface *assignedModel)
 {
 	_assignedModels.removeAll(assignedModel);
+	disconnect(this, nullptr, assignedModel, nullptr);
+
+	// The terms of the removed assigned model must become available again (as when a factor of a FactorsForm is removed)
+	removeTermsInAssignedList();
 }
 

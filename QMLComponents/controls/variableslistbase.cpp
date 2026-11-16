@@ -77,8 +77,10 @@ void VariablesListBase::setUp()
 	_mayUseFormula = (_columns == 1);
 	
 	//We use macros here because the signals come from QML
-	QQuickItem::connect(this,	SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int))					);
-	QQuickItem::connect(this,	SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int))	);
+	// UniqueConnection: the controls are set up again when the options are set again (AnalysisForm::setOptions),
+	// and a second connection would handle each drop twice (the selected variables and then the next ones are moved).
+	QQuickItem::connect(this,	SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)),					Qt::UniqueConnection);
+	QQuickItem::connect(this,	SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)),	Qt::UniqueConnection);
 	connect(this,				&VariablesListBase::columnsChanged,					this, [&]() { _mayUseFormula = (_columns == 1); }				);
 }
 
