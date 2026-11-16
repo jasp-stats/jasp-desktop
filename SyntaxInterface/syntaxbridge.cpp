@@ -668,10 +668,21 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, c
 	return result.c_str();
 }
 
-const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+//An empty dataset selection: nothing given, "" (or only spaces), or a {types, value} with such a value.
+static bool isEmptyDataSetSelection(const Json::Value & value)
+{
+	const Json::Value & inner = value.isObject() && value.isMember("value") ? value["value"] : value;
+
+	return inner.isNull() || (inner.isString() && tq(inner.asString()).trimmed().isEmpty());
+}
+
+//forRun false: the options the form gives, e.g. its defaults (jaspSyntax::parseQmlOptions), and no run follows. A dataset
+//selection option that names no dataset then stays empty instead of failing, as no dataset needs to be loaded to know
+//them, and no multi-dataset run is prepared (no slices are queued). A selection that is given must still resolve.
+static const char* loadQmlAndParseOptionsStatus(const char* statusName, const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData, bool forRun)
 {
 	if (!init())
-		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error during initialization.");
+		return statusError(statusBase(statusName), "Error during initialization.");
 
 	//Request boundary, exactly like Engine::receiveAnalysisMessage: a slice queue is only ever
 	//valid for the request that filled it. The aware branch below refills it through
@@ -691,7 +702,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 
 	AnalysisForm* form = getQmlForm(tq(qmlFileStr));
 	if (!form)
-		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Cannot create QML Form " + qmlFileStr);
+		return statusError(statusBase(statusName), "Cannot create QML Form " + qmlFileStr);
 
 	//Request boundary again (see the queue clear above): raw selection values from a previous
 	//parse must never be picked up by a host registering during this one.
@@ -712,9 +723,10 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	Json::Value rawOptions;
 	Json::Reader rawReader;
 	if (!rawReader.parse(options, rawOptions))
-		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Could not parse the options json");
+		return statusError(statusBase(statusName), "Could not parse the options json");
 
 	std::string optionsToParse = options;
+	Json::Value emptySelections(Json::arrayValue);   //without a run: the selection options that name no dataset
 
 	if (const QStringList selectionOptions = form->dataSetSelectionOptionNames(); !selectionOptions.isEmpty())
 	{
@@ -728,15 +740,23 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 
 			const Json::Value value = rawOptions.isMember(key) ? rawOptions[key] : Json::Value("");
 
+			if (!forRun && isEmptyDataSetSelection(value))
+			{
+				rawOptions.removeMember(key);
+				pending.removeMember(key);
+				emptySelections.append(key);
+				continue;
+			}
+
 			int	   filterId = -1;
 			QString error;
 
 			if (!workspace)
-				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"),
+				return statusError(statusBase(statusName),
 					"The dataset selection option '" + key + "' must name one of the loaded datasets (none are loaded)");
 
 			if (!workspace->resolveDataSetSelectionValue(option, value, filterId, error))
-				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), error.toStdString());
+				return statusError(statusBase(statusName), error.toStdString());
 
 			rawOptions[key]	= std::to_string(filterId);   //strings, exactly like the desktop dropdown writes them
 			pending.removeMember(key);                    //resolved; late hosts need nothing of it
@@ -760,7 +780,13 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	Modules::DynamicModule	*	module			= versionStr.empty() ? nullptr : moduleOfQmlFile(tq(qmlFileStr));
 
 	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg, versionStr, module, analysisNameStr, &upgradeMsgs))
-		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
+		return statusError(statusBase(statusName), "Error when parsing options: " + errorMsg);
+
+	//An empty selection stays empty, as the R wrapper's default (""): the form would otherwise give the filter id of
+	//whatever dataset it bound to, which depends on what happens to be loaded.
+	for (const Json::Value & key : emptySelections)
+		if (parsedOptions.isMember(key.asString()))
+			parsedOptions[key.asString()] = "";
 
 	//Establish the request context before any encoding happens: provideAndUpdateDataSet() points the
 	//process-global ColumnEncoder at the loaded dataset. Without it encodeColumnNamesinOptions() below
@@ -772,9 +798,12 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	gl_dataBridge->extraEncodings()->setCurrentNamesFromOptionsMeta(parsedOptions);
 	gl_dataBridge->updateOptionsAccordingToMeta(parsedOptions);
 
-	Json::Value status = statusBase("syntaxBridgeLoadQmlAndParseOptions");
+	Json::Value status = statusBase(statusName);
 
-	if (form->analysisObj() && form->analysisObj()->multiDataSetAware())
+	const bool multiDataSetAware = form->analysisObj() && form->analysisObj()->multiDataSetAware();
+
+	//Without a run, a multi-dataset aware form gets no dataset slices queued (its selections may be empty anyway)
+	if (multiDataSetAware && forRun)
 	{
 		//Multi-dataset aware run: exactly what Engine::runAnalysis does, through the shared
 		//DataBridge preparation. The selection options arrived as filter ids (translated from
@@ -790,7 +819,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 		rbridge_setWantedCols(plan.primaryCols);
 		status["multiDataSetJson"] = plan.multiDataSetJson;
 	}
-	else
+	else if (!multiDataSetAware)
 	{
 		ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
 		rbridge_setWantedCols(analysisColsTypes);
@@ -811,6 +840,16 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	status["ok"] = true;
 	status["options"] = parsedOptions;
 	return statusResult(status);
+}
+
+const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+{
+	return loadQmlAndParseOptionsStatus("syntaxBridgeLoadQmlAndParseOptions", moduleName, analysisName, qmlFile, options, version, preloadData, true);
+}
+
+const char* STDCALL syntaxBridgeLoadQmlAndParseFormOptionsStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+{
+	return loadQmlAndParseOptionsStatus("syntaxBridgeLoadQmlAndParseFormOptions", moduleName, analysisName, qmlFile, options, version, preloadData, false);
 }
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
