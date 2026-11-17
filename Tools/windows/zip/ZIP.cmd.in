@@ -23,3 +23,10 @@ zip -9 -q -r "@JASP_BINARY_DIR_NATIVE@\JASP\JASP.zip" .
 popd
 )
 endlocal
+
+rem ---------------------- Sanity check -------------------------------
+
+rem Fail the target when the shipped tree exploded into the zip (jasp-issues #4586):
+rem limits are CMake-configurable via ZIP_MAX_ENTRIES and ZIP_MAX_SIZE_GB.
+powershell -NoProfile -ExecutionPolicy Bypass -File "@CMAKE_SOURCE_DIR@\Tools\windows\zip\check-zip.ps1" -ZipPath "@JASP_BINARY_DIR_NATIVE@\JASP\JASP.zip" -MaxEntries @ZIP_MAX_ENTRIES@ -MaxSizeGB @ZIP_MAX_SIZE_GB@
+

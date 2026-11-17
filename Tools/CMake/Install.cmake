@@ -365,6 +365,11 @@ if(WIN32)
     NORMALIZE
     R_BIN_PATH_NATIVE)
 
+  #Guard rails for the zip pack: fail the `zip` target when the shipped tree explodes
+  #(e.g. junctions dereferenced into real copies while packing, jasp-issues #4586).
+  set(ZIP_MAX_ENTRIES 100000 CACHE STRING "Max number of entries allowed in the packed JASP zip")
+  set(ZIP_MAX_SIZE_GB 4 CACHE STRING "Max size in GB allowed for the packed JASP zip")
+
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/zip/ZIP.cmd.in
                  ${CMAKE_BINARY_DIR}/ZIP.cmd @ONLY)
   #msix stuff
