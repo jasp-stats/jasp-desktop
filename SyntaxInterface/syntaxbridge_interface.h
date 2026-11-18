@@ -76,6 +76,10 @@ SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(c
 // As syntaxBridgeLoadQmlAndParseOptionsStatus, for the options a form gives (e.g. its defaults) when no run follows: a
 // dataset selection option that names no dataset stays empty instead of failing, and no multi-dataset run is prepared.
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseFormOptionsStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
+// The R syntax of the analysis with these options: the call of its R wrapper with the options that differ from the
+// defaults of the form, as JASP shows it ({ok, syntax, upgradeMsgs} or {ok: false, error}). The options are upgraded
+// from version first, and the syntax is written for the version of the module of the form.
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateAnalysisSyntaxStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr);
 // As syntaxBridgeAnalysisOptionsFromJaspFileStatus, with the {value, types} options split into <name> and

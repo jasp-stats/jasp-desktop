@@ -81,8 +81,8 @@ public:
 	virtual				bool				isDuplicate()												const	{ return false;				}
 	virtual				bool				wasUpgraded()												const	{ return false;				}
 	virtual				bool				needsRefresh()												const	{ return false;				}
-	virtual				const std::string   module()													const	{ return emptyString;		}
-	virtual				const std::string & name()														const	{ return emptyString;		}
+	virtual				const std::string   module()													const	{ return _module;			}
+	virtual				const std::string & name()														const	{ return _name;				}
 	virtual				const std::string & title()														const	{ return emptyString;		}
 	virtual				const std::string & titleDefault()												const	{ return emptyString;		}
 	virtual				void				setTitle(const std::string& titel)									{}
@@ -127,7 +127,11 @@ public:
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)	const	{ return defaultValue;		}
 	virtual bool				optionLocked(const QString& name)																				const	{ return false; };
 	virtual	Modules::DynamicModule * dynamicModule()																								const	{ return nullptr;			} ///< The module this analysis comes from, the dummy analysis of the syntax bridge has none
-	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
+	virtual	const Version	  &	moduleVersion()																									const	{ return _moduleVersion;	}
+	///< The module, R function and module version of an analysis without a module of its own: the dummy analysis of R
+	///  syntax mode, which the syntax bridge tells for each request (e.g. for the R syntax of its form). The desktop
+	///  Analysis knows them from its module and overrides the getters.
+	void						setModuleAnalysis(const std::string & module, const std::string & name, const Version & moduleVersion)	{ _module = module; _name = name; _moduleVersion = moduleVersion; }
 
 	// ---- the components own the state, JSON is generated on demand --------
 	// The mirror and its whole reader/writer API are DELETED here:
@@ -295,6 +299,10 @@ private:
 	Json::Value		_pendingOptions		= Json::objectValue;
 	bool			_hasPendingOptions	= false,
 					_createdWithOptions	= false;
+
+	std::string		_module,						///< See setModuleAnalysis
+					_name;
+	Version			_moduleVersion		= AppInfo::version;
 	
 protected:
 	static const std::string	emptyString; ///< Otherwise we return references to a temporary object (std::string(""))
