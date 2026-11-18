@@ -111,7 +111,7 @@ bool RSyntax::setControlNameToRSyntaxMap(const QVariantList &conversions)
 	return false;
 }
 
-QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
+QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml, const QString& functionName, const QString& version) const
 {
 	QString result;
 
@@ -119,9 +119,9 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 			indent = useHtml ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : FunctionOptionIndent;
 
 
-	result = _analysisFullName() + "(" + newLine;
+	result = (functionName.isEmpty() ? _analysisFullName() : functionName) + "(" + newLine;
 	result += indent + "data = NULL," + newLine;
-	result += indent + "version = \"" + _form->version() + "\"";
+	result += indent + "version = \"" + (version.isEmpty() ? _form->version() : version) + "\"";
 
 	QStringList formulaSources;
 	for (FormulaBase* formula : _formulas)

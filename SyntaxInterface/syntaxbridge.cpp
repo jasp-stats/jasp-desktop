@@ -36,6 +36,7 @@
 #include "tempfiles.h"
 #include "analysisbase.h"
 #include "analysisform.h"
+#include "rsyntax/rsyntax.h"
 #include "preferencesmodelbase.h"
 #include "log.h"
 #include "utilities/qmlutils.h"
@@ -850,6 +851,37 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 const char* STDCALL syntaxBridgeLoadQmlAndParseFormOptionsStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
 {
 	return loadQmlAndParseOptionsStatus("syntaxBridgeLoadQmlAndParseFormOptions", moduleName, analysisName, qmlFile, options, version, preloadData, false);
+}
+
+const char* STDCALL syntaxBridgeGenerateAnalysisSyntaxStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+{
+	const char * statusName = "syntaxBridgeGenerateAnalysisSyntax";
+
+	//The options are bound to the form as for its defaults: no run follows, and an empty dataset selection may stay empty
+	Json::Value status;
+	Json::Reader reader;
+	if (!reader.parse(loadQmlAndParseOptionsStatus(statusName, moduleName, analysisName, qmlFile, options, version, preloadData, false), status))
+		return statusError(statusBase(statusName), "Could not read the status of parsing the options");
+
+	if (!status["ok"].asBool())
+		return statusResult(status);
+
+	AnalysisForm * form = getQmlForm(tq(qmlFile)); // the form that just bound the options (cached per qml file)
+	if (!form || !form->rSyntax())
+		return statusError(statusBase(statusName), std::string("Cannot create QML Form ") + qmlFile);
+
+	//The form is loaded without its analysis, so it knows neither its R function nor the module version. The options are
+	//upgraded to the version of the module of the form, so that is the version they are written for now.
+	Modules::DynamicModule	*	module			= moduleOfQmlFile(tq(qmlFile));
+	const std::string			syntaxVersion	= module ? module->version().asString() : std::string(version);
+
+	status["syntax"] = fq(form->rSyntax()->generateSyntax(false, false, tq(std::string(moduleName) + "::" + analysisName), tq(syntaxVersion)));
+
+	//The parsed options are prepared for a run (encoded column names): not what the syntax is about
+	status.removeMember("options");
+	status.removeMember("multiDataSetJson");
+
+	return statusResult(status);
 }
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
