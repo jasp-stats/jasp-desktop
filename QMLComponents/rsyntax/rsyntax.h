@@ -46,6 +46,11 @@ public:
 	void							addFormula(FormulaBase* formula);
 	FormulaBase*					getFormula(const QString& name)											const;
 	bool							parseRSyntaxOptions(Json::Value& options)								const;
+	/// A list option may be given as a formula or, with one value only, as a single string: this gives it the list its control expects.
+	/// Part of parseRSyntaxOptions, and needed again for the options an upgrade renamed or added afterwards.
+	bool							normalizeListOptions(Json::Value& options)								const;
+	/// The names in options that are no control of the form (and no formula): what the form cannot do anything with.
+	QStringList						optionsWithoutControl(const Json::Value& options)						const;
 	void							addError(const QString& msg)											const;
 	bool							hasError()																const;
 

@@ -7273,6 +7273,22 @@ void TestAll::testUpgradeMsgsAreSetBeforeAnalysisIsStored()
 	QCOMPARE(controlMsgsWhenStored,	stringvec({"control message"}));
 	QVERIFY(analysis->needsRefresh());
 
+	{
+		//The form shows the messages once: a later bind (applying R syntax) must not bring them back after the user closed them
+		AnalysisForm form;
+		form._analysis = analysis; //Not setAnalysis: no QML controls to set up here
+		auto detach = qScopeGuard([&](){ form._analysis = nullptr; });
+
+		form.bindTo(Json::nullValue);
+		QCOMPARE(form._formWarnings, QStringList({"form message"}));
+		QVERIFY(analysis->upgradeMsgsForOption("").empty());
+		QVERIFY(analysis->upgradeMsgsForOption("number").empty());
+
+		form.clearFormWarnings();
+		form.bindTo(Json::nullValue);
+		QVERIFY2(form._formWarnings.isEmpty(), qPrintable(form._formWarnings.join("; ")));
+	}
+
 	delete exitSpy;
 	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
 
@@ -7311,6 +7327,146 @@ void TestAll::testBrokenUpgradesQmlGivesWarning()
 	QCOMPARE(warnings.size(), 1);
 	QVERIFY2(warnings[0].contains("Already registered an Upgrade with version '0.1'"),		qPrintable(warnings[0]));
 	QVERIFY2(warnings[0].contains("A Change* Item must always be a child of Upgrade"),		qPrintable(warnings[0]));
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+void TestAll::testRSyntaxOptionsAreUpgradedByTheirModule()
+{
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//0.1 -> 0.2 renames the option "number" to "count", 0.2 -> 0.3 adds the option "extra", and the options of an "oldAnalysis" cannot be used at all anymore:
+	const QString	moduleName	= "jaspRSyntaxUpgradeTest",
+					moduleDir	= _writeUpgradeTestModule(moduleName,
+						"Upgrades\n{\n"
+						"\tUpgrade { functionName: \"upgradeMsgTest\"; fromVersion: \"0.1\"; toVersion: \"0.2\"; msg: \"form message\"; ChangeRename { from: \"number\"; to: \"count\" } }\n"
+						"\tUpgrade { functionName: \"upgradeMsgTest\"; fromVersion: \"0.2\"; toVersion: \"0.3\"; ChangeSetValue { name: \"extra\"; jsonValue: 3; msg: \"control message\" } }\n"
+						"\tUpgrade { functionName: \"oldAnalysis\"; fromVersion: \"0.1\"; toVersion: \"0.2\"; ChangeIncompatible { msg: \"too old\" } }\n"
+						"}\n");
+
+	QVERIFY(!moduleDir.isEmpty());
+	QVERIFY(DynamicModules::dynMods()->initializeModuleFromDir(fq(moduleDir)));
+
+	Modules::DynamicModule * module = (*DynamicModules::dynMods())[fq(moduleName)];
+	QVERIFY(module);
+
+	{
+		//The module by itself takes both steps
+		Json::Value				options;
+		Modules::UpgradeMsgs	msgs;
+		std::string				function = "upgradeMsgTest";
+
+		options["number"] = 1;
+
+		QVERIFY(module->upgradeOptions(function, Version("0.1"), options, msgs));
+		QCOMPARE(function, std::string("upgradeMsgTest"));
+		QVERIFY(!options.isMember("number"));
+		QCOMPARE(options["count"].asInt(), 1);
+		QCOMPARE(options["extra"].asInt(), 3);
+		QVERIFY2(!options.isMember(".meta"),			options.toStyledString().c_str());
+		QCOMPARE(msgs[""],		stringvec({"form message"}));
+		QCOMPARE(msgs["extra"],	stringvec({"control message"}));
+		QVERIFY(!msgs.count(Modules::logId));
+	}
+
+	{
+		//R syntax only gives the options that were set: a rename of an option that is not there is skipped,
+		//also for a development module (which gets every other change error thrown at it)
+		const std::string		devModuleName = Modules::DynamicModule::_developmentModuleName;
+		auto					resetDevModule = qScopeGuard([&](){ Modules::DynamicModule::_developmentModuleName = devModuleName; });
+		Json::Value				options;
+		Modules::UpgradeMsgs	msgs;
+		std::string				function = "upgradeMsgTest";
+
+		Modules::DynamicModule::_developmentModuleName = fq(moduleName);
+		options["other"] = 1;
+
+		QVERIFY(module->upgradeOptions(function, Version("0.1"), options, msgs));
+		QVERIFY(!options.isMember("number"));
+		QVERIFY(!options.isMember("count"));
+		QCOMPARE(options["other"].asInt(), 1);
+		QCOMPARE(options["extra"].asInt(), 3);
+	}
+
+	{
+		//Options of a version that needs no upgrade are left alone
+		Json::Value				options;
+		Modules::UpgradeMsgs	msgs;
+		std::string				function = "upgradeMsgTest";
+
+		options["number"] = 1;
+
+		QVERIFY(!module->upgradeOptions(function, Version("0.6"), options, msgs));
+		QCOMPARE(options["number"].asInt(), 1);
+		QVERIFY(!options.isMember("count"));
+		QVERIFY(msgs.empty());
+	}
+
+	//What the form does with the version that the wrapper gave back
+	AnalysisForm form;
+
+	{
+		//Applied R syntax whose options end up the same as before (only the version changed) does not change any control,
+		//but the text area must still get the syntax of the form back instead of keeping what was typed
+		AnalysisBase	analysis(&form);
+		QSignalSpy		syntaxSpy(&form, &AnalysisForm::rSyntaxTextChanged);
+
+		form._analysis = &analysis;
+		auto detach = qScopeGuard([&](){ form._analysis = nullptr; });
+
+		form.runScriptRequestDone(R"({"options": {}, "version": "0.6"})", AnalysisForm::rSyntaxControlName, false);
+		QTRY_VERIFY(syntaxSpy.count() > 0);
+	}
+
+	{
+		Json::Value				options, version(Json::arrayValue);
+		Modules::UpgradeMsgs	msgs;
+		std::string				error;
+
+		options["number"] = 1;
+		version.append("0.2"); //A vector of one from R, and only the second step is needed
+
+		QVERIFY2(form.upgradeRSyntaxOptions(options, version, module, "upgradeMsgTest", msgs, error), error.c_str());
+		QCOMPARE(options["number"].asInt(), 1);
+		QCOMPARE(options["extra"].asInt(), 3);
+		QVERIFY(!msgs.count(""));
+	}
+
+	{
+		//No version or no module: nothing to do, and that is fine
+		Json::Value				options;
+		Modules::UpgradeMsgs	msgs;
+		std::string				error;
+
+		options["number"] = 1;
+
+		QVERIFY(form.upgradeRSyntaxOptions(options, Json::nullValue,	module,		"upgradeMsgTest", msgs, error));
+		QVERIFY(form.upgradeRSyntaxOptions(options, "0.1",				nullptr,	"upgradeMsgTest", msgs, error));
+		QVERIFY(!options.isMember("count"));
+		QVERIFY(msgs.empty());
+	}
+
+	{
+		//Options that cannot be upgraded and a version that is none are errors
+		Json::Value				options;
+		Modules::UpgradeMsgs	msgs;
+		std::string				error;
+
+		options["number"] = 1;
+
+		QVERIFY(!form.upgradeRSyntaxOptions(options, "0.1", module, "oldAnalysis", msgs, error));
+		QCOMPARE(error, std::string("too old"));
+
+		msgs.clear();
+		QVERIFY(!form.upgradeRSyntaxOptions(options, "not a version", module, "upgradeMsgTest", msgs, error));
+		QVERIFY2(error.find("not a version") != std::string::npos, error.c_str());
+	}
 
 	delete exitSpy;
 	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test

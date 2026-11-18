@@ -125,7 +125,7 @@ public:
 	Q_INVOKABLE	QString			helpFile()			const	override	{ return _helpFile;							}
 	const	Json::Value		&	imgOptions()		const				{ return _imgOptions;						}
 	const	Json::Value		&	imgResults()		const				{ return _imgResults;						}
-	Modules::DynamicModule	*	dynamicModule()		const				{ return _dynamicModule;					}
+	Modules::DynamicModule	*	dynamicModule()		const	override	{ return _dynamicModule;					}
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
@@ -180,6 +180,7 @@ public:
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 
 	const stringvec &		upgradeMsgsForOption(const std::string & name)		const	override;
+	void					clearUpgradeMsgs()											override	{ _msgs.clear(); }
 	const Version	&		moduleVersion()										const	override	{ return _dynamicModule ? _dynamicModule->version() : AppInfo::version; }
 
 	const Json::Value	&	getRSource(const std::string & name)		const	override	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }

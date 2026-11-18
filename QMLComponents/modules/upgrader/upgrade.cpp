@@ -14,7 +14,7 @@ Upgrade::Upgrade()
 	connect(this, &QQuickItem::parentChanged, this, &Upgrade::registerStep);
 }
 
-void Upgrade::applyUpgrade(const std::string & function, const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken)
+void Upgrade::applyUpgrade(const std::string & function, const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken, bool sparseOptions)
 {
 	if(function != fq(functionName()))	throw upgradeError(fq(tr("Wrong Upgrade being applied, was looking for function '%1' but this upgrade is for: '%2'").arg(tq(function)).arg(functionName())));
 	if(version	>  fromVersion())		throw upgradeError(fq(tr("Wrong Upgrade being applied, was looking for version '%1' but this upgrade is for: '%2' or lower").arg(tq(version.asString())).arg(tq(fromVersion().asString()))));
@@ -61,7 +61,9 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 		{
 			Log::log() << "Change had a" << ( error.isWarning ? " warning" : "n error") <<  ": " << error.what() << std::endl;
 
-			if(isModuleDev())
+			//A module developer wants to know about a change that does not fit the options, but options with only what was set explicitly
+			//(R syntax) just do not have most options: a warning (the option is not there) says nothing about the Upgrades.qml then.
+			if(isModuleDev() && !(sparseOptions && error.isWarning))
 				throw error;
 			
 			if (!error.isWarning)

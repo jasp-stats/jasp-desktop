@@ -261,6 +261,9 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		result += "#'   keyed by filter id - the jaspBase datasets contract (see jaspBase::runJaspResults).\n";
 	}
 
+	result += "#' @param ... options that are not an argument of this function: the options of an older version of the\n";
+	result += "#'   analysis, to be used together with `version`. They are upgraded to the options of this version.\n";
+
 	result += analysisName + " <- function(\n";
 	// A multiDataSetAware analysis takes its data as a named list of datasets (names = dataset
 	// TITLES - the title surface the selection options carry; the slices R
@@ -340,8 +343,20 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 			emittedSelectionArgs.push_back(selectionArg);
 	}
 
+	// The ellipsis takes the options this version of the form does not have as an argument: a call written for an older
+	// version of the module (`version = ...`) can use options that were renamed or removed since. They are passed on
+	// with the others, and it is the form (through Upgrades.qml) that turns them into the options of this version.
+	// Being last, the ellipsis does not change how the arguments before it are matched. Without `version` nothing is
+	// upgraded and the form would drop them silently, so they stay the error they were (a typo in an option name).
+	result += ",\n" + FunctionOptionIndent + "...";
+
 	result += ") {\n\n"
-	+ FunctionLineIndent + "options <- mget(names(formals(sys.function())), envir = environment(), inherits = FALSE)\n"
+	+ FunctionLineIndent + "options <- mget(setdiff(names(formals(sys.function())), \"...\"), envir = environment(), inherits = FALSE)\n"
+	+ FunctionLineIndent + "options <- c(options, list(...))\n"
+	+ FunctionLineIndent + "if (!all(nzchar(names(options))) || anyDuplicated(names(options)))\n"
+	+ FunctionLineIndent + FunctionLineIndent + "stop(\"The extra options given to " + analysisName + " must be named, each name once.\")\n"
+	+ FunctionLineIndent + "if (...length() > 0L && missing(version))\n"
+	+ FunctionLineIndent + FunctionLineIndent + "stop(\"" + analysisName + " has no option \", paste(names(list(...)), collapse = \", \"), \". Options of an older version need the `version` they were written for.\")\n"
 	+ FunctionLineIndent + (multiDataSetAware ? "options[[\"datasets\"]] <- NULL\n" : "options[[\"data\"]] <- NULL\n")
 	+ FunctionLineIndent + "options[[\"version\"]] <- NULL\n\n";
 
@@ -491,6 +506,26 @@ bool RSyntax::parseRSyntaxOptions(Json::Value &options) const
 			}
 		}
 
+	}
+
+	if (!normalizeListOptions(options))
+		return false;
+
+	for (FormulaBase* formula : _formulas)
+		formula->parseRSyntaxOptions(options);
+
+	return !hasError();
+}
+
+bool RSyntax::normalizeListOptions(Json::Value &options) const
+{
+	if (!options.isObject())
+		return true;
+
+	for (const std::string& member : options.getMemberNames())
+	{
+		QString controlName = tq(member);
+
 		JASPListControl* listControl = qobject_cast<JASPListControl*>(_form->getControl(controlName));
 		if (listControl)
 		{
@@ -532,10 +567,28 @@ bool RSyntax::parseRSyntaxOptions(Json::Value &options) const
 		}
 	}
 
-	for (FormulaBase* formula : _formulas)
-		formula->parseRSyntaxOptions(options);
+	return true;
+}
 
-	return !hasError();
+QStringList RSyntax::optionsWithoutControl(const Json::Value &options) const
+{
+	QStringList result, formulaOptions;
+
+	if (!options.isObject())
+		return result;
+
+	for (FormulaBase* formula : _formulas)
+		formulaOptions << formula->name() << formula->extraOptions(true) << formula->extraOptions(false);
+
+	for (const std::string& member : options.getMemberNames())
+	{
+		const QString name = tq(member);
+
+		if (!name.startsWith('.') && !_form->getControl(name) && !formulaOptions.contains(name)) // .meta and the like are not options
+			result.append(name);
+	}
+
+	return result;
 }
 
 void RSyntax::addError(const QString &msg) const

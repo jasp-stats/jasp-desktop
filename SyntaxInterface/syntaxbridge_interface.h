@@ -73,6 +73,9 @@ SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char 
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptions(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
+// As syntaxBridgeLoadQmlAndParseOptionsStatus, for the options a form gives (e.g. its defaults) when no run follows: a
+// dataset selection option that names no dataset stays empty instead of failing, and no multi-dataset run is prepared.
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseFormOptionsStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr);
 // As syntaxBridgeAnalysisOptionsFromJaspFileStatus, with the {value, types} options split into <name> and
