@@ -430,6 +430,10 @@ private slots:
 	// (no Upgrader, no DynamicModules) brings its options up to date, one Upgrade after the other.
 	void	testRSyntaxOptionsAreUpgradedByTheirModule();
 
+	// The values in R syntax are what R reads back: every digit of a number, NaN and Inf as R writes them, and strings
+	// with their quotes and backslashes escaped.
+	void	testRSyntaxValuesAreReadBackByR();
+
 	// A module loaded from a folder (the syntax bridge's parseDescription, jaspTools): a source checkout has its
 	// files in inst/, an installed package (what covr tests) at its root.
 	void	testModuleFromFolder_data();
