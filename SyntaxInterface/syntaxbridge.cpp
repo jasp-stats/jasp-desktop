@@ -778,7 +778,12 @@ static const char* loadQmlAndParseOptionsStatus(const char* statusName, const ch
 	//The wrapper passes the version its syntax was written for: the Upgrades.qml of the module of the form
 	//brings options of an older version up to date before they are bound, like the desktop does for a jasp file.
 	Modules::UpgradeMsgs		upgradeMsgs;
-	Modules::DynamicModule	*	module			= versionStr.empty() ? nullptr : moduleOfQmlFile(tq(qmlFileStr));
+	Modules::DynamicModule	*	formModule		= moduleOfQmlFile(tq(qmlFileStr)),
+							*	module			= versionStr.empty() ? nullptr : formModule;
+
+	//The options are upgraded to the version of the module of the form: that is the version the form is for now
+	if (form->analysisObj())
+		form->analysisObj()->setModuleAnalysis(moduleNameStr, analysisNameStr, formModule ? formModule->version() : AppInfo::version);
 
 	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg, versionStr, module, analysisNameStr, &upgradeMsgs))
 		return statusError(statusBase(statusName), "Error when parsing options: " + errorMsg);
@@ -870,12 +875,7 @@ const char* STDCALL syntaxBridgeGenerateAnalysisSyntaxStatus(const char* moduleN
 	if (!form || !form->rSyntax())
 		return statusError(statusBase(statusName), std::string("Cannot create QML Form ") + qmlFile);
 
-	//The form is loaded without its analysis, so it knows neither its R function nor the module version. The options are
-	//upgraded to the version of the module of the form, so that is the version they are written for now.
-	Modules::DynamicModule	*	module			= moduleOfQmlFile(tq(qmlFile));
-	const std::string			syntaxVersion	= module ? module->version().asString() : std::string(version);
-
-	status["syntax"] = fq(form->rSyntax()->generateSyntax(false, false, tq(std::string(moduleName) + "::" + analysisName), tq(syntaxVersion)));
+	status["syntax"] = fq(form->rSyntax()->generateSyntax(false));
 
 	//The parsed options are prepared for a run (encoded column names): not what the syntax is about
 	status.removeMember("options");

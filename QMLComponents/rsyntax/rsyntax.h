@@ -37,9 +37,7 @@ public:
 	QVariantList					controlNameToRSyntaxMap()												const;
 	bool							setControlNameToRSyntaxMap(const QVariantList& conv);
 
-	/// The R call of the analysis with the options of the form. functionName ("module::analysis") and version replace
-	/// those of the analysis of the form when given: a form loaded without its analysis (the syntax bridge) has neither.
-	QString							generateSyntax(bool showAllOptions = true, bool useHtml = false, const QString& functionName = "", const QString& version = "")		const;
+	QString							generateSyntax(bool showAllOptions = true, bool useHtml = false)		const;
 	QString							generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware = false)	const;
 	QString							getRSyntaxFromControlName(JASPControl* control)							const;
 	QString							getRSyntaxFromControlName(const QString& name)							const;
