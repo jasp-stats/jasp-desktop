@@ -1,0 +1,29 @@
+diff --git a/src/qml/jsruntime/qv4identifierhash.cpp b/src/qml/jsruntime/qv4identifierhash.cpp
+index 05ee0586..6461a2ad 100644
+--- a/src/qml/jsruntime/qv4identifierhash.cpp
++++ b/src/qml/jsruntime/qv4identifierhash.cpp
+@@ -6,6 +6,8 @@
+ #include <private/qv4identifiertable_p.h>
+ #include <private/qv4string_p.h>
+ #include <private/qv4identifierhashdata_p.h>
++#include <private/qv4writebarrier_p.h>
++#include <private/qv4mm_p.h>
+ #include <private/qprimefornumbits_p.h>
+ 
+ QT_BEGIN_NAMESPACE
+@@ -53,6 +55,15 @@ void IdentifierHash::addEntry(PropertyKey identifier, int value)
+         idx %= d->alloc;
+     }
+     d->entries[idx].identifier = identifier;
++    // Write barrier: entries[] is a root array - IdentifierHashData::markObjects marks
++    // the stored identifiers every cycle and they are never pruned. An identifier stored
++    // while a gc cycle is ongoing (allocations are white then, see memory/design.md)
++    // would otherwise stay unmarked, get swept, and leave a dangling pointer in entries[]
++    // that crashes the next cycle's marking (MarkStack::drain, NULL internalClass).
++    if (Heap::StringOrSymbol *storedId = identifier.asStringOrSymbol())
++        WriteBarrier::markCustom(d->identifierTable->engine, [storedId](QV4::MarkStack *ms) {
++            storedId->mark(ms);
++        });
+     ++d->size;
+     (d->entries + idx)->value = value;
+ }

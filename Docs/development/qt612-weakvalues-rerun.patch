@@ -1,0 +1,63 @@
+Qt 6.12.0 (qtdeclarative) fix #2: re-run the weak-value pass before marking ends
+================================================================================
+
+The incremental GC's weak-value pass (MarkWeakValues) walks all QObjectWrappers
+once per cycle and marks those whose QObject - or the root of its parent chain -
+keeps them alive (QQmlData::keepAliveDuringGarbageCollection: no QQmlData,
+indestructible, or rootObjectInCreation). A QObject that becomes rooted AFTER
+the pass ran in the current cycle (setParent() into a keep-alive chain, an
+ownership change, rootObjectInCreation cleared on a chain root - all routine
+while QML forms are built) keeps a wrapper the collector never marks: the
+destroy phase tears it down and the sweep frees it while the QObject is still
+alive and in use. Under real QML churn this crashes applications inside the
+collector (QV4::MarkStack::drain); JASP ships installQmlGcRescan
+(Desktop/utilities/qmlgcrescan.cpp) as a workaround for exactly this.
+
+Fix: at MarkReady - after marking completed, before the destroy phase - re-run
+InitMarkWeakValues + MarkWeakValues to completion (deadline suspended), then
+hand back a fresh slice so InitCallDestroyObjects rescans the JS stack and
+drains before anything is destroyed or swept. Only incremental runs can miss
+anything (same guard as WeakValue::set's insertion barrier and as the
+cross-validator's isIncrementalRun test).
+
+Verified against a reproducer (QQmlEngine + component-created QML objects whose
+wrappers are only weakly held, parented under a keep-alive anchor after a
+randomized delay; QV4_GC_TIMELIMIT=1): an instrumented build that flags
+wrappers destroyed while their QObject is rooted reports 25 missed wrappers per
+run on unpatched 6.12.0 (3/3 runs) and 0 with this patch (3/3 runs), with the
+rest of the GC behavior unchanged (JASPQuickTest identical to stock).
+
+--- a/src/qml/memory/qv4mm.cpp
++++ b/src/qml/memory/qv4mm.cpp
+@@ -751,11 +751,34 @@
+ 
+-GCState markReady(GCStateMachine *that, ExtraData &)
++GCState markReady(GCStateMachine *that, ExtraData &extraData)
+ {
+     auto isIncrementalRun = [](GCStateMachine* that){
+         return !that->mm->aggressiveGC && that->timeLimit.count() > 0;
+     };
+ 
++    // Re-run the weak-value pass to completion before marking ends: a QObject
++    // that became rooted (parented into a keep-alive chain, ownership change,
++    // rootObjectInCreation cleared on a chain root) after this cycle's pass ran
++    // would otherwise keep a wrapper the collector never marks; the destroy
++    // phase tears it down and the sweep frees it while the QObject is still
++    // alive and rooted. The extra marks land on the mark stack;
++    // InitCallDestroyObjects rescans the JS stack and drains before anything is
++    // destroyed or swept. (The same guard as WeakValue::set's insertion
++    // barrier: only incremental runs can miss anything.)
++    if (that->mm->markStack() && that->mm->m_weakValues && isIncrementalRun(that)) {
++        that->deadline = QDeadlineTimer(QDeadlineTimer::Forever);
++        that->stateInfoMap[GCState::InitMarkWeakValues].execute(that, extraData);
++        while (that->stateInfoMap[GCState::MarkWeakValues].execute(that, extraData)
++               == GCState::MarkWeakValues) {}
++        // A fresh slice, so InitCallDestroyObjects (which redrains) runs before
++        // any JS can root more objects.
++        that->deadline = QDeadlineTimer(that->timeLimit);
++    }
++
+     if (that->mm->crossValidateIncrementalGC && isIncrementalRun(that))
+         return GCState::CrossValidateIncrementalMarkPhase;
+     return GCState::InitCallDestroyObjects;
+ }

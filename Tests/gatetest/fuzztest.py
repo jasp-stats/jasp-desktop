@@ -5,8 +5,15 @@ JASP option fuzzer.
 Schema-guided fuzzing of analysis options through the agent API: for every
 analysis (filtered like the gate test), generates mutations of the default
 options based on the machine-readable optionMeta schema (kinds: checkbox,
-combo, variables, number, integer, percent, string, array), runs them via
-analysis_run and classifies the outcome.
+combo, variables, number, integer, percent, string, array, table, factors,
+levels), runs them via analysis_run and classifies the outcome.
+
+Field coverage: the option names of each analysis are split into disjoint
+chunks (one chunk per run), so across the runs of a sweep every option name
+is mutated at least once. The report file carries a per-analysis
+option_coverage section (mutated / never_mutated / blind), where "blind"
+means the defaults contain the option but optionMeta has no kind for it:
+such options can only ever be poked with type-mismatched junk.
 
 What we hunt (gate failures, immediate abort with a repro file):
   - JASP process death (SIGSEGV/SIGABRT/...)
@@ -44,6 +51,7 @@ import sys
 import tempfile
 import threading
 import time
+from collections import deque
 
 from gatecommon import (
     MCP_SAFE_WAIT_MS,
@@ -71,6 +79,32 @@ LONG_STRING = "x" * 10000
 R_INJECTION = "'; system('touch /tmp/jasp-fuzz-was-here'); x <- '"
 
 NUMBERS = [0, -1, 1, -0.0, 1e-12, 1e300, -1e300, 12345.6789, 2**53, 2**63 - 1, -(2**63)]
+
+INVALID_ARRAYS = [[], [1, 2, 3], [None], ["a", 1], {"nested": {"deep": [1]}}, "not-an-array", None, [LONG_STRING]]
+
+
+def _generic_invalid(rng: random.Random) -> object:
+    """Junk for options whose shape we cannot build (or deliberately wrong ones)."""
+    return rng.choice(INVALID_ARRAYS)
+
+
+def _clamp_in_range(value: float, lo, hi) -> float:
+    """Clamp a numeric pick into the [min, max] the optionMeta prescribes (when present)."""
+    for bound, is_max in ((lo, False), (hi, True)):
+        if isinstance(bound, (int, float)) and not isinstance(bound, bool):
+            if (not is_max and value < bound) or (is_max and value > bound):
+                value = bound
+    return value
+
+
+def _fuzz_cell(rng: random.Random, default: object) -> object:
+    """One table cell: stay scalar (string/number/None - null/bool/objects become
+    empty cells in the table model), jitter the default's flavour."""
+    if isinstance(default, bool):
+        return rng.choice([True, False, 0, ""])
+    if isinstance(default, (int, float)):
+        return rng.choice([default, default + rng.choice([-1, 1, 0.5, 1e300]), 0, -1, "", None])
+    return rng.choice([default, "", "fuzz", UNICODE_CRUD, 0, None])
 
 
 # ---------------------------------------------------------------------------
@@ -130,7 +164,13 @@ def _value_for_kind(rng: random.Random, meta: dict, by_type: dict[str, list[str]
     if kind == "combo":
         # sorted(): the order of JASP's choices array varies between process starts,
         # which would make the RNG stream irreproducible for the same seed.
-        choices = sorted(str(c) for c in (meta.get("choices") or []))
+        # Choices entries may be {"label": ..., "value": ...} dicts - send the canonical
+        # value string, not the dict repr (a dict repr is just another invalid string
+        # and starves the valid-value path of coverage).
+        choices = sorted(
+            (str(c.get("value", c.get("label", ""))) if isinstance(c, dict) else str(c))
+            for c in (meta.get("choices") or [])
+        )
         if choices and rng.random() < valid_probability:
             return rng.choice(choices)
         return rng.choice(["__fuzz_nonexistent__", "", UNICODE_CRUD, None, 0, True])
@@ -142,17 +182,27 @@ def _value_for_kind(rng: random.Random, meta: dict, by_type: dict[str, list[str]
         valid_pool = {"percent": [0, 0.5, 0.95, 1],
                       "integer": [0, 1, 7, 100],
                       "number":  [0, 1, 0.95, -1]}[kind]
+        # optionMeta prescribes min/max (percent in wire format, i.e. already divided by
+        # 100): the valid branch must stay inside it, or range-checked analyses would
+        # reject their "valid" values and outcomes would skew towards validationError.
+        if kind == "percent":
+            lo, hi = meta.get("min", 0), meta.get("max", 1)
+        else:
+            lo, hi = meta.get("min"), meta.get("max")
         if rng.random() < valid_probability:
             default = meta.get("default")
             if kind == "percent":
                 #Percent options live in [0,1]: pick from the pool instead of jittering
                 #(jittering could push the default out of range, e.g. 1 + 1).
-                return rng.choice(valid_pool)
-            if isinstance(default, (int, float)) and not isinstance(default, bool):
+                pick = rng.choice(valid_pool)
+            elif isinstance(default, (int, float)) and not isinstance(default, bool):
                 if kind == "integer":
-                    return int(default + rng.choice([0, 1, -1, 7]))
-                return default + rng.choice([0, 1, -1, 0.5, -0.5, 1e-6, 100])
-            return rng.choice(valid_pool)
+                    pick = int(default + rng.choice([0, 1, -1, 7]))
+                else:
+                    pick = default + rng.choice([0, 1, -1, 0.5, -0.5, 1e-6, 100])
+            else:
+                pick = rng.choice(valid_pool)
+            return int(_clamp_in_range(pick, lo, hi)) if kind == "integer" else _clamp_in_range(pick, lo, hi)
         # invalid / extreme
         pick = rng.choice(NUMBERS + [None, "not-a-number", True, [1]])
         if kind == "integer" and isinstance(pick, float) and pick == int(pick):
@@ -196,40 +246,119 @@ def _value_for_kind(rng: random.Random, meta: dict, by_type: dict[str, list[str]
         return rng.choice(["", " ", LONG_STRING, UNICODE_CRUD, R_INJECTION, "'", '"', "\\\\", "\n\r\t", None, 42, []])
 
     if kind == "array":
+        row_controls = meta.get("rowControls") if isinstance(meta.get("rowControls"), dict) else None
+        if row_controls and rng.random() < valid_probability:
+            # Rows built from the rowControls schema: every row gets a fresh row
+            # identifier plus one value per row control (generated by its own kind,
+            # recursively - nested ComponentsLists inside rows keep working).
+            row_key = meta.get("rowKey") if isinstance(meta.get("rowKey"), str) and meta.get("rowKey") else "value"
+            rows = []
+            for i in range(rng.randint(1, 3)):
+                row = {row_key: f"fuzz_row_{i}_{rng.randrange(1000)}"}
+                for ctrl_name in sorted(row_controls):
+                    ctrl_meta = row_controls[ctrl_name]
+                    if isinstance(ctrl_meta, dict) and ctrl_meta.get("kind"):
+                        row[ctrl_name] = _value_for_kind(rng, ctrl_meta, by_type, valid_probability=0.8)
+                    else:
+                        row[ctrl_name] = rng.choice([None, 0, "", True, []])
+                rows.append(row)
+            return rows
         if rng.random() < valid_probability and isinstance(shape, list) and shape:
             return shape
         if rng.random() < valid_probability and isinstance(shape, dict):
             return shape
-        return rng.choice([[], [1, 2, 3], [None], ["a", 1], {"nested": {"deep": [1]}}, "not-an-array", None,
-                           [LONG_STRING]])
+        return _generic_invalid(rng)
+
+    if kind == "table":
+        if rng.random() < valid_probability and isinstance(shape, list) and shape:
+            table = json.loads(json.dumps(shape))
+            for row in table:
+                if isinstance(row, dict) and isinstance(row.get("values"), list):
+                    row["values"] = [_fuzz_cell(rng, v) for v in row["values"]]
+            r = rng.random()
+            if r < 0.15 and len(table) > 1:
+                table.pop(rng.randrange(len(table)))       # drop a column
+            elif r < 0.3:
+                extra = json.loads(json.dumps(table[0]))
+                extra["name"] = f"{extra.get('name', 'col')}_fuzz"
+                table.append(extra)                        # add a column
+            elif r < 0.45:
+                for row in table:                          # add a level row everywhere
+                    if isinstance(row.get("levels"), list):
+                        row["levels"].append(f"fuzz_level_{rng.randrange(1000)}")
+                    if isinstance(row.get("values"), list):
+                        row["values"].append(rng.choice([0, "", "fuzz"]))
+            return table
+        return _generic_invalid(rng)
+
+    if kind == "factors":
+        if rng.random() < valid_probability:
+            row_key = meta.get("rowKey") if isinstance(meta.get("rowKey"), str) and meta.get("rowKey") else "value"
+            all_names = sorted(n for names in by_type.values() for n in names) or ["term"]
+            factors = []
+            for i in range(1, rng.randint(1, 4) + 1):
+                terms = []
+                for _ in range(rng.randint(0, 3)):
+                    term = rng.choice(all_names)
+                    terms.append([term, rng.choice(all_names)] if rng.random() < 0.2 else term)
+                factors.append({"name": f"Factor {i}", "title": f"Factor {i}", row_key: terms})
+            return factors
+        return _generic_invalid(rng)
+
+    if kind == "levels":
+        if rng.random() < valid_probability:
+            factor_name = meta.get("factorName") if isinstance(meta.get("factorName"), str) and meta.get("factorName") else "Factor"
+            level_name = meta.get("levelName") if isinstance(meta.get("levelName"), str) and meta.get("levelName") else "Level"
+            return [{"name": f"{factor_name} {i}",
+                     "levels": [f"{level_name} {i}_{j}" for j in range(1, rng.randint(1, 4))]}
+                    for i in range(1, rng.randint(1, 4) + 1)]
+        return _generic_invalid(rng)
 
     # Unknown kind / anything else: poke it with type mismatches and null.
     return rng.choice([None, 0, "", [], {}, True, UNICODE_CRUD])
 
 
-def mutate_options(rng: random.Random, defaults: dict, option_meta: dict,
-                   by_type: dict[str, list[str]], max_fields: int = 3,
-                   invalid_probability: float = 0.4) -> dict:
-    """Build one fuzzed options dict: start from the defaults, mutate 1..max_fields fields."""
-    options = json.loads(json.dumps(defaults))  # deep copy
+def coverage_schedule(rng: random.Random, names: list[str], n_runs: int) -> list[list[str]]:
+    """Split the option names into n_runs disjoint chunks (as equal as possible) so
+    that across the runs of one analysis every field is mutated at least once."""
+    names = sorted(names)  # deterministic base order: JASP's dict order varies between starts
+    rng.shuffle(names)
+    n_runs = max(1, n_runs)
+    base, extra = divmod(len(names), n_runs)
+    chunks, idx = [], 0
+    for i in range(n_runs):
+        size = base + (1 if i < extra else 0)
+        chunks.append(names[idx:idx + size])
+        idx += size
+    return chunks
 
-    if rng.random() < 0.05:
-        # occasionally attack the top-level contract itself
-        return {"__fuzz_unknown_option__": rng.choice([1, "x", None, {"deep": {"deeper": [LONG_STRING]}}])}
+
+def mutate_options(rng: random.Random, defaults: dict, option_meta: dict,
+                   by_type: dict[str, list[str]], fields: list[str] | None = None,
+                   max_fields: int = 3, invalid_probability: float = 0.4) -> tuple[dict, list[str]]:
+    """Build one fuzzed options dict: start from the defaults, mutate fields.
+
+    With `fields` (the coverage schedule) exactly those option names are mutated;
+    without it, 1..max_fields random names. Returns (options, mutated_names).
+    """
+    options = json.loads(json.dumps(defaults))  # deep copy
 
     known = [name for name in options.keys()]
     meta_keys = [name for name in option_meta.keys() if name not in known]
-    candidates = known + meta_keys
-    if not candidates:
-        return options
 
-    for name in rng.sample(candidates, k=min(len(candidates), rng.randint(1, max_fields))):
+    if fields is None:
+        candidates = known + meta_keys
+        fields = rng.sample(candidates, k=min(len(candidates), rng.randint(1, max_fields))) if candidates else []
+
+    mutated: list[str] = []
+    for name in fields:
         meta = option_meta.get(name)
         if isinstance(meta, dict) and meta.get("kind"):
             options[name] = _value_for_kind(rng, meta, by_type, valid_probability=1.0 - invalid_probability)
         else:
             options[name] = rng.choice([None, 0, "", [], {}, True, LONG_STRING, UNICODE_CRUD])
-    return options
+        mutated.append(name)
+    return options, mutated
 
 
 # ---------------------------------------------------------------------------
@@ -357,9 +486,18 @@ def replay(cfg) -> int:
             log("NOT reproduced: analysis_create returned no analysisId during replay")
             return 0
         outcome, _, _ = run_one_mutation(client, aid, repro["options"], cfg.timeout_per_run)
+        # A death can also land just AFTER the run turned terminal (async engine
+        # result processing, the next create/remove): give it a moment, then ask
+        # the process itself instead of trusting only the terminal status.
+        for _ in range(10):
+            if jasp_proc.poll() is not None:
+                outcome = f"process-exit code {jasp_proc.returncode}"
+                break
+            time.sleep(0.5)
         log(f"Replay outcome: {outcome}")
-        log("REPRODUCED" if outcome in CRASH_CLASSES else "NOT reproduced (fixed or flaky?)")
-        return 1 if outcome in CRASH_CLASSES else 0
+        reproduced = outcome in CRASH_CLASSES or outcome.startswith("process-exit")
+        log("REPRODUCED" if reproduced else "NOT reproduced (fixed or flaky?)")
+        return 1 if reproduced else 0
     except GateFailure as e:
         log(f"Replay failed to set up: {e}")
         return 1
@@ -470,6 +608,7 @@ def main() -> int:
     records: list[dict] = []
     crashes: list[dict] = []
     totals: dict[str, int] = {}
+    option_coverage: dict[str, dict] = {}
     creates_attempted = 0
     analysis_id: int | None = None
 
@@ -513,6 +652,20 @@ def main() -> int:
         if not pairs:
             log("FATAL: modules_list returned no analyses")
             return 1
+
+        # Expected-modules guard: a module that failed to load is silently invisible
+        # to modules_list, which would shrink the sweep without anyone noticing.
+        expected_modules = list(cfg.expected_modules)
+        if cfg.expected_modules_file:
+            with open(cfg.expected_modules_file) as f:
+                for line in f:
+                    line = line.split("#", 1)[0].strip()
+                    if line:
+                        expected_modules.append(line)
+        missing_modules = sorted(set(expected_modules) - {m for m, _ in pairs})
+        for m in missing_modules:
+            log(f"RUN FAILURE: expected module missing from modules_list: {m} (module did not load?)")
+
         total_runs = len(pairs) * cfg.runs_per_analysis
         log(f"Fuzzing {len(pairs)} analyses x {cfg.runs_per_analysis} runs = {total_runs} runs...")
 
@@ -528,7 +681,10 @@ def main() -> int:
         prev_mod: str | None = None
         prev_ana: str | None = None
         prev_mutation: dict | None = None
+        sweep_stop = False  # a failed restart inside the runs loop aborts the whole sweep
         for module, analysis in pairs:
+            if sweep_stop:
+                break
             analyses_done += 1
             if jasp_proc.poll() is not None:
                 if watchdog_flag["killed"]:
@@ -566,6 +722,26 @@ def main() -> int:
                     bump("create-failed")
                     continue
             except GateFailure as e:
+                if jasp_proc.poll() is not None:
+                    # Transport failure + dead process: the death is the finding, the failed
+                    # create is just where it surfaced (same class as the boundary check
+                    # above; the previous mutation batch or its removal is the likely trigger).
+                    if prev_mod:
+                        culprit_mod, culprit_ana = prev_mod, prev_ana
+                        detail = (f"JASP process exited (code {jasp_proc.returncode}) during "
+                                  f"{module}/{analysis} create; death most likely happened during "
+                                  f"{culprit_mod}/{culprit_ana} (mutation or its removal)")
+                    else:
+                        culprit_mod, culprit_ana = module, analysis
+                        detail = f"JASP process exited (code {jasp_proc.returncode}) during {module}/{analysis} create"
+                    crashes.append({"type": "crash", "module": culprit_mod, "analysis": culprit_ana,
+                                    "options": prev_mutation, "detail": detail})
+                    log(f"FATAL: {detail}")
+                    if prev_mutation is not None and cfg.report:
+                        write_repro(cfg.report + ".repro.json", seed, culprit_mod, culprit_ana, cfg.csv, prev_mutation, detail)
+                    if not restart_after_death(f"{module}/{analysis} create"):
+                        break
+                    continue
                 records.append({"module": module, "analysis": analysis, "outcome": "create-failed", "detail": str(e)})
                 bump("create-failed")
                 analysis_id = None
@@ -574,10 +750,32 @@ def main() -> int:
                 continue
 
             label = f"[{analyses_done}/{len(pairs)}] {module}/{analysis}"
+            # Coverage bookkeeping: every option name (defaults + meta-only) must be
+            # mutated at least once across this analysis' runs; "blind" names have no
+            # optionMeta kind and can only ever receive type-mismatched junk.
+            names = list(dict.fromkeys(list(defaults.keys()) + list((option_meta or {}).keys())))
+            # ".meta" is generated sidecar state on the wire, not a user-facing option:
+            # it stays a fuzz target (junk .meta is still sent) but must not pollute the
+            # blind-option metric, which exists to find *missed options*.
+            blind = sorted(n for n in defaults.keys()
+                           if n not in (".meta", ".filterIds")
+                           and not (isinstance((option_meta or {}).get(n), dict) and (option_meta or {}).get(n, {}).get("kind")))
+            coverage = option_coverage.setdefault(f"{module}/{analysis}",
+                                                  {"names": sorted(names), "mutated": set(), "blind": blind})
+            pending = deque(coverage_schedule(rng, names, cfg.runs_per_analysis))
             try:
                 for i in range(cfg.runs_per_analysis):
                     done += 1
-                    options = mutate_options(rng, defaults, option_meta or {}, by_type)
+                    chunk = pending.popleft() if pending else None
+                    if chunk is None and names:
+                        chunk = [rng.choice(names)]  # safety net: more runs than scheduled chunks
+                    options, mutated = mutate_options(rng, defaults, option_meta or {}, by_type, fields=chunk or [])
+                    if rng.random() < 0.05:
+                        # occasionally also attack the top-level contract itself: an unknown
+                        # option key next to the real mutations (the payload stays fully
+                        # fuzzed, so the coverage schedule is not starved by the attack).
+                        options["__fuzz_unknown_option__"] = rng.choice([1, "x", None, {"deep": {"deeper": [LONG_STRING]}}])
+                    coverage["mutated"].update(mutated)
 
                     # Fresh analysis per mutation: reusing one instance leaks server-side
                     # option state between runs, which makes outcomes (and hence the RNG
@@ -590,6 +788,22 @@ def main() -> int:
                         if fresh_id is None:
                             raise GateFailure("analysis_create returned no analysisId")
                     except GateFailure as e:
+                        if jasp_proc.poll() is not None:
+                            # Transport failure + dead process: a crash, not a bland
+                            # create failure - the current mutation batch is the likely
+                            # trigger and gets the repro.
+                            detail = (f"JASP process exited (code {jasp_proc.returncode}) during "
+                                      f"{module}/{analysis} run {i + 1} create; the failed create is "
+                                      f"where the death surfaced, this mutation batch is the likely trigger")
+                            crashes.append({"type": "crash", "module": module, "analysis": analysis,
+                                            "options": options, "detail": detail})
+                            log(f"FATAL: {detail}")
+                            if cfg.report:
+                                write_repro(cfg.report + ".repro.json", seed, module, analysis, cfg.csv, options, detail)
+                            if not restart_after_death(f"{module}/{analysis} run {i + 1} create"):
+                                sweep_stop = True
+                                break
+                            continue
                         rec = {"module": module, "analysis": analysis, "run": i + 1,
                                "options": options, "outcome": "create-failed", "message": str(e)}
                         records.append(rec)
@@ -620,7 +834,7 @@ def main() -> int:
                                           f"while running {module}/{analysis}"}
 
                     rec = {"module": module, "analysis": analysis, "run": i + 1,
-                           "options": options, "outcome": outcome,
+                           "options": options, "mutated": mutated, "outcome": outcome,
                            "message": str(res.get("message") or (res.get("results") or {}).get("errorMessage", ""))[:300] if isinstance(res, dict) else ""}
                     records.append(rec)
                     bump(outcome)
@@ -695,6 +909,18 @@ def main() -> int:
         for cls in sorted(totals):
             marker = "  <-- SUSPICIOUS" if cls == "internal-error" else ""
             log(f"  {cls:<20} {totals[cls]}{marker}")
+
+        total_opts = sum(len(c["names"]) for c in option_coverage.values())
+        mutated_opts = sum(len(c["mutated"]) for c in option_coverage.values())
+        if total_opts:
+            log(f"Option coverage:    {mutated_opts}/{total_opts} "
+                f"({100.0 * mutated_opts / total_opts:.1f}%) of option names mutated at least once")
+        blind_total = sum(len(c["blind"]) for c in option_coverage.values())
+        if blind_total:
+            blind_analyses = sum(1 for c in option_coverage.values() if c["blind"])
+            log(f"Blind options:      {blind_total} option name(s) without an optionMeta kind in "
+                f"{blind_analyses} analysis(es) - only ever poked blind (see option_coverage in the report)")
+
         if crashes:
             log(f"\nCRASH-CLASS FAILURES: {len(crashes)}")
             for c in crashes:
@@ -721,6 +947,8 @@ def main() -> int:
             run_level_failures.append(
                 "jasp-mcp connected but never served a successful call "
                 f"({client.mcp_failures} per-call failures forced the direct fallback): MCP layer broken")
+        for m in missing_modules:
+            run_level_failures.append(f"expected module missing from modules_list: {m} (module did not load?)")
         for msg in run_level_failures:
             log(f"RUN FAILURE: {msg}")
         log("=" * 70)
@@ -738,6 +966,12 @@ def main() -> int:
                     "crashes": crashes,
                     "run_level_failures": run_level_failures,
                     "suspicious": [r for r in records if r.get("outcome") == "internal-error"],
+                    "option_coverage": {
+                        key: {"total": len(c["names"]),
+                              "mutated": sorted(c["mutated"]),
+                              "never_mutated": sorted(set(c["names"]) - c["mutated"]),
+                              "blind": c["blind"]}
+                        for key, c in option_coverage.items()},
                     "records": records,
                 }, f, indent=2)
             log(f"Report written to {cfg.report}")
@@ -777,6 +1011,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--strict", action="store_true", help="fail the run on -32603 internal errors too")
     p.add_argument("--verbose", action="store_true", help="log every tolerated outcome (validationError etc.)")
     p.add_argument("--repro", default=None, help="replay a failure recorded in a *.repro.json file")
+    p.add_argument("--expected-modules", action="append", default=[],
+                   help="module that must show up in modules_list; a missing one fails the run (repeatable)")
+    p.add_argument("--expected-modules-file", default=None,
+                   help="file with one expected module name per line (# comments allowed), like --expected-modules")
     args = p.parse_args()
     # 0 would wedge every run: after a clean `complete` the counter is 0 and
     # `0 >= 0` would trip the engine-queue detector on the very first analysis.
