@@ -465,7 +465,7 @@ std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::stri
 	return text;
 }
 
-std::string ColumnEncoder::decodeAllKeepingTypes(const std::string & text)
+std::string ColumnEncoder::decodeAllWithTypes(const std::string & text)
 {
 	columnEncoder();
 
