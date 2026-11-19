@@ -2141,10 +2141,7 @@ void MainWindow::fileEventRequestHandler(FileEvent *event)
 	else if (event->operation() == FileEvent::FileSave)
 	{
 		_resultsJsInterface->exportPreviewHTML();
-		_package->setAnalysesData(_analyses->asJson());
-
-		if (!event->isTmp())
-			_package->removeAutoSaveInfo();
+		_package->setAnalysesData(_analyses->asJson(event->isTmp()));
 
 		std::string snapshotError;
 		if (!JASPExporter::createSnapshot(event->isTmp() ? "jasp_autosave_snapshot_" : "jasp_snapshot_", &snapshotError))

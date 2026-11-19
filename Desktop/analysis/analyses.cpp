@@ -276,7 +276,7 @@ bool Analyses::allFinished() const
 	return true;
 }
 
-Json::Value Analyses::asJson() const
+Json::Value Analyses::asJson(bool forAutosave) const
 {
 	Json::Value analysesJson		= Json::objectValue,
 				analysesDataList	= Json::arrayValue;;
@@ -286,6 +286,9 @@ Json::Value Analyses::asJson() const
 
 	analysesJson["analyses"]	= analysesDataList;
 	analysesJson["meta"]		= resultsMeta();
+
+	if (forAutosave)
+		DataSetPackage::pkg()->addAutoSaveInfo(analysesJson);
 
 	return analysesJson;
 }
