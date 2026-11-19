@@ -444,8 +444,10 @@ Window
 			{
 				target:		chatToggleButton,
 				title:		qsTr("AI Assistant"),
-				text:		qsTr("Click the robot icon here or press Ctrl+J to bring up the AI chat panel.Detailed AI settings can be found in the preferences menu."),
-				placement:	"top"
+				text:		qsTr("You can enable, disable, or adjust settings for the AI ​​assistant under Preferences > AI; once enabled, the AI ​​assistant icon will appear here.Click the robot icon here or press Ctrl+J to bring up the AI chat panel."),
+				placement:	"top",
+				onEnter:	function() { chatToggleButton.visible = true;  },
+				onExit:		function() { chatToggleButton.visible = false; }
 			}
 		]
 	}
