@@ -22,6 +22,8 @@
 #include <QQmlContext>
 #include <QRegularExpression>
 #include <QSet>
+#include <QLocale>
+#include <cmath>
 #include "formulasource.h"
 #include "controls/jasplistcontrol.h"
 #include "boundcontrols/boundcontrolterms.h"
@@ -178,7 +180,11 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 					//with its own dataSetSelectionOption) contains variables by declaration now but
 					//only creates a term model for the Source/JAGS/Lavaan-family types.
 					ListModel* listModel = listControl ? listControl->model() : nullptr;
-					if (listModel && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
+					//A DropDown of columns is a list control with variables too, but its model holds the columns it offers,
+					//not the one it selected: its option is the selected column ({value, types}), given back by its name.
+					if (qobject_cast<ComboBoxBase*>(control))
+						result += transformJsonToR(foundValue.isObject() && foundValue.isMember("value") ? foundValue["value"] : foundValue);
+					else if (listModel && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
 						result += _transformInteractionTerms(listModel);
 					else
 						result += transformJsonToR(foundValue);
@@ -601,6 +607,15 @@ bool RSyntax::hasError() const
 	return _form->hasError();
 }
 
+// A string literal R reads back as str: backslashes and double quotes are escaped. Other characters (e.g. the new lines of
+// R code) may stay as they are in an R string.
+QString RSyntax::_rStringLiteral(const QString& str)
+{
+	QString escaped = str;
+	escaped.replace("\\", "\\\\").replace("\"", "\\\"");
+	return "\"" + escaped + "\"";
+}
+
 // A name that is not a syntactic R name (e.g. with a space, or a reserved word) must be backquoted
 QString RSyntax::_transformToRName(const QString &name)
 {
@@ -636,7 +651,7 @@ QString RSyntax::transformJsonToR(const Json::Value &json)
 			result = json.asBool() ? "TRUE" : "FALSE";
 		break;
 		case Json::stringValue:
-			result = "\"" + tq(json.asString()) + "\"";
+			result = _rStringLiteral(tq(json.asString()));
 		break;
 		case Json::intValue:
 			result = QString::number(json.asInt64());
@@ -645,7 +660,13 @@ QString RSyntax::transformJsonToR(const Json::Value &json)
 			result = QString::number(json.asUInt64());
 		break;
 		case Json::realValue:
-			result = QString::number(json.asDouble()); //This is not taking locale into account, but as its going to R this is ok I guess?
+		{
+			const double value = json.asDouble();
+
+			if (std::isnan(value))			result = "NaN";
+			else if (std::isinf(value))		result = value > 0 ? "Inf" : "-Inf";
+			else							result = QString::number(value, 'g', QLocale::FloatingPointShortest); // The shortest text R reads back as this very number (no locale: it goes to R)
+		}
 		break;
 		case Json::arrayValue:
 			if (json.size() == 0) result = "list()";
@@ -692,7 +713,7 @@ QString RSyntax::transformJsonToR(const Json::Value &json)
 				{
 					if (!first) result += ", ";
 					result += transformJsonToR(json.get(member, Json::Value::null));
-					namesR += "\"" + tq(member).replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+					namesR += _rStringLiteral(tq(member));
 					first = false;
 				}
 				result += "); names(.l) <- c(" + namesR.join(", ") + "); .l })";

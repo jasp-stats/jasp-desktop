@@ -40,6 +40,8 @@
 #include "analysisform.h"
 #include "controls/jaspcontrol.h"
 #include "rsyntax/formulaparser.h"	// emission + re-parse roundtrip
+#include "rsyntax/rsyntax.h"
+#include <limits>
 #include "data/asyncloader.h"
 #include "data/fileevent.h"
 #include "utils.h"
@@ -9010,6 +9012,36 @@ void TestAll::testModuleFromFolder()
 	delete mw;
 
 	TempFiles::init(ProcessInfo::currentPID());
+}
+
+
+void TestAll::testRSyntaxValuesAreReadBackByR()
+{
+	auto r = [](const Json::Value & value) { return RSyntax::transformJsonToR(value); };
+
+	//Every digit: QString::number(double) kept 6 significant ones (0.707107, 1.23457e+08)
+	QCOMPARE(r(0.707106781186548),		QString("0.707106781186548"));
+	QCOMPARE(r(123456789.25),			QString("123456789.25"));
+	QCOMPARE(r(1.5),					QString("1.5"));
+	QCOMPARE(r(0.1),					QString("0.1"));
+	QCOMPARE(r(-2.5e-12),				QString("-2.5e-12"));
+
+	//Not nan and inf: R reads those as names
+	QCOMPARE(r(std::numeric_limits<double>::quiet_NaN()),	QString("NaN"));
+	QCOMPARE(r(std::numeric_limits<double>::infinity()),	QString("Inf"));
+	QCOMPARE(r(-std::numeric_limits<double>::infinity()),	QString("-Inf"));
+
+	//Strings with quotes and backslashes are escaped, or R cannot parse the call; a new line may stay
+	QCOMPARE(r("plain"),					QString("\"plain\""));
+	QCOMPARE(r("say \"hi\""),				QString("\"say \\\"hi\\\"\""));
+	QCOMPARE(r("C:\\data\\file.csv"),	QString("\"C:\\\\data\\\\file.csv\""));
+	QCOMPARE(r("two\nlines"),				QString("\"two\nlines\""));
+
+	//Also inside a list
+	Json::Value list(Json::arrayValue);
+	list.append("a\"b");
+	list.append(0.25);
+	QCOMPARE(r(list),						QString("list(\"a\\\"b\", 0.25)"));
 }
 
 

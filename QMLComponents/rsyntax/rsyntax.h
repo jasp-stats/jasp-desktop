@@ -66,6 +66,7 @@ signals:
 private:
 
 	static QString					_transformToRName(const QString& name);
+	static QString					_rStringLiteral(const QString& str);
 	QString							_analysisFullName()														const;
 	QString							_transformInteractionTerms(ListModel* model)							const;
 	// the string-literal content for one term component of the list() branch -
