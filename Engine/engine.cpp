@@ -569,8 +569,9 @@ void Engine::runRCodeCommander(std::string rCode, bool columnsByName)
 
 	std::string rCodeResult =	jaspRCPP_evalRCodeCommander(rCode.c_str());
 
+	//With types: the formulas of a batch of analyses (~ x.nominal) must reach the Desktop as the user typed them
 	if(thereIsSomeData)
-		rCodeResult = ColumnEncoder::decodeAll(rCodeResult);
+		rCodeResult = ColumnEncoder::decodeAllWithTypes(rCodeResult);
 
 	sendRCodeResult(-1, rCodeResult);
 
