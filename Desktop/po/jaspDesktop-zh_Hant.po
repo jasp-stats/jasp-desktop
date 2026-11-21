@@ -9965,3 +9965,18 @@ msgstr "'選項' 必須是具名清單"
 msgctxt "RCommander|"
 msgid "module '%1' not found"
 msgstr "找不到模組「%1」"
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid "The version '%1' is not understood"
+msgstr ""
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid "The options of version %1 could not be upgraded: %2"
+msgstr ""
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid "The option '%1' is not known and is ignored"
+msgstr ""
