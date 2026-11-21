@@ -6,6 +6,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
+"PO-Revision-Date: 2026-11-22 05:51+0000\n"
+"Last-Translator: Koji Kosugi <kosugitti@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/ja/>\n"
+"Language: ja\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -10655,14 +10661,14 @@ msgstr "モジュール '%1' が見つかりません"
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "The version '%1' is not understood"
-msgstr ""
+msgstr "バージョン '%1' を解釈できません"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "The options of version %1 could not be upgraded: %2"
-msgstr ""
+msgstr "バージョン %1 のオプションをアップグレードできませんでした: %2"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "The option '%1' is not known and is ignored"
-msgstr ""
+msgstr "オプション '%1' は不明なため無視します"
