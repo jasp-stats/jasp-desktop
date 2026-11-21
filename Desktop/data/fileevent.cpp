@@ -278,6 +278,9 @@ QString FileEvent::getProgressMsg() const
 		case Utils::FileType::rds:			return tr("Loading R Data File");
 		case Utils::FileType::mwx:
 		case Utils::FileType::mpx:			return tr("Loading Minitab Data Workbook File");
+		case Utils::FileType::mtw:
+		case Utils::FileType::mpj:
+		case Utils::FileType::mtp:			return tr("Loading Minitab File");
 		default:							return tr("Loading File");
 		}
 		break;

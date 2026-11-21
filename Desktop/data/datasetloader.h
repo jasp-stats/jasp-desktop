@@ -32,7 +32,8 @@ public:
 	
 	static std::string getExtension(const std::string &locator, const std::string &extension);
 
-private:
+	///Which importer handles this locator/extension (nullptr when none does; JASP then tries the .jasp route).
+	///Public so tests can assert the routing, e.g. the Enterprise (PRO) gate on the MinitabOldImporter.
 	static Importer* getImporter(const std::string &locator, const std::string &extension);
 };
 
