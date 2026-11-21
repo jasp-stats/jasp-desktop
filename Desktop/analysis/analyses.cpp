@@ -278,7 +278,7 @@ bool Analyses::allFinished() const
 	return true;
 }
 
-Json::Value Analyses::asJson() const
+Json::Value Analyses::asJson(bool forAutosave) const
 {
 	Json::Value analysesJson		= Json::objectValue,
 				analysesDataList	= Json::arrayValue;;
@@ -288,6 +288,9 @@ Json::Value Analyses::asJson() const
 
 	analysesJson["analyses"]	= analysesDataList;
 	analysesJson["meta"]		= resultsMeta();
+
+	if (forAutosave)
+		DataSetPackage::pkg()->addAutoSaveInfo(analysesJson);
 
 	return analysesJson;
 }
@@ -1566,6 +1569,22 @@ void Analyses::registerRpcHandlers()
 
 		Json::Value response = JaspRpcDispatcher::successResult();
 		_rpcWriteIdentity(response, a);
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_setTitle", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		a->setTitle(params["title"].asString());
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
+		response["title"] = a->title();
 		return response;
 	});
 
