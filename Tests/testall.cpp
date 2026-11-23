@@ -9044,5 +9044,43 @@ void TestAll::testRSyntaxValuesAreReadBackByR()
 	QCOMPARE(r(list),						QString("list(\"a\\\"b\", 0.25)"));
 }
 
+void TestAll::testFormulaInteractionOfBacktickedNames()
+{
+	//The types of the columns, as the data gives them
+	class TypesProvider : public VariableInfoProvider
+	{
+	public:
+		QVariant provideInfo(varInfoType info, const QString& name, int) const override
+		{
+			if (info != varInfoType::VariableType)	return QVariant();
+			if (name == "Dose")						return int(columnType::nominal);
+			if (name == "Puppy love")				return int(columnType::scale);
+			return int(columnType::unknown);
+		}
+		bool absorbInfo(varInfoType, const QString&, int, QVariant) override { return false; }
+	} provider;
+
+	auto check = [&](const QString& formulaTerm)
+	{
+		Terms terms = FormulaParser::parseTerm(formulaTerm, &provider);
+		QCOMPARE(terms.size(), size_t(1));
+		QCOMPARE(terms.at(0).components(), QStringList({"Dose", "Puppy love"}));
+		QCOMPARE(terms.at(0).types(), columnTypeVec({columnType::nominal, columnType::scale}));
+	};
+
+	//How R gives the interaction term of Dose * `Puppy love`
+	check("Dose:`Puppy love`");
+	check("`Dose`:`Puppy love`");
+
+	Terms alone = FormulaParser::parseTerm(QString("`Puppy love`"), &provider);
+	QCOMPARE(alone.at(0).components(), QStringList({"Puppy love"}));
+	QCOMPARE(alone.at(0).type(), columnType::scale);
+
+	//The crossing of a * gives the interaction too
+	Terms crossed = FormulaParser::parseTerm(QString("Dose * `Puppy love`"), &provider);
+	QCOMPARE(crossed.size(), size_t(3));
+	QCOMPARE(crossed.at(2).components(), QStringList({"Dose", "Puppy love"}));
+}
+
 
 QTEST_MAIN(TestAll)

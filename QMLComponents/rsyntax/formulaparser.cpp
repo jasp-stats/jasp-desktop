@@ -64,27 +64,33 @@ Terms FormulaParser::parseTerm(QString termStr, VariableInfoProvider * provider)
 		//logic and the provider lookup must not touch the quotes. The R-name guard wraps
 		//non-syntactic names (qualified forms included) in backticks, and - unlike the whole
 		//term string - split components never went through trim(), so strip them here.
-		QString qualifiedCandidate = input.trimmed();
-		if (qualifiedCandidate.startsWith('`'))		qualifiedCandidate = qualifiedCandidate.mid(1);
-		if (qualifiedCandidate.endsWith('`'))		qualifiedCandidate = qualifiedCandidate.chopped(1);
-		if (qualifiedCandidate.startsWith('"'))
-			return std::make_pair(qualifiedCandidate, columnType::unknown);
+		//The same holds for a plain name: in "Dose:`Puppy love`" the trim() of the whole term
+		//only removed the last backtick, so the component is "`Puppy love". A component without
+		//backticks is kept as it is (its padding spaces included).
+		QString unquoted = input.trimmed();
+		bool	backticked = unquoted.startsWith('`') || unquoted.endsWith('`');
+		if (unquoted.startsWith('`'))		unquoted = unquoted.mid(1);
+		if (unquoted.endsWith('`'))		unquoted = unquoted.chopped(1);
+		if (unquoted.startsWith('"'))
+			return std::make_pair(unquoted, columnType::unknown);
+		if (!backticked)
+			unquoted = input;
 
-		QString term = input;
+		QString term = unquoted;
 		columnType type = columnType::unknown;
-		int index = input.lastIndexOf('.');
+		int index = unquoted.lastIndexOf('.');
 		if (index > 0)
 		{
-			QString typeStr = input.mid(index+1);
+			QString typeStr = unquoted.mid(index+1);
 			if (columnTypeValidName(fq(typeStr)))
 			{
 				type = columnTypeFromQString(typeStr);
-				term = input.first(index);
+				term = unquoted.first(index);
 			}
 		}
-		
+
 		if (type == columnType::unknown)
-			type = columnType(provider->provideInfo(varInfoType::VariableType, input).toInt());
+			type = columnType(provider->provideInfo(varInfoType::VariableType, unquoted).toInt());
 
 		return std::make_pair(term, type);
 	};

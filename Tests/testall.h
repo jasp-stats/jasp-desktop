@@ -434,6 +434,10 @@ private slots:
 	// with their quotes and backslashes escaped.
 	void	testRSyntaxValuesAreReadBackByR();
 
+	// In a formula, an interaction of a name that needs backticks (Dose:`Puppy love`) gives that name without them, as
+	// the name alone (`Puppy love`) does.
+	void	testFormulaInteractionOfBacktickedNames();
+
 	// A module loaded from a folder (the syntax bridge's parseDescription, jaspTools): a source checkout has its
 	// files in inst/, an installed package (what covr tests) at its root.
 	void	testModuleFromFolder_data();
