@@ -238,6 +238,7 @@ Terms BoundControlTerms::_getTermsFromOptions(const Json::Value& option) const
 			if (jsonValue.isObject() && jsonValue.isMember(_optionKeyValue()))
 				jsonValue = jsonValue[_optionKeyValue()];
 
+			// The types of the term: a type, or a type per component for an interaction
 			const Json::Value& jsonType = typesOption.size() > i ? typesOption[i] : Json::nullValue;
 			if (jsonValue.isArray())
 			{
@@ -247,21 +248,21 @@ Terms BoundControlTerms::_getTermsFromOptions(const Json::Value& option) const
 				for (const Json::Value& component : jsonValue)
 				{
 					components.push_back(component.asString());
-					types.push_back(parseType(typesOption, j));
+					types.push_back(parseType(jsonType, j));
 					j++;
 				}
 
 				result.add(Term(components, types));
 			}
 			else if (jsonValue.isString())
-				result.add(Term(jsonValue.asString(), parseType(typesOption)));
+				result.add(Term(jsonValue.asString(), parseType(jsonType)));
 
 			i++;
 		}
 
 	}
 	else if (valueOption.isString())
-		result.add(valueOption.asString());
+		result.add(Term(valueOption.asString(), parseType(typesOption)));
 
 	return result;
 }
