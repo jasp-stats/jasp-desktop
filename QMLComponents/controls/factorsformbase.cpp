@@ -368,6 +368,10 @@ void FactorsFormBase::factorAdded(int index, QVariant item)
 	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::ensureNesting);
 
 	listView->setInitialized();
+
+	// The factor has now its VariablesList: a control using factorsItems as source (e.g. a VariablesList in a tab per factor)
+	// may have been created just before, when the factor was added to the model, and has to get this list.
+	emit factorsItemsChanged();
 }
 
 

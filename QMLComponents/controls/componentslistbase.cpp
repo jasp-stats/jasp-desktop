@@ -53,17 +53,10 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 			sourceTerms = _termsModel->getSourceTerms();
 
 	if (sourceTerms.size() > 0)
-	{
-		for (Term& term : terms)
-		{
-			int termInd = sourceTerms.indexOfValue(term);
-			if (termInd >= 0)
-			{
-				term.setTypes(sourceTerms[termInd].types());
-				term.setLabel(sourceTerms[termInd].label());
-			}
-		}
-	}
+		// The rows of a ComponentsList with a source are the terms of its source: the value gives only the values of the row controls.
+		// The value might not have the current terms of the source, for example when the control is reset by its parent control
+		// after its source has changed (a ComponentsList in a TabView, both depending on a FactorsForm).
+		terms = sourceTerms;
 
 	_termsModel->initTerms(terms, allControlValues);
 }

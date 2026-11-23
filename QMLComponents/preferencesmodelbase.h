@@ -12,6 +12,7 @@ class PreferencesModelBase : public QObject
 	Q_PROPERTY(bool		developerMode		READ developerMode			WRITE setDeveloperMode			NOTIFY developerModeChanged		)
 	Q_PROPERTY(int		thresholdScale		READ thresholdScale			WRITE setThresholdScale			NOTIFY thresholdScaleChanged	)
 	Q_PROPERTY(bool		reportingMode		READ reportingMode			WRITE setReportingMode			NOTIFY reportingModeChanged		)
+	Q_PROPERTY(double	uiScale				READ uiScale												NOTIFY uiScaleChanged			) // Without it, preferencesModel.uiScale is undefined in QML when only the base model is used (unit tests, R syntax)
 
 public:
 	explicit PreferencesModelBase(QObject *parent = nullptr);
