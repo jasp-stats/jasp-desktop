@@ -159,42 +159,96 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 
 		const Json::Value& defaultValue = boundControl->defaultBoundValue();
 		const Json::Value& foundValue = optionTree.get(member, Json::Value::null);
-		if (showAllOptions || (defaultValue != foundValue))
+		if (showAllOptions || _differsFromDefault(defaultValue, foundValue))
 		{
-			bool isDifferent = true;
-			// Sometimes a double value is set as integer, so their json value is different
-			// Check whether there are really different.
-			if (!showAllOptions && defaultValue.isNumeric() && foundValue.isNumeric())
-				isDifferent = !qFuzzyCompare(defaultValue.asDouble(), foundValue.asDouble());
+			result += "," + newLine + indent + getRSyntaxFromControlName(control) + " = ";
 
-			if (isDifferent)
+			if (selectionOptions.contains(memberQ))
+				result += transformJsonToR(Json::Value(fq(selectionSurfaceFromBoundValue(foundValue))));   //surface string, never the bound id
+			else
 			{
-				result += "," + newLine + indent + getRSyntaxFromControlName(control) + " = ";
-
-				if (selectionOptions.contains(memberQ))
-					result += transformJsonToR(Json::Value(fq(selectionSurfaceFromBoundValue(foundValue))));   //surface string, never the bound id
+				JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
+				// model() may be null - a TextArea host (e.g. an Rcode editor
+				//with its own dataSetSelectionOption) contains variables by declaration now but
+				//only creates a term model for the Source/JAGS/Lavaan-family types.
+				ListModel* listModel = listControl ? listControl->model() : nullptr;
+				//A DropDown of columns is a list control with variables too, but its model holds the columns it offers,
+				//not the one it selected: its option is the selected column ({value, types}), given back by its name.
+				if (qobject_cast<ComboBoxBase*>(control))
+					result += transformJsonToR(foundValue.isObject() && foundValue.isMember("value") ? foundValue["value"] : foundValue);
+				else if (listModel && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
+					result += _transformInteractionTerms(listModel);
+				else if (listControl && listControl->hasRowComponent() && !showAllOptions)
+					result += transformJsonToR(_rowOptionsWithoutDefaults(listControl, foundValue));
 				else
-				{
-					JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
-					// model() may be null - a TextArea host (e.g. an Rcode editor
-					//with its own dataSetSelectionOption) contains variables by declaration now but
-					//only creates a term model for the Source/JAGS/Lavaan-family types.
-					ListModel* listModel = listControl ? listControl->model() : nullptr;
-					//A DropDown of columns is a list control with variables too, but its model holds the columns it offers,
-					//not the one it selected: its option is the selected column ({value, types}), given back by its name.
-					if (qobject_cast<ComboBoxBase*>(control))
-						result += transformJsonToR(foundValue.isObject() && foundValue.isMember("value") ? foundValue["value"] : foundValue);
-					else if (listModel && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
-						result += _transformInteractionTerms(listModel);
-					else
-						result += transformJsonToR(foundValue);
-				}
+					result += transformJsonToR(foundValue);
 			}
 		}
 	}
 
 	result += ")";
 
+	return result;
+}
+
+bool RSyntax::_differsFromDefault(const Json::Value& defaultValue, const Json::Value& value)
+{
+	if (defaultValue == value)
+		return false;
+
+	// Sometimes a double value is set as integer, so their json value is different: check whether they are really different.
+	if (defaultValue.isNumeric() && value.isNumeric())
+		return !qFuzzyCompare(defaultValue.asDouble(), value.asDouble());
+
+	return true;
+}
+
+Json::Value RSyntax::_rowOptionsWithoutDefaults(JASPListControl* listControl, const Json::Value& option) const
+{
+	// The rows are the terms of the model, in the same order ({value: rows, types, optionKey} for a list of variables).
+	ListModel*			model		= listControl->model();
+	const bool			hasTypes	= option.isObject() && option.isMember("value");
+	const Json::Value&	rows		= hasTypes ? option["value"] : option;
+
+	if (!model || !rows.isArray() || rows.size() != model->terms().size())
+		return option;
+
+	const std::string	keyValue	= fq(listControl->optionKeyValue()),
+						keyLabel	= fq(listControl->optionKeyLabel());
+	Json::Value			shortRows(Json::arrayValue);
+
+	for (Json::ArrayIndex i = 0; i < rows.size(); i++)
+	{
+		const Json::Value& row = rows[i];
+		if (!row.isObject())
+			return option;
+
+		const TermRowKey	key = TermRowKey::ofTerm(model->terms().at(i));
+		Json::Value			shortRow(Json::objectValue);
+
+		for (const std::string& member : row.getMemberNames())
+		{
+			JASPControl*	rowControl	= member == keyValue || member == keyLabel ? nullptr : model->getRowControl(key, tq(member));
+			BoundControl*	bound		= rowControl ? rowControl->boundControl() : nullptr;
+
+			// The key of the row, and what has no row control, stay as they are
+			if (!bound)
+				shortRow[member] = row[member];
+			else if (_differsFromDefault(bound->defaultBoundValue(), row[member]))
+			{
+				JASPListControl* rowList = qobject_cast<JASPListControl*>(rowControl);
+				shortRow[member] = rowList && rowList->hasRowComponent() ? _rowOptionsWithoutDefaults(rowList, row[member]) : row[member];
+			}
+		}
+
+		shortRows.append(shortRow);
+	}
+
+	if (!hasTypes)
+		return shortRows;
+
+	Json::Value result = option;
+	result["value"] = shortRows;
 	return result;
 }
 

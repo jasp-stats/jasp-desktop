@@ -74,6 +74,10 @@ private:
 	// otherwise.
 	QString							_rLiteralForTermComponent(const Term& term, const QString& component, int contextFilterId, class Workspace* ws) const;
 	bool							_areTermsVariables(ListModel* model, const Terms& terms)				const;
+	// The option of a list control with a row component, with in each row only its key and the options that differ from
+	// the default of their row control: reading the syntax back, a row control without option gets its default.
+	Json::Value						_rowOptionsWithoutDefaults(JASPListControl* listControl, const Json::Value& option) const;
+	static bool						_differsFromDefault(const Json::Value& defaultValue, const Json::Value& value);
 
 	AnalysisForm*					_form							= nullptr;
 	QVector<FormulaBase*>			_formulas;
