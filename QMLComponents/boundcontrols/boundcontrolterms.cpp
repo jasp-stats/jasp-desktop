@@ -262,7 +262,7 @@ Terms BoundControlTerms::_getTermsFromOptions(const Json::Value& option) const
 
 	}
 	else if (valueOption.isString())
-		result.add(valueOption.asString());
+		result.add(Term(valueOption.asString(), parseType(typesOption)));
 
 	return result;
 }

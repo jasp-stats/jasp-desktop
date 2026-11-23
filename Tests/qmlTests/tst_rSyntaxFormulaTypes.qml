@@ -75,5 +75,22 @@ Item
 			var model = parsed.options.modelFT
 			compare(JSON.stringify(model.types), JSON.stringify(["nominal", "nominal", "scale", ["nominal", "nominal"]]), "the model terms keep their types")
 		}
+
+		function test_formula_keeps_the_type_of_a_single_variable_already_given()
+		{
+			// R gives a list of one variable as a string: the formula adds its variables next to it
+			var formula = {
+				formula:	"TestInts ~ TestLetters",
+				lhs:		{ vars: "TestInts" },
+				rhs:		{ fixed: { vars: ["TestLetters"], intercept: true } }
+			}
+			var options = { formula: formula, fixedFT: { value: "TestDoubles", types: "nominal" } }
+			var parsed = JSON.parse(jaspForm.parseOptionsToJson(JSON.stringify(options)))
+			verify(parsed.ok, "the options are valid: " + parsed.error)
+
+			var fixed = parsed.options.fixedFT
+			compare(JSON.stringify(fixed.value), JSON.stringify(["TestDoubles", "TestLetters"]), "the given variable and the one of the formula")
+			compare(JSON.stringify(fixed.types), JSON.stringify(["nominal", "nominal"]), "the given variable keeps its type, also when it is not the type of its column")
+		}
 	}
 }
