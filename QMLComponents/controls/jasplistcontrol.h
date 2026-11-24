@@ -92,6 +92,7 @@ public:
 			JASPControl			*	getChildControl(const QString & key, const QString & name) override;
 
 	Q_INVOKABLE columnType			getVariableType(const QString& name);
+	Q_INVOKABLE columnType			getVariableRealType(const QString& name);
 
 			const QVariant		&	source()					const			{ return _source;				}
 			const QVariant		&	values()					const			{ return _values;				}

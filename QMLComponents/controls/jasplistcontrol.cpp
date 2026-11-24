@@ -252,6 +252,11 @@ columnType JASPListControl::getVariableType(const QString &name)
 	return model() ? model()->getVariableType(name) : columnType::unknown;
 }
 
+columnType JASPListControl::getVariableRealType(const QString &name)
+{
+	return model() ? model()->getVariableRealType(name) : columnType::unknown;
+}
+
 int JASPListControl::count()
 {
 	return model() ? model()->rowCount() : 0;
