@@ -985,6 +985,12 @@ bool init(bool dbInMemory)
 
 	qputenv("QT_QPA_PLATFORM", "minimal");
 
+	// Qt's incremental QML garbage collector (Qt 6.10, 6.11) can leave a collection half done: the bridge has no event
+	// loop, so it stays half done across the creation and deletion of forms (lost context properties, and crashes when
+	// the cached forms are cleared). A non-incremental collection (time limit 0) never leaves one half done (as #6403).
+	if (!qEnvironmentVariableIsSet("QV4_GC_TIMELIMIT"))
+		qputenv("QV4_GC_TIMELIMIT", "0");
+
 	gl_application = new QGuiApplication(gl_applicationArgc, gl_applicationArgv.data());
 	gl_qmlEngine = new QQmlEngine();
 
