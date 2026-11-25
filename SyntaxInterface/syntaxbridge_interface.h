@@ -53,19 +53,38 @@ struct SyntaxBridgeDataSet {
 	SyntaxBridgeColumn	*	columns;
 };
 
+// The levels of a factor column, in their order (levelCount 0: not a factor).
+// A separate struct, so that SyntaxBridgeColumn and syntaxBridgeLoadDataSet keep their ABI.
+struct SyntaxBridgeColumnLevels {
+	char	**	levels;
+	int			levelCount;
+};
+
 
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeCleanup();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeShutdown();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearQmlState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearDataSetState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearNativeState();
-SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* dataset, bool dbInMemory, int threshold, bool orderLabelsByValue);
+SYNTAX_INTERFACE int					STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* dataset, bool dbInMemory, int threshold, bool orderLabelsByValue);
+// columnLevels: null, or one entry per column of dataset. The labels of a factor column follow its levels.
+SYNTAX_INTERFACE int					STDCALL syntaxBridgeLoadDataSetWithLevels(const SyntaxBridgeDataSet* dataset, const SyntaxBridgeColumnLevels* columnLevels, bool dbInMemory, int threshold, bool orderLabelsByValue);
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptions(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
+// As syntaxBridgeLoadQmlAndParseOptionsStatus, for the options a form gives (e.g. its defaults) when no run follows.
+// (This JASP version has no dataset selections, so the two are the same.)
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseFormOptionsStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
+// The R syntax of the analysis with these options: the call of its R wrapper with the options that differ from the
+// defaults of the form, as JASP shows it ({ok, syntax} or {ok: false, error}). This JASP version does not upgrade
+// options of an older version (version is ignored).
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateAnalysisSyntaxStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr);
+// As syntaxBridgeAnalysisOptionsFromJaspFileStatus, with the {value, types} options split into <name> and
+// <name>.types like JASP does for an analysis that does not preload its data (ColumnEncoder::flattenTypesInOptions).
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeFlattenedAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateModuleWrappers(const char* name);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* analysisName);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeParseDescription(const char* modulePath);
@@ -73,6 +92,8 @@ SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGetVariableNames();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeSetVerbose(bool verbose);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeColumnEncoderContext();
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const char* encoderContextJson);
+// Decodes every encoded column name in json (names and string values): {ok, text} or {ok: false, error}.
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeDecodeJsonText(const char* json);
 
 } // extern "C"
 

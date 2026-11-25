@@ -98,6 +98,8 @@ public:
 	static	void				decodeJsonSafeHtml(Json::Value & json);
 
 	static	colsPlusTypes		encodeColumnNamesinOptions(Json::Value & options, bool preloadingData);
+			///Splits the {value, types} options into <name> and <name>.types, as for an analysis that does not preload its data, without encoding anything.
+	static	void				flattenTypesInOptions(Json::Value & options);
 
 private:
 	static	void				_convertPreloadingDataOption(Json::Value & option, const std::string& optionName, colsPlusTypes& colTypes);

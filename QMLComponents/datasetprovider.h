@@ -40,7 +40,7 @@ public:
 	int							columnCount(const QModelIndex & parent = QModelIndex())									const	override;
 	QVariant					data(		const QModelIndex & index, int role = Qt::DisplayRole)						const	override;
 
-	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true);
+	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true, const std::map<std::string, stringvec > & levels = {}); ///< levels: the labels of these columns (e.g. R factors) follow this order
 	void						closeDatabase();
 	void						loadDatabase(const Version & jaspVersion);
 

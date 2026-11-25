@@ -39,6 +39,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QTimer>
+#include <QScopeGuard>
 #include "preferencesmodelbase.h"
 
 using namespace std;
@@ -775,6 +776,11 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 {
 	std::set<std::string> controlsJsonWrong;
+
+	// While the options are written, a control bound to a value must keep it although a QML binding of its
+	// default changes it, when a control that binding reads is bound after it (JASPControl::_resetBindingValue).
+	_bindingOptions = true;
+	auto endOfBinding = qScopeGuard([this]() { _bindingOptions = false; });
 
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
