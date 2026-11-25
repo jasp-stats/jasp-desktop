@@ -109,8 +109,8 @@
             "checksum": "13524fa1305867cd3723e8b38e58566679325875860d38907fd05e4e93801ebe"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspQualityControl/releases/download/0.98.4-beta.0_R-4-5-2_Beta/jaspQualityControl_0.98.4-beta.0_Windows_x86-64_R-4-5-2.JASPModule",
-            "checksum": "bc81d213d817f5e3638dd36b28c3fd0a0886e5edac35e28ec9c5433c16e02cc4"
+            "url": "https://github.com/jasp-stats-modules/jaspQualityControl/releases/download/0.98.6-beta.0_R-4-5-2_Beta/jaspQualityControl_0.98.6-beta.0_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "8ce003fad11afff74646fb2b2491a791c715bc7419ec179f332dce6622f94f31"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspRegression/releases/download/0.96.5-release.803_R-4-5-2_Release/jaspRegression_0.96.5-release.803_Windows_x86-64_R-4-5-2.JASPModule",
