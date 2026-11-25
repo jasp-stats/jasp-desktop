@@ -442,6 +442,8 @@ private slots:
 	// files in inst/, an installed package (what covr tests) at its root.
 	void	testModuleFromFolder_data();
 	void	testModuleFromFolder();
+	void	testModuleJaspVersionRange_data();
+	void	testModuleJaspVersionRange();
 
 	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
 	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the

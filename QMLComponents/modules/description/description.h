@@ -29,6 +29,8 @@ class Description : public QQuickItem
 	Q_PROPERTY(QString					icon			READ icon				WRITE setIcon				NOTIFY iconChanged				)
 	Q_PROPERTY(QString					description		READ description		WRITE setDescription		NOTIFY descriptionChanged		)
 	Q_PROPERTY(QString					version			READ versionStr			WRITE setDummy				NOTIFY versionChanged			)
+	Q_PROPERTY(QString					minJaspVersion	READ minJaspVersionStr	WRITE setMinJaspVersion		NOTIFY minJaspVersionChanged	)
+	Q_PROPERTY(QString					maxJaspVersion	READ maxJaspVersionStr	WRITE setMaxJaspVersion		NOTIFY maxJaspVersionChanged	)
 	Q_PROPERTY(QString					author			READ author				WRITE setDummy				NOTIFY authorChanged			)
 	Q_PROPERTY(QString					maintainer		READ maintainer			WRITE setDummy				NOTIFY maintainerChanged		)
 	Q_PROPERTY(QUrl						website			READ website			WRITE setDummyUrl			NOTIFY websiteChanged			)
@@ -61,6 +63,10 @@ public:
 	const QString & description()		const { return _description;				}
 	const Version & version()			const { return _version;					}
 	QString versionStr()				const { return tq(_version.asString());		}
+	const Version & minJaspVersion()	const { return _minJaspVersion;				}
+	const Version & maxJaspVersion()	const { return _maxJaspVersion;				}
+	QString minJaspVersionStr()			const { return _minJaspVersion.isEmpty() ? QString() : tq(_minJaspVersion.asString());	}
+	QString maxJaspVersionStr()			const { return _maxJaspVersion.isEmpty() ? QString() : tq(_maxJaspVersion.asString());	}
 	const QString & author()			const { return _author;						}
 	const QString & maintainer()		const { return _maintainer;					}
 	const QUrl	  & website()			const { return _website;					}
@@ -84,6 +90,8 @@ public slots:
 	void setIcon(					QString						icon			);
 	void setDescription(			QString						description		);
 	void setVersion(				QString						version			);
+	void setMinJaspVersion(			QString						minJaspVersion	);
+	void setMaxJaspVersion(			QString						maxJaspVersion	);
 	void setAuthor(					QString						author			);
 	void setMaintainer(				QString						maintainer		);
 	void setWebsite(				QUrl						website			);
@@ -102,6 +110,8 @@ signals:
 	void iconChanged(				QString						icon			);
 	void descriptionChanged(		QString						description		);
 	void versionChanged();
+	void minJaspVersionChanged();
+	void maxJaspVersionChanged();
 	void authorChanged(				QString						author			);
 	void maintainerChanged(			QString						maintainer		);
 	void websiteChanged(			QUrl						website			);
@@ -129,7 +139,9 @@ private:
 							_maintainer,
 							_license;
 	QUrl					_website;
-	Version					_version;
+	Version					_version,
+							_minJaspVersion,
+							_maxJaspVersion;
 	bool					_requiresDataDef	= true,
 							_hasWrappers		= false,
 							_preloadData		= true,

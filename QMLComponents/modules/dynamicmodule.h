@@ -109,6 +109,10 @@ public:
 	bool				requiresData()		const { return AnalysisEntry::requiresDataEntries(_menuEntries); }
 	const QString	&	author()			const;
 	const Version	&	version()			const;
+	const Version	&	minJaspVersion()	const { return _minJaspVersion;							}
+	const Version	&	maxJaspVersion()	const { return _maxJaspVersion;							}
+	bool				isCompatibleWithJasp(const Version & jaspVersion)	const;
+	void				checkJaspVersion()	const;
 	const QUrl		&	website()			const;
 	const QString	&	license()			const;
 	const QString	&	maintainer()		const;
@@ -253,6 +257,8 @@ private:
 						_bundled			= false,
 						_isCommon			= false,
 						_hasWrappers		= false;
+	Version				_minJaspVersion,
+						_maxJaspVersion;
 	AnalysisEntries		_menuEntries;
 	stringset			_importsR;
 	Description		*	_description		= nullptr;

@@ -32,6 +32,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/qmlutils.h"
 #include "preferencesmodelbase.h"
+#include "appinfo.h"
 
 #ifdef __APPLE__
 #include "otoolstuff.h"
@@ -341,6 +342,28 @@ void DynamicModule::loadDescriptionQml(QQmlContext * context, const QString & de
 	description->setDynMod(this);
 
 	loadInfoFromDescriptionItem(description);
+
+	checkJaspVersion();
+}
+
+bool DynamicModule::isCompatibleWithJasp(const Version & jaspVersion) const
+{
+	return	(_minJaspVersion.isEmpty() || _minJaspVersion <= jaspVersion) &&
+			(_maxJaspVersion.isEmpty() || jaspVersion <= _maxJaspVersion);
+}
+
+void DynamicModule::checkJaspVersion() const
+{
+	if(isCompatibleWithJasp(AppInfo::version))
+		return;
+
+	QString required;
+
+	if		(!_minJaspVersion.isEmpty() && !_maxJaspVersion.isEmpty())	required = tr("JASP %1 up to and including %2").arg(tq(_minJaspVersion.asString())).arg(tq(_maxJaspVersion.asString()));
+	else if	(!_minJaspVersion.isEmpty())								required = tr("JASP %1 or newer").arg(tq(_minJaspVersion.asString()));
+	else																required = tr("JASP %1 or older").arg(tq(_maxJaspVersion.asString()));
+
+	throw ModuleException(name(), fq(tr("This module requires %1, but this is JASP %2.").arg(required).arg(tq(AppInfo::version.asString()))));
 }
 
 void DynamicModule::loadUpgradesQML(QQmlContext * context, const QString & upgradesTxt, const QUrl & url)
@@ -435,6 +458,8 @@ void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 	_title							= fq(description->title());
 	_icon							= fq(description->icon());
 	_hasWrappers					= description->hasWrappers();
+	_minJaspVersion					= description->minJaspVersion();
+	_maxJaspVersion					= description->maxJaspVersion();
 
 	for(auto * menuEntry : _menuEntries)
 		delete menuEntry;

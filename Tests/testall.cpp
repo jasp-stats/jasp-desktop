@@ -9015,6 +9015,81 @@ void TestAll::testModuleFromFolder()
 }
 
 
+void TestAll::testModuleJaspVersionRange_data()
+{
+	const std::string	older	= "0.1",
+						newer	= std::to_string(AppInfo::version.major() + 1),
+						current	= AppInfo::version.asString();
+
+	QTest::addColumn<QString>("minJaspVersion");
+	QTest::addColumn<QString>("maxJaspVersion");
+	QTest::addColumn<bool>("loads");
+
+	QTest::newRow("no range")			<< ""				<< ""			<< true;
+	QTest::newRow("min older")			<< tq(older)		<< ""			<< true;
+	QTest::newRow("min is current")		<< tq(current)		<< ""			<< true;
+	QTest::newRow("min newer")			<< tq(newer)		<< ""			<< false;
+	QTest::newRow("max newer")			<< ""				<< tq(newer)	<< true;
+	QTest::newRow("max is current")		<< ""				<< tq(current)	<< true;
+	QTest::newRow("max older")			<< ""				<< tq(older)	<< false;
+	QTest::newRow("range around")		<< tq(older)		<< tq(newer)	<< true;
+	QTest::newRow("invalid ignored")	<< "notAVersion"	<< ""			<< true;
+}
+
+void TestAll::testModuleJaspVersionRange()
+{
+	QFETCH(QString,	minJaspVersion);
+	QFETCH(QString,	maxJaspVersion);
+	QFETCH(bool,	loads);
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw); //for its QML engine, which reads Description.qml
+
+	const QString modulePath = QString::fromStdString(TempFiles::createTmpFolder()) + "/jaspFakeVersion";
+
+	QString range;
+	if(!minJaspVersion.isEmpty())	range += "\tminJaspVersion: \"" + minJaspVersion + "\"\n";
+	if(!maxJaspVersion.isEmpty())	range += "\tmaxJaspVersion: \"" + maxJaspVersion + "\"\n";
+
+	QVERIFY(QDir().mkpath(modulePath + "/icons"));
+	QVERIFY(QDir().mkpath(modulePath + "/qml"));
+	QVERIFY(_writeTextFile(modulePath + "/DESCRIPTION",	"Package: jaspFakeVersion\nVersion: 0.1\nTitle: Fake\nMaintainer: JASP <info@jasp-stats.org>\n"));
+	QVERIFY(_writeTextFile(modulePath + "/qml/Fake.qml",	"import JASP.Controls\nForm {}\n"));
+	QVERIFY(_writeTextFile(modulePath + "/Description.qml",
+		(QString("import QtQuick\nimport JASP.Module\n\nDescription\n{\n\ttitle: \"Fake\"\n") + range +
+		"\n\tAnalysis\n\t{\n\t\ttitle: \"Fake analysis\"\n\t\tfunc: \"Fake\"\n\t}\n}\n").toUtf8()));
+
+	Modules::DynamicModule	*	module	= nullptr;
+	std::string					error;
+	try
+	{
+		module = new Modules::DynamicModule(nullptr, mw->_qml->rootContext(), modulePath, false);
+	}
+	catch(const Modules::ModuleException & e) { error = e.what(); }
+
+	auto asStr = [](const Version & v) { return v.isEmpty() ? QString() : tq(v.asString()); };
+
+	if(loads)
+	{
+		QVERIFY2(module != nullptr, error.c_str());
+		QCOMPARE(asStr(module->minJaspVersion()), minJaspVersion == "notAVersion" ? QString() : minJaspVersion);
+		QCOMPARE(asStr(module->maxJaspVersion()), maxJaspVersion);
+	}
+	else
+	{
+		QVERIFY(module == nullptr);
+		QVERIFY2(error.find("requires JASP") != std::string::npos, error.c_str());
+		QVERIFY2(error.find(AppInfo::version.asString()) != std::string::npos, error.c_str());
+	}
+
+	delete module;
+	delete exitSpy;
+	delete mw;
+
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+
 void TestAll::testRSyntaxValuesAreReadBackByR()
 {
 	auto r = [](const Json::Value & value) { return RSyntax::transformJsonToR(value); };
