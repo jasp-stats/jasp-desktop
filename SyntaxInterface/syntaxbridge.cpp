@@ -26,6 +26,8 @@
 #include <QCoreApplication>
 #include <QEvent>
 #include <QDir>
+#include <QFile>
+#include <QRegularExpression>
 #include <QThread>
 #include <QQmlIncubator>
 #include "controls/jaspcontrol.h"
@@ -36,6 +38,7 @@
 #include "tempfiles.h"
 #include "analysisbase.h"
 #include "analysisform.h"
+#include "rsyntax/rsyntax.h"
 #include "log.h"
 #include "utilities/qmlutils.h"
 #include "dirs.h"
@@ -256,7 +259,38 @@ static Json::Value columnEncoderContextJson()
 	).toJson();
 }
 
-static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
+/// The version of the module a qml form comes from: <package>/qml/Form.qml in an installed module, <module>/inst/qml/Form.qml
+/// in its sources. The version of JASP when there is no DESCRIPTION there.
+static Version moduleVersionOfQmlFile(const QString & qmlFile)
+{
+	QDir moduleDir = QFileInfo(qmlFile).absoluteDir(); // .../qml
+
+	if (!moduleDir.cdUp())
+		return AppInfo::version;
+
+	if (moduleDir.dirName() == "inst" && !moduleDir.exists("DESCRIPTION"))
+		moduleDir.cdUp();
+
+	QFile description(moduleDir.absoluteFilePath("DESCRIPTION"));
+	if (!description.open(QIODevice::ReadOnly | QIODevice::Text))
+		return AppInfo::version;
+
+	static const QRegularExpression versionLine("^Version:\\s*(\\S+)\\s*$");
+
+	while (!description.atEnd())
+	{
+		QRegularExpressionMatch match = versionLine.match(QString::fromUtf8(description.readLine()).trimmed());
+		if (match.hasMatch())
+		{
+			try						{ return Version(fq(match.captured(1))); }
+			catch (const std::exception &) { break; }
+		}
+	}
+
+	return AppInfo::version;
+}
+
+static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr, bool flattenTypes = false)
 {
 	Json::Value status = statusBase("syntaxBridgeAnalysisOptionsFromJaspFile");
 	status["analysisNr"] = analysisNr;
@@ -296,6 +330,10 @@ static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
 
 	status["ok"] = true;
 	status["options"] = options;
+
+	if (flattenTypes)
+		ColumnEncoder::flattenTypesInOptions(status["options"]);
+
 	return status;
 }
 
@@ -355,7 +393,10 @@ static void refreshQmlDataSetInfoContext()
 static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
 {
 	bool providerWillBeRecreated = gl_initialized && gl_initializedDbInMemory != dbInMemory;
-	if (providerWillBeRecreated)
+	//resetDataSet replaces the dataset every cached form is bound to, so those forms go with it: a new form starts
+	//from its defaults, while a cached one would keep the values of the previous parse for every option that the
+	//next one leaves out (R syntax only gives the options that differ from the defaults).
+	if (providerWillBeRecreated || resetDataSet)
 		clearQmlFormCache();
 
 	DataSetProvider * provider = DataSetProvider::getProvider(dbInMemory, resetDataSet, gl_application);
@@ -447,25 +488,29 @@ void STDCALL syntaxBridgeShutdown()
 	gl_jaspBaseInitialized = false;
 }
 
-void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
+int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
+{
+	return syntaxBridgeLoadDataSetWithLevels(syntaxBridgeDataSet, nullptr, dbInMemory, threshold, orderLabelsByValue);
+}
+
+int STDCALL syntaxBridgeLoadDataSetWithLevels(const SyntaxBridgeDataSet* syntaxBridgeDataSet, const SyntaxBridgeColumnLevels* columnLevels, bool dbInMemory, int threshold, bool orderLabelsByValue)
 {
 	if (!init(dbInMemory))
 	{
 		Log::log() << "Error during initialization" << std::endl;
-		return;
+		return -1;
 	}
 
-	DataSetProvider* provider = nullptr;
-	if (gl_initializedDbInMemory != dbInMemory)
-	{
-		clearDataBridgeState();
-		provider = resetDataProvider(dbInMemory, true);
-		createDataBridge(dbInMemory);
-	}
-	else
-		provider = DataSetProvider::getProvider(dbInMemory);
+	//A load replaces the data: the data bridge keeps its own DataSet object (that R reads the requested columns from),
+	//which does not see a reload of the provider's dataset, so it is recreated as well. Otherwise a second load (e.g.
+	//another data frame of the next unit test) leaves R reading the columns of the first one.
+	clearDataBridgeState();
+	DataSetProvider* provider = resetDataProvider(dbInMemory, true);
+	createDataBridge(dbInMemory);
 
-	std::map<std::string, stringvec > dataSet;
+	//This JASP version has one dataset: a name (a multi-dataset load of a later version) is ignored, the data replaces it.
+	std::map<std::string, stringvec >	dataSet,
+										levels;
 
 	for (int colNr = 0; colNr < syntaxBridgeDataSet->columnCount; colNr++)
 	{
@@ -474,9 +519,19 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 		for (int rowNr = 0; rowNr < syntaxBridgeDataSet->rowCount; rowNr++)
 			values.push_back(column.values[rowNr]);
 		dataSet[column.name] = values;
+
+		if (columnLevels && columnLevels[colNr].levelCount > 0 && columnLevels[colNr].levels)
+		{
+			stringvec & columnLevelValues = levels[column.name];
+			for (int levelNr = 0; levelNr < columnLevels[colNr].levelCount; levelNr++)
+				if (columnLevels[colNr].levels[levelNr])
+					columnLevelValues.push_back(columnLevels[colNr].levels[levelNr]);
+		}
 	}
 
-	provider->loadDataSet(dataSet, threshold, orderLabelsByValue);
+	provider->loadDataSet(dataSet, threshold, orderLabelsByValue, levels);
+
+	return provider->dataSet() ? provider->dataSet()->id() : -1;
 }
 
 void STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory)
@@ -583,6 +638,10 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!form)
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Cannot create QML Form " + qmlFileStr);
 
+	//The form of the bridge has a dummy analysis: tell it which analysis of which module it is now (e.g. for its R syntax)
+	if (form->analysisObj())
+		form->analysisObj()->setModuleAnalysis(moduleNameStr, analysisNameStr, moduleVersionOfQmlFile(tq(qmlFileStr)));
+
 	Json::Value parsedOptions;
 	std::string errorMsg;
 	if (!form->parseOptions(options, parsedOptions, errorMsg))
@@ -596,6 +655,44 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	Json::Value status = statusBase("syntaxBridgeLoadQmlAndParseOptions");
 	status["ok"] = true;
 	status["options"] = parsedOptions;
+	return statusResult(status);
+}
+
+const char* STDCALL syntaxBridgeLoadQmlAndParseFormOptionsStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+{
+	//Without dataset selections (a later JASP version) the options a form gives are those of a run
+	Json::Value status;
+	Json::Reader reader;
+	if (!reader.parse(syntaxBridgeLoadQmlAndParseOptionsStatus(moduleName, analysisName, qmlFile, options, version, preloadData), status))
+		return statusError(statusBase("syntaxBridgeLoadQmlAndParseFormOptions"), "Could not read the status of parsing the options");
+
+	status["operation"] = "syntaxBridgeLoadQmlAndParseFormOptions";
+	return statusResult(status);
+}
+
+const char* STDCALL syntaxBridgeGenerateAnalysisSyntaxStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+{
+	const char * statusName = "syntaxBridgeGenerateAnalysisSyntax";
+
+	Json::Value status;
+	Json::Reader reader;
+	if (!reader.parse(syntaxBridgeLoadQmlAndParseOptionsStatus(moduleName, analysisName, qmlFile, options, version, preloadData), status))
+		return statusError(statusBase(statusName), "Could not read the status of parsing the options");
+
+	status["operation"] = statusName;
+
+	if (!status["ok"].asBool())
+		return statusResult(status);
+
+	AnalysisForm * form = getQmlForm(tq(qmlFile)); // the form that just bound the options (cached per qml file)
+	if (!form || !form->rSyntax())
+		return statusError(statusBase(statusName), std::string("Cannot create QML Form ") + qmlFile);
+
+	status["syntax"] = fq(form->rSyntax()->generateSyntax(false));
+
+	//The parsed options are prepared for a run (encoded column names): not what the syntax is about
+	status.removeMember("options");
+
 	return statusResult(status);
 }
 
@@ -619,6 +716,14 @@ const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * f
 	configureLogging();
 
 	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
+	return statusResult(status);
+}
+
+const char* STDCALL syntaxBridgeFlattenedAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr)
+{
+	configureLogging();
+
+	Json::Value status = analysisOptionsStatus(filePath, analysisNr, true);
 	return statusResult(status);
 }
 
@@ -783,6 +888,43 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 	catch(...)
 	{
 		return statusError(statusBase("syntaxBridgeDecodeColumnText"), "Unknown error while decoding column text.");
+	}
+}
+
+const char* STDCALL syntaxBridgeDecodeJsonText(const char* json)
+{
+	if (!json || json[0] == '\0')
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), "Cannot decode an empty payload.");
+
+	Json::Value payload;
+	Json::Reader reader;
+	if (!reader.parse(json, payload))
+	{
+		Json::Value status = statusBase("syntaxBridgeDecodeJsonText");   // not json at all:
+		status["ok"]   = true;                                           // nothing to decode,
+		status["text"] = json;                                           // pass the text through
+		return statusResult(status);
+	}
+
+	try
+	{
+		ColumnEncoder::decodeJson(payload);
+
+		Json::StreamWriterBuilder writer;
+		writer["indentation"] = "";
+
+		Json::Value status = statusBase("syntaxBridgeDecodeJsonText");
+		status["ok"]   = true;
+		status["text"] = Json::writeString(writer, payload);
+		return statusResult(status);
+	}
+	catch(const std::exception & exception)
+	{
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), exception.what());
+	}
+	catch(...)
+	{
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), "Unknown error while decoding json text.");
 	}
 }
 

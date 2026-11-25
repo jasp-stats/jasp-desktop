@@ -89,7 +89,7 @@ QVariant DataSetProvider::data(const QModelIndex & index, int role) const
 	else								return QVariant(); //QAbstractTableModel::data(index, role);
 }
 
-void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold, bool orderLabelsByValue)
+void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold, bool orderLabelsByValue, const std::map<std::string, stringvec > & levels)
 {
 	beginResetModel();
 	_dataSet->beginBatchedToDB();
@@ -111,7 +111,14 @@ void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & data
 			return dataSet.at(it.first)[r];
 		};
 
-		_dataSet->column(colNr)->initFromLookups(it.first, rowCount, lookup, lookup, it.first, columnType::unknown, {}, threshold, orderLabelsByValue);
+		//The labels of a column with levels (an R factor) follow these, not the order of their values
+		auto		columnLevels	= levels.find(it.first);
+		const bool	hasLevels		= columnLevels != levels.end() && !columnLevels->second.empty();
+
+		_dataSet->column(colNr)->initFromLookups(it.first, rowCount, lookup, lookup, it.first, columnType::unknown, {}, threshold, orderLabelsByValue && !hasLevels);
+
+		if (hasLevels)
+			_dataSet->column(colNr)->labelsOrderBy(columnLevels->second);
 
 		colNr++;
 	}

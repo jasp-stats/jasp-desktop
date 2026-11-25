@@ -28,8 +28,8 @@ public:
 	virtual				bool				isDuplicate()												const	{ return false;				}
 	virtual				bool				wasUpgraded()												const	{ return false;				}
 	virtual				bool				needsRefresh()												const	{ return false;				}
-	virtual				const std::string   module()													const	{ return emptyString;		}
-	virtual				const std::string & name()														const	{ return emptyString;		}
+	virtual				const std::string   module()													const	{ return _syntaxModule;		}
+	virtual				const std::string & name()														const	{ return _syntaxName;		}
 	virtual				const std::string & title()														const	{ return emptyString;		}
 	virtual				const std::string & titleDefault()												const	{ return emptyString;		}
 	virtual				void				setTitle(const std::string& titel)									{}
@@ -50,7 +50,11 @@ public:
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue)													const	{ return defaultValue;		}
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)	const	{ return defaultValue;		}
 	virtual bool				optionLocked(const QString& name)																				const	{ return false; };
-	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
+	virtual	const Version	  &	moduleVersion()																									const	{ return _syntaxModuleVersion;	}
+	///< The module, R function and module version of an analysis without a module of its own: the dummy analysis of R
+	///  syntax mode, which the syntax bridge tells for each request (e.g. for the R syntax of its form). The desktop
+	///  Analysis knows them from its module and overrides the getters.
+	void						setModuleAnalysis(const std::string & module, const std::string & name, const Version & moduleVersion)	{ _syntaxModule = module; _syntaxName = name; _syntaxModuleVersion = moduleVersion; }
 
 						const Json::Value &	boundValues()												const	{ return _boundValues;		}
 						const Json::Value &	boundValue(const std::string& name,
@@ -101,6 +105,9 @@ protected:
 
 private:
 	Json::Value		_boundValues		= Json::objectValue;
+	std::string		_syntaxModule,						///< See setModuleAnalysis
+					_syntaxName;
+	Version			_syntaxModuleVersion	= AppInfo::version;
 
 
 protected:
