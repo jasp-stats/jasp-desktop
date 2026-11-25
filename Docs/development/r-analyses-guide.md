@@ -380,7 +380,7 @@ We'll also have to specify what columns our table will have. Some columns are al
       - `sf:X` - format to X significant figures
       - `p:X`  - if the value is less than X, substitute `< X` in its place (`p:.001` is common)
       - `pc`   - format the number as a percentage (multiply it by 100, and add a % sign) (does not work in conjunction with sf)
-      - `currency` or `currency:X` where X is a string like `EUR` or `JPY`.
+      - `monetary` or `monetary:X` where X is an ISO 4217 code like `EUR` or `JPY`. Without `:X` the user's preferred currency is used (set in the preferences under "Preferred language"; `currency` and `currency:X` are accepted as aliases of `monetary`).
   - `combine`: boolean specifying if cells in the column should be merged if they contain the same value
   - `overtitle`: adds a title which is positioned above all columns that specify the same overtitle (often used for confidence intervals, where the lower and upper bound are in separate columns, but the added overtitle groups them together)
 

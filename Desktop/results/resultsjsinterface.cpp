@@ -148,6 +148,11 @@ void ResultsJsInterface::setGlobalJsValues()
 	js +=			"; window.globSet.decimals = "					+ PreferencesModel::prefs()->fixedDecimalsForJS();
 	js +=			"; window.globSet.tempFolder = '"				+ tempFolder + "/'";
 	js +=			"; window.globSet.showInteractiveDefault = "	+ showInteractiveDefaultString;
+	
+	_currencyCode	= PreferencesModel::prefs()->currencyCode();
+	_currencySymbol	= PreferencesModel::prefs()->currencySymbol();
+	js +=			"; window.setCurrency('"						+ escapeJavascriptString(_currencyCode) + "', '" + escapeJavascriptString(_currencySymbol) + "')";
+	
 	runJavaScript(js);
 }
 
@@ -473,6 +478,20 @@ void ResultsJsInterface::jsLog(QString msg)
 void ResultsJsInterface::setLocale(QString localeId, bool thousandSeps)
 {
 	runJavaScript("window.setLocale('" + escapeJavascriptString(localeId) + "', " + (thousandSeps ? "true" : "false") + ");");
+}
+
+void ResultsJsInterface::setCurrency(QString code, QString symbol)
+{
+	//Monetary columns are formatted by the results page itself, so when the currency really changed it has to re-render them
+	const bool changed = code != _currencyCode || symbol != _currencySymbol;
+	
+	_currencyCode	= code;
+	_currencySymbol	= symbol;
+	
+	runJavaScript("window.setCurrency('" + escapeJavascriptString(code) + "', '" + escapeJavascriptString(symbol) + "');");
+	
+	if(changed && _resultsLoaded)
+		runJavaScript("window.reRenderAnalyses();");
 }
 
 void ResultsJsInterface::runJavaScript(const QString & js)

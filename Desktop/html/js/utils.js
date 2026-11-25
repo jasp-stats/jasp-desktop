@@ -1,6 +1,8 @@
 var currentLocale	= new Intl.Locale("en");
 var currentLocaleId = "en"
 var useThousandsSeparators = true
+var currencyCode	= "EUR"		//The currency chosen in the preferences, set by setCurrency below
+var currencySymbol	= "€"
 
 function setCurrentLocaleID(id, useThousandsSeps)
 {
@@ -14,6 +16,14 @@ function setCurrentLocaleID(id, useThousandsSeps)
 	useThousandsSeparators	= useThousandsSeps
 }
 
+function setCurrency(code, symbol)
+{
+	if (typeof code === "string" && code !== "")
+		currencyCode = code
+	if (typeof symbol === "string" && symbol !== "")
+		currencySymbol = symbol
+}
+
 /*
 function formatFixed(value, fixIt) 
 {
@@ -21,15 +31,35 @@ function formatFixed(value, fixIt)
 }*/
 
 
-function formatMoney(_currency='EUR', amount, thousands=true) {
-	const formatter = new Intl.NumberFormat(currentLocaleId, {
-		style: 'currency',
-		currency: _currency,
-		trailingZeroDisplay: 'stripIfInteger',
-		useGrouping: useThousandsSeparators || thousands
-	});
+function formatMoney(_currency, amount, thousands=true, _symbol="") {
+	if (typeof _currency !== "string" || _currency === "")
+		_currency = currencyCode
 	
-	return amount == "." ? amount : formatter.format(amount)
+	if (amount == ".")
+		return amount
+	
+	const options = { trailingZeroDisplay: 'stripIfInteger', useGrouping: useThousandsSeparators || thousands }
+	
+	//The preferred currency always shows the symbol the user chose, at the placement the locale prescribes: format
+	//with the ISO code for "no currency" (XXX) and swap its currency part for the symbol (what XXX renders as differs per locale).
+	if (_symbol === "" && _currency === currencyCode)
+		_symbol = currencySymbol
+	
+	if (_symbol !== "")
+	{
+		const placer = new Intl.NumberFormat(currentLocaleId, { style: 'currency', currency: 'XXX', ...options })
+		return placer.formatToParts(amount).map(part => part.type === "currency" ? _symbol : part.value).join("")
+	}
+	
+	try {
+		const formatter = new Intl.NumberFormat(currentLocaleId, { style: 'currency', currency: _currency, ...options })
+		return formatter.format(amount)
+	}
+	catch (e) {
+		//Not a currency Intl knows (a historic code perhaps): fall back to the code as its own symbol
+		const placer = new Intl.NumberFormat(currentLocaleId, { style: 'currency', currency: 'XXX', ...options })
+		return placer.formatToParts(amount).map(part => part.type === "currency" ? _currency : part.value).join("")
+	}
 }
 
 function handleNoZeroLead(number, result, noZeroLead)
@@ -191,17 +221,18 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 		if(f.startsWith("thousands"))
 			thousands = true
 		
-		if(f.startsWith(moneyFmt))
+		if(f.startsWith(moneyFmt) || f.startsWith("currency")) //currency is accepted as an alias of monetary, which is what the documentation used to call it
 		{
-			if(f.length > moneyFmt.length) 
+			const moneyToken = f.startsWith(moneyFmt) ? moneyFmt : "currency"
+			if(f.length > moneyToken.length) 
 			{
-				currency = f.substr(moneyFmt.length)
+				currency = f.substr(moneyToken.length)
 				if(currency.startsWith(":"))
 					currency = currency.substring(1)
 			}
 			
 			if(currency == "")
-				currency = "EUR"
+				currency = currencyCode
 		}
 
 		if (f.indexOf("dp:") != -1 && !fixDecimals)
@@ -283,6 +314,9 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 	
 	format = currency != "" ? "monetary" : pc ? "percentage" : isFinite(sf) ? "significance" : isFinite(dp) ? "decimalPoints" : "other"
 	
+	//The preferred currency is shown with the symbol the user chose, an explicitly pinned one with the symbol its code brings
+	const moneySymbol = currency === currencyCode ? currencySymbol : ""
+	
 	//Now that thats been determined we can format our cells
 	for (var rowNo = 0; rowNo < column.length; rowNo++) 
 	{
@@ -315,7 +349,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 				}
 				case "monetary":
 				{
-					formatted["content"] = formatMoney(_currency=currency, content, thousands)
+					formatted["content"] = formatMoney(currency, content, thousands, moneySymbol)
 					formatted["class"]	 = "monetary"
 					break;
 				}

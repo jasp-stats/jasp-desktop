@@ -26,6 +26,9 @@ class LanguageModel : public QAbstractListModel
 	Q_PROPERTY(QString		currentAltTerritory		READ currentAltTerritory		WRITE setCurrentAltTerritory		NOTIFY currentAltTerritoryChanged	)
 	Q_PROPERTY(QString		exampleFormatting		READ exampleFormatting												NOTIFY exampleFormattingChanged		)
 	Q_PROPERTY(bool			useThousandSeps			READ useThousandSeps			WRITE setUseThousandSeps			NOTIFY useThousandSepsChanged		)
+	Q_PROPERTY(bool			currencyOverride		READ currencyOverride			WRITE setCurrencyOverride			NOTIFY currencyOverrideChanged		)
+	Q_PROPERTY(QString		currencyCode			READ currencyCode													NOTIFY currencyChanged				)
+	Q_PROPERTY(QString		currencySymbol			READ currencySymbol												NOTIFY currencyChanged				)
 
 	struct LanguageInfo
 	{
@@ -103,6 +106,16 @@ public:
 	
 	bool useThousandSeps() const;
 	void setUseThousandSeps(bool newUseThousandSeps);
+
+	///Whether the user overrides the currency that belongs to the chosen locale
+	bool currencyOverride() const													{ return _currencyOverride; }
+	///The effective currency: the override when that is on, else the one the current locale brings
+	QString currencyCode() const;
+	QString currencySymbol() const;
+	///Only while the override is on: validates the code against ISO 4217 (else false) and fills in the symbol belonging to it
+	Q_INVOKABLE bool setCurrencyCode(const QString & newCode);
+	///Only while the override is on: stores the symbol and, when it belongs to a known currency, that code as well
+	Q_INVOKABLE bool setCurrencySymbol(const QString & newSymbol);
 	
 public slots:
 	void									setCurrentLanguage(QString language);
@@ -111,6 +124,7 @@ public slots:
 	void									setCurrentAltTerritory(const QString &newCurrentAltTerritory);
 	void									loadModuleTranslationFiles(Modules::DynamicModule *dyn);
 	void									resultsPageLoaded();
+	void									setCurrencyOverride(bool overrideIt);
 
 signals:
 	void									currentLanguageChanged();
@@ -126,6 +140,10 @@ signals:
 	void									resumeEngines();
 	
 	void useThousandSepsChanged();
+
+	///The effective currency changed: the results page and the engines are told (they are sent code and symbol), and the preferences example follows
+	void currencyOverrideChanged(bool currencyOverride);
+	void currencyChanged(QString currencyCode, QString currencySymbol);
 	
 private:
 	static LanguageModel *					_singleton;
@@ -140,6 +158,8 @@ private:
 	void									fillAltOptions();
 	void									fillAltTerritories();
 	void									setAlternativeLocaleStatic();
+	///Hands the effective currency to whoever listens and refreshes the preferences example; also re-arms the formatting callbacks with the currency's symbol
+	void									_emitCurrencyChanged();
 
 	QApplication						*	_mApp						= nullptr;
 	QTranslator							*	_mTranslator				= nullptr;
@@ -155,6 +175,9 @@ private:
 											_useThousandSeps;
 	QStringList								_altLanguages,
 											_altTerritories;
+	bool									_currencyOverride	= false;
+	QString									_currencyCode,			///< Stored values, only in effect while _currencyOverride; re-seeded from the locale when the override turns on
+											_currencySymbol;
 	std::map<QString,QLocale::Language>		_nativeLanguageNameToEnum;
 	std::map<QString,QLocale::Territory>	_nativeTerritoryNameToEnum;
 };

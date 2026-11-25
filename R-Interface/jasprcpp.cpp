@@ -359,6 +359,14 @@ void STDCALL jaspRCPP_setDecimalSettings(int numDecimals, bool fixedDecimals, bo
 	rEnvironment[".exactPValues"]		= exactPValues;
 }
 
+void STDCALL jaspRCPP_setCurrencySettings(const char * currencyCode, const char * currencySymbol)
+{
+	auto rEnvironment = Rcpp::Environment::global_env();
+
+	rEnvironment[".currencyCode"]		= currencyCode		? currencyCode		: "";
+	rEnvironment[".currencySymbol"]		= currencySymbol	? currencySymbol	: "";
+}
+
 void STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int ppi, const char* imageBackground)
 {
 	auto rEnvironment = Rcpp::Environment::global_env();

@@ -668,6 +668,7 @@ void MainWindow::makeConnections()
 			
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_columnModel,			&ColumnModel::languageChangedHandler,						Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::currentLocaleChanged,				_resultsJsInterface,	&ResultsJsInterface::setLocale,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::currencyChanged,					_resultsJsInterface,	&ResultsJsInterface::setCurrency,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_allHelp,				&AllHelp::helpChanged,										Qt::QueuedConnection);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
@@ -1539,6 +1540,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 	}
 
 	_resultsJsInterface->setLocale(_languageModel->currentLocale().bcp47Name(), _languageModel->useThousandSeps());
+	_resultsJsInterface->setCurrency(_languageModel->currencyCode(), _languageModel->currencySymbol());
 	_resultsJsInterface->analysisChanged(analysis);
 
 	setPackageModified();

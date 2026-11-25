@@ -135,7 +135,9 @@ private: // Data:
 									_analysisRFile			= "",
 									_dynamicModuleCall		= "",
 									_langR					= "en",
-									_qLocaleName			= "C";
+									_qLocaleName			= "C",
+									_currencyCode			= "",
+									_currencySymbol			= "";
 	Json::Value						_imageOptions,
 									_analysisOptions		= Json::nullValue,
 									_analysisResults;

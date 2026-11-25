@@ -1318,6 +1318,8 @@ void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 	msg["languageCode"]			= fq(PreferencesModel::prefs()->languageCode());
 	msg["localeQt"]				= fq(PreferencesModel::prefs()->localeQt().bcp47Name());
 	msg["use1000Seps"]			=	 PreferencesModel::prefs()->useThousandSeparators();
+	msg["currencyCode"]			= fq(PreferencesModel::prefs()->currencyCode());
+	msg["currencySymbol"]		= fq(PreferencesModel::prefs()->currencySymbol());
 	msg["GITHUB_PAT"]			= fq(PreferencesModel::prefs()->githubPatResolved());
 	msg["numDecimals"]			=	 PreferencesModel::prefs()->numDecimals();
 	msg["fixedDecimals"]		=	 PreferencesModel::prefs()->fixedDecimals();

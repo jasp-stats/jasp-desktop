@@ -7,6 +7,7 @@ Rectangle
 	property string	toolTip:	""
 	property alias	textInput:	textInput
 	property var	nextEl:		null
+	property bool	invalid:	false	///< Set when the last edit was rejected; paints the border red until it is cleared again
 	
 	signal onTextChanged();
 	signal editingFinished();
@@ -20,7 +21,7 @@ Rectangle
 	width:				implicitWidth
 	
 	color:				enabled ? jaspTheme.controlBackgroundColor : jaspTheme.controlDisabledBackgroundColor
-	border.color:		!textInput.activeFocus ? jaspTheme.borderColor : jaspTheme.focusBorderColor
+	border.color:		invalid ? jaspTheme.redDarker : (!textInput.activeFocus ? jaspTheme.borderColor : jaspTheme.focusBorderColor)
 	border.width:		1
 	onFocusChanged:		if(focus) textInput.focus = true;
 	activeFocusOnTab:	true

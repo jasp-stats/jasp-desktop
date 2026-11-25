@@ -20,6 +20,7 @@
 #include "data/importers/minitabimporter.h"
 #include "data/importers/database/databaseimportcolumn.h"
 #include "utilities/settings.h"
+#include "utilities/currencytable.h"
 #include "gui/preferencesmodel.h"
 #include "utilities/desktopcommunicator.h"
 #include "datasetsyncer.h"
@@ -9080,6 +9081,53 @@ void TestAll::testFormulaInteractionOfBacktickedNames()
 	Terms crossed = FormulaParser::parseTerm(QString("Dose * `Puppy love`"), &provider);
 	QCOMPARE(crossed.size(), size_t(3));
 	QCOMPARE(crossed.at(2).components(), QStringList({"Dose", "Puppy love"}));
+}
+
+void TestAll::testCurrencyTable()
+{
+	QVERIFY(CurrencyTable::isValidCode("EUR"));
+	QVERIFY(CurrencyTable::isValidCode("USD"));
+	QVERIFY(CurrencyTable::isValidCode("JPY"));
+	QVERIFY(CurrencyTable::isValidCode("NLG"));	//The pre-euro currencies stay available, auditors need them
+	QVERIFY(!CurrencyTable::isValidCode("ABC"));
+	QVERIFY(!CurrencyTable::isValidCode("EU"));
+	QVERIFY(!CurrencyTable::isValidCode("EURO"));
+	QVERIFY(!CurrencyTable::isValidCode(""));
+	QVERIFY(!CurrencyTable::isValidCode("eur")); //The caller is expected to normalize the casing first
+
+	QCOMPARE(CurrencyTable::symbolForCode("EUR"),	QString("€"));
+	QCOMPARE(CurrencyTable::symbolForCode("USD"),	QString("$"));
+	QCOMPARE(CurrencyTable::symbolForCode("JPY"),	QString("¥"));
+	QCOMPARE(CurrencyTable::symbolForCode("NLG"),	QString("ƒ"));
+	QCOMPARE(CurrencyTable::symbolForCode("ABC"),	QString(""));
+
+	QCOMPARE(CurrencyTable::codeForSymbol("€"),		QString("EUR"));
+	QCOMPARE(CurrencyTable::codeForSymbol("$"),		QString("USD"));	//"$" stands for many codes, USD has priority
+	QCOMPARE(CurrencyTable::codeForSymbol("¥"),		QString("JPY"));	//as does JPY over CNY
+	QCOMPARE(CurrencyTable::codeForSymbol("ƒ"),		QString("NLG"));	//and the gulden over the Antillean guilder
+	QCOMPARE(CurrencyTable::codeForSymbol("?"),		QString(""));
+}
+
+void TestAll::testCurrencyStringDefaultSymbol()
+{
+	//Like interfaceLocale, but with the currency chosen in the preferences handed along: currencyString without a
+	//symbol must use that one, while a symbol the caller does hand in still wins.
+	const QLocale defaultBefore;
+
+	QColumnUtils::setCallbacksAndDefaultLocale(QLocale(QLocale::Dutch, QLocale::Netherlands), true, "f");
+
+	auto guard = qScopeGuard([defaultBefore]
+	{
+		QLocale::setDefault(defaultBefore);
+		ColumnUtils::setCurrentQLocaleId("C");
+		ColumnUtils::setDecimalPoint(".");
+		ColumnUtils::setAlternativeDoubleToString(nullptr, nullptr);
+		ColumnUtils::setExtraStringToNumber(nullptr, nullptr);
+	});
+
+	QCOMPARE(QColumnUtils::currencyString(1234.5),			QString("f\u00A01.234,50"));	//No symbol: the default currency symbol is used, Qt writes it with a no-break space before the number
+	QCOMPARE(QColumnUtils::currencyString(1234.5, ""),		QString("f\u00A01.234,50"));
+	QCOMPARE(QColumnUtils::currencyString(1234.5, "€"),		QString("€\u00A01.234,50"));	//An explicit symbol wins
 }
 
 

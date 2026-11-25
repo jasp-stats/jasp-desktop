@@ -1,6 +1,7 @@
 #include "languagemodel.h"
 #include "qutils.h"
 #include "utilities/settings.h"
+#include "utilities/currencytable.h"
 #include "resultstesting/compareresults.h"
 #include "results/resultsjsinterface.h"
 #include "modules/dynamicmodule.h"
@@ -94,6 +95,9 @@ void LanguageModel::initialize()
 	_currentAltLanguage		= Settings::value(Settings::ALT_LOCALE_LANGUAGE		).toString();
 	_currentAltTerritory	= Settings::value(Settings::ALT_LOCALE_REGION		).toString();
 	_useThousandSeps		= Settings::value(Settings::USE_THOUSAND_SEPARATORS	).toBool();
+	_currencyOverride		= Settings::value(Settings::CURRENCY_OVERRIDE		).toBool();
+	_currencyCode			= Settings::value(Settings::CURRENCY_CODE			).toString();
+	_currencySymbol			= Settings::value(Settings::CURRENCY_SYMBOL			).toString();
 	
 	fillAltOptions();
 	
@@ -104,6 +108,7 @@ void LanguageModel::initialize()
 		_useThousandSeps		= false;
 		_currentAltLanguage		= _defaultLocale.nativeLanguageName();
 		_currentAltTerritory	= _defaultLocale.nativeTerritoryName();
+		_currencyOverride		= false; //the results tests need one currency: the one the locale brings
 	}
 	
 	if (!LanguageInfo::isLanguageAllowed(_currentLanguageCode)) 
@@ -335,7 +340,7 @@ void LanguageModel::setDefaultLocaleFromCurrent()
 {
 	setAlternativeLocaleStatic();
 	
-	QColumnUtils::setCallbacksAndDefaultLocale(currentLocale(), useThousandSeps());
+	QColumnUtils::setCallbacksAndDefaultLocale(currentLocale(), useThousandSeps(), currencySymbol());
 	
 	emit currentLocaleChanged(currentLocale().bcp47Name(), useThousandSeps());
 	emit exampleFormattingChanged();
@@ -348,6 +353,7 @@ void LanguageModel::refreshAll()
 	ResultsJsInterface::singleton()->setResultsLoaded(false);	//So that javascript starts queueing any Js (such as title changed of an analysis) until the page is reloaded
 	
 	setDefaultLocaleFromCurrent();
+	_emitCurrencyChanged();										//the currency belonging to the locale may have changed as well
 
 	//On linux it somehow ignores the newer settings, so instead of pausing we kill the engines... https://github.com/jasp-stats/jasp-test-release/issues/1046
 	//But I do not know if it necessary, because the modules-translations aren't working.
@@ -606,7 +612,7 @@ QString LanguageModel::exampleFormatting() const
 	examples.push_back(QColumnUtils::doubleToString(1.234567890));
 	examples.push_back(QColumnUtils::doubleToString(12345.67890));
 	examples.push_back(QColumnUtils::doubleToString(1234567890));
-	examples.push_back(QColumnUtils::currencyString(10000000.10, "€"));
+	examples.push_back(QColumnUtils::currencyString(10000000.10, currencySymbol()));
 	
 	return examples.join("\n");
 	
@@ -642,4 +648,105 @@ void LanguageModel::setUseThousandSeps(bool newUseThousandSeps)
 	Settings::setValue(Settings::USE_THOUSAND_SEPARATORS, _useThousandSeps);
 	
 	refreshAll();
+}
+
+QString LanguageModel::currencyCode() const
+{
+	return _currencyOverride ? _currencyCode : currentLocale().currencySymbol(QLocale::CurrencyIsoCode);
+}
+
+QString LanguageModel::currencySymbol() const
+{
+	return _currencyOverride ? _currencySymbol : currentLocale().currencySymbol();
+}
+
+void LanguageModel::_emitCurrencyChanged()
+{
+	//Re-arm the formatting callbacks as well, so that QColumnUtils::currencyString without a symbol uses the currency chosen here
+	QColumnUtils::setCallbacksAndDefaultLocale(currentLocale(), useThousandSeps(), currencySymbol());
+	
+	emit currencyChanged(currencyCode(), currencySymbol());
+	emit exampleFormattingChanged();
+}
+
+void LanguageModel::setCurrencyOverride(bool overrideIt)
+{
+	if (_currencyOverride == overrideIt || resultXmlCompare::compareResults::theOne()->testMode() || Settings::isForced(Settings::CURRENCY_OVERRIDE))
+		return;
+	
+	//The locale's currency, read before the override flips on: currencyCode()/currencySymbol() answer the override once it is set
+	const QString	derivedCode		= currencyCode(),
+					derivedSymbol	= currencySymbol();
+	
+	_currencyOverride = overrideIt;
+	
+	if(_currencyOverride)
+	{
+		//Seed the fields with the currency the locale brings, so the user starts editing from there
+		_currencyCode		= derivedCode;
+		_currencySymbol		= derivedSymbol;
+		
+		Settings::setValue(Settings::CURRENCY_CODE,		_currencyCode);
+		Settings::setValue(Settings::CURRENCY_SYMBOL,	_currencySymbol);
+	}
+	
+	Settings::setValue(Settings::CURRENCY_OVERRIDE, _currencyOverride);
+	
+	emit currencyOverrideChanged(_currencyOverride);
+	_emitCurrencyChanged();
+}
+
+bool LanguageModel::setCurrencyCode(const QString & newCode)
+{
+	if(!_currencyOverride || Settings::isForced(Settings::CURRENCY_CODE))
+		return false;
+	
+	const QString code = newCode.trimmed().toUpper();
+	
+	if(code == _currencyCode)
+		return true;
+	
+	if(!CurrencyTable::isValidCode(code))
+		return false;
+	
+	_currencyCode	= code;
+	_currencySymbol	= CurrencyTable::symbolForCode(code);
+	
+	Settings::setValue(Settings::CURRENCY_CODE,		_currencyCode);
+	Settings::setValue(Settings::CURRENCY_SYMBOL,	_currencySymbol);
+	
+	_emitCurrencyChanged();
+	
+	return true;
+}
+
+bool LanguageModel::setCurrencySymbol(const QString & newSymbol)
+{
+	if(!_currencyOverride || Settings::isForced(Settings::CURRENCY_SYMBOL))
+		return false;
+	
+	const QString symbol = newSymbol.trimmed();
+	
+	if(symbol.isEmpty())
+		return false;
+	
+	if(symbol == _currencySymbol)
+		return true;
+	
+	_currencySymbol = symbol;
+	
+	//When the symbol belongs to a known currency the code follows it, when it is shared by several (like "$") or unknown the code stays
+	const QString code = CurrencyTable::codeForSymbol(symbol);
+	
+	if(!code.isEmpty() && code != _currencyCode)
+	{
+		_currencyCode = code;
+		Settings::setValue(Settings::CURRENCY_CODE, _currencyCode);
+	}
+	
+	Settings::setValue(Settings::CURRENCY_SYMBOL, _currencySymbol);
+	
+	_emitCurrencyChanged();
+	
+	return true;
 }
