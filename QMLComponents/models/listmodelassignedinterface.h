@@ -33,6 +33,10 @@ public:
 	virtual void					setAvailableModel(ListModelTermsAvailable *availableModel);
 	ListModelTermsAvailable*		availableModel() const													{ return _availableModel; }
 
+	///< Sets the terms of the value the control is bound to. That value is complete, so the list gets exactly these terms,
+	///  whereas initTerms may re-initialize the list with what survives of its terms (e.g. keeping their interactions).
+	virtual void					bindTerms(const Terms& terms, const Terms::RelatedValuesPerTerm& allValuesMap = {})	{ initTerms(terms, allValuesMap); }
+
 public slots:
 	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)				{}
 			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)		override;

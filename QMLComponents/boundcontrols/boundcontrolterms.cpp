@@ -184,7 +184,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	newValue["types"] = terms.types();
 	BoundControlBase::bindTo(newValue);
 
-	_termsModel->initTerms(terms, allControlValues);
+	_termsModel->bindTerms(terms, allControlValues);
 }
 
 Json::Value BoundControlTerms::createJson() const

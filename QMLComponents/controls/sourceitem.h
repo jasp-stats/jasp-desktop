@@ -25,6 +25,7 @@
 #include <QMap>
 #include <QSet>
 #include <QAbstractItemModel>
+#include <QPointer>
 
 #include "jasplistcontrol.h"
 #include "variableinfo.h"
@@ -115,8 +116,10 @@ private:
 	Terms							_values;
 	bool							_isValuesSource				= false;
 	bool							_isRSource					= false;
-	ListModel			*			_sourceListModel			= nullptr;
-	QAbstractItemModel	*			_sourceNativeModel			= nullptr;
+	// QPointer: a source model can be deleted before this item when a form is destroyed (disconnectModels then
+	// disconnected from freed memory, a crash when the syntax bridge clears its cached forms).
+	QPointer<ListModel>				_sourceListModel;
+	QPointer<QAbstractItemModel>	_sourceNativeModel;
 	int								_nativeModelDisplayRole		= Qt::DisplayRole,
 									_nativeModelValueRole		= Qt::DisplayRole,
 									_nativeModelTypeRole		= -1,
