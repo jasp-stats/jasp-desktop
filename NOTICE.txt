@@ -1,9 +1,7 @@
-JASP includes other open source software components. The following
-is a list of these components (full copies of the license agreements
-used by these components are included below):
+JASP includes third-party components. This notice covers the R logo and Qt.
 
-- R Logo (CC-BY-SA 4.0) 
-- Qt (LGPL v2.1)
+- R Logo (CC-BY-SA 4.0)
+- Qt 6 (see component licenses below)
 
 
 R Logo
@@ -17,4 +15,11 @@ R logo is distributed under CC-BY-SA 4.0 license, https://creativecommons.org/li
 Open Source Qt
 ---------------------
 
-Qt framework is distributed under LGPL v2.1, https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html.
+Many Qt 6 modules are available under the GNU Lesser General Public
+License, version 3 (LGPLv3). Qt HTTP Server and Qt Network Authorization
+are available under the GNU General Public License, version 3 (GPLv3)
+as their open-source license option. Qt also includes third-party code
+under its own licenses.
+
+See https://doc.qt.io/qt-6/licensing.html for component-specific licensing
+information and third-party notices.
