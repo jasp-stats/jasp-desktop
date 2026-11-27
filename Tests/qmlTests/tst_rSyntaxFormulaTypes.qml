@@ -76,6 +76,34 @@ Item
 			compare(JSON.stringify(model.types), JSON.stringify(["nominal", "nominal", "scale", ["nominal", "nominal"]]), "the model terms keep their types")
 		}
 
+		function test_formula_interaction_components_take_the_type_of_their_list()
+		{
+			// TestInts is ordinal, which fixedFT does not allow: there it becomes nominal, and so must the TestInts in the
+			// interaction, also when the interaction comes without its main effect (jasp-stats/INTERNAL-jasp#3467)
+			var cases = [
+				{ formula: "TestDoubles ~ TestLetters * TestInts",				vars: ["TestLetters", "TestInts", "TestLetters:TestInts"],
+				  modelTypes: ["nominal", "nominal", ["nominal", "nominal"]] },
+				{ formula: "TestDoubles ~ TestLetters + TestLetters:TestInts",	vars: ["TestLetters", "TestLetters:TestInts"],
+				  modelTypes: ["nominal", ["nominal", "nominal"]] }
+			]
+
+			for (var i = 0; i < cases.length; i++)
+			{
+				var formula = {
+					formula:	cases[i].formula,
+					lhs:		{ vars: "TestDoubles" },
+					rhs:		{ fixed: { vars: cases[i].vars, intercept: true } }
+				}
+				var parsed = JSON.parse(jaspForm.parseOptionsToJson(JSON.stringify({ formula: formula })))
+				verify(parsed.ok, cases[i].formula + " is valid: " + parsed.error)
+
+				var fixed = parsed.options.fixedFT
+				compare(JSON.stringify(fixed.value), JSON.stringify(["TestLetters", "TestInts"]), cases[i].formula + ": the variables")
+				compare(JSON.stringify(fixed.types), JSON.stringify(["nominal", "nominal"]), cases[i].formula + ": the ordinal variable becomes nominal")
+				compare(JSON.stringify(parsed.options.modelFT.types), JSON.stringify(cases[i].modelTypes), cases[i].formula + ": the interaction has the types of the variables list")
+			}
+		}
+
 		function test_formula_keeps_the_type_of_a_single_variable_already_given()
 		{
 			// R gives a list of one variable as a string: the formula adds its variables next to it
