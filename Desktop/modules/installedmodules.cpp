@@ -13,6 +13,27 @@
 
 const std::string InstalledModules::settingsPath = "modules-settings.json";
 
+std::string InstalledModules::_versionAsString(const Json::Value& version) {
+	//Accepts every shape the bundle manager ever wrote: "0.99.0",
+	//{"Version": "0.99.0"}, [[0, 99, 0]] (rjson's rendering of a package_version)
+	//and [0, 99, 0].
+	if(version.isString())
+		return version.asString();
+
+	if(version.isObject()) //isMember throws on non-objects (jsoncpp find() asserts), so guard the type before asking
+		return version.isMember("Version") ? version["Version"].asString() : "";
+
+	if(!version.isArray())
+		return "";
+
+	const Json::Value& parts = version.size() > 0 && version[Json::UInt(0)].isArray() ? version[Json::UInt(0)] : version;
+
+	std::string strVersion;
+	for(Json::ArrayIndex i = 0; i < parts.size(); i++)
+		strVersion += parts[i].asString() + (i + 1 < parts.size() ? "." : "");
+	return strVersion;
+}
+
 void InstalledModules::parseModuleInfo(const std::string& path, InstalledModules::ModuleInfo& info) {
 	InstalledModules::ModuleInfo module;
 
@@ -21,22 +42,8 @@ void InstalledModules::parseModuleInfo(const std::string& path, InstalledModules
 	Json::Reader().parse(in, root);
 
 	std::string strVersion = "";
-	if(root.isMember("version")) {
-		if(root["version"].isString()) {
-			strVersion = root["version"].asString();
-		}
-		else if(root["version"].isMember("Version")) {
-			strVersion = root["version"]["Version"].asString();
-		}
-		else {
-			Json::Value version = root["version"][0];
-			for(int i = 0; i < version.size(); i++) {
-				auto x = version[i];
-				strVersion =  strVersion + version[i].asString() + ".";
-			}
-			strVersion.pop_back();
-		}
-	}
+	if(root.isMember("version"))
+		strVersion = _versionAsString(root["version"]);
 
 	info.name = root["name"].asString();
 	info.version = BundleVersion(strVersion);
