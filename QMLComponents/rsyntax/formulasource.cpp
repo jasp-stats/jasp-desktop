@@ -458,6 +458,39 @@ Terms::RelatedValuesPerTerm  FormulaSource::_getTermsFromExtraOptions(const Json
 
 }
 
+void FormulaSource::_setComponentTypesFromSources(Term& term, const QList<ListModelAssignedInterface*>& sourceModels, const Json::Value& options) const
+{
+	if (term.size() < 2)
+		return;
+
+	columnTypeVec	types		= term.types();
+	int				componentId	= 0;
+	types.resize(term.size(), columnType::unknown);
+
+	for (const QString& component : term.components())
+	{
+		for (ListModelAssignedInterface* sourceModel : sourceModels)
+		{
+			BoundControlTerms* boundControl = dynamic_cast<BoundControlTerms*>(sourceModel->listView()->boundControl());
+			if (!boundControl)
+				continue;
+
+			const Terms sourceTerms = boundControl->termsFromOption(options[fq(sourceModel->name())]);
+			int index = sourceTerms.indexOfValue(component);
+			if (index >= 0)
+			{
+				// If the source does not give a type, leave it unknown: binding the interaction list takes it then from its main
+				// effects or its source (BoundControlTerms::bindTo), not from the column.
+				types[componentId] = sourceTerms.at(size_t(index)).type();
+				break;
+			}
+		}
+		componentId++;
+	}
+
+	term.setTypes(types);
+}
+
 const QString FormulaSource::interceptTerm = "Intercept";
 
 bool FormulaSource::_checkIntercept(Terms &terms) const
@@ -625,6 +658,19 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 
 		if (found)
 		{
+			if (isInteractionModel)
+			{
+				// The components of an interaction get the type the variable has in the list it comes from (e.g. a nominal factor
+				// for an ordinal column), as their main effects do, and not the type of the column.
+				Terms checkedTerms;
+				for (Term term : terms)
+				{
+					_setComponentTypesFromSources(term, specifiedSourceModels + unspecifiedSourceModels, options);
+					checkedTerms.add(term);
+				}
+				terms = checkedTerms;
+			}
+
 			_addTermsToOptions(assignedModel, options, terms);
 			if (termsMap)
 			{

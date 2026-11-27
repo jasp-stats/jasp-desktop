@@ -38,6 +38,7 @@ public:
 
 	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const Terms::RelatedValuesPerTerm &extraTermsMap = {}) const;
 	bool		areTermsInOption(const Json::Value& option,	Terms& terms)					const;
+	Terms		termsFromOption(const Json::Value& option)									const	{ return _getTermsFromOptions(option); }
 
 protected:
 	Json::Value	createStorageValue()														const	override;
