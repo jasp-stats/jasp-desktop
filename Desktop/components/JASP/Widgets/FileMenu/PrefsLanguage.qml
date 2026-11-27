@@ -147,12 +147,13 @@ PrefsGroupRect
 		PrefsTextInput
 		{
 			id:					currencyCode
+			objectName:			"currencyCodeField"
 			enabled:			languageModel.currencyOverride && !preferencesModel.settingIsForced("currencyCode")
 			text:				languageModel.currencyCode
 			toolTip:			qsTr("ISO 4217 currency code, e.g. EUR, USD or JPY")
 			nextEl:				currencySymbol
-			L.preferredWidth:	Math.round(90 * preferencesModel.uiScale)
-			L.minimumWidth:		Math.round(60 * preferencesModel.uiScale)
+			L.Layout.preferredWidth:	Math.round(90 * preferencesModel.uiScale)
+			L.Layout.minimumWidth:		Math.round(60 * preferencesModel.uiScale)
 
 			onEditingFinished:
 			{
@@ -169,11 +170,12 @@ PrefsGroupRect
 		PrefsTextInput
 		{
 			id:					currencySymbol
+			objectName:			"currencySymbolField"
 			enabled:			languageModel.currencyOverride && !preferencesModel.settingIsForced("currencySymbol")
 			text:				languageModel.currencySymbol
 			toolTip:			qsTr("Currency symbol, e.g. €, $ or ¥. When it belongs to a currency the code follows it.")
-			L.preferredWidth:	Math.round(70 * preferencesModel.uiScale)
-			L.minimumWidth:		Math.round(50 * preferencesModel.uiScale)
+			L.Layout.preferredWidth:	Math.round(70 * preferencesModel.uiScale)
+			L.Layout.minimumWidth:		Math.round(50 * preferencesModel.uiScale)
 			nextEl:				overrideCurrency
 
 			onEditingFinished:
@@ -191,6 +193,7 @@ PrefsGroupRect
 		CheckBox
 		{
 			id:					overrideCurrency
+			objectName:			"currencyOverrideCheckBox"
 			enabled:			!preferencesModel.settingIsForced("currencyOverride")
 			label:				qsTr("Override default currency")
 			checked:			languageModel.currencyOverride

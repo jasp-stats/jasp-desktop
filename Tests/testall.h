@@ -490,6 +490,14 @@ private slots:
 	// and a cancelled drag (the columns model changed) gives it its row back.
 	void	testScriptConstructorDragKeepsFormulaRows();
 
+	// Loads the real QML preferences (the "Interface" page) and makes its currency controls answer
+	// for themselves: the page must instantiate without a single QML warning, the fields must be
+	// sized and filled by the model, and toggling the override must seed them instead of emptying
+	// them. Runs right before testMainWindowShowsFilterWindow: it needs the QML engine the
+	// command-line tests switch off (and never switch back on), and it must not leak its MainWindow
+	// (MainWindow and DataSetPackage are singletons the next constructor asserts on).
+	void	testPreferencesQmlCurrencyControls();
+
 	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a
