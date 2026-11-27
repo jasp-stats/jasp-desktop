@@ -94,6 +94,7 @@ protected:
 	std::pair<Terms, Json::Value>	_onlyTrueTerms(const QString& controlName)														const;
 	bool							_areTermsInOptions(ListModelAssignedInterface* model, const Json::Value& options, Terms& terms)	const;
 	void							_addTermsToOptions(ListModelAssignedInterface* model, Json::Value& options, const Terms& terms)	const;
+	Terms							_checkTypesInSource(ListModelAssignedInterface* sourceModel, const Terms& terms)	const;
 	void							_setComponentTypesFromSources(Term& term, const QList<ListModelAssignedInterface*>& sourceModels, const Json::Value& options)	const;
 	FormulaParser::ParsedTerms		_fillOptionsWithFixedTerms(ListModel* model, const FormulaParser::ParsedTerms &parsedTerms, Json::Value &options, QMap<QString, Terms>* termsMap = nullptr)	const;
 	FormulaParser::ParsedTerms		_fillOptionsWithRandomTerms(const FormulaParser::ParsedTerms& parsedTerms, Json::Value& options)														const;
