@@ -170,8 +170,9 @@ static void initializeWebEngineOnce()
 	}
 }
 
-///While testPreferencesQmlCurrencyControls loads the UI, every message mentioning the preferences QML
-///is collected (and still forwarded to the handler that was installed before) for the test to assert on.
+///While testMainWindowShowsFilterWindow loads the preferences page, every message mentioning the
+///preferences QML is collected (and still forwarded to the handler that was installed before) for
+///the test to assert on.
 static QtMessageHandler	_previousMessageHandler		= nullptr;
 static QStringList *	_prefsQmlWarningCollector	= nullptr;
 
@@ -188,6 +189,11 @@ void TestAll::testMainWindowShowsFilterWindow()
 {
 	// Makes MainWindow::checkForUpdates() bail out (mainwindow.cpp).
 	QCoreApplication::setApplicationName("JASPTest");
+
+	// The command-line chain tests set this to keep the QML engine out of their MainWindows and
+	// never unset it, which is why this test used to fail in full runs (no QML was ever loaded,
+	// so qmlLoadedSpy stayed empty) while passing on its own. The QML is the point here.
+	qputenv("JASP_TEST_BACKENDLESS", "");
 
 	// The full QML UI contains WebEngine views (ChatWindow, results page), so WebEngine must be
 	// initialized before MainWindow creates its QQmlApplicationEngine (same order as main.cpp).
@@ -350,34 +356,11 @@ void TestAll::testMainWindowShowsFilterWindow()
 	QVERIFY(!filterModel->filterVisible()); // FilterWindow closed because the VariablesWindow opened
 	QVERIFY(columnModel->visible());        // VariablesWindow stayed open
 
-	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
-	JASPTIMER_PRINTALL();
-
-	// Deliberately do not delete mainWindow: tearing down the EngineSync / DatabaseInterface
-	// during process shutdown throws (sqlite session already gone), which would fail the test
-	// even though the assertions passed. The binary exits right after this slot anyway.
-}
-
-void TestAll::testPreferencesQmlCurrencyControls()
-{
+	// --- The preferences page (currency controls) ---
 	//The preferences QML only ever announces its problems through "Received QML warnings" in a real
 	//run: a broken type or attached property there leaves every non-UI test green (it has happened
-	//twice). So load the real UI and make the currency controls answer for themselves.
-	QCoreApplication::setApplicationName("JASPTest"); //so checkForUpdates() stays out of the way
-
-	//The command-line chain tests set this to keep the QML engine out of their MainWindows and never
-	//unset it (which is why testMainWindowShowsFilterWindow fails in full runs but not on its own).
-	//This test needs the QML, so it clears the flag and hands back whatever it found afterwards.
-	const QByteArray backendlessBefore = qgetenv("JASP_TEST_BACKENDLESS");
-	qputenv("JASP_TEST_BACKENDLESS", "");
-	auto restoreBackendless = qScopeGuard([&]{ qputenv("JASP_TEST_BACKENDLESS", backendlessBefore); });
-
-	initializeWebEngineOnce();
-
-	//Collect what the QML engine complains about while the UI loads (and forward it to the normal
-	//handler, so the log loses nothing). Anything mentioning the preferences is a failure: an
-	//"Expected type name" on a namespaced attached property, for instance, makes the whole
-	//PrefsLanguage type unavailable and only PrefsUI.qml:193 reports where to look.
+	//twice). So open the "Interface" page the way the UI does and make its currency controls answer
+	//for themselves.
 	QStringList prefsQmlWarnings;
 	_previousMessageHandler		= qInstallMessageHandler(prefsQmlWarningHandler);
 	_prefsQmlWarningCollector	= &prefsQmlWarnings;
@@ -400,52 +383,18 @@ void TestAll::testPreferencesQmlCurrencyControls()
 		ColumnUtils::setExtraStringToNumber(nullptr, nullptr);
 	});
 
-	//A previous MainWindow teardown took the whole session directory (and its database) with it,
-	//while MainWindow wants to create its own DatabaseInterface in there again (see
-	//_newMainWindowWithExitSpy), and it wants to construct its own PreferencesModel.
-	TempFiles::init(ProcessInfo::currentPID());
-	delete PreferencesModel::prefs();
-
-	//The QML root is a Window, which no QObject of MainWindow can be the parent of, so the QML items
-	//are found through the top-level window(s) that appeared with it. An earlier test leaks one of
-	//its own, whose identical objectNames must not answer here.
-	const QWindowList windowsBefore = QGuiApplication::topLevelWindows();
-
-	MainWindow * mainWindow = new MainWindow(nullptr); //leaked: the binary exits right after this slot
-
-	QSignalSpy qmlLoadedSpy(mainWindow, &MainWindow::qmlLoadedChanged);
-	QTRY_VERIFY(!qmlLoadedSpy.isEmpty()); // loadQML() runs from a QTimer::singleShot in the ctor
-
-	//The QML root is a Window, which no QObject of MainWindow can be the parent of, so the QML items
-	//are found through the top-level window(s) that appeared with it. An earlier test leaks one of
-	//its own, whose identical objectNames must not answer here.
-	QList<QQuickWindow*> myQmlWindows;
-	for(QWindow * window : QGuiApplication::topLevelWindows())
-		if(QQuickWindow * quick = qobject_cast<QQuickWindow*>(window))
-			if(!windowsBefore.contains(window))
-				myQmlWindows << quick;
-	QVERIFY2(!myQmlWindows.isEmpty(), "No new QML window appeared: MainWindow.qml did not load");
-
-	auto findInMyQml = [&myQmlWindows](const QString & objectName) -> QQuickItem *
-	{
-		for(QQuickWindow * window : myQmlWindows)
-			if(QQuickItem * item = window->findChild<QQuickItem*>(objectName))
-				return item;
-		return nullptr;
-	};
-
-	//The preferences pages are loaded on demand through the file menu's resource buttons, so open
-	//the "Interface" page (PrefsUI.qml) the way the UI does.
+	//The preferences pages are loaded on demand through the file menu's resource buttons.
 	ResourceButtons * resourceButtons = mainWindow->findChild<ResourceButtons*>();
 	QVERIFY(resourceButtons != nullptr);
 	resourceButtons->setSelectedButton(ResourceButtons::PrefsUI);
 
+	//Only one QML MainWindow exists in this process, so the first match is unambiguous.
 	QQuickItem * currencyCode		= nullptr;
 	QQuickItem * currencySymbol		= nullptr;
 	QQuickItem * overrideCheckBox	= nullptr;
-	QTRY_VERIFY((currencyCode		= findInMyQml("currencyCodeField"))			!= nullptr);
-	QTRY_VERIFY((currencySymbol		= findInMyQml("currencySymbolField"))		!= nullptr);
-	QTRY_VERIFY((overrideCheckBox	= findInMyQml("currencyOverrideCheckBox"))	!= nullptr);
+	QTRY_VERIFY((currencyCode		= _findQuickItemByName("currencyCodeField"))			!= nullptr);
+	QTRY_VERIFY((currencySymbol		= _findQuickItemByName("currencySymbolField"))			!= nullptr);
+	QTRY_VERIFY((overrideCheckBox	= _findQuickItemByName("currencyOverrideCheckBox"))		!= nullptr);
 
 	//Test mode pins the interface locale to en_US, so the read-only fields show what belongs to it
 	QCOMPARE(currencyCode->property("text").toString(),		QString("USD"));
@@ -484,17 +433,12 @@ void TestAll::testPreferencesQmlCurrencyControls()
 
 	QVERIFY2(prefsQmlWarnings.isEmpty(), qPrintable("QML warnings while loading the preferences:\n" + prefsQmlWarnings.join("\n")));
 
-	//testMainWindowShowsFilterWindow runs next and asserts that no MainWindow and no DataSetPackage
-	//exist yet, so this test cannot leak either of them the way it does. Tearing down the EngineSync
-	//and the DatabaseInterface can throw (see there), but everything above has passed, so swallow it.
-	try
-	{
-		delete mainWindow;
-	}
-	catch(const std::exception & e)
-	{
-		std::cerr << "TestAll::testPreferencesQmlCurrencyControls: skipping MainWindow teardown: " << e.what() << std::endl;
-	}
+	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
+	JASPTIMER_PRINTALL();
+
+	// Deliberately do not delete mainWindow: tearing down the EngineSync / DatabaseInterface
+	// during process shutdown throws (sqlite session already gone), which would fail the test
+	// even though the assertions passed. The binary exits right after this slot anyway.
 }
 
 #define TO_STR2(x) #x

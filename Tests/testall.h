@@ -490,18 +490,16 @@ private slots:
 	// and a cancelled drag (the columns model changed) gives it its row back.
 	void	testScriptConstructorDragKeepsFormulaRows();
 
-	// Loads the real QML preferences (the "Interface" page) and makes its currency controls answer
-	// for themselves: the page must instantiate without a single QML warning, the fields must be
-	// sized and filled by the model, and toggling the override must seed them instead of emptying
-	// them. Runs right before testMainWindowShowsFilterWindow: it needs the QML engine the
-	// command-line tests switch off (and never switch back on), and it must not leak its MainWindow
-	// (MainWindow and DataSetPackage are singletons the next constructor asserts on).
-	void	testPreferencesQmlCurrencyControls();
-
 	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a
 	// regression test that the full UI bootstrap + filter window opening works headlessly.
+	// Afterwards it opens the preferences' "Interface" page and checks the currency controls:
+	// a broken preferences QML only ever surfaced as "Received QML warnings" in a real run
+	// (twice), while every non-UI test stayed green. It clears the JASP_TEST_BACKENDLESS flag
+	// the command-line chain tests leave behind (why it used to fail in full runs but not on
+	// its own) and must stay the last test: only one QML MainWindow can exist per process, and
+	// this one leaks on purpose because the binary exits right after the slot.
 	void	testMainWindowShowsFilterWindow();
 
 private:
