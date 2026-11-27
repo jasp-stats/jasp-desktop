@@ -58,6 +58,8 @@ void Description::connectChangesToDelay()
 	connect(this, &Description::titleChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::iconChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::descriptionChanged,		this, &Description::delayedUpdate);
+	connect(this, &Description::minJaspVersionChanged,	this, &Description::delayedUpdate);
+	connect(this, &Description::maxJaspVersionChanged,	this, &Description::delayedUpdate);
 	connect(this, &Description::authorChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::maintainerChanged,		this, &Description::delayedUpdate);
 	connect(this, &Description::websiteChanged,			this, &Description::delayedUpdate);
@@ -135,6 +137,32 @@ void Description::setVersion(QString version)
 
 	_version = ver;
 	emit versionChanged();
+}
+
+void Description::setMinJaspVersion(QString minJaspVersion)
+{
+	Version ver;
+	try						{ ver = fq(minJaspVersion); }
+	catch(std::exception &)	{ Log::log() << "Description '" << _name << "' has an invalid minJaspVersion: '" << fq(minJaspVersion) << "', ignoring it." << std::endl; }
+
+	if (_minJaspVersion == ver)
+		return;
+
+	_minJaspVersion = ver;
+	emit minJaspVersionChanged();
+}
+
+void Description::setMaxJaspVersion(QString maxJaspVersion)
+{
+	Version ver;
+	try						{ ver = fq(maxJaspVersion); }
+	catch(std::exception &)	{ Log::log() << "Description '" << _name << "' has an invalid maxJaspVersion: '" << fq(maxJaspVersion) << "', ignoring it." << std::endl; }
+
+	if (_maxJaspVersion == ver)
+		return;
+
+	_maxJaspVersion = ver;
+	emit maxJaspVersionChanged();
 }
 
 void Description::setAuthor(QString author)
