@@ -104,6 +104,24 @@ Item
 			}
 		}
 
+		function test_formula_keeps_the_type_given_with_a_variable()
+		{
+			// fixedFT allows nominal and scale: TestDoubles.nominal stays nominal, though its column is scale and scale is allowed,
+			// as a main effect and in an interaction (jasp-stats/INTERNAL-jasp#3467)
+			var formula = {
+				formula:	"TestInts ~ TestDoubles.nominal * TestLetters",
+				lhs:		{ vars: "TestInts" },
+				rhs:		{ fixed: { vars: ["TestDoubles.nominal", "TestLetters", "TestDoubles.nominal:TestLetters"], intercept: true } }
+			}
+			var parsed = JSON.parse(jaspForm.parseOptionsToJson(JSON.stringify({ formula: formula })))
+			verify(parsed.ok, "the formula is valid: " + parsed.error)
+
+			var fixed = parsed.options.fixedFT
+			compare(JSON.stringify(fixed.value), JSON.stringify(["TestDoubles", "TestLetters"]), "the variables of the formula, without their type")
+			compare(JSON.stringify(fixed.types), JSON.stringify(["nominal", "nominal"]), "the scale variable has the type given with it")
+			compare(JSON.stringify(parsed.options.modelFT.types), JSON.stringify(["nominal", "nominal", ["nominal", "nominal"]]), "the model terms too")
+		}
+
 		function test_formula_keeps_the_type_of_a_single_variable_already_given()
 		{
 			// R gives a list of one variable as a string: the formula adds its variables next to it

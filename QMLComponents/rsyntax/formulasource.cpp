@@ -491,6 +491,26 @@ void FormulaSource::_setComponentTypesFromSources(Term& term, const QList<ListMo
 	term.setTypes(types);
 }
 
+Terms FormulaSource::_checkTypesInSource(ListModelAssignedInterface* sourceModel, const Terms& terms) const
+{
+	// The type of a variable in a formula is the type given with it (as `x.nominal`) or else the type of its column: it is kept
+	// when the source allows it, and else becomes the default type of the source.
+	// (ListModel::checkTermsTypes would set an allowed type back to the type of the column, and so ignore `x.nominal` for a scale column x.)
+	JASPListControl*	listView		= sourceModel->listView();
+	Terms				checkedTerms	= terms;
+
+	for (Term& term : checkedTerms)
+	{
+		columnTypeVec types = term.types();
+		for (columnType& type : types)
+			if (type != columnType::unknown && !listView->isTypeAllowed(type))
+				type = listView->defaultType();
+		term.setTypes(types);
+	}
+
+	return checkedTerms;
+}
+
 const QString FormulaSource::interceptTerm = "Intercept";
 
 bool FormulaSource::_checkIntercept(Terms &terms) const
@@ -636,8 +656,8 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 
 					if (found)
 					{
-						terms = sourceModel->checkTermsTypes(terms);
-						termsToSearch = sourceModel->checkTermsTypes(termsToSearch);
+						terms = _checkTypesInSource(sourceModel, terms);
+						termsToSearch = _checkTypesInSource(sourceModel, termsToSearch);
 						_addTermsToOptions(sourceModel, options, termsToSearch);
 						break;
 					}
