@@ -829,7 +829,7 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 		}
 	
 		JASPTIMER_RESUME(Column::setValues call setValue and count integers);
-		
+
 		for(size_t i=0; i<rows; i++)
 		{
 			std::string	valueStr = valueLookup(i);
@@ -838,8 +838,9 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 
 			//The width is that of the value as the data shows it, and a number written the way C does is shown written differently
 			_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(isDouble && !useLocale ? doubleToDisplayString(valueDbl) : valueStr)));
-		
-			if(setValue(i, valueDbl, isDouble ? "" : valueStr, false) && aChange)
+
+			bool rowChanged = setValue(i, valueDbl, isDouble ? "" : valueStr, false);
+			if(rowChanged && aChange)
 				(*aChange) = true;
 					
 			if(!isDouble)
@@ -876,10 +877,9 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 		{
 			const std::string	value = valueLookup(i),
 								label = labelLookup(i);
-			
+
 			if(setValue(i, value, label, false, useLocale) && aChange)
-				(*aChange) = true;
-					
+				(*aChange) = true;					
 			if(value != "" || label != "")
 			{
 				if(ColumnUtils::getIntValue(value, tmpInt))
@@ -2189,21 +2189,26 @@ bool Column::setValue(size_t row, int valueInt, bool writeToDB)
 bool Column::setValue(size_t row, double valueDbl,  const std::string & valueStr, bool writeToDB)
 {
 	assert(!_hasLabels);
-	
+
 	if(row >= _dbls.size())
 		return false;
-	
-	bool changed = _dbls[row] != valueDbl || _strs[row] != valueStr;
-	
+
+	//NaN == NaN is false, yet two missing values are of course identical: without special-casing
+	//them, every rewrite of a column that contains empty cells (e.g. an analysis repeatedly writing
+	//its computed selection indicator) is flagged as a change, which makes the desktop re-run the
+	//very analysis that wrote it, which writes the same values again, ad infinitum.
+	const bool	bothMissing	= std::isnan(_dbls[row]) && std::isnan(valueDbl);
+	bool		changed		= bothMissing ? _strs[row] != valueStr : (_dbls[row] != valueDbl || _strs[row] != valueStr);
+
 	_dbls[row] = valueDbl;
 	_strs[row] = valueStr;
-	
+
 	if(writeToDB && !_data->writeBatchedToDB())
 	{
 		db().columnSetValue(_id, row, valueDbl, valueStr);
 		incRevision();
 	}
-	
+
 	return changed;
 }
 
