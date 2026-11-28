@@ -10985,3 +10985,23 @@ msgstr ""
 msgctxt "AnalysisForm|"
 msgid "The option '%1' is not known and is ignored"
 msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "JASP %1 up to and including %2"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "JASP %1 or newer"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "JASP %1 or older"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "This module requires %1, but this is JASP %2."
+msgstr ""

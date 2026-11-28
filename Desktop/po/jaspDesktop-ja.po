@@ -6,12 +6,6 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
-"PO-Revision-Date: 2026-11-22 05:51+0000\n"
-"Last-Translator: Koji Kosugi <kosugitti@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/ja/>\n"
-"Language: ja\n"
-"X-Generator: Weblate 2026.12.dev0\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -10672,3 +10666,23 @@ msgstr "バージョン %1 のオプションをアップグレードできま�
 msgctxt "AnalysisForm|"
 msgid "The option '%1' is not known and is ignored"
 msgstr "オプション '%1' は不明なため無視します"
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "JASP %1 up to and including %2"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "JASP %1 or newer"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "JASP %1 or older"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "This module requires %1, but this is JASP %2."
+msgstr ""
