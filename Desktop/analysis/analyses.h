@@ -111,7 +111,7 @@ public:
 
 	int			count() const	{ assert(_analysisMap.size() == _orderedIds.size()); return _analysisMap.size(); }
 
-	Json::Value asJson() const;
+	Json::Value asJson(bool forAutosave = false) const;
 
 	
 	

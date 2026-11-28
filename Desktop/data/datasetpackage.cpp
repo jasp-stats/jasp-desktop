@@ -584,16 +584,19 @@ bool DataSetPackage::filePathIsNonSaveable(const QString & path) const
 
 void DataSetPackage::setAnalysesData(const Json::Value &analysesData)
 {
-	QString		previousASF					= analysesData.type() != Json::objectValue ? "" : tq(analysesData.get("autoSaveFileName", "").asString());
-				_analysesData				= analysesData;
+	_analysesData = analysesData;
+}
+
+void DataSetPackage::addAutoSaveInfo(Json::Value & analysesData) const
+{
 	QFileInfo	dataFile					( tq(dataSet() ? dataSet()->dataFilePath() : "") ),
 				curFileI					( currentFile() );
 	QString		dataFileName				= dataFile.fileName(),
 				curFile						= currentFile(),
 				autoSaveString				= curFile != "JASP" ? tr("%1 autosaved").arg(curFileI.fileName()) + "<br>" + tr("Full path: %1").arg("<code>"+curFileI.absoluteFilePath()+"</code>") : dataFileName == "" ? tr("Unsaved workspace") : tr("Unsaved workspace of datafile %1").arg(dataFileName);
 
-	_analysesData["autoSaveDescription"]	= fq(autoSaveString);
-	_analysesData["autoSaveFileName"]		= fq(curFileI.exists() ? curFileI.fileName() : previousASF != "" ? previousASF : curFile != "" ? curFile : tr("Autosave"));
+	analysesData["autoSaveDescription"]		= fq(autoSaveString);
+	analysesData["autoSaveFileName"]		= fq(curFileI.exists() ? curFileI.fileName() : curFile != "" ? curFile : tr("Autosave"));
 }
 
 
