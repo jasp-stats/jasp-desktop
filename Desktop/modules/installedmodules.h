@@ -28,6 +28,8 @@
 #include <map>
 #include "version.h"
 
+namespace Json { class Value; }
+
 /**
  * @brief 		A minimal class for reporting the list active modules, to be used by `loadModules`.
   *
@@ -55,7 +57,8 @@ public:
 
 private:
 
-	static void parseModuleInfo(const std::string& path, ModuleInfo& info);
+	static void			parseModuleInfo(const std::string& path, ModuleInfo& info);
+	static std::string	_versionAsString(const Json::Value& version);
 
 	static const std::string settingsPath;
 

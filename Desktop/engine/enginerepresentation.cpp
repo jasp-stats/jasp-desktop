@@ -838,7 +838,9 @@ void EngineRepresentation::checkForComputedColumns(DataSet * dataSet, const Json
 			//successful compute: pick the values back up from the DB, validate the column and let the
 			//columns depending on it proceed.
 			std::string		columnName	= results["columnName"].asString();
-			bool			dataChanged	= results["dataChanged"].asBool();
+			//A type-only rewrite (e.g. ordinal -> nominal) must still propagate to dependents even
+			//when the values themselves are identical, so typeChanged counts as a change too.
+			bool			dataChanged	= results["dataChanged"].asBool() || results.get("typeChanged", Json::Value(false)).asBool();
 
 			//The analysis reports the encoded column name; translate it to the real one. Decoding is
 			//context-free: the global table answers for every live filter of every
@@ -1318,6 +1320,8 @@ void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 	msg["languageCode"]			= fq(PreferencesModel::prefs()->languageCode());
 	msg["localeQt"]				= fq(PreferencesModel::prefs()->localeQt().bcp47Name());
 	msg["use1000Seps"]			=	 PreferencesModel::prefs()->useThousandSeparators();
+	msg["currencyCode"]			= fq(PreferencesModel::prefs()->currencyCode());
+	msg["currencySymbol"]		= fq(PreferencesModel::prefs()->currencySymbol());
 	msg["GITHUB_PAT"]			= fq(PreferencesModel::prefs()->githubPatResolved());
 	msg["numDecimals"]			=	 PreferencesModel::prefs()->numDecimals();
 	msg["fixedDecimals"]		=	 PreferencesModel::prefs()->fixedDecimals();

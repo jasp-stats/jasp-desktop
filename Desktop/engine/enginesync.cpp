@@ -109,6 +109,7 @@ EngineSync::EngineSync(QObject *parent)
 		connect(PreferencesModel::prefs(),	&PreferencesModel::fixedDecimalsChanged,			this,						&EngineSync::settingsChanged					);
 		connect(PreferencesModel::prefs(),	&PreferencesModel::exactPValuesChanged,				this,						&EngineSync::settingsChanged					);
 		connect(PreferencesModel::prefs(),	&PreferencesModel::normalizedNotationChanged,		this,						&EngineSync::settingsChanged					);
+		connect(PreferencesModel::prefs(),	&PreferencesModel::currencyChanged,					this,						&EngineSync::settingsChanged					);
 		connect(PreferencesModel::prefs(),	&PreferencesModel::maxEnginesChanged,					this,					&EngineSync::maxEngineCountChanged,				Qt::DirectConnection	);
 	}
 	

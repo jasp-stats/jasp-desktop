@@ -1623,6 +1623,15 @@ void Workspace::computedColumnSucceeded(int dataSetId, QString columnNameQ, QStr
 		return;
 
 	column->validate();
+
+	//A rewrite that changed nothing must not be treated as a fresh computation: propagating it
+	//re-invalidates the very analysis (and its filters) that just finished, which re-runs the
+	//analysis, which rewrites the same values, ad infinitum. jaspBase reports the per-row truth
+	//(jaspColumn::dataEntry "dataChanged", or the computeColumn reply), so an unchanged rewrite
+	//only picks the values up above and settles here.
+	if(!dataChanged)
+		return;
+
 	column->checkForDependentColumnsToBeSent();
 
 	//Any filter that uses this computed column needs to be recomputed as well, otherwise it will

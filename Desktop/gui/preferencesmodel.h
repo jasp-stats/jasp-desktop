@@ -101,6 +101,9 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
 	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
 	Q_PROPERTY(bool			syncDroppedDatafile		READ syncDroppedDatafile		WRITE setSyncDroppedDatafile		NOTIFY syncDroppedDatafileChanged		)
+	Q_PROPERTY(QString		currencyCode			READ currencyCode													NOTIFY currencyChanged					)
+	Q_PROPERTY(QString		currencySymbol			READ currencySymbol													NOTIFY currencyChanged					)
+	Q_PROPERTY(bool			currencyOverride		READ currencyOverride												NOTIFY currencyOverrideChanged			)
 
 
 
@@ -152,6 +155,10 @@ public:
 	QString			languageCode()							const;
 	bool			useThousandSeparators()					const;
 	const QLocale & localeQt()								const;
+	///The currency chosen in the preferences (the override when that is on, else the one the locale brings), for analysis forms to default to
+	QString			currencyCode()							const;
+	QString			currencySymbol()						const;
+	bool			currencyOverride()						const;
 	bool			disableAnimations()						const;
 	bool			animationsOn()							const override { return !disableAnimations() && !safeGraphics(); }
 	bool			generateMarkdown()						const;
@@ -401,7 +408,10 @@ signals:
 	void rpcServerPortChanged(			int			rpcServerPort);
 
 	void syncDroppedDatafileChanged(	bool		syncDroppedDatafile);
-  
+
+	void currencyChanged();
+	void currencyOverrideChanged();
+
 	void onboardingCompletedChanged(	bool	onboardingCompleted);
 	void onboardingStepChanged(			int		onboardingStep);
 

@@ -100,7 +100,7 @@ PrefsGroupRect
 				value:						languageModel.currentAltTerritory
 				onValueChanged:				if(value != "") languageModel.currentAltTerritory = value
 				addEmptyValue:				false
-				KeyNavigation.tab:			nextTabItem ? nextTabItem : undefined
+				KeyNavigation.tab:			currencyCode
 				control.width:				Math.max(alternativeLocaleLanguage.control.implicitWidth, alternativeLocaleTerritory.control.implicitWidth)
 			}
 
@@ -128,6 +128,96 @@ PrefsGroupRect
 				font.family:		preferencesModel.interfaceFont
 				wrapMode:			Text.WordWrap
 				padding:			jaspTheme.itemPadding
+			}
+		}
+	}
+
+	RowLayout
+	{
+		spacing:		jaspTheme.generalAnchorMargin
+
+		Text
+		{
+			text:				qsTr("Currency:")
+			color:				jaspTheme.textEnabled
+			font.pixelSize:		Math.round(12 * preferencesModel.uiScale)
+			font.family:		preferencesModel.interfaceFont
+		}
+
+		PrefsTextInput
+		{
+			id:					currencyCode
+			objectName:			"currencyCodeField"
+			enabled:			languageModel.currencyOverride && !preferencesModel.settingIsForced("currencyCode")
+			text:				languageModel.currencyCode
+			toolTip:			qsTr("ISO 4217 currency code, e.g. EUR, USD or JPY")
+			nextEl:				currencySymbol
+			L.Layout.preferredWidth:	Math.round(90 * preferencesModel.uiScale)
+			L.Layout.minimumWidth:		Math.round(60 * preferencesModel.uiScale)
+
+			onEditingFinished:
+			{
+				invalid = false
+				if (!languageModel.setCurrencyCode(text))
+				{
+					text		= languageModel.currencyCode
+					invalid		= true
+					currencyInvalidTimer.restart()
+				}
+			}
+		}
+
+		PrefsTextInput
+		{
+			id:					currencySymbol
+			objectName:			"currencySymbolField"
+			enabled:			languageModel.currencyOverride && !preferencesModel.settingIsForced("currencySymbol")
+			text:				languageModel.currencySymbol
+			toolTip:			qsTr("Currency symbol, e.g. €, $ or ¥. When it belongs to a currency the code follows it.")
+			L.Layout.preferredWidth:	Math.round(70 * preferencesModel.uiScale)
+			L.Layout.minimumWidth:		Math.round(50 * preferencesModel.uiScale)
+			nextEl:				overrideCurrency
+
+			onEditingFinished:
+			{
+				invalid = false
+				if (!languageModel.setCurrencySymbol(text))
+				{
+					text		= languageModel.currencySymbol
+					invalid		= true
+					currencyInvalidTimer.restart()
+				}
+			}
+		}
+
+		CheckBox
+		{
+			id:					overrideCurrency
+			objectName:			"currencyOverrideCheckBox"
+			enabled:			!preferencesModel.settingIsForced("currencyOverride")
+			label:				qsTr("Override default currency")
+			checked:			languageModel.currencyOverride
+			onCheckedChanged:	languageModel.currencyOverride = checked
+			toolTip:			qsTr("Use a currency of your own choosing instead of the one that belongs to the language and territory selected above.")
+
+			KeyNavigation.tab:	nextTabItem ? nextTabItem : undefined
+		}
+
+		Timer
+		{
+			id:			currencyInvalidTimer
+			interval:	2000
+			onTriggered:	currencyCode.invalid = currencySymbol.invalid = false
+		}
+
+		Connections
+		{
+			target: languageModel
+
+			function onCurrencyChanged()
+			{
+				currencyCode.text	= languageModel.currencyCode
+				currencySymbol.text	= languageModel.currencySymbol
 			}
 		}
 	}

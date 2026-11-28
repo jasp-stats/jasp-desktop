@@ -37,6 +37,8 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::developerModeChanged,		this, [&](){ this->setEngineSandbox(!this->developerMode()); } );
 	
 	connect(LanguageModel::lang(),	&LanguageModel::currentLanguageChanged,			this, &PreferencesModel::languageCodeChanged			);
+	connect(LanguageModel::lang(),	&LanguageModel::currencyChanged,				this, &PreferencesModel::currencyChanged				);
+	connect(LanguageModel::lang(),	&LanguageModel::currencyOverrideChanged,		this, &PreferencesModel::currencyOverrideChanged		);
 	
 	_loadDatabaseFont();
 	
@@ -310,6 +312,21 @@ bool PreferencesModel::useThousandSeparators() const
 const QLocale & PreferencesModel::localeQt() const
 {
 	return LanguageModel::lang()->currentLocale();
+}
+
+QString PreferencesModel::currencyCode() const
+{
+	return LanguageModel::lang()->currencyCode();
+}
+
+QString PreferencesModel::currencySymbol() const
+{
+	return LanguageModel::lang()->currencySymbol();
+}
+
+bool PreferencesModel::currencyOverride() const
+{
+	return LanguageModel::lang()->currencyOverride();
 }
 
 QString PreferencesModel::githubPatResolved() const

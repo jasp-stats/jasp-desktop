@@ -129,7 +129,10 @@ public:
 		COMPANY_LOGO_PATH,
 		COMPANY_LOGO_HEIGHT,
 		DATABASE_ENABLED,
-		OSF_ENABLED
+		OSF_ENABLED,
+		CURRENCY_OVERRIDE,
+		CURRENCY_CODE,
+		CURRENCY_SYMBOL
 	};
 
 	/// Resolution order for value(): highest first —

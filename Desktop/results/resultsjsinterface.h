@@ -113,6 +113,7 @@ public slots:
 	void setThemeCss(					QString themeName);
 	void setFontFamily();
 	void setLocale(						QString localeId, bool useThousandSeparators);
+	void setCurrency(					QString code, QString symbol);
 
 
 //end callables
@@ -154,6 +155,8 @@ private slots:
 private:
 	double				_webEngineZoom	= 1.0;
 	QString				_resultsPageUrl = "qrc:///html/index-jasp.html";
+	QString				_currencyCode,
+						_currencySymbol;	///< Last values pushed to the results page, so a change is only re-rendered when it really is one
 	bool				_resultsLoaded	= false,
 						_scrollAtAll	= true;
 	

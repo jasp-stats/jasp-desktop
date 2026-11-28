@@ -50,6 +50,11 @@ private slots:
 	void	testCsvImportLocale();
 	void	testCsvImportLocaleColumnWidth();
 	void	testNumbersGroupedWithSpaces();
+
+	// The currency the preferences offer: the ISO 4217 table validates codes and fills in symbols,
+	// and QColumnUtils::currencyString falls back to the default symbol when it is given none.
+	void	testCurrencyTable();
+	void	testCurrencyStringDefaultSymbol();
 	void	testCsvImportNumbers_data();
 	void	testCsvImportNumbers();
 	void	testCsvSyncNumbers_data();
@@ -491,6 +496,12 @@ private slots:
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a
 	// regression test that the full UI bootstrap + filter window opening works headlessly.
+	// Afterwards it opens the preferences' "Interface" page and checks the currency controls:
+	// a broken preferences QML only ever surfaced as "Received QML warnings" in a real run
+	// (twice), while every non-UI test stayed green. It clears the JASP_TEST_BACKENDLESS flag
+	// the command-line chain tests leave behind (why it used to fail in full runs but not on
+	// its own) and must stay the last test: only one QML MainWindow can exist per process, and
+	// this one leaks on purpose because the binary exits right after the slot.
 	void	testMainWindowShowsFilterWindow();
 
 private:

@@ -20,7 +20,10 @@
 #include "data/importers/minitabimporter.h"
 #include "data/importers/database/databaseimportcolumn.h"
 #include "utilities/settings.h"
+#include "utilities/currencytable.h"
+#include "utilities/languagemodel.h"
 #include "gui/preferencesmodel.h"
+#include "widgets/filemenu/resourcebuttons.h"
 #include "utilities/desktopcommunicator.h"
 #include "datasetsyncer.h"
 #include <QTemporaryDir>
@@ -154,14 +157,47 @@ QQuickItem * TestAll::_findQuickItemByName(const QString & objectName)
 	return nullptr;
 }
 
+///QtWebEngine must be initialized before the first MainWindow creates its QQmlApplicationEngine (same
+///order as main.cpp), but several tests construct one: initialize exactly once per process.
+static void initializeWebEngineOnce()
+{
+	static bool initialized = false;
+
+	if(!initialized)
+	{
+		QtWebEngineQuick::initialize();
+		initialized = true;
+	}
+}
+
+///While testMainWindowShowsFilterWindow loads the preferences page, every message mentioning the
+///preferences QML is collected (and still forwarded to the handler that was installed before) for
+///the test to assert on.
+static QtMessageHandler	_previousMessageHandler		= nullptr;
+static QStringList *	_prefsQmlWarningCollector	= nullptr;
+
+static void prefsQmlWarningHandler(QtMsgType type, const QMessageLogContext & context, const QString & msg)
+{
+	if(_prefsQmlWarningCollector && (msg.contains("PrefsLanguage") || msg.contains("PrefsUI")))
+		*_prefsQmlWarningCollector << msg;
+
+	if(_previousMessageHandler)
+		_previousMessageHandler(type, context, msg);
+}
+
 void TestAll::testMainWindowShowsFilterWindow()
 {
 	// Makes MainWindow::checkForUpdates() bail out (mainwindow.cpp).
 	QCoreApplication::setApplicationName("JASPTest");
 
+	// The command-line chain tests set this to keep the QML engine out of their MainWindows and
+	// never unset it, which is why this test used to fail in full runs (no QML was ever loaded,
+	// so qmlLoadedSpy stayed empty) while passing on its own. The QML is the point here.
+	qputenv("JASP_TEST_BACKENDLESS", "");
+
 	// The full QML UI contains WebEngine views (ChatWindow, results page), so WebEngine must be
 	// initialized before MainWindow creates its QQmlApplicationEngine (same order as main.cpp).
-	QtWebEngineQuick::initialize();
+	initializeWebEngineOnce();
 
 	// MainWindow constructs the one-and-only DataSetPackage singleton, so no other package may
 	// exist at this point (the cleanup() of any previous test has deleted it).
@@ -319,6 +355,83 @@ void TestAll::testMainWindowShowsFilterWindow()
 	columnModel->setVisible(true);
 	QVERIFY(!filterModel->filterVisible()); // FilterWindow closed because the VariablesWindow opened
 	QVERIFY(columnModel->visible());        // VariablesWindow stayed open
+
+	// --- The preferences page (currency controls) ---
+	//The preferences QML only ever announces its problems through "Received QML warnings" in a real
+	//run: a broken type or attached property there leaves every non-UI test green (it has happened
+	//twice). So open the "Interface" page the way the UI does and make its currency controls answer
+	//for themselves.
+	QStringList prefsQmlWarnings;
+	_previousMessageHandler		= qInstallMessageHandler(prefsQmlWarningHandler);
+	_prefsQmlWarningCollector	= &prefsQmlWarnings;
+	auto restoreHandler = qScopeGuard([]
+	{
+		qInstallMessageHandler(_previousMessageHandler);
+		_previousMessageHandler		= nullptr;
+		_prefsQmlWarningCollector	= nullptr;
+	});
+
+	//Toggling the override below re-arms the interface-locale callbacks globally (the currency change
+	//is a locale-level event); hand the state the tests expect (C, no callbacks) back afterwards.
+	const QLocale localeBefore = QLocale();
+	auto restoreLocale = qScopeGuard([&]
+	{
+		QLocale::setDefault(localeBefore);
+		ColumnUtils::setCurrentQLocaleId("C");
+		ColumnUtils::setDecimalPoint(".");
+		ColumnUtils::setAlternativeDoubleToString(nullptr, nullptr);
+		ColumnUtils::setExtraStringToNumber(nullptr, nullptr);
+	});
+
+	//The preferences pages are loaded on demand through the file menu's resource buttons.
+	ResourceButtons * resourceButtons = mainWindow->findChild<ResourceButtons*>();
+	QVERIFY(resourceButtons != nullptr);
+	resourceButtons->setSelectedButton(ResourceButtons::PrefsUI);
+
+	//Only one QML MainWindow exists in this process, so the first match is unambiguous.
+	QQuickItem * currencyCode		= nullptr;
+	QQuickItem * currencySymbol		= nullptr;
+	QQuickItem * overrideCheckBox	= nullptr;
+	QTRY_VERIFY((currencyCode		= _findQuickItemByName("currencyCodeField"))			!= nullptr);
+	QTRY_VERIFY((currencySymbol		= _findQuickItemByName("currencySymbolField"))			!= nullptr);
+	QTRY_VERIFY((overrideCheckBox	= _findQuickItemByName("currencyOverrideCheckBox"))		!= nullptr);
+
+	//Test mode pins the interface locale to en_US, so the read-only fields show what belongs to it
+	QCOMPARE(currencyCode->property("text").toString(),		QString("USD"));
+	QCOMPARE(currencySymbol->property("text").toString(),	QString("$"));
+
+	//The RowLayout owns the geometry of its children: an explicit width is ignored and the fields
+	//collapse to their (empty) implicit width, clipping everything typed into them, so they must be
+	//sized through Layout.preferredWidth
+	QVERIFY2(currencyCode->width() >= 60,	qPrintable(QString("currencyCodeField is only %1 wide").arg(currencyCode->width())));
+	QVERIFY2(currencySymbol->width() >= 50,	qPrintable(QString("currencySymbolField is only %1 wide").arg(currencySymbol->width())));
+
+	//Override on: the fields enable and are seeded with the currency of the locale, not emptied
+	LanguageModel * languageModel = LanguageModel::lang();
+	QVERIFY(languageModel != nullptr);
+	QVERIFY(overrideCheckBox->setProperty("checked", QVariant(true)));
+	QVERIFY(currencyCode->property("enabled").toBool());
+	QVERIFY(currencySymbol->property("enabled").toBool());
+	QTRY_COMPARE(currencyCode->property("text").toString(),		QString("USD"));
+	QTRY_COMPARE(currencySymbol->property("text").toString(),	QString("$"));
+
+	//A valid code brings its symbol with it, an invalid one is rejected
+	QVERIFY(languageModel->setCurrencyCode("JPY"));
+	QCOMPARE(languageModel->currencyCode(),		QString("JPY"));
+	QCOMPARE(languageModel->currencySymbol(),	QString("¥"));
+	QTRY_COMPARE(currencyCode->property("text").toString(),		QString("JPY"));
+	QTRY_COMPARE(currencySymbol->property("text").toString(),	QString("¥"));
+
+	QVERIFY(!languageModel->setCurrencyCode("EURRR"));
+	QCOMPARE(languageModel->currencyCode(), QString("JPY"));
+
+	//and off again: back to the currency of the locale and disabled
+	QVERIFY(overrideCheckBox->setProperty("checked", QVariant(false)));
+	QVERIFY(!currencyCode->property("enabled").toBool());
+	QTRY_COMPARE(currencyCode->property("text").toString(),		QString("USD"));
+	QTRY_COMPARE(currencySymbol->property("text").toString(),	QString("$"));
+
+	QVERIFY2(prefsQmlWarnings.isEmpty(), qPrintable("QML warnings while loading the preferences:\n" + prefsQmlWarnings.join("\n")));
 
 	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
 	JASPTIMER_PRINTALL();
@@ -9155,6 +9268,53 @@ void TestAll::testFormulaInteractionOfBacktickedNames()
 	Terms crossed = FormulaParser::parseTerm(QString("Dose * `Puppy love`"), &provider);
 	QCOMPARE(crossed.size(), size_t(3));
 	QCOMPARE(crossed.at(2).components(), QStringList({"Dose", "Puppy love"}));
+}
+
+void TestAll::testCurrencyTable()
+{
+	QVERIFY(CurrencyTable::isValidCode("EUR"));
+	QVERIFY(CurrencyTable::isValidCode("USD"));
+	QVERIFY(CurrencyTable::isValidCode("JPY"));
+	QVERIFY(CurrencyTable::isValidCode("NLG"));	//The pre-euro currencies stay available, auditors need them
+	QVERIFY(!CurrencyTable::isValidCode("ABC"));
+	QVERIFY(!CurrencyTable::isValidCode("EU"));
+	QVERIFY(!CurrencyTable::isValidCode("EURO"));
+	QVERIFY(!CurrencyTable::isValidCode(""));
+	QVERIFY(!CurrencyTable::isValidCode("eur")); //The caller is expected to normalize the casing first
+
+	QCOMPARE(CurrencyTable::symbolForCode("EUR"),	QString("€"));
+	QCOMPARE(CurrencyTable::symbolForCode("USD"),	QString("$"));
+	QCOMPARE(CurrencyTable::symbolForCode("JPY"),	QString("¥"));
+	QCOMPARE(CurrencyTable::symbolForCode("NLG"),	QString("ƒ"));
+	QCOMPARE(CurrencyTable::symbolForCode("ABC"),	QString(""));
+
+	QCOMPARE(CurrencyTable::codeForSymbol("€"),		QString("EUR"));
+	QCOMPARE(CurrencyTable::codeForSymbol("$"),		QString("USD"));	//"$" stands for many codes, USD has priority
+	QCOMPARE(CurrencyTable::codeForSymbol("¥"),		QString("JPY"));	//as does JPY over CNY
+	QCOMPARE(CurrencyTable::codeForSymbol("ƒ"),		QString("NLG"));	//and the gulden over the Antillean guilder
+	QCOMPARE(CurrencyTable::codeForSymbol("?"),		QString(""));
+}
+
+void TestAll::testCurrencyStringDefaultSymbol()
+{
+	//Like interfaceLocale, but with the currency chosen in the preferences handed along: currencyString without a
+	//symbol must use that one, while a symbol the caller does hand in still wins.
+	const QLocale defaultBefore;
+
+	QColumnUtils::setCallbacksAndDefaultLocale(QLocale(QLocale::Dutch, QLocale::Netherlands), true, "f");
+
+	auto guard = qScopeGuard([defaultBefore]
+	{
+		QLocale::setDefault(defaultBefore);
+		ColumnUtils::setCurrentQLocaleId("C");
+		ColumnUtils::setDecimalPoint(".");
+		ColumnUtils::setAlternativeDoubleToString(nullptr, nullptr);
+		ColumnUtils::setExtraStringToNumber(nullptr, nullptr);
+	});
+
+	QCOMPARE(QColumnUtils::currencyString(1234.5),			QString("f\u00A01.234,50"));	//No symbol: the default currency symbol is used, Qt writes it with a no-break space before the number
+	QCOMPARE(QColumnUtils::currencyString(1234.5, ""),		QString("f\u00A01.234,50"));
+	QCOMPARE(QColumnUtils::currencyString(1234.5, "€"),		QString("€\u00A01.234,50"));	//An explicit symbol wins
 }
 
 

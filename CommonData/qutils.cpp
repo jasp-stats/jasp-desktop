@@ -556,7 +556,7 @@ static ColumnUtils::toIntF stringToIntFor(const QLocale & locale)
 	};
 }
 
-void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps)
+void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps, const QString & defaultCurrencySymbol)
 {
 	QLocale::setDefault(locale);
 	ColumnUtils::setCurrentQLocaleId(			fq(locale.bcp47Name())		);
@@ -575,14 +575,15 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 		return fq(loc.toString(dbl, 'g', precision));
 	};
 	
-	altFuncCurToString = [locale, useThousandSeps](double dbl, const std::string & symbol, bool sepas)
+	altFuncCurToString = [locale, useThousandSeps, defaultCurrencySymbol](double dbl, const std::string & symbol, bool sepas)
 	{
 		QLocale loc(locale);
 		
 		if(!sepas || !useThousandSeps)
 			QColumnUtils::setOmitGroupSeparatorOnQLocale(loc);
 		
-		return fq(loc.toCurrencyString(dbl, tq(symbol)));
+		//A symbol handed in wins; without one the currency chosen in the preferences is used, and if that is empty as well the locale's own symbol (toCurrencyString does that for an empty symbol)
+		return fq(loc.toCurrencyString(dbl, symbol.empty() ? defaultCurrencySymbol : tq(symbol)));
 	};
 
 	// ColumnUtils is in CommonData library and doesn't access Qt (for instance for QLocale), so instead we use a callback.

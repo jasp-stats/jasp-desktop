@@ -237,7 +237,17 @@ const Settings::Setting Settings::Values[] = {
 	// pane out entirely (#ifndef PRO in ResourceButtons), so there the
 	// setting is a no-op. Dropped from every file operation by
 	// ActionButtons::loadButtonData(); a change needs a restart.
-	{"osfEnabled",				true}
+	{"osfEnabled",				true},
+	// The currency used to format monetary values (the "monetary" column
+	// format in results, QColumnUtils::currencyString and the currency the
+	// engine hands to R as .currencyCode/.currencySymbol). While
+	// currencyOverride is false the currency simply follows the locale picked
+	// in the language preferences (LanguageModel derives it from QLocale), and
+	// code/symbol are only used once the user turns the override on. To pin a
+	// currency for a deployment force all three keys, override included.
+	{"currencyOverride",		false	},
+	{"currencyCode",			""		},
+	{"currencySymbol",			""		}
 };
 
 // Shipped JSON files beside the application: the per-client installer layer
